@@ -16,10 +16,7 @@ Abschluss relevant;
 Vornamen und Nachnamen in einzelne Spalten:
 f_name, l_name
 
-table Employee
-table Status
-table Dept
-table Location
+
 ````
 
 **Oliver: Notizbereich für Alle**
