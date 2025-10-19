@@ -6,25 +6,27 @@ Abschluss relevant;
 
 
 
-**Alexander: Notizbereich für Alle**
+**Alexander: Notizbereich Allgemein**
 ````
 
 ````
 
-**Lukas: Notizbereich für Alle**
+**Lukas: Notizbereich Allgemein**
 ````
-Vornamen und Nachnamen in einzelne Spalten:
-f_name, l_name
+Vornamen und Nachnamen in einzelne Spalten;
+Adressen in composity type anlegen;
+Telefonnummern, Emails in Array[] speichern;
 
-
-````
-
-**Oliver: Notizbereich für Alle**
-````
-
+postgres verwendet standardmäßig Lowercase Tabellen namen
+außer diese werden mit "" angeführt.  filiale ->"Filiale"
 ````
 
-**Dumitru: Notizbereich für Alle**
+**Oliver: Notizbereich Allgemein**
+````
+
+````
+
+**Dumitru: Notizbereich Allgemein**
 ````
 
 ````
@@ -68,12 +70,15 @@ Benutzeroberfläche sowie
 Implementierung von Teilen der GUI 
 
 
-__Zielsetzung:__
-`Ziel ist es mittels einer Softwarelösung die Zeitaufwändigen Kontrollen auf ein Minimum zu reduzieren, als 
+<u>___Zielsetzung:___</u>
+
+````
+Ziel ist es mittels einer Softwarelösung die Zeitaufwändigen Kontrollen auf ein Minimum zu reduzieren, als 
 auch eine optimierte Übersicht der, vom Auftraggeber bereitgestellten Daten zu gewährleisten. Aufgabe des 
 Projektteams ist das Erstellen einer Softwarelösung, welche dem Auftraggeber dabei hilft, eine schnellere 
 Kontrolle der Dienstpläne zu kontrollieren und zu verwalten. Der Zugriff erfolgt dabei lokal beim Auftraggeber. 
 Der PSP soll als Zeitersparnis und Arbeitserleichterung für den AG dienen. Dabei soll auf eine eigens 
 angelegte Datenbank zugegriffen werden können um einen vereinfachten Überblick aller Mitarbeiter und 
 deren vordefinierten Status zu erhalten. Unter bestimmten Suchkriterien soll zusätzlich nach geeignetem 
-Ersatz bei Ausfall eines Mitarbeiters gefiltert werden können.`
+Ersatz bei Ausfall eines Mitarbeiters gefiltert werden können.
+````
