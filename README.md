@@ -14,8 +14,10 @@ Abschluss relevant;
 **Lukas: Notizbereich Allgemein**
 ````
 Vornamen und Nachnamen in einzelne Spalten;
-Adressen in composity type anlegen;
-Telefonnummern, Emails in Array[] speichern;
+
+
+
+
 
 postgres verwendet standardmäßig Lowercase Tabellen namen
 außer diese werden mit "" angeführt.  filiale ->"Filiale"
