@@ -1,21 +1,32 @@
+
 /*
-Composite Type für Adresse definieren
+Create Script für Filialen anlegen inklusive Mitarbeiter anlegen
 */
 
--- Composite Berich
-CREATE TYPE adresse_typ AS (
-    strasse VARCHAR(50),
-    plz VARCHAR(10),
-    ort VARCHAR(30)
+CREATE TABLE if not EXISTS filiale (
+    FNr SERIAL PRIMARY KEY,
+    Strasse VARCHAR(50),
+    PLZ VARCHAR(10),
+    Ort VARCHAR(50),
+    Land VARCHAR(55) DEFAULT 'Österreich',
+    telefon VARCHAR(50),
+    email VARCHAR(50),
+    Filialleiter_Nr INTEGER,
+    FOREIGN KEY (Filialleiter_Nr) REFERENCES mitarbeiter(MNr)
 );
 
 
-
---Create Bereich
-Create table if not exists filialen (
-    Fi_id SERIAL PRIMARY KEY,
-    FilialLeiter VARCHAR(35),
-    adresse adresse_typ NOT NULL
-
+CREATE TABLE if not EXISTS mitarbeiter_arbeitet_in_Filiale (
+    MNr INTEGER,
+    FNr INTEGER,
+    PRIMARY KEY(MNr, FNr),
+    FOREIGN KEY (MNr) REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
+    FOREIGN KEY (FNr) REFERENCES filiale(FNr) ON DELETE CASCADE
 );
+
+/*
+ON DELETE CASCADE
+Beschreibung in createMA.sql
+*/
+
 
