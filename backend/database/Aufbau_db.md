@@ -20,13 +20,10 @@
 
 ````
 
-Dienstvertrag 
-Arbeitstyp  
-Kalendereintrag
+Überprüfung der Logik
 
 
 ````
-MA_Nummer als FK im Dienstvertrag oder anders herum?
 
 
-Erste Funktion insert überlegen
+Erste Funktion 'insert' überlegen
