@@ -14,17 +14,22 @@
 
 
 
-
 <h4>Was als nächstes kommt</h4>
 
 
 ````
 
-Überprüfung der Logik
+Im Funktion Ordner:
+--Views
+--Procedure
+|-- Suchfunktion, Filterfunktionen, [Limit setzen -> Top 5 Üstunden]
+|-- Detailinformation als View [Status, Kontakt]
+|-- Hilfsfunktionen [Regelnsetzen, zB Dienstplanüberschneidung]
+|-- Echtzeit Rendern für Frontend
 
 
 ````
-
+`[Wichtig!! performance berücksichtigen]`
 
 
 
