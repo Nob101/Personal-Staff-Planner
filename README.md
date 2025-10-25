@@ -81,12 +81,13 @@ Implementierung von Teilen der GUI
 <u>___Zielsetzung:___</u>
 
 ````
-Ziel ist es mittels einer Softwarelösung die Zeitaufwändigen Kontrollen auf ein Minimum zu reduzieren, als 
-auch eine optimierte Übersicht der, vom Auftraggeber bereitgestellten Daten zu gewährleisten. Aufgabe des 
-Projektteams ist das Erstellen einer Softwarelösung, welche dem Auftraggeber dabei hilft, eine schnellere 
-Kontrolle der Dienstpläne zu kontrollieren und zu verwalten. Der Zugriff erfolgt dabei lokal beim Auftraggeber. 
-Der PSP soll als Zeitersparnis und Arbeitserleichterung für den AG dienen. Dabei soll auf eine eigens 
-angelegte Datenbank zugegriffen werden können um einen vereinfachten Überblick aller Mitarbeiter und 
-deren vordefinierten Status zu erhalten. Unter bestimmten Suchkriterien soll zusätzlich nach geeignetem 
-Ersatz bei Ausfall eines Mitarbeiters gefiltert werden können.
+
+Eine Softwarelösung zur automatischen Dienstplan Erstellung und der effizienten 
+Verwaltung der Arbeitszeiten einzelner Mitarbeiter und den jeweils zugehörigen Filialen in 
+den Bezirken, Hartberg, Feldbach und Fürstenfeld. Die Anwendung soll, unter 
+Berücksichtigung gesetzlicher Regelungen, der Monatsstunden und der Verfügbarkeit 
+einzelner Mitarbeiter flexible Anpassungen ermöglichen. Zudem soll die Software im 
+Ausfall und/oder Fernbleibens eines Mitarbeiters, zum Beispiel Krankheitsfall oder Urlaub 
+automatisch Ersatzmitarbeiter vorschlagen und sich flexibel an Änderungen anpassen. 
+
 ````
