@@ -11,8 +11,6 @@ CREATE TABLE if not EXISTS mitarbeiter (
     PLZ VARCHAR(10),
     Ort VARCHAR(50),
     Land VARCHAR(55),
-    telefon VARCHAR(50),
-    email VARCHAR(50),
     Stammfiliale_Nr INTEGER,
     ANr INTEGER DEFAULT 1 REFERENCES arbeitstyp(ANr), --Standard ist verfügBar
     DVNr INTEGER
@@ -45,17 +43,6 @@ CREATE TABLE mitarbeiter_Email (
     FOREIGN KEY (MNr) REFERENCES mitarbeiter(MNr) ON DELETE CASCADE
 );
 
-
-
-
-
-
-/*
-ALTER TABLE Mitarbeiter
-    ADD CONSTRAINT fk_Stammfiliale 
-    FOREIGN KEY (Stammfiliale_Nr) 
-    REFERENCES Filiale(FNr);
-*/
 
 
 
