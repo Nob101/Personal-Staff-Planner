@@ -5,16 +5,16 @@ Create Script für Mitarbeiter anlegen inklusive Kontaktdaten
 
 CREATE TABLE if not EXISTS mitarbeiter (
     MNr SERIAL PRIMARY KEY,
-    f_name VARCHAR(35) NOT NULL,
-    l_name VARCHAR(45) NOT NULL,
-    haupttelefon VARCHAR(55),
-    hauptemail VARCHAR(100)
+    Vorname VARCHAR(35) NOT NULL,
+    Nachname VARCHAR(45) NOT NULL,
+    Haupttelefon VARCHAR(55),
+    Hauptemail VARCHAR(100)
     Strasse VARCHAR(50),
     PLZ VARCHAR(10),
     Ort VARCHAR(50),
     Land VARCHAR(55),
     Stammfiliale_Nr INTEGER,
-    ANr INTEGER DEFAULT 1 REFERENCES arbeitstyp(ANr), --Standard ist verfügBar
+    ANr INTEGER DEFAULT 1 REFERENCES arbeitstyp(ANr), --Standard ist verfügbar
     DVNr INTEGER
     CONSTRAINT fk_Stammfiliale FOREIGN KEY (Stammfiliale_Nr) REFERENCES filiale(FNr),
     CONSTRAINT fk_Dienstvertrag FOREIGN KEY (DVNr) REFERENCES dienstvertrag(DVNr)

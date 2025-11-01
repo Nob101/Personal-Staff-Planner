@@ -10,16 +10,16 @@ Create Script für Dienstvertrag, Arbietstyp (Verfügbarkeit) und Kalendertag
 CREATE TABLE IF NOT EXISTS dienstvertrag (
     DVNr SERIAL PRIMARY KEY,
     MNr INTEGER REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
-    Arbeitsstunden NUMERIC,
-    Einteilung VARCHAR(55) Not Null
+    Arbeitsstunden NUMERIC, --festgelegte Arbeitsstunden
+    Anstellung VARCHAR(60), --Angestellter, Gastgewerbe,
+    Einteilung VARCHAR(55) Not Null --Springer in welchem Bereich / nächste Filialen vom Hauptwohnsitz und/oder Region
 );
 
 
 
 CREATE TABLE if not EXISTS arbeitstyp (
     ANr INTEGER PRIMARY KEY,
-    Text VARCHAR(50) NOT NULL,
-    Beschreibung VARCHAR(200)
+    Text VARCHAR(50) NOT NULL
 );
 
 -- 1 als default wert in MA table anlegen
@@ -32,7 +32,7 @@ INSERT INTO arbeitstyp (ANr, Text) VALUES
     (6, 'Dienstverhinderung §8'),
     (7, 'Pflegefreistellung'),
     (8, 'Karenz')
-ON CONFLICT (ANr) DO NOTHING;
+ON CONFLICT (ANr) DO NOTHING; --es können neue Einträge nur angehängt werden aber bestehnden nicht entfernt/geändert werden
 
 
 -- §8 allgemein für diverse Fälle (Todesfall zB)
@@ -43,13 +43,13 @@ CREATE TABLE if not EXISTS kalendereintrag (
     MNr INTEGER REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
     FNr INTEGER REFERENCES filiale(FNr) ON DELETE CASCADE,
     ANr INTEGER REFERENCES arbeitstyp(ANr) ON DELETE CASCADE,
-    Von TIMESTAMP NOT NULL , --flexible Arbietszeiten, [Zuordnen -> AG -> Berechnen Alexander aus Dienstvertrag]
+    Von TIMESTAMP NOT NULL , --flexible Arbietszeiten, [Zuordnen -> AG -> Berechnen Alexander aus Dienstvertrag (Arbeitsstunden)]
     Bis TIMESTAMP NOT NULL,
     Bemerkung VARCHAR(200),
     CONSTRAINT chk_von_bis CHECK (Von < Bis)
 );
 
---Zeitstempel -> Trigger
+--kalendereintrag -> Trigger -> keine doppelbuchungen
 
 /* Beispiel
 INSERT INTO kalendereintrag (MNr, FNr, ANr, Von, Bis, Bemerkung)
