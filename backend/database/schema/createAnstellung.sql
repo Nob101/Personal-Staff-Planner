@@ -7,13 +7,13 @@ Create Script für Dienstvertrag, Arbietstyp (Verfügbarkeit) und Kalendertag
 */
 
 
-CREATE TABLE IF NOT EXISTS dienstplan (
-    PlanID SERIAL PRIMARY KEY,
-    MNr INTEGER REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
-    Tag SMALLINT NOT NULL, -- 1=Mo, ..., 7=So
-    Startzeit TIME NOT NULL,
-    Dauer INTEGER NOT NULL -- in Stunden
-);
+-- CREATE TABLE IF NOT EXISTS dienstplan (
+--     PlanID SERIAL PRIMARY KEY,
+--     MNr INTEGER REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
+--     Tag SMALLINT NOT NULL, -- 1=Mo, ..., 7=So
+--     Startzeit TIME NOT NULL,
+--     Dauer INTEGER NOT NULL -- in Stunden
+-- );
 
 
 
