@@ -15,7 +15,7 @@ CREATE TABLE if not EXISTS filiale (
     FOREIGN KEY (Filialleiter_Nr) REFERENCES mitarbeiter(MNr)
 );
 
-
+-- Zwischentabelle N:M beziehung
 CREATE TABLE if not EXISTS mitarbeiter_arbeitet_in_Filiale (
     MNr INTEGER,
     FNr INTEGER,

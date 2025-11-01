@@ -7,6 +7,8 @@ CREATE TABLE if not EXISTS mitarbeiter (
     MNr SERIAL PRIMARY KEY,
     f_name VARCHAR(35) NOT NULL,
     l_name VARCHAR(45) NOT NULL,
+    haupttelefon VARCHAR(55),
+    hauptemail VARCHAR(100)
     Strasse VARCHAR(50),
     PLZ VARCHAR(10),
     Ort VARCHAR(50),
