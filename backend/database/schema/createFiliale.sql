@@ -11,8 +11,8 @@ CREATE TABLE if not EXISTS filiale (
     Land VARCHAR(55) DEFAULT 'Österreich',
     telefon VARCHAR(50),
     email VARCHAR(50),
-    Filialleiter_Nr INTEGER,
-    CONSTRAINT fk_filialleiter FOREIGN KEY (Filialleiter_Nr) REFERENCES mitarbeiter(MNr)
+    Filialleiter_Nr INTEGER, -- welcher der MA als Filialleiter zugewiesen ist
+    CONSTRAINT fk_filialleiter FOREIGN KEY (Filialleiter_Nr) REFERENCES mitarbeiter(MNr) --es kann keinen Filialmitarbeiter geben, der kein MA ist
 );
 
 -- Zwischentabelle N:M beziehung
