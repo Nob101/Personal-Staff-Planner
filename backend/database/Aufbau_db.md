@@ -2,7 +2,7 @@
 <h2>Architekur-Aufbau für die Datenbank</h2>
 
 **In dem Ordner 'schema' sind:**
--reine SQL Scripte welche die tabellen und Datenstruktur defineiren
+-reine SQL Scripte welche die tabellen und Datenstruktur definieren
 
 **In dem ordner 'functions' sind:**
 -eigene funktionen, welche für die individuelle Abfragen/verarbeitungen verantwortlich sind
@@ -100,3 +100,9 @@ app.listen(port, () => {
 
 
 ````
+
+<h3> Notiz</h3>
+
+__1.)__ Tabellen müssen an ER-Modell angepasst werden
+__2.)__ ER-Modell muss AG Anforderungen/Vorgaben entsprechen
+
