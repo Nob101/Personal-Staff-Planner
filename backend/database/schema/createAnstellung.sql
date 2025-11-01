@@ -7,13 +7,12 @@ Create Script für Dienstvertrag, Arbietstyp (Verfügbarkeit) und Kalendertag
 */
 
 
--- CREATE TABLE IF NOT EXISTS dienstplan (
---     PlanID SERIAL PRIMARY KEY,
---     MNr INTEGER REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
---     Tag SMALLINT NOT NULL, -- 1=Mo, ..., 7=So
---     Startzeit TIME NOT NULL,
---     Dauer INTEGER NOT NULL -- in Stunden
--- );
+CREATE TABLE IF NOT EXISTS dienstvertrag (
+    DVNr SERIAL PRIMARY KEY,
+    MNr INTEGER REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
+    Arbeitsstunden NUMERIC,
+    Einteilung VARCHAR(55) Not Null
+);
 
 
 
@@ -44,14 +43,22 @@ CREATE TABLE if not EXISTS kalendereintrag (
     MNr INTEGER REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
     FNr INTEGER REFERENCES filiale(FNr) ON DELETE CASCADE,
     ANr INTEGER REFERENCES arbeitstyp(ANr) ON DELETE CASCADE,
-    Von TIMESTAMP NOT NULL,
+    Von TIMESTAMP NOT NULL , --flexible Arbietszeiten, [Zuordnen -> AG -> Berechnen Alexander aus Dienstvertrag]
     Bis TIMESTAMP NOT NULL,
-    Arbeitsstunden NUMERIC,
     Bemerkung VARCHAR(200),
     CONSTRAINT chk_von_bis CHECK (Von < Bis)
 );
 
+--Zeitstempel -> Trigger
+
+/* Beispiel
+INSERT INTO kalendereintrag (MNr, FNr, ANr, Von, Bis, Bemerkung)
+VALUES 
+(1, 1, 1, '2025-11-01 07:30:00', '2025-11-01 15:30:00', 'Schichtbeginn um 7:30 Uhr, Ende um 15:30 Uhr'),
+(2, 2, 2, '2025-11-01 09:00:00', '2025-11-01 18:00:00', 'Schichtbeginn um 9:00 Uhr, Ende um 18:00 Uhr');
 
 
+Von TIMESTAMP NOT NULL DEFAULT date_trunc('day', CURRENT_TIMESTAMP) + interval '8 hours',  wird auf Mitternacht des aktuellen Tages +8 Stunden gesetzt = 8 uhr Morgens
+*/
 
 

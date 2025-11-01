@@ -22,6 +22,7 @@ CREATE TABLE if not EXISTS mitarbeiter (
 );
 
 
+--Junction Tables -> 2 Attribute = Composite Primary Keys
 
 CREATE TABLE if not EXISTS mitarbeiter_Telefon (
     MNr INTEGER,
@@ -29,12 +30,6 @@ CREATE TABLE if not EXISTS mitarbeiter_Telefon (
     PRIMARY KEY (MNr, telefon),
     FOREIGN KEY (MNr) REFERENCES mitarbeiter(MNr) ON DELETE CASCADE
 );
-
-/*
-ON DELETE CASCADE
-Wenn ein Datensatz in der Tabelle Mitarbeiter gelöscht wird, werden alle Datensätze in jener Tabelle, 
-die über die Spalte MNr auf diesen Mitarbeiter verweisen, ebenfalls automatisch gelöscht.
-*/
 
 
 
@@ -46,6 +41,11 @@ CREATE TABLE mitarbeiter_Email (
 );
 
 
+/*
+ON DELETE CASCADE
+Wenn ein Datensatz in der Tabelle Mitarbeiter gelöscht wird, werden alle Datensätze in jener Tabelle, 
+die über die Spalte MNr auf diesen Mitarbeiter verweisen, ebenfalls automatisch gelöscht.
+*/
 
 
 
