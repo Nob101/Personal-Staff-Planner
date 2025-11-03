@@ -8,7 +8,13 @@ Abschluss relevant;
 
 **Alexander: Notizbereich Allgemein**
 ````
-
+routen/mitarbeiter:
+api/mitarbeiter //GET gibt alle mitarbeiter zurück
+api/mitarbeiter/:mnr //GET einen mitarbeiter mit der gegeben id
+api/mitarbeiter   //POST erstellt einen neuen Mitarbeiter
+api/mitarbeiter/:mnr //PUT aktualisiert den Mitarbeiter mit der id
+api/mitarbeiter/:mnr // DELETE löscht den Mitarbeiter mit der eingegeben id
+ 
 ````
 
 **Lukas: Notizbereich Allgemein**
