@@ -39,13 +39,13 @@ ON CONFLICT (ANr) DO NOTHING; --es können neue Einträge nur angehängt werden 
 
 
 CREATE TABLE if not EXISTS kalendereintrag (
-    KNr SERIAL PRIMARY KEY,
+    KALNr SERIAL PRIMARY KEY,
     MNr INTEGER REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
     FNr INTEGER REFERENCES filiale(FNr) ON DELETE CASCADE,
     ANr INTEGER REFERENCES arbeitstyp(ANr) ON DELETE CASCADE,
     Von TIMESTAMP NOT NULL , --flexible Arbietszeiten, [Zuordnen -> AG -> Berechnen Alexander aus Dienstvertrag (Arbeitsstunden)]
     Bis TIMESTAMP NOT NULL,
-    Bemerkung VARCHAR(200),
+    Anmerkung VARCHAR(250),
     CONSTRAINT chk_von_bis CHECK (Von < Bis)
 );
 

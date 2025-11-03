@@ -8,44 +8,33 @@ CREATE TABLE if not EXISTS mitarbeiter (
     Vorname VARCHAR(35) NOT NULL,
     Nachname VARCHAR(45) NOT NULL,
     Haupttelefon VARCHAR(55),
-    Hauptemail VARCHAR(100)
-    Strasse VARCHAR(50),
-    PLZ VARCHAR(10),
-    Ort VARCHAR(50),
-    Land VARCHAR(55),
+    Hauptemail VARCHAR(100),
     Stammfiliale_Nr INTEGER,
     ANr INTEGER DEFAULT 1 REFERENCES arbeitstyp(ANr), --Standard ist verfügbar
-    DVNr INTEGER
+    DVNr INTEGER,
     CONSTRAINT fk_Stammfiliale FOREIGN KEY (Stammfiliale_Nr) REFERENCES filiale(FNr),
     CONSTRAINT fk_Dienstvertrag FOREIGN KEY (DVNr) REFERENCES dienstvertrag(DVNr)
 
 );
 
 
---Junction Tables -> 2 Attribute = Composite Primary Keys
-
-CREATE TABLE if not EXISTS mitarbeiter_Telefon (
-    MNr INTEGER,
-    telefon VARCHAR(55),
-    PRIMARY KEY (MNr, telefon),
-    FOREIGN KEY (MNr) REFERENCES mitarbeiter(MNr) ON DELETE CASCADE
-);
-
-
-
-CREATE TABLE mitarbeiter_Email (
-    MNr INTEGER,
-    email VARCHAR(100),
-    PRIMARY KEY (MNr, email),
-    FOREIGN KEY (MNr) REFERENCES mitarbeiter(MNr) ON DELETE CASCADE
+CREATE TABLE mitarbeiter_kontakt (
+  KNr SERIAL PRIMARY KEY,
+  MNr INTEGER NOT NULL REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
+  Strasse VARCHAR(50),
+  PLZ VARCHAR(10),
+  Ort VARCHAR(50),
+  Land VARCHAR(55),
+  Zusatztelefon VARCHAR(55)[],
+  Zusatzemail VARCHAR(100)[]
 );
 
 
 /*
-ON DELETE CASCADE
-Wenn ein Datensatz in der Tabelle Mitarbeiter gelöscht wird, werden alle Datensätze in jener Tabelle, 
-die über die Spalte MNr auf diesen Mitarbeiter verweisen, ebenfalls automatisch gelöscht.
+INSERT INTO mitarbeiter_kontakt (MNr, Telefonnummer, Email) VALUES
+(1, ARRAY['123456789', '987654321'], ARRAY['mail1@example.com', 'mail2@example.com']);
 */
+
 
 
 
