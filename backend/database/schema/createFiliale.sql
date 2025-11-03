@@ -15,6 +15,7 @@ CREATE TABLE if not EXISTS filiale (
     CONSTRAINT fk_filialleiter FOREIGN KEY (Filialleiter_Nr) REFERENCES mitarbeiter(MNr) --es kann keinen Filialmitarbeiter geben, der kein MA ist
 );
 
+--Junction Tables -> 2 Attribute = Composite Primary Keys
 -- Zwischentabelle N:M beziehung
 CREATE TABLE if not EXISTS mitarbeiter_arbeitet_in_Filiale (
     MNr INTEGER,
@@ -24,9 +25,15 @@ CREATE TABLE if not EXISTS mitarbeiter_arbeitet_in_Filiale (
     FOREIGN KEY (FNr) REFERENCES filiale(FNr) ON DELETE CASCADE
 );
 
+
+
 /*
 ON DELETE CASCADE
-Beschreibung in createMA.sql
+Wenn Elterntelement gelöscht wird, wird auch das Kindelement mitentfernt
+
+Bsp.
+Wenn ein Datensatz in der Tabelle Mitarbeiter gelöscht wird, werden alle Datensätze in jener Tabelle, 
+die über die Spalte MNr auf diesen Mitarbeiter verweisen, ebenfalls automatisch gelöscht.
 */
 
 
