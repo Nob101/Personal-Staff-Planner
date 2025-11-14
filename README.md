@@ -19,19 +19,51 @@ api/mitarbeiter/:mnr // DELETE löscht den Mitarbeiter mit der eingegeben id
 
 **Lukas: Notizbereich Allgemein**
 ````
-Vornamen und Nachnamen in einzelne Spalten;
+Demo Version
+Tabelle mitarbeiter
+Spalten:
+    Mnr (PK)        Integer
+    Vorname         string
+    Nachname        string
+    Fkurzl (unique) string 
+    Akurzl (unique) string 
+    Counter         Integer
+
+Tabelle filiale
+Spalten:
+    Fnr (PK)        Integer
+    Fkurzl (unique) string
+    Strasse         string
+    PLZ             string
+    Ort             string
+    Land            string
+    telefon         string
+    email           string
+
+Tabelle mitarbieter_arbeitet_in_Filiale
+Spalte:
+    Mnr            Integer
+    Fnr            Integer
+
+Tabelle arbietstyp      (wird mit einem Insert direkt befüllt)
+Spalte:
+    Akurzl         string
+    Text           string  
 
 
 
 
-
-postgres verwendet standardmäßig Lowercase Tabellen namen
-außer diese werden mit "" angeführt.  filiale ->"Filiale"
-
-tabelle mitarbeiter
-tabelle filialen
-usw.
-
+Noch Anzulegen:
+Tabelle mitarbeiter_kontakt
+Spalten:
+    Knr (PK)       Integer
+    Mnr            Integer
+    Strasse         string
+    PLZ             string
+    Ort             string
+    Land            string
+    telefon  []     string
+    email    []     string
 
 ````
 
