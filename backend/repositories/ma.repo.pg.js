@@ -34,7 +34,7 @@ const COLUMNS = `mnr, vorname, nachname, fkurzl, akurzl, counter`;
 
 async function list(offset = 0, limit = 10) {
   const { rows } = await pool.query(
-    `SELECT ${COLUMNS} FROM mitarbeiter ORDER BY mnr LIMIT $1 OFFSET $2`,
+    `SELECT ${COLUMNS} FROM mitarbeiter ORDER BY mnr LIMIT $1 OFFSET $2`, //$1 $2 -> platzhalter in Postgres
     [limit, offset]
   );
   return rows;
@@ -73,49 +73,6 @@ async function searchByName(name) {
   return rows;
 }
 
-//----------------------------------------------------------------------------------
-
-
-
-        /**
-         * Fügt mehrere Mitarbeiter auf einmal in die Datenbank ein (Bulk Insert)
-         * Bulk Insert -> gleichzeitiges Einfügen mehrerer Datensätze in einem VVorgang
-         * Pflichtfelder: vorname, nachname (müssen gesetzt sein)
-         * counter muss Zahl [10..999] sein, fkurzl und akurzl können NULL und sind unique
-         * @param {Array<Object>} mitarbeiterArray - Array mit Mitarbeiter-Objekten
-         * @returns {Promise<Array>} Array der eingefügten Mitarbeiterobjekte mit allen Spalten
-         */
-async function createMany(mitarbeiterArray) {
-  if (!Array.isArray(mitarbeiterArray) || mitarbeiterArray.length === 0) return [];
-  
-  const values = [];
-  const placeholders = mitarbeiterArray.map((_, i) => {
-    const index = i * 5;
-    const m = mitarbeiterArray[i];
-
-    //Prüfung der Pflichtfelder welche nicht NULL sein dürfen
-    if(!m.vorname || !m.nachname){
-        throw new Error(`Mitarbietr ${i + 1}: 'vorname' und 'nachname' sind Pflichtfelder`)
-    }
-    if(typeof m.counter !== 'number' || m.counter > 999){
-        throw new Error(`Mitarbeiter Counter `)
-    }
-
-
-    values.push(m.vorname, 
-        m.nachname,
-        m.fkurzl || null,
-        m.akurzl || null,
-        m.counter ?? 0          //Nullish Coalescing Operator -> wenn kein wert zugewiesen wird, counter  ist automatisch 0 
-    );
-
-    return `($${index + 1}, $${index + 2}, $${index + 3}, $${index + 4}, $${index + 5})`;
-  }).join(',');
-
-  const query = `INSERT INTO mitarbeiter (vorname, nachname, fkurzl, akurzl, counter) VALUES ${placeholders} RETURNING ${COLUMNS}`;
-  const { rows } = await pool.query(query, values);
-  return rows;
-}
 
 
 //----------------------------------------------------------------------------------
@@ -158,6 +115,7 @@ async function create(dto = {}) {
          * @param {number} [dto.counter]
          * @returns {Promise<Object|null>} Aktualisiertes Mitarbeiter-Objekt oder null wenn nicht gefunden
          */
+
 async function update(mnr, dto = {}) {
   const { vorname, nachname, fkurzl, akurzl, counter } = dto;
 
@@ -203,7 +161,6 @@ module.exports = {
   list,
   get,
   searchByName,
-  createMany,
   create,
   update,
   remove,

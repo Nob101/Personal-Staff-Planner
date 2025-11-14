@@ -25,8 +25,8 @@ Spalten:
     Mnr (PK)        Integer
     Vorname         string
     Nachname        string
-    Fkurzl (unique) string 
-    Akurzl (unique) string 
+    Fkurzl          string 
+    Akurzl          string 
     Counter         Integer
 
 Tabelle filiale
@@ -49,7 +49,6 @@ Tabelle arbietstyp      (wird mit einem Insert direkt befüllt)
 Spalte:
     Akurzl         string
     Text           string  
-
 
 
 Tabelle mitarbeiter_kontakt
