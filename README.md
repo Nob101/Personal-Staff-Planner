@@ -68,7 +68,7 @@ Spalte:
     telefon_typ    string   --telefon 1, telefon 2, etc.
     nummer         string   --nummer 1, nummer 2, etc.
 
-Tabelle mitarbieter_telefon
+Tabelle mitarbieter_email
 Spalte:
     Mnr            Integer
     email_typ      string   --email 1, email 2, etc.
