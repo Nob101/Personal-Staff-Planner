@@ -52,8 +52,6 @@ Spalte:
 
 
 
-
-Noch Anzulegen:
 Tabelle mitarbeiter_kontakt
 Spalten:
     Knr (PK)       Integer
@@ -62,8 +60,20 @@ Spalten:
     PLZ             string
     Ort             string
     Land            string
-    telefon       string
-    email         string
+
+
+Tabelle mitarbieter_telefon
+Spalte:
+    Mnr            Integer
+    telefon_typ    string   --telefon 1, telefon 2, etc.
+    nummer         string   --nummer 1, nummer 2, etc.
+
+Tabelle mitarbieter_telefon
+Spalte:
+    Mnr            Integer
+    email_typ      string   --email 1, email 2, etc.
+    email_adresse  string   --adresse 1, adresse 2, etc.
+
 
 ````
 
