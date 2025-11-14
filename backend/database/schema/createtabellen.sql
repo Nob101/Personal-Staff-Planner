@@ -2,22 +2,30 @@
         erstellen der Tabellen für die Demo-Version
 */
 
+    /*
+    ON DELETE CASCADE
+    Wenn Elterntelement gelöscht wird, wird auch das Kindelement mitentfernt
+
+    Bsp.
+    Wenn ein Datensatz in der Tabelle Mitarbeiter gelöscht wird, werden alle Datensätze in jener Tabelle, 
+    die über die Spalte MNr auf diesen Mitarbeiter verweisen, ebenfalls automatisch gelöscht.
+    */
 
 
 CREATE TABLE if not EXISTS mitarbeiter (
     MNr SERIAL PRIMARY KEY,
     Vorname VARCHAR(35) NOT NULL,
     Nachname VARCHAR(45) NOT NULL,
-    FKurzl VARCHAR(15) UNIQUE, --Stammfiliale
-    AKurzl VARCHAR(15) UNIQUE, --Arbeitstyp
-    Counter INTEGER NOT NULL --Counter für Algorithmus
-    
+    FKurzl VARCHAR(15),         --Stammfiliale
+    AKurzl VARCHAR(15),         --Arbeitstyp
+    Counter INTEGER NOT NULL    --Counter für Algorithmus
+
 );
 
 
 CREATE TABLE if not EXISTS filiale (
     FNr SERIAL PRIMARY KEY,
-    FKurzl VARCHAR(15) UNIQUE,
+    FKurzl VARCHAR(15),
     Strasse VARCHAR(50),
     PLZ VARCHAR(10),
     Ort VARCHAR(50),
@@ -40,14 +48,40 @@ CREATE TABLE if not EXISTS arbeitstyp (
     Text VARCHAR(55) NOT NULL
 );
 
-    /*
-    ON DELETE CASCADE
-    Wenn Elterntelement gelöscht wird, wird auch das Kindelement mitentfernt
+CREATE TABLE mitarbeiter_hat_arbeitstyp (
+    MNr INTEGER REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
+    AKurzl VARCHAR(6) REFERENCES arbeitstyp(AKurzl),
+    PRIMARY KEY(MNr, AKurzl)
+);
 
-    Bsp.
-    Wenn ein Datensatz in der Tabelle Mitarbeiter gelöscht wird, werden alle Datensätze in jener Tabelle, 
-    die über die Spalte MNr auf diesen Mitarbeiter verweisen, ebenfalls automatisch gelöscht.
-    */
+
+CREATE TABLE mitarbeiter_kontakt (
+          KNr SERIAL PRIMARY KEY,
+          MNr INTEGER NOT NULL REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
+          Strasse VARCHAR(50),
+          PLZ VARCHAR(10),
+          Ort VARCHAR(50),
+          Land VARCHAR(55),
+
+        );
+
+CREATE TABLE mitarbeiter_telefon (
+  MNr INTEGER NOT NULL REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
+  telefon_typ VARCHAR(50) NOT NULL,
+  nummer VARCHAR(55) NOT NULL,
+  PRIMARY KEY (MNr, telefon_typ)
+);
+
+CREATE TABLE mitarbeiter_email (
+  MNr INTEGER NOT NULL REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
+  email_typ VARCHAR(50) NOT NULL,
+  email_adresse VARCHAR(100) NOT NULL,
+  PRIMARY KEY (MNr, email_typ)
+);
+
+
+
+
 
 
 
@@ -55,24 +89,24 @@ CREATE TABLE if not EXISTS arbeitstyp (
 --hinzufügen der PK -> FK beziehungen, um einen Aussführfehler zu vermeiden
 
 ALTER TABLE mitarbeiter
-ADD CONSTRAINT fk_Stammfiliale FOREIGN KEY ( Stammfiliale_Nr) REFERENCES filiale(FKurzl);
+ADD CONSTRAINT fk_Stammfiliale FOREIGN KEY ( Fkurzl) REFERENCES filiale(FKurzl);
 
-Alter TABLE mitarbeiter
+ALTER TABLE mitarbeiter
 ADD CONSTRAINT fk_arbeitstyp FOREIGN KEY (AKurzl) REFERENCES arbeitstyp(AKurzl);
 
 -- Alle Test Insert Befehle zur überprüfung
 
 INSERT INTO arbeitstyp (AKurzl, Text) VALUES 
-    ('AD', 'Anfangsdienst'),
-    ('ED', 'Enddienst'),
-    ('FF', 'Frei'),
-    ('KK', 'Erkrankung'),
-    ('AR', 'Arzttermin'),
-    ('UL', 'Urlaub'),
-    ('ZA', 'Zeitausgleich'),
-    ('DV', 'Dienstverhinderung §8'),
-    ('PF', 'Pflegefreistellung'),
-    ('KR', 'Karenz')
+    ('A', 'Anfangsdienst'),
+    ('E', 'Enddienst'),
+    ('F', 'Frei'),
+    ('K', 'Krankenstand'),
+    ('A', 'Arzttermin'),
+    ('U', 'Urlaub'),
+    ('Z', 'Zeitausgleich'),
+    ('D', 'Dienstverhinderung §8'),
+    ('P', 'Pflegefreistellung')
+    
 ON CONFLICT (AKurzl) DO NOTHING; 
 
 -- -- §8 allgemein für diverse Fälle (Todesfall zB)
@@ -83,42 +117,9 @@ ON CONFLICT (AKurzl) DO NOTHING;
 
 /*
     Alte Tabellen (für später)  noch nicht fertig angepasst!!!!!!!!
+
+    Tabelle Dienstplan zwischen tabelle
 */
-
-        -- CREATE TABLE mitarbeiter_kontakt (
-        --   KNr SERIAL PRIMARY KEY,
-        --   MNr INTEGER NOT NULL REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
-        --   Strasse VARCHAR(50),
-        --   PLZ VARCHAR(10),
-        --   Ort VARCHAR(50),
-        --   Land VARCHAR(55),
-        --   Zusatztelefon VARCHAR(55)[],
-        --   Zusatzemail VARCHAR(100)[]
-        -- );
-
-
-        -- /*
-        -- INSERT INTO mitarbeiter_kontakt (MNr, Telefonnummer, Email) VALUES
-        -- (1, ARRAY['123456789', '987654321'], ARRAY['mail1@example.com', 'mail2@example.com']);
-        -- */
-
-
-
-
-
-
-        -- /*
-        -- Create Script für Dienstvertrag, Arbietstyp (Verfügbarkeit) und Kalendertag
-        -- */
-
-
-        -- CREATE TABLE IF NOT EXISTS dienstvertrag (
-        --     DVNr SERIAL PRIMARY KEY,
-        --     MNr INTEGER REFERENCES mitarbeiter(MNr) ON DELETE CASCADE,
-        --     Arbeitsstunden NUMERIC, --festgelegte Arbeitsstunden
-        --     Anstellung VARCHAR(60), --Angestellter, Gastgewerbe,
-        --     Einteilung VARCHAR(55) Not Null --Springer in welchem Bereich / nächste Filialen vom Hauptwohnsitz und/oder Region
-        -- );
 
 
 
