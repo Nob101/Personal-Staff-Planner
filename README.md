@@ -62,8 +62,8 @@ Spalten:
     PLZ             string
     Ort             string
     Land            string
-    telefon  []     string
-    email    []     string
+    telefon       string
+    email         string
 
 ````
 
