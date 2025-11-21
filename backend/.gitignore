@@ -2,7 +2,7 @@
 node_modules/
 
 # Umgebungsvariablen (env Dateien)
-.env
+*.env
 
 # Draw.io Dateien
 *.drawio
