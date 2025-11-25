@@ -1,0 +1,3811 @@
+{
+  "jahr": 2025,
+  "monat": 6,
+  "tageImMonat": 30,
+  "monatsstunden": 168,
+  "filialen": [
+    {
+      "filiale": {
+        "id": 1,
+        "standort": "Wien Mitte",
+        "farbe": "#FF8800"
+      },
+      "arbeitstage": 30,
+      "plan": [
+        {
+          "datum": "2025-06-01",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-01-E-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-01-E-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-01-F-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-01-A-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-02",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-02-E-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-02-F-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-02-A-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-02-E-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-03",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-03-E-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-03-F-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-03-A-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-03-E-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-04",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-04-F-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-04-A-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-04-E-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-04-F-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-05",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-05-F-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-05-A-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-05-E-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-05-F-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-06",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-06-A-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-06-E-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-06-F-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-06-A-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-07",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-07-A-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-07-E-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-07-F-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-07-A-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-08",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-08-A-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-08-F-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-08-A-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-08-E-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-09",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-09-A-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-09-F-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-09-A-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-09-E-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-10",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-10-F-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-10-A-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-10-E-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-10-F-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-11",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-11-F-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-11-A-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-11-E-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-11-F-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-12",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-12-E-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-12-E-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-12-F-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-12-A-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-13",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-13-E-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-13-E-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-13-F-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-13-A-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-14",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-14-E-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-14-F-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-14-A-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-14-E-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-15",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-15-E-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-15-F-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-15-A-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-15-E-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-16",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-16-F-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-16-A-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-16-E-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-16-F-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-17",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-17-F-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-17-A-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-17-E-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-17-F-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-18",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-18-A-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-18-E-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-18-F-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-18-A-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-19",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-19-A-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-19-E-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-19-F-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-19-A-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-20",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-20-A-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-20-F-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-20-A-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-20-E-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-21",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-21-A-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-21-F-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-21-A-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-21-E-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-22",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-22-F-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-22-A-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-22-E-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-22-F-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-23",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-23-F-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-23-A-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-23-E-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-23-F-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-24",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-24-E-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-24-E-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-24-F-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-24-A-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-25",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-25-E-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-25-E-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-25-F-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-25-A-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-26",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-26-E-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-26-F-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-26-A-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-26-E-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-27",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-27-E-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-27-F-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-27-A-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-27-E-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-28",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-28-F-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-28-A-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-28-E-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-28-F-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-29",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-29-F-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-29-A-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-29-E-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-29-F-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-30",
+          "einsatz": [
+            {
+              "dienstId": "1-2025-06-30-A-3",
+              "mitarbeiterId": 3,
+              "vorname": "Peter",
+              "nachname": "Schmidt",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-30-E-5",
+              "mitarbeiterId": 5,
+              "vorname": "Tom",
+              "nachname": "Weber",
+              "schicht": "E",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-30-F-7",
+              "mitarbeiterId": 7,
+              "vorname": "Lukas",
+              "nachname": "Wolf",
+              "schicht": "F",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            },
+            {
+              "dienstId": "1-2025-06-30-A-8",
+              "mitarbeiterId": 8,
+              "vorname": "Anna",
+              "nachname": "Huber",
+              "schicht": "A",
+              "farbe": "#FF8800",
+              "filialeId": 1,
+              "hauptfilialeId": 1
+            }
+          ]
+        }
+      ],
+      "springer": [],
+      "offeneDienste": [],
+      "stundenProMitarbeiter": {
+        "3": 162,
+        "5": 162,
+        "7": 162,
+        "8": 162
+      }
+    },
+    {
+      "filiale": {
+        "id": 2,
+        "standort": "Graz Süd",
+        "farbe": "#00AEEF"
+      },
+      "arbeitstage": 30,
+      "plan": [
+        {
+          "datum": "2025-06-01",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-01-A-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-01-F-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-01-E-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-01-A-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-02",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-02-E-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-02-E-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-02-F-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-02-A-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-03",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-03-E-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-03-E-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-03-F-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-03-A-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-04",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-04-F-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-04-E-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-04-A-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-04-F-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-05",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-05-F-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-05-E-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-05-A-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-05-F-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-06",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-06-A-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-06-F-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-06-A-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-06-E-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-07",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-07-A-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-07-F-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-07-A-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-07-E-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-08",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-08-E-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-08-A-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-08-F-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-08-E-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-09",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-09-E-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-09-A-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-09-F-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-09-E-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-10",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-10-F-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-10-A-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-10-E-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-10-F-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-11",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-11-F-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-11-A-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-11-E-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-11-F-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-12",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-12-A-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-12-F-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-12-E-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-12-A-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-13",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-13-A-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-13-F-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-13-E-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-13-A-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-14",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-14-E-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-14-E-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-14-F-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-14-A-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-15",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-15-E-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-15-E-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-15-F-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-15-A-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-16",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-16-F-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-16-E-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-16-A-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-16-F-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-17",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-17-F-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-17-E-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-17-A-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-17-F-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-18",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-18-A-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-18-F-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-18-A-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-18-E-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-19",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-19-A-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-19-F-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-19-A-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-19-E-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-20",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-20-E-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-20-A-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-20-F-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-20-E-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-21",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-21-E-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-21-A-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-21-F-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-21-E-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-22",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-22-F-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-22-A-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-22-E-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-22-F-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-23",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-23-F-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-23-A-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-23-E-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-23-F-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-24",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-24-A-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-24-F-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-24-E-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-24-A-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-25",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-25-A-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-25-F-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-25-E-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-25-A-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-26",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-26-E-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-26-E-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-26-F-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-26-A-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-27",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-27-E-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-27-E-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-27-F-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-27-A-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-28",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-28-F-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-28-E-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-28-A-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-28-F-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-29",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-29-F-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-29-E-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-29-A-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-29-F-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-30",
+          "einsatz": [
+            {
+              "dienstId": "2-2025-06-30-A-1",
+              "mitarbeiterId": 1,
+              "vorname": "Max",
+              "nachname": "Müller",
+              "schicht": "A",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-30-F-4",
+              "mitarbeiterId": 4,
+              "vorname": "Laura",
+              "nachname": "Fischer",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-30-A-6",
+              "mitarbeiterId": 6,
+              "vorname": "Sophie",
+              "nachname": "Klein",
+              "schicht": "F",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            },
+            {
+              "dienstId": "2-2025-06-30-E-9",
+              "mitarbeiterId": 9,
+              "vorname": "Felix",
+              "nachname": "Schneider",
+              "schicht": "E",
+              "farbe": "#00AEEF",
+              "filialeId": 2,
+              "hauptfilialeId": 2
+            }
+          ]
+        }
+      ],
+      "springer": [],
+      "offeneDienste": [],
+      "stundenProMitarbeiter": {
+        "1": 162,
+        "4": 162,
+        "6": 162,
+        "9": 162
+      }
+    },
+    {
+      "filiale": {
+        "id": 3,
+        "standort": "Salzburg Nord",
+        "farbe": "#8BC34A"
+      },
+      "arbeitstage": 30,
+      "plan": [
+        {
+          "datum": "2025-06-01",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-01-A-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-01-E-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-01-F-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-02",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-02-A-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-02-E-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-02-F-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-03",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-03-E-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-03-F-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-03-A-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-04",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-04-E-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-04-F-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-04-A-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-05",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-05-F-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-05-A-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-05-E-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-06",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-06-F-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-06-A-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-06-E-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-07",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-07-A-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-07-E-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-07-F-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-08",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-08-A-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-08-E-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-08-F-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-09",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-09-E-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-09-F-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-09-A-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-10",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-10-E-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-10-F-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-10-A-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-11",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-11-F-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-11-A-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-11-E-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-12",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-12-F-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-12-A-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-12-E-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-13",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-13-A-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-13-E-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-13-F-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-14",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-14-A-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-14-E-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-14-F-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-15",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-15-E-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-15-F-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-15-A-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-16",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-16-E-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-16-F-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-16-A-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-17",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-17-F-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-17-A-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-17-E-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-18",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-18-F-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-18-A-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-18-E-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-19",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-19-A-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-19-E-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-19-F-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-20",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-20-A-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-20-E-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-20-F-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-21",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-21-E-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-21-F-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-21-A-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-22",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-22-E-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-22-F-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-22-A-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-23",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-23-F-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-23-A-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-23-E-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-24",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-24-F-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-24-A-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-24-E-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-25",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-25-A-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-25-E-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-25-F-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-26",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-26-A-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-26-E-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-26-F-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-27",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-27-E-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-27-F-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-27-A-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-28",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-28-E-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-28-F-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-28-A-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-29",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-29-F-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-29-A-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-29-E-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        },
+        {
+          "datum": "2025-06-30",
+          "einsatz": [
+            {
+              "dienstId": "3-2025-06-30-F-10",
+              "mitarbeiterId": 10,
+              "vorname": "Mia",
+              "nachname": "Bauer",
+              "schicht": "F",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-30-A-11",
+              "mitarbeiterId": 11,
+              "vorname": "Jan",
+              "nachname": "Richter",
+              "schicht": "A",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            },
+            {
+              "dienstId": "3-2025-06-30-E-12",
+              "mitarbeiterId": 12,
+              "vorname": "Lea",
+              "nachname": "Koch",
+              "schicht": "E",
+              "farbe": "#8BC34A",
+              "filialeId": 3,
+              "hauptfilialeId": 3
+            }
+          ]
+        }
+      ],
+      "springer": [],
+      "offeneDienste": [],
+      "stundenProMitarbeiter": {
+        "10": 180,
+        "11": 180,
+        "12": 180
+      }
+    }
+  ]
+}

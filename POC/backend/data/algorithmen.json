@@ -1,0 +1,15 @@
+[
+    {
+        "id" : 1,
+        "name": "Algorithmus A",
+        "pattern": ["A","A","E","E","F","F"],
+        "stunden": 9
+    },
+    {
+        "id" : 2,
+        "name": "Algorithmus B",
+        "pattern": ["A","A","A","A","F","F","E","E","E","E","F","F"],
+        "stunden": 9
+    }
+]
+
