@@ -1,0 +1,5 @@
+Im Zuge der Testphase habe ich den automatischen Dienstplan-Algorithmus als Proof of Concept umgesetzt und überprüft, ob das Grundprinzip funktioniert. Dabei konnte ich zeigen, dass der Algorithmus die Schichten korrekt nach dem hinterlegten Muster verteilt und auch unterschiedliche Mitarbeitertypen (20 / 30 / 40 Stundenkräfte) berücksichtigt.
+
+Erfolgreich war, dass die Dienstpläne für mehrere Filialen ohne Fehler generiert wurden und sich die Arbeitsstunden pro Mitarbeiter an die Sollstunden angepasst haben. Schwierigkeiten gab es anfangs bei der Erkennung von Abdeckungen und beim Setzen von Krank- oder Urlaubsdiensten mit Ersatz, was ich durch zusätzliche Prüfungen und Dropdown-Optionen im Frontend lösen konnte.
+
+Insgesamt kann man sagen, dass der Algorithmus stabil läuft und die Logik wie geplant funktioniert. Für die weitere Entwicklung muss das System aber noch mit der Datenbank verbunden und in das Hauptprojekt integriert werden, um mit echten Daten zu testen
