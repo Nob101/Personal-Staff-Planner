@@ -1,19 +1,28 @@
+// server.js
 const express = require('express');
 const app = express();
 const cors = require('cors');
 const PORT = 3000;
 
-const mitarbeiterRouter = require('./routes/mitarbeiter.js');
+// Middleware
+app.use(express.json()); // JSON-Body verarbeiten
+app.use(cors());         // Cross-Origin-Zugriff erlauben
 
-app.use(express.json());
-app.use(cors());
-
-
+// ---------------------
+//   ROUTES EINBINDEN
+// ---------------------
+const mitarbeiterRouter = require('./routes/mitarbeiter.routes');
 app.use('/api/mitarbeiter', mitarbeiterRouter);
 
+const filialenRouter = require('./routes/filialen.routes');
+app.use('/api/filialen', filialenRouter);
 
+const dienstplanRouter = require('./routes/dienstplan.routes');
+app.use('/api/dienstplan', dienstplanRouter);
 
-
+// ---------------------
+//   SERVER STARTEN
+// ---------------------
 app.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
+  console.log(`✅ Server läuft auf Port ${PORT}`);
 });
