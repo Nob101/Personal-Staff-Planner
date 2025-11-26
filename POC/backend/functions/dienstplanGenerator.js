@@ -165,50 +165,81 @@ async function generateDienstplan(year, month) {
         // Counter hochzählen
         m.counter = (m.counter + 1) % patternFuerM.length;
       }
+      // --------------------------------------------------
+      // Abdeckung prüfen: mindestens eine A und E pro Tag
+      // --------------------------------------------------
+      const hatA = einsatzHeute.some(e => e.schicht === 'A');
+      const hatE = einsatzHeute.some(e => e.schicht === 'E');
+
+      // Falls keine A- oder E-Schicht vorhanden ist → korrigieren
+      if (!hatA && einsatzHeute.length > 0) {
+        einsatzHeute[0].schicht = 'A';
+      }
+      if (!hatE && einsatzHeute.length > 1) {
+        einsatzHeute[1].schicht = 'E';
+      }
+
 
       plan.push({ datum, einsatz: einsatzHeute });
     }
 
-    // ==================================================
-    // STUNDEN-KÜRZUNG (ÜBERARBEITUNG NACH LIMIT)
-    // ==================================================
-    const minWorkersProSchicht = 1;
+      // ==================================================
+      // STUNDEN-KÜRZUNG (ÜBERARBEITUNG NACH LIMIT)
+      // ==================================================
+      const minWorkersProSchicht = 1;
 
-    for (const m of mitarbeiter) {
-      const id = m.id;
-      const ziel = monatsstunden * getFaktorFuerMitarbeiter(m);
-      let hours = stundenProMitarbeiter.get(id) || 0;
+      for (const m of mitarbeiter) {
+        const id = m.id;
+        const ziel = monatsstunden * getFaktorFuerMitarbeiter(m);
+        let hours = stundenProMitarbeiter.get(id) || 0;
 
-      // Kürzen bis Ziel erreicht oder keine Dienste mehr entfernbar
-      while (hours > ziel) {
-        const kandidaten = [];
+        // Kürzen bis Ziel erreicht oder keine Dienste mehr entfernbar
+        while (hours > ziel) {
+          const kandidaten = [];
 
-        for (const tag of plan) {
-          const idx = tag.einsatz.findIndex(e => e.mitarbeiterId === id && e.schicht !== 'F');
-          if (idx === -1) continue;
+          for (const tag of plan) {
+            const idx = tag.einsatz.findIndex(e => e.mitarbeiterId === id && e.schicht !== 'F');
+            if (idx === -1) continue;
 
-          const eins = tag.einsatz[idx];
-          const schicht = eins.schicht;
-          if (!['A', 'E'].includes(schicht)) continue;
+            const eins = tag.einsatz[idx];
+            const schicht = eins.schicht;
+            if (!['A', 'E'].includes(schicht)) continue;
 
-          const abdeckung = dienstAbdeckung[tag.datum][schicht];
-          if (!abdeckung || abdeckung.length <= minWorkersProSchicht) continue;
+            // ⚠️ Sicherheitsprüfung: nie letzte A- oder E-Schicht entfernen
+            const abdeckung = dienstAbdeckung[tag.datum][schicht];
+            if (!abdeckung || abdeckung.length <= minWorkersProSchicht) continue;
 
-          kandidaten.push({ tag, idx, schicht });
+            kandidaten.push({ tag, idx, schicht });
+          }
+
+          if (kandidaten.length === 0) break;
+
+          // Zufällig einen Dienst streichen, der sicher gestrichen werden darf
+          const { tag, idx, schicht } = kandidaten[Math.floor(Math.random() * kandidaten.length)];
+          tag.einsatz[idx].schicht = 'F';
+          dienstAbdeckung[tag.datum][schicht] =
+            dienstAbdeckung[tag.datum][schicht].filter(mid => mid !== id);
+
+          hours -= stundenProDienst;
+          stundenProMitarbeiter.set(id, Math.max(0, hours));
         }
-
-        if (kandidaten.length === 0) break;
-
-        // Zufällig einen Dienst streichen
-        const { tag, idx, schicht } = kandidaten[Math.floor(Math.random() * kandidaten.length)];
-        tag.einsatz[idx].schicht = 'F';
-        dienstAbdeckung[tag.datum][schicht] =
-          dienstAbdeckung[tag.datum][schicht].filter(mid => mid !== id);
-
-        hours -= stundenProDienst;
-        stundenProMitarbeiter.set(id, Math.max(0, hours));
       }
-    }
+
+      // ==================================================
+      // 🔹 Endkontrolle pro Tag – A & E müssen vorhanden sein
+      // ==================================================
+      for (const tag of plan) {
+        const hatA = tag.einsatz.some(e => e.schicht === 'A');
+        const hatE = tag.einsatz.some(e => e.schicht === 'E');
+
+        if (!hatA && tag.einsatz.length > 0) {
+          tag.einsatz[0].schicht = 'A';
+        }
+        if (!hatE && tag.einsatz.length > 1) {
+          tag.einsatz[1].schicht = 'E';
+        }
+      }
+
 
     // ==================================================
     // RESULTATE SAMMELN
