@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const mitarbeiterRepo = require('../repositories/mitarbeiter.repo.pg'); // Mitarbeiter-Repository
-const filialenRepo = require('../repositories/filialen.repo.pg');        // Filialen-Repository
-const { resetCountersForFiliale } = require('../functions/resetCountersForFiliale');
 
+const mitarbeiterRepo = require('../repositories/mitarbeiter.repo.pg');
+const filialenRepo = require('../repositories/filialen.repo.pg');
+const { resetCountersForFiliale } = require('../functions/resetCountersForFiliale');
 
 // -------------------------------------------------------------
 // GET: Alle Mitarbeiter
@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
     let springerAlgorithmId = null;
 
     if (springer && hauptFiliale) {
-      springerAlgorithmId = hauptFiliale.algorithmId === 1 ? 2 : 1;
+      springerAlgorithmId = hauptFiliale.algorithmid === 1 ? 2 : 1;
     }
 
     const neuerMitarbeiter = await mitarbeiterRepo.add({
@@ -90,7 +90,10 @@ router.post('/', async (req, res) => {
       anmerkung
     });
 
-    await resetCountersForFiliale(neuerMitarbeiter.stammfiliale); // Counter zurücksetzen
+    // Counter-Reset für betroffene Filiale
+    if (hauptFiliale) {
+      await resetCountersForFiliale(hauptFiliale.id);
+    }
 
     res.status(201).json(neuerMitarbeiter);
   } catch (err) {
@@ -108,7 +111,6 @@ router.put('/:id', async (req, res) => {
     const updates = req.body;
 
     const geaendert = await mitarbeiterRepo.update(id, updates);
-
     if (!geaendert) {
       return res.status(404).json({ error: 'Mitarbeiter nicht gefunden' });
     }
@@ -127,7 +129,12 @@ router.delete('/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
     const ma = await mitarbeiterRepo.getById(id);
-    if (ma) await resetCountersForFiliale(ma.stammfiliale);
+
+    if (ma) {
+      const hauptFiliale = await filialenRepo.getByKuerzel(ma.stammfiliale);
+      if (hauptFiliale) await resetCountersForFiliale(hauptFiliale.id);
+    }
+
     await mitarbeiterRepo.remove(id);
     res.json({ message: 'Mitarbeiter gelöscht' });
   } catch (err) {
@@ -141,6 +148,10 @@ router.delete('/:id', async (req, res) => {
 // -------------------------------------------------------------
 router.post('/verfuegbar', async (req, res) => {
   const { filialeId, datum } = req.body;
+  if (!filialeId || !datum) {
+    return res.status(400).json({ error: 'Filiale und Datum sind Pflichtfelder.' });
+  }
+
   try {
     const verfuegbar = await mitarbeiterRepo.getVerfuegbar(filialeId, datum);
     res.json(verfuegbar);

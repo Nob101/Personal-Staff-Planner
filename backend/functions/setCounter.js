@@ -18,7 +18,7 @@ async function setCounterForMitarbeiter(filialeId) {
   const filiale = await filialenRepo.getById(filialeId);
   if (!filiale) throw new Error('Filiale nicht gefunden');
 
-  const algorithm = await algorithmenRepo.getById(filiale.algorithmid);
+ const algorithm = await algorithmenRepo.getById(filiale.algorithmid);
   if (!algorithm) throw new Error('Algorithmus nicht gefunden');
 
   const pattern = algorithm.algorythmus || algorithm.pattern;

@@ -121,6 +121,10 @@ async function generateDienstplan(year, month) {
 
     kürzeStunden(plan, dienstAbdeckung, stundenProMitarbeiter, monatsstunden, mitarbeiter, stundenProDienst);
 
+    for (const m of mitarbeiter) {
+    await mitarbeiterRepo.updateCounter(m.id, m.counter);
+  }
+
     resultFilialen.push({
       filiale: { id: filiale.id, standort: filiale.standort, farbe: filiale.farbe },
       arbeitstage: dates.length,
@@ -140,10 +144,14 @@ async function generateDienstplan(year, month) {
     filialen: resultFilialen
   };
 
-  await dienstplanRepo.saveOrUpdatePlan(jahr, monat, planObjekt);
-  return planObjekt;
-}
+  await dienstplanRepo.save({
+  jahr: jahr,
+  monat: monat,
+  ...planObjekt
+  });
 
+return planObjekt;
+}
 // -----------------------------------------------------------
 // Hilfsfunktionen
 // -----------------------------------------------------------
@@ -185,7 +193,7 @@ function kürzeStunden(plan, dienstAbdeckung, stundenProMitarbeiter, monatsstund
 }
 
 function getFaktorFuerMitarbeiter(m) {
-  const typ = Number(m.arbeitnehmertyp || 40);
+  const typ = Number(m.arbeitnehmer_typ || 40);
   return typ / 40;
 }
 
