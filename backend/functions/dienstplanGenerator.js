@@ -6,17 +6,11 @@ const mitarbeiterRepo = require('../repositories/mitarbeiter.repo.pg');
 const { getAllDatesOfMonth, getMonthlyHours } = require('./dateUtils');
 const { setCounterForMitarbeiter } = require('./setCounter');
 
-/**
- * Generiert den Dienstplan für alle Filialen und speichert ihn als JSON in der DB.
- */
 async function generateDienstplan(year, month) {
   const jahr = Number(year);
   const monat = Number(month);
 
-  // Monatsstunden laut Werktage (Mo–Fr)
   const { monatsstunden } = getMonthlyHours(jahr, monat);
-
-  // Stammdaten aus der Datenbank
   const filialen = await filialenRepo.getAll();
   const algorithmen = await algorithmenRepo.getAll();
   const alleMitarbeiter = await mitarbeiterRepo.getAll();
@@ -25,7 +19,7 @@ async function generateDienstplan(year, month) {
     return { jahr, monat, tageImMonat: 0, filialen: [], info: 'Keine Filialen gefunden' };
   }
 
-  // Counter pro Filiale aktualisieren
+  // Counter initialisieren
   for (const filiale of filialen) {
     await setCounterForMitarbeiter(filiale.id);
   }
@@ -33,37 +27,38 @@ async function generateDienstplan(year, month) {
   const dates = getAllDatesOfMonth(jahr, monat);
   const resultFilialen = [];
 
-  // -----------------------------------------------------------
-  // Dienstplan pro Filiale erzeugen
-  // -----------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // PLAN PRO FILIALE
+  // ---------------------------------------------------------------------------
   for (const filiale of filialen) {
     const algorithm = algorithmen.find(a => a.id === filiale.algorithmid);
+    if (!algorithm) continue;
 
-    if (!algorithm) {
-      resultFilialen.push({
-        filiale: { id: filiale.id, standort: filiale.standort, farbe: filiale.farbe },
-        arbeitstage: dates.length,
-        plan: [],
-        error: 'Kein Algorithmus gefunden'
-      });
-      continue;
+    let pattern = algorithm.algorythmus || algorithm.pattern;
+
+    // Wenn aus DB (string), dann parsen
+    if (typeof pattern === 'string') {
+      try {
+        pattern = JSON.parse(pattern);
+      } catch {
+        console.warn(`⚠️  Pattern von ${algorithm.name} konnte nicht geparst werden.`);
+        pattern = [];
+      }
     }
 
-    const pattern = algorithm.algorythmus || algorithm.pattern;
-    const patternLen = Array.isArray(pattern) ? pattern.length : 0;
-
-    if (patternLen === 0) {
-      resultFilialen.push({
-        filiale: { id: filiale.id, standort: filiale.standort, farbe: filiale.farbe },
-        arbeitstage: dates.length,
-        plan: [],
-        error: 'Ungültiges Pattern'
-      });
-      continue;
+    // Fallback
+    if (!Array.isArray(pattern) || pattern.length === 0) {
+      console.warn(`⚠️  Ungültiges Pattern für ${algorithm.name}, Fallback A/E/F verwendet.`);
+      pattern = ['A', 'E', 'F'];
     }
 
+    console.log(`✅ Algorithmus ${algorithm.name} verwendet Pattern:`, pattern);
+
+    const patternLen = pattern.length;
     const stundenProDienst = Number(algorithm.stunden) || 9;
+
     const mitarbeiter = alleMitarbeiter.filter(m => m.hauptfilialeid === filiale.id);
+    if (mitarbeiter.length === 0) continue;
 
     const stundenProMitarbeiter = new Map();
     mitarbeiter.forEach(m => stundenProMitarbeiter.set(m.id, 0));
@@ -73,9 +68,9 @@ async function generateDienstplan(year, month) {
 
     const plan = [];
 
-    // -----------------------------------------------------------
-    // Tages-Schichten
-    // -----------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // 🔹 TAGES-SCHICHTEN
+    // -------------------------------------------------------------------------
     for (const datum of dates) {
       const einsatzHeute = [];
 
@@ -86,11 +81,10 @@ async function generateDienstplan(year, month) {
         const zielStunden = monatsstunden * faktor;
         const limit = zielStunden + 20;
 
-        const schichtPattern = pattern;
-        const schichtRoh = schichtPattern[m.counter % patternLen];
-        let schicht = schichtRoh;
-
+        // Wichtig: individueller Startversatz pro Mitarbeiter
+        let schicht = pattern[(m.counter + m.id) % patternLen];
         let aktuelleStunden = stundenProMitarbeiter.get(m.id) || 0;
+
         if (schicht !== 'F') {
           if (aktuelleStunden >= limit) schicht = 'F';
           else aktuelleStunden += stundenProDienst;
@@ -116,26 +110,46 @@ async function generateDienstplan(year, month) {
         m.counter = (m.counter + 1) % patternLen;
       }
 
+      // ✅ Sicherstellen, dass mind. A + E abgedeckt ist
+      if (einsatzHeute.length > 1) {
+        const hatA = einsatzHeute.some(e => e.schicht === 'A');
+        const hatE = einsatzHeute.some(e => e.schicht === 'E');
+        if (!hatA) einsatzHeute[0].schicht = 'A';
+        if (!hatE) einsatzHeute[1].schicht = 'E';
+      }
+
       plan.push({ datum, einsatz: einsatzHeute });
     }
 
+    // -------------------------------------------------------------------------
+    // 🔹 STUNDENKÜRZUNG
+    // -------------------------------------------------------------------------
     kürzeStunden(plan, dienstAbdeckung, stundenProMitarbeiter, monatsstunden, mitarbeiter, stundenProDienst);
 
+    // Doppelte Sicherheit: A/E prüfen
+    for (const tag of plan) {
+      const hatA = tag.einsatz.some(e => e.schicht === 'A');
+      const hatE = tag.einsatz.some(e => e.schicht === 'E');
+      if (!hatA && tag.einsatz.length > 0) tag.einsatz[0].schicht = 'A';
+      if (!hatE && tag.einsatz.length > 1) tag.einsatz[1].schicht = 'E';
+    }
+
+    // Counter speichern
     for (const m of mitarbeiter) {
-    await mitarbeiterRepo.updateCounter(m.id, m.counter);
-  }
+      await mitarbeiterRepo.updateCounter(m.id, m.counter);
+    }
 
     resultFilialen.push({
-      filiale: { id: filiale.id, standort: filiale.standort, farbe: filiale.farbe },
+      filiale: { id: filiale.id, ort: filiale.ort, farbe: filiale.farbe },
       arbeitstage: dates.length,
       plan,
       stundenProMitarbeiter: Object.fromEntries(stundenProMitarbeiter)
     });
   }
 
-  // -----------------------------------------------------------
-  // Dienstplan in der DB speichern
-  // -----------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // PLAN SPEICHERN
+  // ---------------------------------------------------------------------------
   const planObjekt = {
     jahr,
     monat,
@@ -145,19 +159,20 @@ async function generateDienstplan(year, month) {
   };
 
   await dienstplanRepo.save({
-  jahr: jahr,
-  monat: monat,
-  ...planObjekt
+    jahr,
+    monat,
+    ...planObjekt
   });
 
-return planObjekt;
+  console.log(`✅ Dienstplan ${monat}/${jahr} erfolgreich generiert.`);
+  return planObjekt;
 }
-// -----------------------------------------------------------
-// Hilfsfunktionen
-// -----------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// 🔧 HILFSFUNKTIONEN
+// -----------------------------------------------------------------------------
 function kürzeStunden(plan, dienstAbdeckung, stundenProMitarbeiter, monatsstunden, mitarbeiter, stundenProDienst) {
   const minWorkersProSchicht = 1;
-
   for (const m of mitarbeiter) {
     const faktor = getFaktorFuerMitarbeiter(m);
     const ziel = monatsstunden * faktor;
@@ -165,50 +180,28 @@ function kürzeStunden(plan, dienstAbdeckung, stundenProMitarbeiter, monatsstund
 
     while (hours > ziel) {
       const kandidaten = [];
-
       for (const tag of plan) {
         const idx = tag.einsatz.findIndex(e => e.mitarbeiterId === m.id && e.schicht !== 'F');
         if (idx === -1) continue;
-
         const eins = tag.einsatz[idx];
         const abdeckung = dienstAbdeckung[tag.datum][eins.schicht];
         if (!abdeckung || abdeckung.length <= minWorkersProSchicht) continue;
-
         kandidaten.push({ tag, idx, schicht: eins.schicht });
       }
-
       if (kandidaten.length === 0) break;
-
-      const rnd = Math.floor(Math.random() * kandidaten.length);
-      const { tag, idx, schicht } = kandidaten[rnd];
+      const { tag, idx, schicht } = kandidaten[Math.floor(Math.random() * kandidaten.length)];
       tag.einsatz[idx].schicht = 'F';
       dienstAbdeckung[tag.datum][schicht] =
         dienstAbdeckung[tag.datum][schicht].filter(mid => mid !== m.id);
-
       hours -= stundenProDienst;
-      if (hours < 0) hours = 0;
-      stundenProMitarbeiter.set(m.id, hours);
+      stundenProMitarbeiter.set(m.id, Math.max(0, hours));
     }
   }
 }
 
 function getFaktorFuerMitarbeiter(m) {
-  const typ = Number(m.arbeitnehmer_typ || 40);
+  const typ = Number(m.arbeitnehmertyp || 40);
   return typ / 40;
 }
 
 module.exports = { generateDienstplan };
-
-
-
-/*
-CREATE TABLE dienstplaene (
-  id SERIAL PRIMARY KEY,
-  jahr INT NOT NULL,
-  monat INT NOT NULL,
-  plan_json JSONB NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW(),
-  UNIQUE (jahr, monat)
-);
-*/

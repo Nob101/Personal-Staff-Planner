@@ -1,16 +1,16 @@
 /*
-Spalte	                                Typ	                            Beschreibung
+Spalte	                               Typ	                            Beschreibung
 
-id	                                    SERIAL                          PRIMARY KEY	
-filialname	                            TEXT	                        Name oder Kürzel der Filiale
-farbe	                                TEXT	                        HEX-Farbcode fürs Frontend
-ort	                                    TEXT	                        Standort
-strasse	                                TEXT	                        Adresse
-plz	                                    TEXT	                        Postleitzahl
-land	                                TEXT	                        Land
-email	                                TEXT	                        Kontaktadresse
-telefon	                                TEXT	                        Telefonnummer
-algorithmid	                        INTEGER	                        Referenz auf Algorithmus
+id	                                   SERIAL                          PRIMARY KEY	
+filialname	                           TEXT	                        Name oder Kürzel der Filiale
+farbe	                                 TEXT	                        HEX-Farbcode fürs Frontend
+ort	                                   TEXT	                        Standort
+strasse	                               TEXT	                        Adresse
+plz	                                   TEXT	                        Postleitzahl
+land	                                 TEXT	                        Land
+email	                                 TEXT	                        Kontaktadresse
+telefon	                               TEXT	                        Telefonnummer
+algorithmid	                           INTEGER	                        Referenz auf Algorithmus
 */
 
 
