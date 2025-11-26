@@ -20,9 +20,13 @@ app.use('/api/filialen', filialenRouter);
 const dienstplanRouter = require('./routes/dienstplan.routes');
 app.use('/api/dienstplan', dienstplanRouter);
 
+const algorithmenRouter = require('./routes/algorithmen.routes');
+app.use('/api/algorithmen', algorithmenRouter);
+
+
 // ---------------------
 //   SERVER STARTEN
 // ---------------------
 app.listen(PORT, () => {
-  console.log(`✅ Server läuft auf Port ${PORT}`);
+  console.log(`Server läuft auf Port ${PORT}`);
 });
