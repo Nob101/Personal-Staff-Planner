@@ -2,19 +2,22 @@ const express = require('express');
 const router = express.Router();
 
 const mitarbeiterRepo = require('../repositories/mitarbeiter.repo.pg');
-const filialenRepo = require('../repositories/filialen.repo.pg');
+const filialenRepo    = require('../repositories/filialen.repo.pg');
+const dienstplanRepo  = require('../repositories/dienstplan.repo.pg');
+
+const { setCounterForMitarbeiter } = require('../functions/setCounter');
 const { resetCountersForFiliale } = require('../functions/resetCountersForFiliale');
 
 // -------------------------------------------------------------
-// GET: Alle Mitarbeiter
+// GET: alle Mitarbeiter
 // -------------------------------------------------------------
 router.get('/', async (_req, res) => {
   try {
     const data = await mitarbeiterRepo.getAll();
     res.json(data);
   } catch (err) {
-    console.error('Fehler beim Lesen:', err);
-    res.status(500).json({ error: 'Fehler beim Lesen der Mitarbeiterdaten' });
+    console.error('Fehler /mitarbeiter:', err);
+    res.status(500).json({ error: 'Fehler beim Laden der Mitarbeiter' });
   }
 });
 
@@ -24,81 +27,69 @@ router.get('/', async (_req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const mitarbeiter = await mitarbeiterRepo.getById(id);
+    const ma = await mitarbeiterRepo.getById(id);
 
-    if (!mitarbeiter) {
-      return res.status(404).json({ error: 'Mitarbeiter nicht gefunden' });
-    }
+    if (!ma) return res.status(404).json({ error: 'Mitarbeiter nicht gefunden' });
 
-    res.json(mitarbeiter);
+    res.json(ma);
   } catch (err) {
-    console.error('Fehler beim Lesen eines Mitarbeiters:', err);
-    res.status(500).json({ error: 'Fehler beim Lesen eines Mitarbeiters' });
+    console.error('Fehler /mitarbeiter/:id:', err);
+    res.status(500).json({ error: 'Fehler beim Laden' });
   }
 });
 
 // -------------------------------------------------------------
-// POST: Neuen Mitarbeiter anlegen
+// POST: Mitarbeiter anlegen
 // -------------------------------------------------------------
 router.post('/', async (req, res) => {
   try {
-    const {
-      vorname,
-      nachname,
-      geburtsdatum,
-      strasse,
-      plz,
-      ort,
-      land,
-      telefon1,
-      telefon2,
-      email1,
-      email2,
-      stammfiliale,
-      nebenfilialen = [],
-      arbeitnehmerTyp = 40,
-      springer = false,
-      anmerkung
-    } = req.body;
+    const body = req.body;
 
-    // Springer-Algorithmus bestimmen
-    const hauptFiliale = await filialenRepo.getByKuerzel(stammfiliale);
+    // Filiale finden nach Kürzel
+    const hauptFiliale = body.stammfiliale
+      ? await filialenRepo.getByKuerzel(body.stammfiliale)
+      : null;
+
     let springerAlgorithmId = null;
 
-    if (springer && hauptFiliale) {
-      springerAlgorithmId = hauptFiliale.algorithmid === 1 ? 2 : 1;
+    if (body.springer && hauptFiliale) {
+      springerAlgorithmId =
+        hauptFiliale.algorithmid === 1 ? 2 : 1;
     }
 
-    const neuerMitarbeiter = await mitarbeiterRepo.add({
-      vorname,
-      nachname,
-      geburtsdatum,
-      strasse,
-      plz,
-      ort,
-      land,
-      telefon1,
-      telefon2,
-      email1,
-      email2,
-      stammfiliale,
-      nebenfilialen,
-      arbeitnehmerTyp,
+    const neuer = await mitarbeiterRepo.add({
+      vorname: body.vorname,
+      nachname: body.nachname,
+      geburtsdatum: body.geburtsdatum,
+      strasse: body.strasse,
+      plz: body.plz,
+      ort: body.ort,
+      land: body.land,
+      telefon1: body.telefon1,
+      telefon2: body.telefon2,
+      email1: body.email1,
+      email2: body.email2,
+      stammfiliale: body.stammfiliale,
+      nebenfilialen: body.nebenfilialen,
+      arbeitnehmertyp: body.arbeitnehmertyp ?? body.arbeitnehmerTyp ?? 40,
       counter: null,
-      springer,
-      springerAlgorithmId,
-      anmerkung
+      springer: body.springer ?? false,
+      springeralgorithmid: springerAlgorithmId,
+      anmerkung: body.anmerkung,
+      hauptfilialeid: hauptFiliale?.id ?? null
     });
 
-    // Counter-Reset für betroffene Filiale
+    // Counter neu berechnen
     if (hauptFiliale) {
       await resetCountersForFiliale(hauptFiliale.id);
+      await setCounterForMitarbeiter(hauptFiliale.id);
     }
 
-    res.status(201).json(neuerMitarbeiter);
+    res.status(201).json(neuer);
+
   } catch (err) {
-    console.error('Fehler beim Anlegen:', err);
-    res.status(500).json({ error: 'Fehler beim Anlegen des Mitarbeiters' });
+    console.error('Fehler POST /mitarbeiter:', err);
+    res.status(500).json({ error: 'Fehler beim Anlegen' });
   }
 });
 
@@ -108,56 +99,109 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const updates = req.body;
 
-    const geaendert = await mitarbeiterRepo.update(id, updates);
-    if (!geaendert) {
+    const updated = await mitarbeiterRepo.update(id, req.body);
+    if (!updated) {
       return res.status(404).json({ error: 'Mitarbeiter nicht gefunden' });
     }
 
-    res.json(geaendert);
+    res.json(updated);
   } catch (err) {
-    console.error('Fehler beim Bearbeiten:', err);
-    res.status(500).json({ error: 'Fehler beim Bearbeiten des Mitarbeiters' });
+    console.error('Fehler PUT /mitarbeiter:', err);
+    res.status(500).json({ error: 'Fehler beim Bearbeiten' });
   }
 });
 
 // -------------------------------------------------------------
-// DELETE: Mitarbeiter löschen
+// DELETE
 // -------------------------------------------------------------
 router.delete('/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
     const ma = await mitarbeiterRepo.getById(id);
 
-    if (ma) {
-      const hauptFiliale = await filialenRepo.getByKuerzel(ma.stammfiliale);
-      if (hauptFiliale) await resetCountersForFiliale(hauptFiliale.id);
+    if (ma?.hauptfilialeid) {
+      await resetCountersForFiliale(ma.hauptfilialeid);
+      await setCounterForMitarbeiter(ma.hauptfilialeid);
     }
 
-    await mitarbeiterRepo.remove(id);
+    const removed = await mitarbeiterRepo.remove(id);
+    if (!removed) {
+      return res.status(404).json({ error: 'Mitarbeiter nicht gefunden' });
+    }
+
     res.json({ message: 'Mitarbeiter gelöscht' });
   } catch (err) {
-    console.error('Fehler beim Löschen:', err);
-    res.status(500).json({ error: 'Fehler beim Löschen des Mitarbeiters' });
+    console.error('Fehler DELETE /mitarbeiter:', err);
+    res.status(500).json({ error: 'Fehler beim Löschen' });
   }
 });
 
 // -------------------------------------------------------------
-// POST: Verfügbare Mitarbeiter für Ersatz (Krank/Urlaub)
+// POST: Verfügbare Mitarbeiter
 // -------------------------------------------------------------
 router.post('/verfuegbar', async (req, res) => {
-  const { filialeId, datum } = req.body;
-  if (!filialeId || !datum) {
-    return res.status(400).json({ error: 'Filiale und Datum sind Pflichtfelder.' });
-  }
-
   try {
-    const verfuegbar = await mitarbeiterRepo.getVerfuegbar(filialeId, datum);
+    const { filialeId, datum, jahr, monat } = req.body;
+
+    if (!filialeId || !datum || !jahr || !monat) {
+      return res.status(400).json({ error: "filialeId, datum, jahr, monat sind Pflicht" });
+    }
+
+    const j = Number(jahr);
+    const m = Number(monat);
+
+    // 1) Dienstplan aus DB
+    const row = await dienstplanRepo.getByDate(j, m);
+
+    if (!row || !row.plan_data || !Array.isArray(row.plan_data.filialen)) {
+      return res.status(404).json({ error: "Dienstplan nicht gefunden oder beschädigt" });
+    }
+
+    const plan = row.plan_data;
+
+    // 2) alle Mitarbeiter
+    const alleMA = await mitarbeiterRepo.getAll();
+
+    // 3) alle Einsätze an diesem Datum (über alle Filialen)
+    const einsaetzeHeute = [];
+    for (const fb of plan.filialen) {
+      if (!fb.plan) continue;
+      const tag = fb.plan.find(t => t.datum === datum);
+      if (tag && Array.isArray(tag.einsatz)) {
+        einsaetzeHeute.push(...tag.einsatz);
+      }
+    }
+
+    // 4) Mitarbeiter, die in dieser Filiale arbeiten dürfen (Haupt + Nebenfiliale)
+    const filId = Number(filialeId);
+
+    const maFiliale = alleMA.filter(ma => {
+      const neben = Array.isArray(ma.nebenfilialen)
+        ? ma.nebenfilialen.map(Number)
+        : [];
+
+      return (
+        Number(ma.hauptfilialeid) === filId ||
+        neben.includes(filId)
+      );
+    });
+
+    // 5) aussortieren, wer an diesem Tag schon A/E/U/K hat
+    const verfuegbar = maFiliale.filter(ma => {
+      const hatDienst = einsaetzeHeute.some(
+        e =>
+          Number(e.mitarbeiterId) === Number(ma.id) &&
+          ['A','E','U','K'].includes(e.schicht)
+      );
+      return !hatDienst;
+    });
+
     res.json(verfuegbar);
+
   } catch (err) {
-    console.error('Fehler /verfuegbar:', err);
-    res.status(500).json({ error: 'Fehler beim Ermitteln der verfügbaren Mitarbeiter' });
+    console.error("Fehler /mitarbeiter/verfuegbar:", err);
+    res.status(500).json({ error: "Serverfehler" });
   }
 });
 

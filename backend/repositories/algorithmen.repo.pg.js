@@ -7,20 +7,12 @@ stunden	                            NTEGER	                Stunden pro Dienst (z
 
 */
 
-
-
-// ============================================================================
-// ⚙️ algorithmen.repo.pg.js
-// ---------------------------------------------------------------------------
-// PostgreSQL Repository für Dienstplan-Algorithmen
-// Diese Algorithmen definieren die Schichtmuster (A, E, F usw.)
-// und werden pro Filiale zugeordnet.
-// ============================================================================
-
 const pool = require('../db/pool');
 
+const ALLOWED_FIELDS = ['name', 'pattern', 'stunden'];
+
 // ============================================================================
-// 🔹 Alle Algorithmen abrufen
+// GET ALL
 // ============================================================================
 async function getAll() {
   const result = await pool.query('SELECT * FROM algorithmen ORDER BY id;');
@@ -28,7 +20,7 @@ async function getAll() {
 }
 
 // ============================================================================
-// 🔹 Algorithmus per ID abrufen
+// GET BY ID
 // ============================================================================
 async function getById(id) {
   const result = await pool.query('SELECT * FROM algorithmen WHERE id = $1;', [id]);
@@ -36,10 +28,7 @@ async function getById(id) {
 }
 
 // ============================================================================
-// 🔹 Neuen Algorithmus hinzufügen
-// ---------------------------------------------------------------------------
-// Erwartet z. B. ein Pattern ["A", "A", "E", "E", "F", "F"]
-// und eine Stundenanzahl pro Dienst (z. B. 9).
+// ADD
 // ============================================================================
 async function add(a) {
   const query = `
@@ -47,43 +36,60 @@ async function add(a) {
     VALUES ($1, $2::jsonb, $3)
     RETURNING *;
   `;
-  const values = [a.name, JSON.stringify(a.pattern), a.stunden];
+  const values = [
+    a.name,
+    JSON.stringify(a.pattern),
+    a.stunden
+  ];
+
   const result = await pool.query(query, values);
   return result.rows[0];
 }
 
 // ============================================================================
-// 🔹 Algorithmus aktualisieren
+// UPDATE
 // ============================================================================
 async function update(id, updates) {
-  // Falls ein Pattern-Array mitgeschickt wurde → in JSON umwandeln
-  if (updates.pattern && Array.isArray(updates.pattern)) {
-    updates.pattern = JSON.stringify(updates.pattern);
+
+  const clean = {};
+
+  for (const key of ALLOWED_FIELDS) {
+    if (updates[key] !== undefined) {
+      if (key === 'pattern' && Array.isArray(updates.pattern)) {
+        clean.pattern = JSON.stringify(updates.pattern);
+      } else {
+        clean[key] = updates[key];
+      }
+    }
   }
 
-  const fields = Object.keys(updates);
+  const fields = Object.keys(clean);
   if (fields.length === 0) return null;
 
   const setClause = fields.map((f, i) => `${f} = $${i + 1}`).join(', ');
-  const values = Object.values(updates);
+  const values = fields.map(f => clean[f]);
+
   values.push(id);
 
-  const query = `UPDATE algorithmen SET ${setClause} WHERE id = $${fields.length + 1} RETURNING *;`;
+  const query = `
+    UPDATE algorithmen
+    SET ${setClause}
+    WHERE id = $${fields.length + 1}
+    RETURNING *;
+  `;
+
   const result = await pool.query(query, values);
   return result.rows[0] || null;
 }
 
 // ============================================================================
-// 🔹 Algorithmus löschen
+// REMOVE
 // ============================================================================
 async function remove(id) {
-  await pool.query('DELETE FROM algorithmen WHERE id = $1;', [id]);
-  return true;
+  const result = await pool.query('DELETE FROM algorithmen WHERE id = $1;', [id]);
+  return result.rowCount > 0;
 }
 
-// ============================================================================
-// EXPORT
-// ============================================================================
 module.exports = {
   getAll,
   getById,
@@ -91,3 +97,4 @@ module.exports = {
   update,
   remove
 };
+

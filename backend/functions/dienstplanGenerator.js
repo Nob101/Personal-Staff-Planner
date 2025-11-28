@@ -1,96 +1,206 @@
-// functions/dienstplanGenerator.js
-const dienstplanRepo = require('../repositories/dienstplan.repo.pg');
-const filialenRepo = require('../repositories/filialen.repo.pg');
+// ============================================================================
+// 🧩 dienstplanGenerator.js (DB-Version, Minimal-Schema für Einsätze)
+// ----------------------------------------------------------------------------
+// Features:
+// - berücksichtigt Hauptfilialen
+// - Algorithmus/Pattern pro Filiale (A/E/F…)
+// - individueller Counter pro Mitarbeiter (rotierender Startpunkt)
+// - 20h / 30h / 40h (arbeitnehmertyp)
+// - Springer mit eigenem Algorithmus (springeralgorithmid), aber weiterhin
+//   nur in ihrer Hauptfiliale eingeplant (wie in deiner Altversion)
+// - A und E pro Tag garantiert
+// - Stundenkürzung mit Puffer, ohne letzte A/E wegzunehmen
+// - speichert NUR {dienstId, mitarbeiterId, schicht} in einsatz
+//   (alle Namen/Farben holt das Frontend extra)
+// ============================================================================
+
+const filialenRepo    = require('../repositories/filialen.repo.pg');
 const algorithmenRepo = require('../repositories/algorithmen.repo.pg');
 const mitarbeiterRepo = require('../repositories/mitarbeiter.repo.pg');
-const { getAllDatesOfMonth, getMonthlyHours } = require('./dateUtils');
-const { setCounterForMitarbeiter } = require('./setCounter');
 
+const { getAllDatesOfMonth, getMonthlyHours } = require('./dateUtils');
+const { setCounterForMitarbeiter }           = require('./setCounter');
+
+// kleiner Puffer über den Sollstunden
+const LIMIT_PUFFER_STUNDEN = 20;
+
+// Faktor aus arbeitnehmertyp (20 / 30 / 40)
+function getFaktorFuerMitarbeiter(m) {
+  const typNum = Number(m.arbeitnehmertyp ?? 40) || 40; // DB-Spalte: arbeitnehmertyp
+  return typNum / 40;
+}
+
+// Pattern aus Algorithmus holen, egal ob JSON oder String
+function parsePattern(algorithm) {
+  let pattern = algorithm.algorythmus || algorithm.pattern;
+
+  if (typeof pattern === 'string') {
+    try {
+      pattern = JSON.parse(pattern);
+    } catch {
+      pattern = [];
+    }
+  }
+
+  if (!Array.isArray(pattern) || pattern.length === 0) {
+    pattern = ['F']; // Fallback
+  }
+
+  return pattern;
+}
+
+// ============================================================================
+// 🔹 generateDienstplan
+// ============================================================================
 async function generateDienstplan(year, month) {
-  const jahr = Number(year);
+  const jahr  = Number(year);
   const monat = Number(month);
 
   const { monatsstunden } = getMonthlyHours(jahr, monat);
-  const filialen = await filialenRepo.getAll();
+  const dates             = getAllDatesOfMonth(jahr, monat);
+
+  const filialen    = await filialenRepo.getAll();
   const algorithmen = await algorithmenRepo.getAll();
-  const alleMitarbeiter = await mitarbeiterRepo.getAll();
 
   if (!Array.isArray(filialen) || filialen.length === 0) {
-    return { jahr, monat, tageImMonat: 0, filialen: [], info: 'Keine Filialen gefunden' };
+    return {
+      jahr,
+      monat,
+      tageImMonat: 0,
+      monatsstunden,
+      filialen: [],
+      info: 'Keine Filialen vorhanden'
+    };
   }
 
-  // Counter initialisieren
+  // Counter für alle Filialen vorbereiten (wie früher über setCounterForMitarbeiter)
   for (const filiale of filialen) {
     await setCounterForMitarbeiter(filiale.id);
   }
 
-  const dates = getAllDatesOfMonth(jahr, monat);
+  // Mitarbeiter NACH dem Counter-Setup laden
+  const alleMitarbeiter = await mitarbeiterRepo.getAll();
+
   const resultFilialen = [];
 
-  // ---------------------------------------------------------------------------
+  // ========================================================================
   // PLAN PRO FILIALE
-  // ---------------------------------------------------------------------------
+  // ========================================================================
   for (const filiale of filialen) {
     const algorithm = algorithmen.find(a => a.id === filiale.algorithmid);
-    if (!algorithm) continue;
 
-    let pattern = algorithm.algorythmus || algorithm.pattern;
-
-    // Wenn aus DB (string), dann parsen
-    if (typeof pattern === 'string') {
-      try {
-        pattern = JSON.parse(pattern);
-      } catch {
-        console.warn(`⚠️  Pattern von ${algorithm.name} konnte nicht geparst werden.`);
-        pattern = [];
-      }
+    if (!algorithm) {
+      resultFilialen.push({
+        filiale: {
+          id: filiale.id,
+          standort: filiale.ort,
+          farbe: filiale.farbe
+        },
+        arbeitstage: dates.length,
+        plan: [],
+        springer: [],
+        offeneDienste: [],
+        stundenProMitarbeiter: {},
+        error: 'Kein Algorithmus gefunden'
+      });
+      continue;
     }
 
-    // Fallback
-    if (!Array.isArray(pattern) || pattern.length === 0) {
-      console.warn(`⚠️  Ungültiges Pattern für ${algorithm.name}, Fallback A/E/F verwendet.`);
-      pattern = ['A', 'E', 'F'];
+    const defaultPattern = parsePattern(algorithm);
+    if (!defaultPattern.length) {
+      resultFilialen.push({
+        filiale: {
+          id: filiale.id,
+          standort: filiale.ort,
+          farbe: filiale.farbe
+        },
+        arbeitstage: dates.length,
+        plan: [],
+        springer: [],
+        offeneDienste: [],
+        stundenProMitarbeiter: {},
+        error: 'Ungültiges Pattern'
+      });
+      continue;
     }
 
-    console.log(`✅ Algorithmus ${algorithm.name} verwendet Pattern:`, pattern);
-
-    const patternLen = pattern.length;
     const stundenProDienst = Number(algorithm.stunden) || 9;
 
-    const mitarbeiter = alleMitarbeiter.filter(m => m.hauptfilialeid === filiale.id);
-    if (mitarbeiter.length === 0) continue;
+    // Mitarbeiter dieser Filiale (nur Hauptfiliale)
+    const mitarbeiter = alleMitarbeiter.filter(
+      m => m.hauptfilialeid === filiale.id
+    );
 
+    if (!mitarbeiter.length) {
+      resultFilialen.push({
+        filiale: {
+          id: filiale.id,
+          standort: filiale.ort,
+          farbe: filiale.farbe
+        },
+        arbeitstage: dates.length,
+        plan: [],
+        springer: [],
+        offeneDienste: [],
+        stundenProMitarbeiter: {},
+        info: 'Keine Mitarbeiter für diese Filiale'
+      });
+      continue;
+    }
+
+    // Stunden-Tracking
     const stundenProMitarbeiter = new Map();
     mitarbeiter.forEach(m => stundenProMitarbeiter.set(m.id, 0));
 
+    // Abdeckung A/E pro Tag
     const dienstAbdeckung = {};
-    for (const d of dates) dienstAbdeckung[d] = { A: [], E: [] };
+    for (const d of dates) {
+      dienstAbdeckung[d] = { A: [], E: [] };
+    }
 
     const plan = [];
 
-    // -------------------------------------------------------------------------
-    // 🔹 TAGES-SCHICHTEN
-    // -------------------------------------------------------------------------
+    // ==================================================
+    // PHASE 1: Grundplan mit Pattern & Stundenlimit
+    // ==================================================
     for (const datum of dates) {
       const einsatzHeute = [];
 
       for (const m of mitarbeiter) {
         if (m.counter == null) m.counter = 0;
 
-        const faktor = getFaktorFuerMitarbeiter(m);
-        const zielStunden = monatsstunden * faktor;
-        const limit = zielStunden + 20;
+        const faktor       = getFaktorFuerMitarbeiter(m);
+        const zielStunden  = monatsstunden * faktor;
+        const limitStunden = zielStunden + LIMIT_PUFFER_STUNDEN;
 
-        // Wichtig: individueller Startversatz pro Mitarbeiter
-        let schicht = pattern[(m.counter + m.id) % patternLen];
-        let aktuelleStunden = stundenProMitarbeiter.get(m.id) || 0;
+        // Algorithmus pro Mitarbeiter (Springer?)
+        const algoIdFuerM =
+          m.springer && m.springeralgorithmid
+            ? m.springeralgorithmid
+            : filiale.algorithmid;
 
-        if (schicht !== 'F') {
-          if (aktuelleStunden >= limit) schicht = 'F';
-          else aktuelleStunden += stundenProDienst;
-          stundenProMitarbeiter.set(m.id, aktuelleStunden);
+        const algoFuerM    = algorithmen.find(a => a.id === algoIdFuerM) || algorithm;
+        let patternFuerM   = parsePattern(algoFuerM);
+
+        if (!patternFuerM.length) {
+          patternFuerM = ['F'];
         }
 
+        // Schicht aus Pattern
+        let schicht = patternFuerM[m.counter % patternFuerM.length];
+
+        // Stundenprüfung
+        let bereits = stundenProMitarbeiter.get(m.id) || 0;
+        if (schicht !== 'F') {
+          if (bereits >= limitStunden) {
+            schicht = 'F';
+          } else {
+            bereits += stundenProDienst;
+            stundenProMitarbeiter.set(m.id, bereits);
+          }
+        }
+
+        
         const eintrag = {
           dienstId: `${filiale.id}-${datum}-${schicht}-${m.id}`,
           mitarbeiterId: m.id,
@@ -101,107 +211,142 @@ async function generateDienstplan(year, month) {
           filialeId: filiale.id,
           hauptfilialeId: m.hauptfilialeid
         };
-
         einsatzHeute.push(eintrag);
 
-        if (['A', 'E'].includes(schicht))
-          dienstAbdeckung[datum][schicht].push(m.id);
 
-        m.counter = (m.counter + 1) % patternLen;
+        if (schicht === 'A' || schicht === 'E') {
+          dienstAbdeckung[datum][schicht].push(m.id);
+        }
+
+        // Counter weiterdrehen
+        m.counter = (m.counter + 1) % patternFuerM.length;
       }
 
-      // ✅ Sicherstellen, dass mind. A + E abgedeckt ist
-      if (einsatzHeute.length > 1) {
-        const hatA = einsatzHeute.some(e => e.schicht === 'A');
-        const hatE = einsatzHeute.some(e => e.schicht === 'E');
-        if (!hatA) einsatzHeute[0].schicht = 'A';
-        if (!hatE) einsatzHeute[1].schicht = 'E';
+      // Sicherstellen: pro Tag mindestens 1x A und 1x E
+      let hatA = einsatzHeute.some(e => e.schicht === 'A');
+      let hatE = einsatzHeute.some(e => e.schicht === 'E');
+
+      if (!hatA && einsatzHeute.length > 0) {
+        const e0 = einsatzHeute[0];
+        if (e0.schicht === 'F') {
+          const cur = stundenProMitarbeiter.get(e0.mitarbeiterId) || 0;
+          stundenProMitarbeiter.set(e0.mitarbeiterId, cur + stundenProDienst);
+        }
+        e0.schicht = 'A';
+        dienstAbdeckung[datum].A.push(e0.mitarbeiterId);
+      }
+
+      if (!hatE && einsatzHeute.length > 1) {
+        const e1 = einsatzHeute[1];
+        if (e1.schicht === 'F') {
+          const cur = stundenProMitarbeiter.get(e1.mitarbeiterId) || 0;
+          stundenProMitarbeiter.set(e1.mitarbeiterId, cur + stundenProDienst);
+        }
+        e1.schicht = 'E';
+        dienstAbdeckung[datum].E.push(e1.mitarbeiterId);
       }
 
       plan.push({ datum, einsatz: einsatzHeute });
     }
 
-    // -------------------------------------------------------------------------
-    // 🔹 STUNDENKÜRZUNG
-    // -------------------------------------------------------------------------
-    kürzeStunden(plan, dienstAbdeckung, stundenProMitarbeiter, monatsstunden, mitarbeiter, stundenProDienst);
+    // ==================================================
+    // PHASE 2: Stunden-Kürzung pro Mitarbeiter
+    // ==================================================
+    const minWorkersProSchicht = 1;
 
-    // Doppelte Sicherheit: A/E prüfen
-    for (const tag of plan) {
-      const hatA = tag.einsatz.some(e => e.schicht === 'A');
-      const hatE = tag.einsatz.some(e => e.schicht === 'E');
-      if (!hatA && tag.einsatz.length > 0) tag.einsatz[0].schicht = 'A';
-      if (!hatE && tag.einsatz.length > 1) tag.einsatz[1].schicht = 'E';
+    for (const m of mitarbeiter) {
+      const id   = m.id;
+      const ziel = monatsstunden * getFaktorFuerMitarbeiter(m);
+      let hours  = stundenProMitarbeiter.get(id) || 0;
+
+      while (hours > ziel) {
+        const kandidaten = [];
+
+        for (const tag of plan) {
+          const idx = tag.einsatz.findIndex(
+            e => e.mitarbeiterId === id && (e.schicht === 'A' || e.schicht === 'E')
+          );
+          if (idx === -1) continue;
+
+          const schicht = tag.einsatz[idx].schicht;
+          const abdeckung = dienstAbdeckung[tag.datum][schicht];
+
+          // nie letzte A/E-Schicht des Tages löschen
+          if (!abdeckung || abdeckung.length <= minWorkersProSchicht) continue;
+
+          kandidaten.push({ tag, idx, schicht });
+        }
+
+        if (kandidaten.length === 0) break;
+
+        const { tag, idx, schicht } =
+          kandidaten[Math.floor(Math.random() * kandidaten.length)];
+
+        // Dienst auf F setzen
+        tag.einsatz[idx].schicht = 'F';
+        dienstAbdeckung[tag.datum][schicht] =
+          dienstAbdeckung[tag.datum][schicht].filter(mid => mid !== id);
+
+        hours -= stundenProDienst;
+        stundenProMitarbeiter.set(id, Math.max(0, hours));
+      }
     }
 
-    // Counter speichern
+    // ==================================================
+    // PHASE 3: Endkontrolle – A/E trotzdem pro Tag
+    // ==================================================
+    for (const tag of plan) {
+      let hatA = tag.einsatz.some(e => e.schicht === 'A');
+      let hatE = tag.einsatz.some(e => e.schicht === 'E');
+
+      if (!hatA && tag.einsatz.length > 0) {
+        const e0 = tag.einsatz[0];
+        if (e0.schicht === 'F') {
+          const cur = stundenProMitarbeiter.get(e0.mitarbeiterId) || 0;
+          stundenProMitarbeiter.set(e0.mitarbeiterId, cur + stundenProDienst);
+        }
+        e0.schicht = 'A';
+      }
+
+      if (!hatE && tag.einsatz.length > 1) {
+        const e1 = tag.einsatz[1];
+        if (e1.schicht === 'F') {
+          const cur = stundenProMitarbeiter.get(e1.mitarbeiterId) || 0;
+          stundenProMitarbeiter.set(e1.mitarbeiterId, cur + stundenProDienst);
+        }
+        e1.schicht = 'E';
+      }
+    }
+
+    // Counter in DB persistieren
     for (const m of mitarbeiter) {
       await mitarbeiterRepo.updateCounter(m.id, m.counter);
     }
 
+    // Ergebnis für diese Filiale einsammeln
     resultFilialen.push({
-      filiale: { id: filiale.id, ort: filiale.ort, farbe: filiale.farbe },
+      filiale: {
+        id: filiale.id,
+        standort: filiale.ort,
+        farbe: filiale.farbe
+      },
       arbeitstage: dates.length,
       plan,
+      springer: [],
+      offeneDienste: [],
       stundenProMitarbeiter: Object.fromEntries(stundenProMitarbeiter)
     });
   }
+  
 
-  // ---------------------------------------------------------------------------
-  // PLAN SPEICHERN
-  // ---------------------------------------------------------------------------
-  const planObjekt = {
+  // Gesamter Monatsplan
+  return {
     jahr,
     monat,
     tageImMonat: dates.length,
     monatsstunden,
     filialen: resultFilialen
   };
-
-  await dienstplanRepo.save({
-    jahr,
-    monat,
-    ...planObjekt
-  });
-
-  console.log(`✅ Dienstplan ${monat}/${jahr} erfolgreich generiert.`);
-  return planObjekt;
-}
-
-// -----------------------------------------------------------------------------
-// 🔧 HILFSFUNKTIONEN
-// -----------------------------------------------------------------------------
-function kürzeStunden(plan, dienstAbdeckung, stundenProMitarbeiter, monatsstunden, mitarbeiter, stundenProDienst) {
-  const minWorkersProSchicht = 1;
-  for (const m of mitarbeiter) {
-    const faktor = getFaktorFuerMitarbeiter(m);
-    const ziel = monatsstunden * faktor;
-    let hours = stundenProMitarbeiter.get(m.id) || 0;
-
-    while (hours > ziel) {
-      const kandidaten = [];
-      for (const tag of plan) {
-        const idx = tag.einsatz.findIndex(e => e.mitarbeiterId === m.id && e.schicht !== 'F');
-        if (idx === -1) continue;
-        const eins = tag.einsatz[idx];
-        const abdeckung = dienstAbdeckung[tag.datum][eins.schicht];
-        if (!abdeckung || abdeckung.length <= minWorkersProSchicht) continue;
-        kandidaten.push({ tag, idx, schicht: eins.schicht });
-      }
-      if (kandidaten.length === 0) break;
-      const { tag, idx, schicht } = kandidaten[Math.floor(Math.random() * kandidaten.length)];
-      tag.einsatz[idx].schicht = 'F';
-      dienstAbdeckung[tag.datum][schicht] =
-        dienstAbdeckung[tag.datum][schicht].filter(mid => mid !== m.id);
-      hours -= stundenProDienst;
-      stundenProMitarbeiter.set(m.id, Math.max(0, hours));
-    }
-  }
-}
-
-function getFaktorFuerMitarbeiter(m) {
-  const typ = Number(m.arbeitnehmertyp || 40);
-  return typ / 40;
 }
 
 module.exports = { generateDienstplan };

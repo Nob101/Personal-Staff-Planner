@@ -11,87 +11,69 @@ created_at	                        TIMESTAMP DEFAULT now()	        Zeitstempel d
 
 // Wichtig //
 //ALTER TABLE dienstplaene ADD CONSTRAINT unique_jahr_monat UNIQUE (jahr, monat);
-
-
-
-// ============================================================================
-// 📅 dienstplan.repo.pg.js
-// ---------------------------------------------------------------------------
-// PostgreSQL Repository für Dienstpläne
-// - Speichert vollständige JSON-Struktur des Dienstplans pro Monat
-// - Wird vom Generator und von den Routen verwendet
-// ============================================================================
+// backend/repositories/dienstplan.repo.pg.js
 
 const pool = require('../db/pool');
 
-// ============================================================================
-// 🔹 Dienstplan nach Jahr & Monat abrufen
-// ============================================================================
+// -------------------------------------------------------------
+// Einen Plan laden – komplette Zeile zurückgeben
+//   → { id, jahr, monat, plan_data, created_at }
+// -------------------------------------------------------------
 async function getByDate(jahr, monat) {
-  const query = `
-    SELECT *
-    FROM dienstplaene
-    WHERE jahr = $1 AND monat = $2;
-  `;
-  const result = await pool.query(query, [jahr, monat]);
+  const result = await pool.query(
+    'SELECT * FROM dienstplaene WHERE jahr = $1 AND monat = $2',
+    [jahr, monat]
+  );
   return result.rows[0] || null;
 }
 
-// ============================================================================
-// 🔹 Dienstplan speichern (Insert oder Update)
-// ============================================================================
-async function save(planObj) {
-  const query = `
+// -------------------------------------------------------------
+// Plan speichern – plan_data ist reines JSON des Plans
+// -------------------------------------------------------------
+async function save(jahr, monat, plan) {
+  await pool.query(
+    `
     INSERT INTO dienstplaene (jahr, monat, plan_data)
-    VALUES ($1, $2, $3::jsonb)
+    VALUES ($1, $2, $3)
     ON CONFLICT (jahr, monat)
-    DO UPDATE SET
-      plan_data = EXCLUDED.plan_data,
-      created_at = NOW();
-  `;
-
-  const values = [
-    planObj.jahr,
-    planObj.monat,
-    JSON.stringify(planObj)
-  ];
-
-  await pool.query(query, values);
+    DO UPDATE SET plan_data = $3
+    `,
+    [jahr, monat, plan]
+  );
   return true;
 }
 
-// ============================================================================
-// 🔹 Dienstplan löschen
-// ============================================================================
+// -------------------------------------------------------------
+// Nur das JSON aktualisieren
+// -------------------------------------------------------------
+async function updatePlan(jahr, monat, planData) {
+  await pool.query(
+    `
+    UPDATE dienstplaene
+       SET plan_data = $3
+     WHERE jahr = $1 AND monat = $2
+    `,
+    [jahr, monat, planData]
+  );
+  return true;
+}
+
+// -------------------------------------------------------------
+// Löschen
+// -------------------------------------------------------------
 async function remove(jahr, monat) {
-  const query = `
-    DELETE FROM dienstplaene
-    WHERE jahr = $1 AND monat = $2
-    RETURNING *;
-  `;
-  const result = await pool.query(query, [jahr, monat]);
+  const result = await pool.query(
+    'DELETE FROM dienstplaene WHERE jahr = $1 AND monat = $2',
+    [jahr, monat]
+  );
   return result.rowCount > 0;
 }
 
-// ============================================================================
-// 🔹 Alle Dienstpläne abrufen
-// ============================================================================
 async function getAll() {
-  const query = `
-    SELECT jahr, monat, created_at
-    FROM dienstplaene
-    ORDER BY jahr DESC, monat DESC;
-  `;
-  const result = await pool.query(query);
+  const result = await pool.query(
+    'SELECT jahr, monat, created_at FROM dienstplaene ORDER BY jahr DESC, monat DESC'
+  );
   return result.rows;
 }
 
-// ============================================================================
-// EXPORT
-// ============================================================================
-module.exports = {
-  getByDate,
-  save,
-  remove,
-  getAll
-};
+module.exports = { getByDate, save, updatePlan, remove, getAll };
