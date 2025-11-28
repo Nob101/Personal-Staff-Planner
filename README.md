@@ -86,7 +86,12 @@ src/
  │    ├─ images/
  │    ├─ icons/
  │    └─ styles/
- │
+│
+├─ views/
+│   ├─ MitarbeiterView.vue       # Container für /mitarbeiter Route
+│   ├─ FilialView.vue            # Container für /filialen Route
+│   └─ ...                       
+│
  ├─ components/
  │   ├─ global/                        # Globale Komponenten die mehrmals verwendet werden               
  │   │    ├─ Navbar.vue
@@ -96,7 +101,6 @@ src/
  │   │    └─ ButtonPrimary.vue (allg. Buttonvorlage)
  │
  │   ├─ mitarbeiter/                   # Alle Mitarbeiter-Komponenten   
- │   │    ├─ MitarbeiterView.vue       # Container / Page für die Route
  │   │    ├─ MitarbeiterActionBar.vue
  │   │    ├─ MitarbeiterList.vue
  │   │    ├─ MitarbeiterCard.vue
@@ -105,14 +109,12 @@ src/
  │   │    └─ nutzt ModalConfirmDelete.vue (Button in MitarbeiterCard)
  │
  │   ├─ filialen/                      # Alle Filialen-Komponenten   
- │   │    ├─ FilialView.vue            # Container / Page für die Filialen-Route
  │   │    ├─ FilialActionBar.vue
  │   │    ├─ FilialList.vue
  │   │    ├─ FilialCard.vue
  │   │    ├─ ModalFilialCreate.vue
  │   │    ├─ ModalFilialEdit.vue (Button in FilialenCard)
  │   │    └─ nutzt ModalConfirmDelete.vue (Button in FilialenCard)
- │
  │   └─ ...
 
 ````
