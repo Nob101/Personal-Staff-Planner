@@ -14,44 +14,31 @@ algorithmid	                           INTEGER	                        Referenz 
 */
 
 
-
-// ============================================================================
-// 🏢 filialen.repo.pg.js
-// ---------------------------------------------------------------------------
-// PostgreSQL Repository für Filialen
-// Stellt CRUD-Funktionen sowie eine Zusatzfunktion zur Verfügung, um
-// Filialen anhand ihres Kürzels zu finden (z. B. "PINK").
-// ============================================================================
-
 const pool = require('../db/pool');
 
-// ============================================================================
-// 🔹 Alle Filialen abrufen
-// ============================================================================
+const ALLOWED_FIELDS = [
+  'filialname', 'farbe', 'ort', 'strasse', 'plz',
+  'land', 'email', 'telefon', 'algorithmid'
+];
+
 async function getAll() {
   const result = await pool.query('SELECT * FROM filialen ORDER BY id;');
   return result.rows;
 }
 
-// ============================================================================
-// 🔹 Filiale per ID abrufen
-// ============================================================================
 async function getById(id) {
   const result = await pool.query('SELECT * FROM filialen WHERE id = $1;', [id]);
   return result.rows[0] || null;
 }
 
-// ============================================================================
-// 🔹 Filiale per Kürzel (Name) abrufen
-// ============================================================================
 async function getByKuerzel(kuerzel) {
-  const result = await pool.query('SELECT * FROM filialen WHERE filialname ILIKE $1;', [kuerzel]);
+  const result = await pool.query(
+    'SELECT * FROM filialen WHERE filialname ILIKE $1;',
+    [kuerzel]
+  );
   return result.rows[0] || null;
 }
 
-// ============================================================================
-// 🔹 Neue Filiale hinzufügen
-// ============================================================================
 async function add(f) {
   const query = `
     INSERT INTO filialen (
@@ -61,47 +48,52 @@ async function add(f) {
     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
     RETURNING *;
   `;
-  const values = [
-    f.filialname, f.farbe, f.ort, f.strasse,
-    f.plz, f.land, f.email, f.telefon, f.algorithmId
-  ];
-  const result = await pool.query(query, values);
+  const result = await pool.query(query, [
+    f.filialname,
+    f.farbe,
+    f.ort,
+    f.strasse,
+    f.plz,
+    f.land,
+    f.email,
+    f.telefon,
+    f.algorithmId
+  ]);
   return result.rows[0];
 }
 
-// ============================================================================
-// 🔹 Filiale aktualisieren
-// ============================================================================
 async function update(id, updates) {
-  // camelCase in snake_case mappen
-  if (updates.algorithmId) {
+
+  
+  if (updates.algorithmId !== undefined) {
     updates.algorithmid = updates.algorithmId;
     delete updates.algorithmId;
   }
 
-  const fields = Object.keys(updates);
+  const fields = Object.keys(updates).filter(f => ALLOWED_FIELDS.includes(f));
   if (fields.length === 0) return null;
 
   const setClause = fields.map((f, i) => `${f} = $${i + 1}`).join(', ');
-  const values = Object.values(updates);
+  const values = fields.map(f => updates[f]);
+
   values.push(id);
 
-  const query = `UPDATE filialen SET ${setClause} WHERE id = $${fields.length + 1} RETURNING *;`;
+  const query = `
+    UPDATE filialen
+    SET ${setClause}
+    WHERE id = $${fields.length + 1}
+    RETURNING *;
+  `;
   const result = await pool.query(query, values);
+
   return result.rows[0] || null;
 }
 
-// ============================================================================
-// 🔹 Filiale löschen
-// ============================================================================
 async function remove(id) {
-  await pool.query('DELETE FROM filialen WHERE id = $1;', [id]);
-  return true;
+  const result = await pool.query('DELETE FROM filialen WHERE id = $1;', [id]);
+  return result.rowCount > 0;
 }
 
-// ============================================================================
-// EXPORT
-// ============================================================================
 module.exports = {
   getAll,
   getById,

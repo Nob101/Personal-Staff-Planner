@@ -23,9 +23,11 @@ router.get('/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
     const filiale = await filialenRepo.getById(id);
+
     if (!filiale) {
       return res.status(404).json({ error: 'Filiale nicht gefunden' });
     }
+
     res.json(filiale);
   } catch (err) {
     console.error('Fehler beim Lesen der Filiale:', err);
@@ -34,7 +36,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // -------------------------------------------------------------
-// POST: Neue Filiale anlegen
+// POST: Neue Filiale
 // -------------------------------------------------------------
 router.post('/', async (req, res) => {
   try {
@@ -68,18 +70,29 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(neueFiliale);
   } catch (err) {
-    console.error('Fehler beim Anlegen einer Filiale:', err);
+    console.error('Fehler beim Anlegen:', err);
     res.status(500).json({ error: 'Fehler beim Anlegen einer Filiale' });
   }
 });
 
 // -------------------------------------------------------------
-// PUT: Filiale bearbeiten
+// PUT: Filiale aktualisieren
 // -------------------------------------------------------------
 router.put('/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const updates = req.body;
+
+    const updates = {
+      filialname: req.body.filialname,
+      farbe: req.body.farbe,
+      ort: req.body.ort,
+      strasse: req.body.strasse,
+      plz: req.body.plz,
+      land: req.body.land,
+      email: req.body.email,
+      telefon: req.body.telefon,
+      algorithmId: req.body.algorithmId
+    };
 
     const geaendert = await filialenRepo.update(id, updates);
 
@@ -89,21 +102,27 @@ router.put('/:id', async (req, res) => {
 
     res.json(geaendert);
   } catch (err) {
-    console.error('Fehler beim Bearbeiten einer Filiale:', err);
+    console.error('Fehler beim Bearbeiten:', err);
     res.status(500).json({ error: 'Fehler beim Bearbeiten der Filiale' });
   }
 });
 
 // -------------------------------------------------------------
-// DELETE: Filiale löschen
+// DELETE
 // -------------------------------------------------------------
 router.delete('/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
-    await filialenRepo.remove(id);
+
+    const deleted = await filialenRepo.remove(id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: 'Filiale nicht gefunden' });
+    }
+
     res.json({ message: 'Filiale gelöscht' });
   } catch (err) {
-    console.error('Fehler beim Löschen der Filiale:', err);
+    console.error('Fehler beim Löschen:', err);
     res.status(500).json({ error: 'Fehler beim Löschen der Filiale' });
   }
 });
@@ -117,8 +136,8 @@ router.get('/:id/mitarbeiter', async (req, res) => {
     const mitarbeiter = await mitarbeiterRepo.getByFiliale(id);
     res.json(mitarbeiter);
   } catch (err) {
-    console.error('Fehler beim Laden der Mitarbeiter der Filiale:', err);
-    res.status(500).json({ error: 'Fehler beim Laden der Mitarbeiter der Filiale' });
+    console.error('Fehler beim Laden der Mitarbeiter:', err);
+    res.status(500).json({ error: 'Fehler beim Laden der Mitarbeiter' });
   }
 });
 

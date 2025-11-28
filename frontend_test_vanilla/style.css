@@ -1,0 +1,209 @@
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #111;
+  color: #eee;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  margin-top: 0;
+}
+
+#controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#controls label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+}
+
+#controls input {
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background: #222;
+  color: #eee;
+}
+
+#ladenBtn {
+  padding: 8px 14px;
+  border-radius: 4px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+}
+
+#ladenBtn:hover {
+  background: #2563eb;
+}
+
+#result {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Filial-Container */
+.filiale-block {
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 12px;
+  background: #1c1c1c;
+}
+
+.filiale-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.filiale-title {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.filiale-color {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #444;
+}
+
+/* Tagesliste */
+.day-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.day-row {
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: #181818;
+  border: 1px solid #2b2b2b;
+}
+
+.day-date {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+
+/* Dienst-Kacheln (pro Mitarbeiter) */
+.dienst-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.dienst-tag {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #555;
+}
+
+.dienst-schicht {
+  font-weight: bold;
+}
+
+
+/* ===== Matrix-Ansicht wie in Excel ===== */
+
+.matrix {
+  margin-top: 8px;
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid #2b2b2b;
+}
+
+.matrix-inner {
+  min-width: 600px;
+}
+
+.matrix-header-row,
+.matrix-row {
+  display: flex;
+}
+
+/* allgemeine Zellen */
+.matrix-cell {
+  border-right: 1px solid #2b2b2b;
+  border-bottom: 1px solid #2b2b2b;
+  padding: 2px 4px;
+  min-width: 30px;
+  text-align: center;
+  font-size: 0.75rem;
+  box-sizing: border-box;
+}
+
+/* linke Spalte: Mitarbeitername */
+.matrix-cell-name {
+  min-width: 160px;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 500;
+  position: sticky;
+  left: 0;
+  background: #111; /* fixierter Hintergrund */
+  z-index: 2;
+}
+
+/* Kopfzeile: Datum / Wochentag */
+.matrix-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #000;
+}
+
+.matrix-cell-header {
+  background: #222;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.matrix-dow {
+  font-size: 0.65rem;
+  color: #aaa;
+}
+
+.matrix-day {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* normale Tageszelle */
+.matrix-cell-day {
+  background: #181818;
+}
+
+/* Schichtbuchstabe in der Zelle */
+.matrix-schicht {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+
+.dienst-select {
+  font-size: 0.7rem;
+  max-width: 140px;
+}
+
+
