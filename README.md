@@ -90,30 +90,26 @@ src/
  ├─ components/
  │   ├─ global/                        # Globale Komponenten die mehrmals verwendet werden               
  │   │    ├─ Navbar.vue
- │   │    ├─ ModalBase.vue
- │   │    ├─ ModalConfirmDelete.vue
- │   │    ├─ InputField.vue
- │   │    └─ ButtonPrimary.vue
+ │   │    ├─ ModalBase.vue (allg. Modalvorlage)
+ │   │    ├─ ModalConfirmDelete.vue (allgemeines Löschbestätigungs Modal)
+ │   │    ├─ InputField.vue (allgemeine Inputfeldvorlage)
+ │   │    └─ ButtonPrimary.vue (allg. Buttonvorlage)
  │
  │   ├─ mitarbeiter/                   # Alle Mitarbeiter-Komponenten   
  │   │    ├─ MitarbeiterActionBar.vue
  │   │    ├─ MitarbeiterList.vue
  │   │    ├─ MitarbeiterCard.vue
- │   │    ├─ BtnMitarbeiterPrimary.vue
- │   │    ├─ BtnMitarbeiterDanger.vue
  │   │    ├─ ModalMitarbeiterCreate.vue
- │   │    ├─ ModalMitarbeiterEdit.vue
- │   │    └─ nutzt ModalConfirmDelete.vue
+ │   │    ├─ ModalMitarbeiterEdit.vue (Button in MitarbeiterCard)
+ │   │    └─ nutzt ModalConfirmDelete.vue (Button in MitarbeiterCard)
  │
  │   ├─ filialen/                      # Alle Filialen-Komponenten   
  │   │    ├─ FilialActionBar.vue
  │   │    ├─ FilialList.vue
  │   │    ├─ FilialCard.vue
- │   │    ├─ BtnFilialPrimary.vue
- │   │    ├─ BtnFilialDanger.vue
  │   │    ├─ ModalFilialCreate.vue
- │   │    ├─ ModalFilialEdit.vue
- │   │    └─ nutzt ModalConfirmDelete.vue
+ │   │    ├─ ModalFilialEdit.vue (Button in FilialenCard)
+ │   │    └─ nutzt ModalConfirmDelete.vue (Button in FilialenCard)
  │
  │   └─ ...
 
