@@ -96,6 +96,7 @@ src/
  │   │    └─ ButtonPrimary.vue (allg. Buttonvorlage)
  │
  │   ├─ mitarbeiter/                   # Alle Mitarbeiter-Komponenten   
+ │   │    ├─ MitarbeiterView.vue       # Container / Page für die Route
  │   │    ├─ MitarbeiterActionBar.vue
  │   │    ├─ MitarbeiterList.vue
  │   │    ├─ MitarbeiterCard.vue
@@ -104,6 +105,7 @@ src/
  │   │    └─ nutzt ModalConfirmDelete.vue (Button in MitarbeiterCard)
  │
  │   ├─ filialen/                      # Alle Filialen-Komponenten   
+ │   │    ├─ FilialView.vue            # Container / Page für die Filialen-Route
  │   │    ├─ FilialActionBar.vue
  │   │    ├─ FilialList.vue
  │   │    ├─ FilialCard.vue
