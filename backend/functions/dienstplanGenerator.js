@@ -93,7 +93,7 @@ async function generateDienstplan(year, month) {
       resultFilialen.push({
         filiale: {
           id: filiale.id,
-          standort: filiale.ort,
+          standort:  filiale.filialname || filiale.ort || "Unbekannt",
           farbe: filiale.farbe
         },
         arbeitstage: dates.length,
@@ -111,7 +111,7 @@ async function generateDienstplan(year, month) {
       resultFilialen.push({
         filiale: {
           id: filiale.id,
-          standort: filiale.ort,
+          standort: filiale.filialname || filiale.ort || "Unbekannt",
           farbe: filiale.farbe
         },
         arbeitstage: dates.length,
@@ -135,7 +135,7 @@ async function generateDienstplan(year, month) {
       resultFilialen.push({
         filiale: {
           id: filiale.id,
-          standort: filiale.ort,
+          standort: filiale.filialname || filiale.ort || "Unbekannt",
           farbe: filiale.farbe
         },
         arbeitstage: dates.length,
@@ -327,7 +327,7 @@ async function generateDienstplan(year, month) {
     resultFilialen.push({
       filiale: {
         id: filiale.id,
-        standort: filiale.ort,
+        standort: filiale.filialname || filiale.ort || "Unbekannt",
         farbe: filiale.farbe
       },
       arbeitstage: dates.length,
