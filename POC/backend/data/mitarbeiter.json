@@ -1,0 +1,138 @@
+[
+  {
+    "id": 1,
+    "vorname": "Max",
+    "nachname": "Müller",
+    "hauptfilialeId": 2,
+    "nebenfilialenIds": [
+      1,
+      3
+    ],
+    "springer": true,
+    "springerAlgorithmId": 1,
+    "counter": 5
+  },
+  {
+    "id": 3,
+    "vorname": "Peter",
+    "nachname": "Schmidt",
+    "hauptfilialeId": 1,
+    "nebenfilialenIds": [
+      2,
+      3
+    ],
+    "springer": true,
+    "springerAlgorithmId": 2,
+    "counter": 5
+  },
+  {
+    "id": 4,
+    "vorname": "Laura",
+    "nachname": "Fischer",
+    "hauptfilialeId": 2,
+    "nebenfilialenIds": [
+      1,
+      3
+    ],
+    "arbeitnehmerTyp": "20",
+    "counter": 3
+  },
+  {
+    "id": 5,
+    "vorname": "Tom",
+    "nachname": "Weber",
+    "hauptfilialeId": 1,
+    "nebenfilialenIds": [
+      2,
+      3
+    ],
+    "counter": 1
+  },
+  {
+    "id": 6,
+    "vorname": "Sophie",
+    "nachname": "Klein",
+    "hauptfilialeId": 2,
+    "nebenfilialenIds": [
+      1,
+      3
+    ],
+    "counter": 7
+  },
+  {
+    "id": 7,
+    "vorname": "Lukas",
+    "nachname": "Wolf",
+    "hauptfilialeId": 1,
+    "nebenfilialenIds": [
+      2,
+      3
+    ],
+    "counter": 3
+  },
+  {
+    "id": 8,
+    "vorname": "Anna",
+    "nachname": "Huber",
+    "hauptfilialeId": 1,
+    "nebenfilialenIds": [
+      2,
+      3
+    ],
+    "arbeitnehmerTyp": "30",
+    "counter": 5
+  },
+  {
+    "id": 9,
+    "vorname": "Felix",
+    "nachname": "Schneider",
+    "hauptfilialeId": 2,
+    "nebenfilialenIds": [
+      1
+    ],
+    "counter": 11
+  },
+  {
+    "id": 10,
+    "vorname": "Mia",
+    "nachname": "Bauer",
+    "hauptfilialeId": 3,
+    "nebenfilialenIds": [
+      2
+    ],
+    "counter": 4
+  },
+  {
+    "id": 11,
+    "vorname": "Jan",
+    "nachname": "Richter",
+    "hauptfilialeId": 3,
+    "nebenfilialenIds": [],
+    "arbeitnehmerTyp": "20",
+    "counter": 0
+  },
+  {
+    "id": 12,
+    "vorname": "Lea",
+    "nachname": "Koch",
+    "hauptfilialeId": 3,
+    "nebenfilialenIds": [
+      2,
+      1
+    ],
+    "counter": 2
+  },
+  {
+    "id": 13,
+    "vorname": "Steffi",
+    "nachname": "Schitter",
+    "hauptfilialeId": 3,
+    "nebenfilialenIds": [
+      1,
+      2
+    ],
+    "springer": true,
+    "springerAlgorithmId": 2,
+    "counter": 4
+  }
+]
