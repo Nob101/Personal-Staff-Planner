@@ -1,10 +1,10 @@
 <script setup>
     import { ref } from 'vue'
-    import logo from '../assets/images/icons/PSP_Logo_Transparent.png';
-    //import dienstplaene_icon from '../assets/images/icons/dienstplaene_icon.png'
-    //import mitarbeiter_icon from '../assets/images/icons/mitarbeiter_icon.png'
-    //import filialen_icon from '../assets/images/icons/filialen_icon.png'
-    //import einstellungen_icon from '../assets/images/icons/einstellungen_icon.png'
+    import logo from '@/assets/icons/PSP_Logo_Transparent.png';
+    //import dienstplaene_icon from '../assets/icons/dienstplaene_icon.png'
+    //import mitarbeiter_icon from '../assets/icons/mitarbeiter_icon.png'
+    //import filialen_icon from '../assets/icons/filialen_icon.png'
+    //import einstellungen_icon from '../assets/icons/einstellungen_icon.png'
 
     //!! To-Do: Link von offener Page soll gehighlighted werden, derzeit nicht der Fall
     const activeLink = ref('')
