@@ -8,11 +8,11 @@
 // Funktionalitäten und Komponenten importieren
 import Navbar from '@/components/global/Navbar.vue';
 import MitarbeiterView from '@/views/MitarbeiterView.vue';
+import LoginView from '@/views/LoginView.vue';
 </script>
 
 <template>
-  <Navbar />
-  <MitarbeiterView />
+  <LoginView />
 </template>
 
 <style scoped> 
