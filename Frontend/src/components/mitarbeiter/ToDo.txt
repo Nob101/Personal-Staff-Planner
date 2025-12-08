@@ -1,0 +1,7 @@
+Mitarbeiter hinzufügen
+-> Springer nicht bekannt soll nicht da stehen bis Ja/Nein gewählt wurde
+-> Dropdowns für Filialen fixen
+-> Filialen als Namen anzeigen nicht ID
+
+Lösch-Button implementieren
+CSS/Tailwind installieren und implementieren

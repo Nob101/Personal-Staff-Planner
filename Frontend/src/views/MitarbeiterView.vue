@@ -3,57 +3,62 @@
         - Mitarbeiter ID: Was passiert wenn ein Mitarbeiter gelöscht wird? Neuvergabe der IDs?
 -->
 <script setup>
-// Funktionalitäten und Komponenten importieren
+//Komponenten importieren
 import { ref } from 'vue'
 import MitarbeiterActionBar from '@/components/mitarbeiter/MitarbeiterActionBar.vue'
 import MitarbeiterList from '@/components/mitarbeiter/MitarbeiterList.vue'
 import ModalMitarbeiterCreate from '@/components/mitarbeiter/ModalMitarbeiterCreate.vue'
 import ModalMitarbeiterEdit from '@/components/mitarbeiter/ModalMitarbeiterEdit.vue'
 
-// Dummy-Daten für Test
+//Dummy-Daten für Testzwecke. MÜSSEN MIT BACKEND REQUESTS ersetzt werden.
 const mitarbeiter = ref([
   {
     id: 1,
     vorname: 'Max',
-    nachname: 'Müller',
-    geburtsdatum: '15.01.1985',
-    email: '',
-    telefon1: '01234 567890',
-    telefon2: '',
+    nachname: 'Mustermann',
+    geburtsdatum: '1990-01-15',
+    email1: 'max.mustermann@example.com',
+    email2: 'max2@example.com',
+    telefon1: '0123456789',
+    telefon2: '0123456788',
     strasse: 'Musterstraße 1',
     ort: 'Musterstadt',
-    postleitzahl: '1234',
-    hauptfilialeId: 2,
-    nebenfilialenIds: [1, 3],
+    postleitzahl: '2345',
+    land: 'Österreich',
+    arbeitsstunden: 40,
     springer: true,
-    springerAlgorithmId: 1,
-    counter: 5
+    hauptfiliale: 1,
+    nebenfilialen: [2],
+    anmerkungen: 'Sehr motiviert'
   },
   {
     id: 2,
     vorname: 'Lisa',
-    nachname: 'Meyer',
-    geburtsdatum: '15.01.1985',
-    email: '',
-    telefon1: '01234 567890',
-    telefon2: '',
-    strasse: 'Musterstraße 1',
-    ort: 'Musterstadt',
-    postleitzahl: '1234',
-    hauptfilialeId: 1,
-    nebenfilialenIds: [],
+    nachname: 'Müller',
+    geburtsdatum: '1992-06-20',
+    email1: 'lisa.mueller@example.com',
+    email2: 'lisa2@example.com',
+    telefon1: '0987654321',
+    telefon2: '0987654322',
+    strasse: 'Beispielweg 5',
+    ort: 'Beispielstadt',
+    postleitzahl: '4321',
+    land: 'Österreich',
+    arbeitsstunden: 30,
     springer: false,
-    springerAlgorithmId: null,
-    counter: 2
+    hauptfiliale: 2,
+    nebenfilialen: [1, 3],
+    anmerkungen: 'Teilzeit'
   }
+])
+const filialen = ref([
+  { id: 1, name: 'Filiale A' },
+  { id: 2, name: 'Filiale B' },
+  { id: 3, name: 'Filiale C' }
 ])
 
 // Event-Funktionen
 
-//Temporärer Konsolen-Log für Edit. MUSS NOCH IMPLEMENTIERT WERDEN!
-//function handleEdit(mitarbeiter) {
-//  console.log('Bearbeiten:', mitarbeiter)
-//}
 //temporärer Konsolen-Log für Delete. MUSS NOCH IMPLEMENTIERT WERDEN!
 function handleDelete(mitarbeiter) {
   console.log('Löschen:', mitarbeiter)
@@ -62,22 +67,23 @@ function handleDelete(mitarbeiter) {
 //Fügt neuen Mitarbeiter dem Mitarbeiter-Array hinzu. MUSS MÖGLICHERWEISE NOCH ANS BACKEND ANGEPASST WERDEN!
 function handleMitarbeiterCreate(neu) {
   mitarbeiter.value.push({
-    id: mitarbeiter.value.length + 1, // Beispiel-ID. In Realität sollte diese vom Backend vergeben werden?
+    id: mitarbeiter.value.length + 1, // Beispiel-ID. In Realität sollte diese dann vom Backend vergeben werden!
     vorname: neu.vorname,
     nachname: neu.nachname,
-    geburtsdatum: neu.geburtsdatum,
-    email: neu.email,
-    telefon1: neu.telefon1,
-    telefon2: neu.telefon2,
-    strasse: neu.strasse,
-    ort: neu.ort,
-    postleitzahl: neu.postleitzahl,
-    anmerkungen: neu.anmerkungen,
-    hauptfilialeId: null,
-    nebenfilialenIds: [],
-    springer: false,
-    springerAlgorithmId: null,
-    counter: 0
+    geburtsdatum: neu.geburtsdatum || null,
+    email1: neu.email1 || '',
+    email2: neu.email2 || '',
+    telefon1: neu.telefon1 || '',
+    telefon2: neu.telefon2 || '',
+    strasse: neu.strasse || '',
+    ort: neu.ort || '',
+    postleitzahl: neu.postleitzahl || '',
+    land: neu.land || '',
+    arbeitsstunden: neu.arbeitsstunden ? Number(neu.arbeitsstunden) : null,                       //Arbeitstunden als Zahl, null falls leeres Inputfeld
+    springer: neu.springer === true ? 'Ja' : neu.springer === false ? 'Nein' : 'Nicht bekannt',  //"Nicht bekannt" falls Ja/Nein nicht gewählt wurde
+    hauptfiliale: neu.hauptfiliale || null,
+    nebenfilialen: neu.nebenfilialen?.length ? neu.nebenfilialen : null,                         //// ? : prüft ob neu.nebenfilialen existiert und eine Länge > 0 hat; wenn ja wird neu.nebenfilialen genommen, sonst null
+    anmerkungen: neu.anmerkungen || ''
   })
 }
 //Modale - Steuerung
@@ -88,22 +94,21 @@ function openModalMitarbeiterCreate() {
   showModalMitarbeiterCreate.value = true
 }
 
-//Mitarbeiter Ändern Modal - NOCH NICHT IMPLEMENTIERT
+//Mitarbeiter Ändern Modal
 const selectedMitarbeiter = ref(null)
 const showModalMitarbeiterEdit = ref(false)
-
+//Öffnet Ändern Modal wenn bei einem Mitarbeiter auf "Bearbeiten" geklickt wird
 function handleEdit(mitarbeiter) {
   selectedMitarbeiter.value = mitarbeiter
   showModalMitarbeiterEdit.value = true
 }
-
+//Überschreibt bestehende Mitarbeiterdaten mit den geänderten
 function handleMitarbeiterEdit(editedData) {
   const index = mitarbeiter.value.findIndex(m => m.id === editedData.id)
   if (index !== -1) {
     mitarbeiter.value[index] = { ...mitarbeiter.value[index], ...editedData }
   }
 }
-
 </script>
 
 <template>
@@ -115,7 +120,7 @@ function handleMitarbeiterEdit(editedData) {
     <MitarbeiterList :mitarbeiter="mitarbeiter" @edit="handleEdit" @delete="handleDelete" />
 
     <!-- Modale ganz am Ende des Containers, damit es über allem liegt -->
-    <ModalMitarbeiterCreate v-if="showModalMitarbeiterCreate" @close="showModalMitarbeiterCreate = false" @mitarbeiterCreate="handleMitarbeiterCreate" />
-    <ModalMitarbeiterEdit v-if="showModalMitarbeiterEdit && selectedMitarbeiter" :mitarbeiter="selectedMitarbeiter" @close="showModalMitarbeiterEdit = false" @mitarbeiterEdit="handleMitarbeiterEdit" />
+    <ModalMitarbeiterCreate v-if="showModalMitarbeiterCreate" :filialen="filialen" @close="showModalMitarbeiterCreate = false" @mitarbeiterCreate="handleMitarbeiterCreate" />
+    <ModalMitarbeiterEdit v-if="showModalMitarbeiterEdit && selectedMitarbeiter" :mitarbeiter="selectedMitarbeiter" :filialen="filialen" @close="showModalMitarbeiterEdit = false" @mitarbeiterEdit="handleMitarbeiterEdit" />
   </div>
 </template>
