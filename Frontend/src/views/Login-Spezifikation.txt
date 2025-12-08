@@ -14,9 +14,13 @@ Fehler-Meldungen für falsche Eingaben, fehlende Eingaben, nicht existierente Be
 
 Umsetzung:
 08.12.2025
-Ziel ist es erst einmal alles bis auf die Backend-Verbindung zu machen. Diese wird im Laufe des restlichen Monats gemacht.
-Heißt: Alle Frontend-Elemente + CSS/Tailwind?
+HTML erstellt. Dummy-Daten für Testzwecke verwendet.
 
 Designideen:
 -> Logo als transparenten Background
 -> Farbe bei Anmelden/Registrieren wechseln
+
+To-Do:
+-> Backend-Anbindung
+-> CSS/Tailwind
+-> Logo als transparenten Background?
