@@ -1,10 +1,10 @@
 <script setup>
     import { ref } from 'vue'
     import logo from '@/assets/icons/PSP_Logo_Transparent.png';
-    //import dienstplaene_icon from '../assets/icons/dienstplaene_icon.png'
-    //import mitarbeiter_icon from '../assets/icons/mitarbeiter_icon.png'
-    //import filialen_icon from '../assets/icons/filialen_icon.png'
-    //import einstellungen_icon from '../assets/icons/einstellungen_icon.png'
+    import dienstplaene_icon from '@/assets/icons/dienstplaene_icon_solid.svg'
+    import mitarbeiter_icon from '@/assets/icons/mitarbeiter_icon_solid.svg'
+    import  filialen_icon from '@/assets/icons/filialen_icon_solid.svg'
+    import einstellungen_icon from '@/assets/icons/einstellungen_icon_solid.svg'
 
     //!! To-Do: Link von offener Page soll gehighlighted werden, derzeit nicht der Fall
     const activeLink = ref('')
@@ -13,30 +13,30 @@
 <template>
     <nav class="navbar">
         <div class="navbar-logo">
-            <img v-bind:src="logo" alt="Personal Staff Planner Logo" class="logo-image" />
+            <img v-bind:src="logo" alt="Personal Staff Planner Logo" class="logo-icon" />
         </div>
     <ul class="navbar-links">
       <li>
         <a href="Dienstpläne" v-bind:class="{ active: activeLink === 'Dienstpläne' }" @click="activeLink = 'Dienstpläne'">
-          <img v-bind:src="dienstplaene_icon" alt="dienstplaene icon" class="link-icon" />
+          <img v-bind:src="dienstplaene_icon" alt="dienstplaene icon" class="logo-icon" />
           Dienstpläne
         </a>
       </li>
       <li>
         <a href="Mitarbeiter" v-bind:class="{ active: activeLink === 'Mitarbeiter' }" @click="activeLink = 'Mitarbeiter'">
-          <img v-bind:src="mitarbeiter_icon" alt="mitarbeiter icon" class="link-icon" />
+          <img v-bind:src="mitarbeiter_icon" alt="mitarbeiter icon" class="logo-icon" />
           Mitarbeiter
         </a>
       </li>
       <li>
         <a href="Filialen" v-bind:class="{ active: activeLink === 'Filialen' }" @click="activeLink = 'Filialen'">
-          <img v-bind:src="filialen_icon" alt="filialen icon" class="link-icon" />
+          <img v-bind:src="filialen_icon" alt="filialen icon" class="logo-icon" />
           Filialen
         </a>
       </li>
       <li>
         <a href="Einstellungen" v-bind:class="{ active: activeLink === 'Einstellungen' }" @click="activeLink = 'Einstellungen'">
-          <img v-bind:src="einstellungen_icon" alt="einstellungen icon" class="link-icon" />
+          <img v-bind:src="einstellungen_icon" alt="einstellungen icon" class="logo-icon" />
           Einstellungen
         </a>
       </li>
@@ -79,7 +79,7 @@
   color: white;
   border-radius: 6px;
 }
-.logo-image {
+.logo-icon {
   width: 40px;
   height: auto;
 }
