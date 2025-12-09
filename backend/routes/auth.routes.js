@@ -9,16 +9,17 @@ router.post('/login', async (req, res) => {
     const user = await authRepo.authenticate(username, password);
 
     if (!user) {
-      return res.status(401).json({ error: 'Ungültige Anmeldedaten' });
+      return res.status(401).json({ success: false, error: 'Ungültige Anmeldedaten' });
     }
 
     res.json({
+      success: true,
       message: 'Login erfolgreich',
       user
     });
   } catch (err) {
     console.error('Fehler /auth/login:', err);
-    res.status(500).json({ error: 'Fehler bei der Anmeldung' });
+    res.status(500).json({ success: false, error: 'Fehler bei der Anmeldung' });
   }
 });
 
