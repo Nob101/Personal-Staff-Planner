@@ -2,9 +2,9 @@
 Spalte	                            Typ	                            Beschreibung
 
 id	                                SERIAL                          PRIMARY KEY	
-jahr	                            INTEGER	                        z. B. 2025
-monat	                            INTEGER	                        z. B. 11
-plan_data	                        JSONB	                        enthält den gesamten generierten Plan
+jahr	                              INTEGER	                        z. B. 2025
+monat	                              INTEGER	                        z. B. 11
+plan_data	                          JSONB	                          enthält den gesamten generierten Plan
 created_at	                        TIMESTAMP DEFAULT now()	        Zeitstempel der Erstellung
 
 */

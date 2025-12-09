@@ -6,8 +6,7 @@
 // - Algorithmus/Pattern pro Filiale (A/E/F…)
 // - individueller Counter pro Mitarbeiter (rotierender Startpunkt)
 // - 20h / 30h / 40h (arbeitnehmertyp)
-// - Springer mit eigenem Algorithmus (springeralgorithmid), aber weiterhin
-//   nur in ihrer Hauptfiliale eingeplant (wie in deiner Altversion)
+// - Springer mit eigenem Algorithmus (springeralgorithmid)
 // - A und E pro Tag garantiert
 // - Stundenkürzung mit Puffer, ohne letzte A/E wegzunehmen
 // - speichert NUR {dienstId, mitarbeiterId, schicht} in einsatz
@@ -73,7 +72,7 @@ async function generateDienstplan(year, month) {
     };
   }
 
-  // Counter für alle Filialen vorbereiten (wie früher über setCounterForMitarbeiter)
+  
   for (const filiale of filialen) {
     await setCounterForMitarbeiter(filiale.id);
   }
@@ -318,7 +317,7 @@ async function generateDienstplan(year, month) {
       }
     }
 
-    // Counter in DB persistieren
+    
     for (const m of mitarbeiter) {
       await mitarbeiterRepo.updateCounter(m.id, m.counter);
     }

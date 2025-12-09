@@ -1,6 +1,6 @@
 // backend/routes/dienstplan.routes.js
 // ============================================================================
-// 📅 Dienstplan-Routen (DB-Version, Schema B)
+// 📅 Dienstplan-Routen (DB-Version,
 // ============================================================================
 
 const express = require('express');
@@ -23,7 +23,7 @@ async function savePlan(jahr, monat, plan) {
 }
 
 // ============================================================================
-// GET /api/dienstplan?jahr=2025&monat=5&force=1   (von dir aktuell nicht benutzt)
+// GET /api/dienstplan?jahr=2025&monat=5&force=1  
 // ============================================================================
 router.get('/', async (req, res) => {
   const jahr  = Number(req.query.jahr);
@@ -87,7 +87,7 @@ router.post('/generate', async (req, res) => {
 });
 
 // ============================================================================
-// GET /api/dienstplan/:jahr/:monat   (Button "Dienstplan laden")
+// GET /api/dienstplan/:jahr/:monat   
 // ============================================================================
 router.get('/:jahr/:monat', async (req, res) => {
   const jahr  = Number(req.params.jahr);
@@ -249,9 +249,7 @@ router.patch('/shift', async (req, res) => {
 // ============================================================================
 // POST /api/dienstplan/krank-mit-ersatz
 // Body: { jahr, monat, dienstId, ersatzMitarbeiterId, art ('K'|'U') }
-// → hier können wir später noch feinjustieren, aktuell lasse ich deinen alten
-//   einfachen Stand so wie er war, nur mit savePlan(loadPlan)
-// ============================================================================
+// =========================================================================
 router.post('/krank-mit-ersatz', async (req, res) => {
   try {
     const { jahr, monat, dienstId, ersatzMitarbeiterId, art } = req.body;
@@ -318,8 +316,7 @@ router.post('/krank-mit-ersatz', async (req, res) => {
     // 5) alten Einsatz auf Krank/U setzen
     altEinsatz.schicht = art;
 
-    // Achtung: Ein Krank/Urlaub-Tag zählt als arbeitsfrei (0 Stunden)
-    // → passt.
+  
 
     // 6) Ersatz-MA Daten holen
     const ersatzMA = alleMA.find(m => Number(m.id) === Number(ersatzMitarbeiterId));
