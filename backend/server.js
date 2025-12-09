@@ -23,6 +23,9 @@ app.use('/api/dienstplan', dienstplanRouter);
 const algorithmenRouter = require('./routes/algorithmen.routes');
 app.use('/api/algorithmen', algorithmenRouter);
 
+const authRouter = require('./routes/auth.routes');
+app.use('/api/auth', authRouter);
+
 
 // ---------------------
 //   SERVER STARTEN

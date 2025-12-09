@@ -1,21 +1,21 @@
 /*
 Spalte	                            Typ	                    Beschreibung
 id	                                SERIAL                  PRIMARY KEY	
-name	                            TEXT	                z. B. "Standard A/E" oder "Wechsel 2/2/2"
-pattern	                            JSONB	                Array aus Buchstaben wie ["A","A","E","E","F","F"]
-stunden	                            NTEGER	                Stunden pro Dienst (z. B. 9)
+name	                              TEXT	                  z. B. "Standard A/E" oder "Wechsel 2/2/2"
+pattern	                            JSONB	                  Array aus Buchstaben wie ["A","A","E","E","F","F"]
+stunden	                            INTEGER	                Stunden pro Dienst (z. B. 9)
 
 */
 
-const pool = require('../db/pool');
+const pool = require("../db/pool");
 
-const ALLOWED_FIELDS = ['name', 'pattern', 'stunden'];
+const ALLOWED_FIELDS = ["name", "pattern", "stunden"];
 
 // ============================================================================
 // GET ALL
 // ============================================================================
 async function getAll() {
-  const result = await pool.query('SELECT * FROM algorithmen ORDER BY id;');
+  const result = await pool.query("SELECT * FROM algorithmen ORDER BY id;");
   return result.rows;
 }
 
@@ -23,7 +23,9 @@ async function getAll() {
 // GET BY ID
 // ============================================================================
 async function getById(id) {
-  const result = await pool.query('SELECT * FROM algorithmen WHERE id = $1;', [id]);
+  const result = await pool.query("SELECT * FROM algorithmen WHERE id = $1;", [
+    id,
+  ]);
   return result.rows[0] || null;
 }
 
@@ -36,11 +38,7 @@ async function add(a) {
     VALUES ($1, $2::jsonb, $3)
     RETURNING *;
   `;
-  const values = [
-    a.name,
-    JSON.stringify(a.pattern),
-    a.stunden
-  ];
+  const values = [a.name, JSON.stringify(a.pattern), a.stunden];
 
   const result = await pool.query(query, values);
   return result.rows[0];
@@ -50,12 +48,11 @@ async function add(a) {
 // UPDATE
 // ============================================================================
 async function update(id, updates) {
-
   const clean = {};
 
   for (const key of ALLOWED_FIELDS) {
     if (updates[key] !== undefined) {
-      if (key === 'pattern' && Array.isArray(updates.pattern)) {
+      if (key === "pattern" && Array.isArray(updates.pattern)) {
         clean.pattern = JSON.stringify(updates.pattern);
       } else {
         clean[key] = updates[key];
@@ -66,8 +63,8 @@ async function update(id, updates) {
   const fields = Object.keys(clean);
   if (fields.length === 0) return null;
 
-  const setClause = fields.map((f, i) => `${f} = $${i + 1}`).join(', ');
-  const values = fields.map(f => clean[f]);
+  const setClause = fields.map((f, i) => `${f} = $${i + 1}`).join(", ");
+  const values = fields.map((f) => clean[f]);
 
   values.push(id);
 
@@ -86,7 +83,9 @@ async function update(id, updates) {
 // REMOVE
 // ============================================================================
 async function remove(id) {
-  const result = await pool.query('DELETE FROM algorithmen WHERE id = $1;', [id]);
+  const result = await pool.query("DELETE FROM algorithmen WHERE id = $1;", [
+    id,
+  ]);
   return result.rowCount > 0;
 }
 
@@ -95,6 +94,5 @@ module.exports = {
   getById,
   add,
   update,
-  remove
+  remove,
 };
-
