@@ -1,0 +1,156 @@
+------------------------------------------------------------
+1) TABELLE: algorithmen
+------------------------------------------------------------
+Zweck:
+    Speichert Schichtmuster (Pattern) und Stunden je Dienst.
+
+Spalten:
+    id              INTEGER     NOT NULL PRIMARY KEY
+                    DEFAULT nextval('algorithmen_id_seq')
+
+    name            TEXT
+
+    pattern         JSONB       -- z. B. ["A","E","F"]
+
+    stunden         INTEGER     -- z. B. 9
+
+Constraints:
+    PRIMARY KEY (id)
+
+
+------------------------------------------------------------
+2) TABELLE: auth
+------------------------------------------------------------
+Zweck:
+    Login-Daten für die Anwendung (lokaler Single-User).
+
+Spalten:
+    id              INTEGER     NOT NULL PRIMARY KEY
+                    DEFAULT nextval('auth_id_seq')
+
+    username        TEXT        NOT NULL UNIQUE
+
+    password        TEXT        NOT NULL
+                    -- gespeicherter bcrypt-Hash
+
+Constraints:
+    PRIMARY KEY (id)
+    UNIQUE (username)
+
+
+------------------------------------------------------------
+3) TABELLE: dienstplaene
+------------------------------------------------------------
+Zweck:
+    Speichert vollständig generierte Monatspläne
+    als JSON-Objekt (inkl. Filialen, Mitarbeitern & Einsätzen).
+
+Spalten:
+    id              INTEGER     NOT NULL PRIMARY KEY
+                    DEFAULT nextval('dienstplaene_id_seq')
+
+    jahr            INTEGER     NOT NULL
+
+    monat           INTEGER     NOT NULL
+
+    plan_data       JSONB       NOT NULL
+                    -- kompletter Plan, wie vom Backend generiert
+
+    created_at      TIMESTAMP   DEFAULT now()
+
+Constraints:
+    PRIMARY KEY (id)
+    UNIQUE (jahr, monat)   -- verhindert doppelte Monatspläne
+
+
+------------------------------------------------------------
+4) TABELLE: filialen
+------------------------------------------------------------
+Zweck:
+    Stammdaten der Filialen.
+
+Spalten:
+    id              INTEGER     NOT NULL PRIMARY KEY
+                    DEFAULT nextval('filialen_id_seq')
+
+    filialname      TEXT
+
+    farbe           TEXT        -- z. B. "#ff66cc"
+
+    ort             TEXT
+
+    strasse         TEXT
+
+    plz             TEXT
+
+    land            TEXT
+
+    email           TEXT
+
+    telefon         TEXT
+
+    algorithmid     INTEGER     -- verweist auf algorithmen.id
+
+Constraints:
+    PRIMARY KEY (id)
+
+Empfohlene FK (optional):
+    FOREIGN KEY (algorithmid)
+        REFERENCES algorithmen(id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
+
+
+------------------------------------------------------------
+5) TABELLE: mitarbeiter
+------------------------------------------------------------
+Zweck:
+    Stammdaten der Mitarbeiter inkl. Filialzuordnung
+    und algorithmischer Planparameter.
+
+Spalten:
+    id                  INTEGER     NOT NULL PRIMARY KEY
+                        DEFAULT nextval('mitarbeiter_id_seq')
+
+    vorname             TEXT
+    nachname            TEXT
+    geburtsdatum        DATE
+
+    strasse             TEXT
+    plz                 TEXT
+    ort                 TEXT
+    land                TEXT
+
+    telefon1            TEXT
+    telefon2            TEXT
+
+    email1              TEXT
+    email2              TEXT
+
+    stammfiliale        TEXT            -- reine Anzeige
+    nebenfilialen       JSONB           -- z. B. ["1","2"]
+
+    arbeitnehmertyp     INTEGER         -- 20 / 30 / 40 (Stundenmodell)
+
+    counter             INTEGER         -- Algorithmus-Rotation
+    springer            BOOLEAN
+    springeralgorithmid INTEGER         -- eigenes Pattern für Springer
+
+    anmerkung           TEXT
+
+    hauptfilialeid      INTEGER         -- FK auf filialen.id
+
+Constraints:
+    PRIMARY KEY (id)
+
+Empfohlene Foreign Keys:
+    FOREIGN KEY (hauptfilialeid)
+        REFERENCES filialen(id)
+        ON DELETE SET NULL
+
+    FOREIGN KEY (springeralgorithmid)
+        REFERENCES algorithmen(id)
+        ON DELETE SET NULL
+
+
+------------------------------------------------------------
