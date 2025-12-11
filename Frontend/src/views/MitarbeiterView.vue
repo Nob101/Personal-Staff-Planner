@@ -9,6 +9,7 @@ import MitarbeiterActionBar from '@/components/mitarbeiter/MitarbeiterActionBar.
 import MitarbeiterList from '@/components/mitarbeiter/MitarbeiterList.vue'
 import ModalMitarbeiterCreate from '@/components/mitarbeiter/ModalMitarbeiterCreate.vue'
 import ModalMitarbeiterEdit from '@/components/mitarbeiter/ModalMitarbeiterEdit.vue'
+import BestätigungsModal from '@/components/global/BestätigungsModal.vue'
 
 //Dummy-Daten für Testzwecke. MÜSSEN MIT BACKEND REQUESTS ersetzt werden.
 const mitarbeiter = ref([
@@ -57,12 +58,12 @@ const filialen = ref([
   { id: 3, name: 'Filiale C' }
 ])
 
-// Event-Funktionen
 
-//temporärer Konsolen-Log für Delete. MUSS NOCH IMPLEMENTIERT WERDEN!
-function handleDelete(mitarbeiter) {
-  console.log('Löschen:', mitarbeiter)
-}
+//Modale - Steuerung
+
+//Mitarbeiter Erstellen Modal
+let showModalMitarbeiterCreate = ref(false)
+//Funktion: Mitarbeiter Erstellen Modal öffnen
 
 //Fügt neuen Mitarbeiter dem Mitarbeiter-Array hinzu. MUSS MÖGLICHERWEISE NOCH ANS BACKEND ANGEPASST WERDEN!
 function handleMitarbeiterCreate(neu) {
@@ -86,17 +87,15 @@ function handleMitarbeiterCreate(neu) {
     anmerkungen: neu.anmerkungen || ''
   })
 }
-//Modale - Steuerung
 
-//Mitarbeiter Erstellen Modal
-let showModalMitarbeiterCreate = ref(false)
-function openModalMitarbeiterCreate() {
-  showModalMitarbeiterCreate.value = true
-}
 
-//Mitarbeiter Ändern Modal
-const selectedMitarbeiter = ref(null)
+
+
+//Mitarbeiter Edit Modal
 const showModalMitarbeiterEdit = ref(false)
+//Variable für den gewählten Mitarbeiter
+const selectedMitarbeiter = ref(null)
+
 //Öffnet Ändern Modal wenn bei einem Mitarbeiter auf "Bearbeiten" geklickt wird
 function handleEdit(mitarbeiter) {
   selectedMitarbeiter.value = mitarbeiter
@@ -109,18 +108,61 @@ function handleMitarbeiterEdit(editedData) {
     mitarbeiter.value[index] = { ...mitarbeiter.value[index], ...editedData }
   }
 }
+
+//Bestätigungs-Modal vor Löschen eines ausgewählten Mitarbeiters
+const selectedMitarbeiterToDelete = ref(null)
+const showDeleteModal = ref(false)
+
+//Öffnet das Bestätigungsmodal für den ausgewählten Mitarbeiter
+function handleDelete(mitarbeiter) {
+  selectedMitarbeiterToDelete.value = mitarbeiter
+  showDeleteModal.value = true
+}
+//löscht den ausgewählten Mitarbeiter nach Bestätigung
+function confirmDelete() {
+  if (selectedMitarbeiterToDelete.value) {
+    mitarbeiter.value = mitarbeiter.value.filter(m => m.id !== selectedMitarbeiterToDelete.value.id)
+    selectedMitarbeiterToDelete.value = null
+  }
+  showDeleteModal.value = false
+}
+//schließt das Berstätigungs-Modal wenn abgebrochen/ESC gedrückt wird
+function cancelDelete() {
+  selectedMitarbeiterToDelete.value = null
+  showDeleteModal.value = false
+}
 </script>
 
 <template>
   <div class="mitarbeiter-view container mx-auto p-4">
     <!-- ActionBar -->
-    <MitarbeiterActionBar @mitarbeiterCreate="openModalMitarbeiterCreate" />
+    <MitarbeiterActionBar @mitarbeiterCreate="showModalMitarbeiterCreate = true" />
 
     <!-- Mitarbeiter Liste -->
-    <MitarbeiterList :mitarbeiter="mitarbeiter" @edit="handleEdit" @delete="handleDelete" />
+    <MitarbeiterList :mitarbeiter="mitarbeiter" :filialen="filialen" @edit="handleEdit" @delete="handleDelete" />
 
-    <!-- Modale ganz am Ende des Containers, damit es über allem liegt -->
-    <ModalMitarbeiterCreate v-if="showModalMitarbeiterCreate" :filialen="filialen" @close="showModalMitarbeiterCreate = false" @mitarbeiterCreate="handleMitarbeiterCreate" />
-    <ModalMitarbeiterEdit v-if="showModalMitarbeiterEdit && selectedMitarbeiter" :mitarbeiter="selectedMitarbeiter" :filialen="filialen" @close="showModalMitarbeiterEdit = false" @mitarbeiterEdit="handleMitarbeiterEdit" />
+    <!-- Modale am Ende -->
+    <ModalMitarbeiterCreate 
+      :show="showModalMitarbeiterCreate" 
+      :filialen="filialen" 
+      @close="showModalMitarbeiterCreate = false" 
+      @mitarbeiterCreate="handleMitarbeiterCreate"
+    />
+    <ModalMitarbeiterEdit
+      :show="showModalMitarbeiterEdit && selectedMitarbeiter"
+      :mitarbeiter="selectedMitarbeiter"
+      :filialen="filialen"
+      @close="showModalMitarbeiterEdit = false"
+      @mitarbeiterEdit="handleMitarbeiterEdit"
+    />
+    <BestätigungsModal
+    :show="showDeleteModal"
+    message="Möchtest du diesen Mitarbeiter wirklich löschen?"
+    @confirm="confirmDelete"
+    @close="cancelDelete"
+    />
   </div>
 </template>
+
+
+

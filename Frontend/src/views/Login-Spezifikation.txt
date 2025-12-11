@@ -21,6 +21,6 @@ Designideen:
 -> Farbe bei Anmelden/Registrieren wechseln
 
 To-Do:
--> Backend-Anbindung
+-> Backend-Anbindung & Seiten-Rerouting nach Login
 -> CSS/Tailwind
 -> Logo als transparenten Background?
