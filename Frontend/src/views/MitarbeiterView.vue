@@ -1,7 +1,5 @@
 <!-- MitarbeiterView.vue -->
-<!-- TODO:
-        - Mitarbeiter ID: Was passiert wenn ein Mitarbeiter gelöscht wird? Neuvergabe der IDs?
--->
+
 <script setup>
 //Komponenten importieren
 import { ref } from 'vue'
