@@ -1,13 +1,9 @@
 <!-- ModalMitarbeiterEdit.vue-->
- <!-- ModalMitarbeiterCreate.vue -->
-<!-- TODO:
-        - Code muss geschrieben werden. So nicht passend.
-        - Input-Felder müssen noch geändert/ergänzt werden je nach Anforderung. Drop-downs für Filialen etc.
-        - Geburtsdatum Eingabefeld ladet nicht bestehendes
--->
 
 <script setup>
+import BaseModal from '@/components/global/BaseModal.vue'
 import { ref, defineProps, watch, computed } from 'vue'
+
 
 // Emits, um das Modal zu schließen / bearbeiten
 const emit = defineEmits(['close', 'mitarbeiterEdit'])
@@ -16,10 +12,12 @@ const emit = defineEmits(['close', 'mitarbeiterEdit'])
 // Props: Mitarbeiter-Objekt
 const props = defineProps({
   mitarbeiter: { type: Object, required: true },
-  filialen: { type: Array, required: true }
+  filialen: { type: Array, required: true },
+  show: { type: Boolean, required: true } // vom Parent gesteuert
 })
 
 // Lokale Kopie der Daten (nicht direkt vom Props!)
+//wird verwendet damit die tatsächlichen Mitarbeiterdaten erst beim speichern überschrieben werden!
 const vorname = ref('')
 const nachname = ref('')
 const geburtsdatum = ref('')
@@ -101,138 +99,134 @@ function handleSubmit() {
   })
   emit('close')
 }
+
 </script>
 
 <template>
-  <div class="modal-background">
-    <div class="mitarbeiterEdit-container">
-      <h1>Mitarbeiter bearbeiten: {{ mitarbeiter.vorname }} {{ mitarbeiter.nachname }}</h1>
-      <form @submit.prevent="handleSubmit">
+  <BaseModal :show="show" @close="emit('close')" width="500px">
+    <!-- Header Slot -->
+    <template #header>
+      <h2 class="text-2xl font-semibold">Mitarbeiter bearbeiten: {{ mitarbeiter.vorname }} {{ mitarbeiter.nachname }}</h2>
+    </template>
 
-        <div>
-          <label>Vorname:</label>
-          <input type="text" v-model="vorname" required />
+    <!-- Body Slot -->
+    <template #body>
+      <form @submit.prevent="handleSubmit" class="space-y-4">
+        <!-- Vorname/Nachname -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label>Vorname:</label>
+            <input type="text" v-model="vorname" required class="w-full border rounded px-2 py-1"/>
+          </div>
+          <div>
+            <label>Nachname:</label>
+            <input type="text" v-model="nachname" required class="w-full border rounded px-2 py-1"/>
+          </div>
         </div>
 
-        <div>
-          <label>Nachname:</label>
-          <input type="text" v-model="nachname" required />
-        </div>
-
+        <!-- Geburtsdatum -->
         <div>
           <label>Geburtsdatum:</label>
-          <input type="date" v-model="geburtsdatum" />
+          <input type="date" v-model="geburtsdatum" class="w-full border rounded px-2 py-1"/>
         </div>
 
-        <div>
-          <label>Email 1:</label>
-          <input type="email" v-model="email1" />
-        </div>
-
-        <div>
-          <label>Email 2:</label>
-          <input type="email" v-model="email2" />
-        </div>
-
-        <div>
-          <label>Telefon 1:</label>
-          <input type="tel" v-model="telefon1" />
-        </div>
-
-        <div>
-          <label>Telefon 2:</label>
-          <input type="tel" v-model="telefon2" />
-        </div>
-
-        <!-- Adresse Box -->
-        <div class="adresse-box">
+        <!-- Email -->
+        <div class="grid grid-cols-2 gap-4">
           <div>
-            <label>Straße:</label>
-            <input type="text" v-model="strasse" />
+            <label>Email 1:</label>
+            <input type="email" v-model="email1" class="w-full border rounded px-2 py-1"/>
           </div>
           <div>
-            <label>Ort:</label>
-            <input type="text" v-model="ort" />
-          </div>
-          <div>
-            <label>Postleitzahl:</label>
-            <input type="text" v-model="postleitzahl" />
-          </div>
-          <div>
-            <label>Land:</label>
-            <input type="text" v-model="land" />
+            <label>Email 2:</label>
+            <input type="email" v-model="email2" class="w-full border rounded px-2 py-1"/>
           </div>
         </div>
 
-        <div>
-          <label>Arbeitsstunden:</label>
-          <input type="number" v-model="arbeitsstunden" />
+        <!-- Telefon -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label>Telefon 1:</label>
+            <input type="tel" v-model="telefon1" class="w-full border rounded px-2 py-1"/>
+          </div>
+          <div>
+            <label>Telefon 2:</label>
+            <input type="tel" v-model="telefon2" class="w-full border rounded px-2 py-1"/>
+          </div>
         </div>
 
-        <div class="springer">
-          <label>Springer:</label>
-          <label>
-            <input type="radio" v-model="springer" :value="true" /> Ja
-          </label>
-          <label>
-            <input type="radio" v-model="springer" :value="false" /> Nein
-          </label>
-          <span v-if="springer === undefined" class="not-known">Nicht bekannt</span>
+        <!-- Adresse -->
+        <fieldset class="border rounded p-3">
+          <legend>Adresse</legend>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label>Straße:</label>
+              <input type="text" v-model="strasse" class="w-full border rounded px-2 py-1"/>
+            </div>
+            <div>
+              <label>Ort:</label>
+              <input type="text" v-model="ort" class="w-full border rounded px-2 py-1"/>
+            </div>
+            <div>
+              <label>Postleitzahl:</label>
+              <input type="text" v-model="postleitzahl" class="w-full border rounded px-2 py-1"/>
+            </div>
+            <div>
+              <label>Land:</label>
+              <input type="text" v-model="land" class="w-full border rounded px-2 py-1"/>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Arbeitsstunden / Springer -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label>Arbeitsstunden:</label>
+            <input type="number" v-model="arbeitsstunden" class="w-full border rounded px-2 py-1"/>
+          </div>
+          <div>
+            <label>Springer:</label>
+            <div class="flex gap-4 items-center mt-1">
+              <label><input type="radio" v-model="springer" :value="true"/> Ja</label>
+              <label><input type="radio" v-model="springer" :value="false"/> Nein</label>
+            </div>
+          </div>
         </div>
 
-        <div class="hauptfiliale">
-          <label>Hauptfiliale:</label>
-          <select v-model="hauptfiliale" required>
-            <option disabled value="">Hauptfiliale wählen...</option>
-            <option v-for="filiale in filialen" :key="filiale.id" :value="filiale.id">
-              {{ filiale.name }}
-            </option>
-          </select>
+        <!-- Hauptfiliale / Nebenfilialen -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label>Hauptfiliale:</label>
+            <select v-model="hauptfiliale" required class="w-full border rounded px-2 py-1">
+              <option disabled value="">Hauptfiliale wählen...</option>
+              <option v-for="filiale in filialen" :key="filiale.id" :value="filiale.id">{{ filiale.name }}</option>
+            </select>
+          </div>
+          <div>
+            <label>Nebenfilialen:</label>
+            <select v-model="nebenfilialen" multiple class="w-full border rounded px-2 py-1">
+              <option disabled value="">Nebenfiliale(n) wählen...</option>
+              <option v-for="filiale in nebenfilialenOptionen" :key="filiale.id" :value="filiale.id">{{ filiale.name }}</option>
+            </select>
+          </div>
         </div>
 
-        <div class="nebenfilialen">
-          <label>Nebenfilialen:</label>
-          <select v-model="nebenfilialen" multiple>
-            <option disabled value="">Nebenfiliale(n) wählen...</option>
-            <option
-              v-for="filiale in nebenfilialenOptionen"
-              :key="filiale.id"
-              :value="filiale.id"
-            >
-              {{ filiale.name }}
-            </option>
-          </select>
-        </div>
-
+        <!-- Anmerkungen -->
         <div>
           <label>Anmerkungen:</label>
-          <textarea rows="4" v-model="anmerkungen"></textarea>
+          <textarea rows="4" v-model="anmerkungen" class="w-full border rounded px-2 py-1"></textarea>
         </div>
-
-        <div class="modal-actions">
-          <button type="submit">Änderungen speichern</button>
-          <button type="button" @click="emit('close')">Abbrechen</button>
-        </div>
-
       </form>
-    </div>
-  </div>
+    </template>
+
+    <!-- Footer Slot -->
+    <template #footer>
+      <div class="flex justify-center gap-4 mt-4">
+        <button class=" bg-blue-300 px-4 py-2 rounded" @click="handleSubmit" >Änderungen speichern</button>
+        <button  class=" bg-gray-200 px-4 py-2 rounded" @click="emit('close')">Abbrechen</button>
+      </div>
+    </template>
+  </BaseModal>
 </template>
 
-<style scoped>
-.modal-background {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.mitarbeiterEdit-container {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 400px;
-}
+<style>
 </style>

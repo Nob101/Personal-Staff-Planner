@@ -1,9 +1,4 @@
 <!-- MitarbeiterList.vue -->
-<!-- TODO:
-        - CSS und Container Formatierung definieren
-        - Mitarbeiter in einzelnen Filialen (Hauptfiliale) Container gruppieren?
-        - CSS/Tailwind Formatierung definieren 
--->
 
 <script setup>
 // Funktionalitäten und Komponenten importieren
@@ -15,23 +10,26 @@ const props = defineProps({
   mitarbeiter: {
     type: Array,
     required: true
-  }
+  },
+  filialen: { 
+    type: Array, 
+    required: true }
 })
 
 // Events: Bearbeiten und Löschen Klicks an Parent (MitarbeiterView.vue) weitergeben
 const emit = defineEmits(['edit', 'delete'])
 </script>
 
-<!---->
 <template>
     <!--rendert alle Mitarbeiter die im mitarbeiter-Array sind-->
     <div class="mitarbeiter-list grid gap-4">
         <MitarbeiterCard
-            v-for="mitarbeiter in mitarbeiter"
-            :key="mitarbeiter.id"
-            :mitarbeiter="mitarbeiter"
-            @edit="() => emit('edit', mitarbeiter)"
-            @delete="() => emit('delete', mitarbeiter)"
+            v-for="m in mitarbeiter"
+            :key="m.id"
+            :mitarbeiter="m"
+            :filialen="filialen"
+            @edit="() => emit('edit', m)"
+            @delete="() => emit('delete', m)"
         />
     </div>
 </template>

@@ -12,7 +12,9 @@ import LoginView from '@/views/LoginView.vue';
 </script>
 
 <template>
-  <LoginView />
+  <!-- <LoginView /> -->
+   <Navbar />
+   <MitarbeiterView />
 </template>
 
 <style scoped> 

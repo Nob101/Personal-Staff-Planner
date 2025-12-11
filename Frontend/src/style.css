@@ -1,0 +1,18 @@
+/* Tailwind Installation nach https://tailwindcss.com/docs/installation/using-vite */
+/* VS Code Extension:  Tailwind CSS IntelliSense nach https://tailwindcss.com/docs/editor-setup */
+
+@import "tailwindcss";
+
+body {
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 1.5;
+}
+
+button {
+  @apply px-4 py-2 rounded-lg font-medium text-center 
+         border border-black
+         transition duration-200
+         shadow-sm
+         hover:shadow-md
+         cursor-pointer;
+}
