@@ -1,11 +1,21 @@
-<script setup></script>
+<!-- App.vue -->
+<!-- TODO:
+        - Routing definieren und umsetzen (Routing zu verschiedenen Views und Backend-Requests/Responses)
+        - CSS/Tailwind Formatierung definieren 
+-->
+
+<script setup>
+// Funktionalitäten und Komponenten importieren
+import Navbar from '@/components/global/Navbar.vue';
+import MitarbeiterView from '@/views/MitarbeiterView.vue';
+import LoginView from '@/views/LoginView.vue';
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <!-- <LoginView /> -->
+   <Navbar />
+   <MitarbeiterView />
 </template>
 
-<style scoped></style>
+<style scoped> 
+</style>

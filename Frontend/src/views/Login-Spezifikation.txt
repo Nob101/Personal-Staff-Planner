@@ -1,0 +1,26 @@
+Einfacher Login-Landingpage, die Benutzer zuerst zu sehen bekommen.
+
+MUSS haben:
+
+1x Inputfeld für "Benutzername"
+1x Inputfeld für "Passwort"
+1x Button für "Anmelden"
+1x Button für "Registrieren"
+
+Extras:
+
+Registrieren und Anmelden als seperate Tabs/Fenster
+Fehler-Meldungen für falsche Eingaben, fehlende Eingaben, nicht existierente Benutzerdaten, etc.
+
+Umsetzung:
+08.12.2025
+HTML erstellt. Dummy-Daten für Testzwecke verwendet.
+
+Designideen:
+-> Logo als transparenten Background
+-> Farbe bei Anmelden/Registrieren wechseln
+
+To-Do:
+-> Backend-Anbindung & Seiten-Rerouting nach Login
+-> CSS/Tailwind
+-> Logo als transparenten Background?
