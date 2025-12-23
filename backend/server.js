@@ -2,7 +2,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const db = require('./backend/db/database/schema/database.js')
+const db = require('./db/database/schema/database.js')
 const PORT = 3000;
 
 
