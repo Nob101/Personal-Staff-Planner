@@ -51,6 +51,104 @@ Das System nutzt ein relationales Datenbanksystem mit folgenden Kern-Tabellen:
 ### Frontend-Bereich
 - **Oliver Bauer**: Evaluierung der Frontend-Technologien & Implementierung der Kern-Anwendung.
 - **Dumitru Jelezneac**: Design der Benutzeroberfläche & Implementierung der GUI-Komponenten.
+**Lukas: Notizbereich Datenbank-Struktur**
+
+> **Info!**
+> __Integrität:__ ON DELETE CASCADE stellt sicher, dass alle Mitarbeiterdaten automatisch gelöscht werden.
+> __Springer-Logik:__ Das Design erlaubt mehrere Schichten pro Tag/Mitarbeiter in unterschiedlichen Filialen. (<i>Performance via Counter</i>)
+> __Dienstplanung:__ Zentrale Tabelle für Schichtzuweisungen; ein Unique-Constraint verhindert doppelte Einträge und sichert die logische Korrektheit der Tagesplanung.
+
+````
+
+
+Tabelle filiale
+Spalten:
+    fnr (PK)          Integer
+    filialname        string
+    fkurzl (unique)   string
+    strasse           string
+    plz               string
+    ort               string
+    land              string (Default: 'Österreich')
+    telefon           string
+    email             string
+    farbe             string (Default: '#3498db')
+    algorithmid       Integer
+
+Tabelle arbeitstyp      (Wird mit einem Insert direkt befüllt)
+Spalten:
+    akurzl (PK)       string
+    text              string  
+
+Tabelle algorithmen
+Spalten:
+    id (PK)           Integer
+    name              string
+    stunden           Integer (Default: 9)
+
+Tabelle algorithmus_muster
+Spalten:
+    id (PK)           Integer
+    algorithmus_id    Integer (FK -> algorithmen)
+    reihenfolge       Integer
+    akurzl            string (FK -> arbeitstyp)
+
+
+
+Tabelle mitarbeiter
+Spalten:
+    mnr (PK)          Integer
+    vorname           string
+    nachname          string
+    fkurzl            string (FK -> filiale)
+    akurzl            string (FK -> arbeitstyp)
+    counter           Integer (Default: 0)
+    hauptfiliale_fnr  Integer (FK -> filiale)
+    stunden_soll      Integer (Default: 160)
+    springer          Boolean (Default: FALSE)
+    algorithmus_id    Integer (FK -> algorithmen)
+
+Tabelle mitarbeiter_kontakt
+Spalten:
+    knr (PK)          Integer
+    mnr               Integer (FK -> mitarbeiter, ON DELETE CASCADE)
+    strasse           string
+    plz               string
+    ort               string
+    land              string
+
+Tabelle mitarbeiter_telefon
+Spalten:
+    mnr               Integer (FK -> mitarbeiter, ON DELETE CASCADE)
+    telefon_typ       string  -- telefon 1, telefon 2, etc.
+    nummer            string  -- nummer 1, nummer 2, etc.
+    (PK: mnr, telefon_typ)
+
+Tabelle mitarbeiter_email
+Spalten:
+    mnr               Integer (FK -> mitarbeiter, ON DELETE CASCADE)
+    email_typ         string  -- email 1, email 2, etc.
+    email_adresse     string  -- adresse 1, adresse 2, etc.
+    (PK: mnr, email_typ)
+
+Tabelle mitarbeiter_arbeitet_in_Filiale (N:M)
+Spalten:
+    mnr               Integer (FK -> mitarbeiter)
+    fnr               Integer (FK -> filiale)
+    (PK: mnr, fnr)
+
+Tabelle dienstplaene
+Spalten:
+    id (PK)           Integer
+    jahr              Integer
+    monat             Integer
+    datum             Date
+    mnr               Integer (FK -> mitarbeiter)
+    fnr               Integer (FK -> filiale)
+    schicht_typ       string (FK -> arbeitstyp)
+    anmerkung         string
+    erstellt_am       Timestamp (Default: now())
+    (Unique: datum, mnr, fnr, schicht_typ)
 
 ---
 
