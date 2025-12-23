@@ -17,62 +17,104 @@ api/mitarbeiter/:mnr // DELETE löscht den Mitarbeiter mit der eingegeben id
  
 ````
 
-**Lukas: Notizbereich Allgemein**
+**Lukas: Notizbereich Datenbank-Struktur**
+
+> **Info!**
+> __Integrität:__ ON DELETE CASCADE stellt sicher, dass alle Mitarbeiterdaten automatisch gelöscht werden.
+> __Springer-Logik:__ Das Design erlaubt mehrere Schichten pro Tag/Mitarbeiter in unterschiedlichen Filialen. (<i>Performance via Counter</i>)
+> __Dienstplanung:__ Zentrale Tabelle für Schichtzuweisungen; ein Unique-Constraint verhindert doppelte Einträge und sichert die logische Korrektheit der Tagesplanung.
+
 ````
-Demo Version
-Tabelle mitarbeiter
-Spalten:
-    Mnr (PK)        Integer
-    Vorname         string
-    Nachname        string
-    Fkurzl          string 
-    Akurzl          string 
-    Counter         Integer
+
 
 Tabelle filiale
 Spalten:
-    Fnr (PK)        Integer
-    Fkurzl (unique) string
-    Strasse         string
-    PLZ             string
-    Ort             string
-    Land            string
-    telefon         string
-    email           string
+    fnr (PK)          Integer
+    filialname        string
+    fkurzl (unique)   string
+    strasse           string
+    plz               string
+    ort               string
+    land              string (Default: 'Österreich')
+    telefon           string
+    email             string
+    farbe             string (Default: '#3498db')
+    algorithmid       Integer
 
-Tabelle mitarbieter_arbeitet_in_Filiale
-Spalte:
-    Mnr            Integer
-    Fnr            Integer
+Tabelle arbeitstyp      (Wird mit einem Insert direkt befüllt)
+Spalten:
+    akurzl (PK)       string
+    text              string  
 
-Tabelle arbietstyp      (wird mit einem Insert direkt befüllt)
-Spalte:
-    Akurzl         string
-    Text           string  
+Tabelle algorithmen
+Spalten:
+    id (PK)           Integer
+    name              string
+    stunden           Integer (Default: 9)
 
+Tabelle algorithmus_muster
+Spalten:
+    id (PK)           Integer
+    algorithmus_id    Integer (FK -> algorithmen)
+    reihenfolge       Integer
+    akurzl            string (FK -> arbeitstyp)
+
+
+
+Tabelle mitarbeiter
+Spalten:
+    mnr (PK)          Integer
+    vorname           string
+    nachname          string
+    fkurzl            string (FK -> filiale)
+    akurzl            string (FK -> arbeitstyp)
+    counter           Integer (Default: 0)
+    hauptfiliale_fnr  Integer (FK -> filiale)
+    stunden_soll      Integer (Default: 160)
+    springer          Boolean (Default: FALSE)
+    algorithmus_id    Integer (FK -> algorithmen)
 
 Tabelle mitarbeiter_kontakt
 Spalten:
-    Knr (PK)       Integer
-    Mnr            Integer
-    Strasse         string
-    PLZ             string
-    Ort             string
-    Land            string
+    knr (PK)          Integer
+    mnr               Integer (FK -> mitarbeiter, ON DELETE CASCADE)
+    strasse           string
+    plz               string
+    ort               string
+    land              string
 
+Tabelle mitarbeiter_telefon
+Spalten:
+    mnr               Integer (FK -> mitarbeiter, ON DELETE CASCADE)
+    telefon_typ       string  -- telefon 1, telefon 2, etc.
+    nummer            string  -- nummer 1, nummer 2, etc.
+    (PK: mnr, telefon_typ)
 
-Tabelle mitarbieter_telefon
-Spalte:
-    Mnr            Integer
-    telefon_typ    string   --telefon 1, telefon 2, etc.
-    nummer         string   --nummer 1, nummer 2, etc.
+Tabelle mitarbeiter_email
+Spalten:
+    mnr               Integer (FK -> mitarbeiter, ON DELETE CASCADE)
+    email_typ         string  -- email 1, email 2, etc.
+    email_adresse     string  -- adresse 1, adresse 2, etc.
+    (PK: mnr, email_typ)
 
-Tabelle mitarbieter_email
-Spalte:
-    Mnr            Integer
-    email_typ      string   --email 1, email 2, etc.
-    email_adresse  string   --adresse 1, adresse 2, etc.
+Tabelle mitarbeiter_arbeitet_in_Filiale (N:M)
+Spalten:
+    mnr               Integer (FK -> mitarbeiter)
+    fnr               Integer (FK -> filiale)
+    (PK: mnr, fnr)
 
+Tabelle dienstplaene
+Spalten:
+    id (PK)           Integer
+    jahr              Integer
+    monat             Integer
+    datum             Date
+    mnr               Integer (FK -> mitarbeiter)
+    fnr               Integer (FK -> filiale)
+    schicht_typ       string (FK -> arbeitstyp)
+    anmerkung         string
+    erstellt_am       Timestamp (Default: now())
+    (Unique: datum, mnr, fnr, schicht_typ)
 
 ````
 
