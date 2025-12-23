@@ -173,6 +173,27 @@ CREATE TABLE IF NOT EXISTS dienstplaene (
                                               -- verhindert aber doppelte gleiche Dienste.
 );
 
+
+
+
+/*
+###############################
+
+-- USER
+
+################################
+*/
+
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role VARCHAR(20) DEFAULT 'admin' 
+);
+
+
+
+
 /*------------------------------------------------
 
 hinzufügen der PK -> FK beziehungen, um einen Aussführfehler zu vermeiden
