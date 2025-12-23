@@ -24,6 +24,21 @@ api/mitarbeiter/:mnr // DELETE löscht den Mitarbeiter mit der eingegeben id
 > __Springer-Logik:__ Das Design erlaubt mehrere Schichten pro Tag/Mitarbeiter in unterschiedlichen Filialen. (<i>Performance via Counter</i>)
 > __Dienstplanung:__ Zentrale Tabelle für Schichtzuweisungen; ein Unique-Constraint verhindert doppelte Einträge und sichert die logische Korrektheit der Tagesplanung.
 
+---
+
+<h3>Setup Anleitung</h3>
+
+**Einmalig**
+___Installation:___ Ladet PostgreSQL von `postgresql.org/download` herunter und installiert es.
+___WICHTIG:___ Das Passwort, das ihr bei der Installation für den User postgres vergebt, ist das `DB_PASSWORD`. Merken!
+___DB anlegen:___ Öffne pgAdmin 4, Rechtsklick auf "Databases" -> "Create" -> "Database". Name: `dienstplan` (Muss exakt so heißen).
+___Im Backend-ordenr:___ `npm install` ausführen
+___Umgebungsvariablen:___  Kopiert die Datei .env.example. und bennent sie um in `.env` ohne name oder Ähnliches und tragt das lokale Postgres passwort in  `DB_PASSWORD` ein.
+
+>Wenn Postgres nicht startet: mit windowstast + r nach services.msc suchen; und in der liste zu postgres scrollen [starten, beenden, neustarten] Näheres steht in der .env.example Datei
+
+---
+
 ````
 
 
