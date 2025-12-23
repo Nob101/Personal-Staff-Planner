@@ -2,7 +2,9 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const db = require('./backend/db/database/schema/database.js')
 const PORT = 3000;
+
 
 // Middleware
 app.use(express.json()); // JSON-Body verarbeiten
@@ -30,6 +32,19 @@ app.use('/api/auth', authRouter);
 // ---------------------
 //   SERVER STARTEN
 // ---------------------
-app.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
-});
+
+async function startApp(){
+  try{
+    await db.initDatabase();
+
+    app.listen(PORT, () => {
+        console.log(`Server läuft auf Port ${PORT}`);
+    });
+  }catch (err){
+    console.error("Fehler beim starten der Anwendung:", err);
+    process.exit(1);
+  }
+}
+
+startApp();
+
