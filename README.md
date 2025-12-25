@@ -1,22 +1,73 @@
 # Personal-Staff-Planner
-Im Rahmen der Diplomarbeit für die HTL Pinkafeld;
-Abschluss relevant;
+
+Dieses Projekt entsteht im Rahmen der Diplomarbeit an der **HTL Pinkafeld (Fachbereich Informatik)**. Es handelt sich um eine Softwarelösung zur automatisierten Dienstplanerstellung und effizienten Verwaltung von Arbeitszeiten.
+
+## 🎯 Zielsetzung
+
+Die Anwendung ermöglicht die Verwaltung von Mitarbeitern und Filialen (Bezirke Hartberg, Feldbach und Fürstenfeld). Unter Berücksichtigung gesetzlicher Regelungen, Monatsstunden und individueller Verfügbarkeiten bietet das System:
+- **Automatische Dienstplanerstellung**
+- **Flexible Anpassungen** bei Ausfällen (Krankheit, Urlaub)
+- **Ersatzvorschläge** für fehlendes Personal
+
+---
+
+## 🏗 Projektstruktur
+
+Das Projekt ist in ein **Backend (Express/Node.js)** und ein **Frontend (Vue 3)** unterteilt.
+
+### Backend API (`/backend`)
+Die Kommunikation erfolgt über eine REST-API:
+- `GET /api/mitarbeiter` – Alle Mitarbeiter abrufen
+- `GET /api/mitarbeiter/:mnr` – Einzelnen Mitarbeiter abrufen
+- `POST /api/mitarbeiter` – Neuen Mitarbeiter erstellen
+- `PUT /api/mitarbeiter/:mnr` – Mitarbeiter aktualisieren
+- `DELETE /api/mitarbeiter/:mnr` – Mitarbeiter löschen
+
+### Frontend (`/Frontend`)
+Das Frontend basiert auf **Vue 3** mit einer komponentenbasierten Architektur:
+- `src/views/` – Hauptansichten (MitarbeiterView, FilialView)
+- `src/components/global/` – Wiederverwendbare Basis-Komponenten (Modals, Inputs, Buttons)
+- `src/components/mitarbeiter/` & `filialen/` – Fachspezifische Komponenten
+
+---
 
 
+## 📊 Datenmodell (Struktur)
 
+Das System nutzt ein relationales PostgreSQL-Datenbanksystem. Zur Sicherstellung der Datenintegrität werden **Constraints** und **Cascading Deletes** verwendet.
 
+### 📋 Kern-Tabellen
+- **filiale**: Stammdaten der Standorte (PK: `fnr`, Kurzbezeichnung `fkurzl`, Farbcodes für UI).
+- **mitarbeiter**: Personalstammdaten (PK: `mnr`, Soll-Stunden, Springer-Status, Algorithmus-Zuweisung).
+- **dienstplaene**: Zentrale Planungstabelle (PK: `id`). Ein Unique-Constraint auf `datum, mnr, fnr, schicht_typ` sichert die Logik.
+- **arbeitstyp**: Definition der Schichtarten (PK: `akurzl`, z. B. 'F' für Frühdienst).
+- **algorithmen / algorithmus_muster**: Steuerungstabellen für die automatisierte Dienstplanerstellung.
 
-**Alexander: Notizbereich Allgemein**
-````
-routen/mitarbeiter:
-api/mitarbeiter //GET gibt alle mitarbeiter zurück
-api/mitarbeiter/:mnr //GET einen mitarbeiter mit der gegeben id
-api/mitarbeiter   //POST erstellt einen neuen Mitarbeiter
-api/mitarbeiter/:mnr //PUT aktualisiert den Mitarbeiter mit der id
-api/mitarbeiter/:mnr // DELETE löscht den Mitarbeiter mit der eingegeben id
- 
-````
+### 🔗 Relationen & Details
+- **mitarbeiter_arbeitet_in_Filiale**: N:M Verknüpfung für Mitarbeiter, die in mehreren Filialen eingesetzt werden können.
+- **Erreichbarkeit**: Normalisierte Detailtabellen (**mitarbeiter_kontakt**, **mitarbeiter_telefon**, **mitarbeiter_email**) mit `ON DELETE CASCADE`.
+- **users**: Verwaltung der Systemzugriffe (Username, Password-Hash, Role).
 
+---
+
+## 🏗 Datenbank-Besonderheiten (Archiv)
+
+> **Integrität:** `ON DELETE CASCADE` stellt sicher, dass beim Löschen eines Mitarbeiters alle Kontaktinformationen (Telefon, Email, Anschrift) automatisch entfernt werden.
+>
+> **Springer-Logik:** Das Design erlaubt mehrere Schichten pro Tag/Mitarbeiter in unterschiedlichen Filialen. Ein automatischer `counter` in der Mitarbeitertabelle unterstützt die faire Verteilung durch den Algorithmus.
+>
+> **Sicherheit:** Passwörter werden verschlüsselt als `password_hash` gespeichert. Die Datenbank initialisiert zudem automatisch Trigger für Zeitstempel und zur Vermeidung von Doppelbuchungen.
+---
+
+## 👥 Projektteam & Rollen
+
+### Backend-Bereich
+- **Alexander Haupt**: Evaluierung der Backend-Frameworks & Implementierung der Serviceschicht.
+- **Lukas Atzmüller**: Evaluierung der Datenbanksysteme, Datenmodellierung & Infrastruktur.
+
+### Frontend-Bereich
+- **Oliver Bauer**: Evaluierung der Frontend-Technologien & Implementierung der Kern-Anwendung.
+- **Dumitru Jelezneac**: Design der Benutzeroberfläche & Implementierung der GUI-Komponenten.
 **Lukas: Notizbereich Datenbank-Struktur**
 
 > **Info!**
@@ -131,105 +182,38 @@ Spalten:
     erstellt_am       Timestamp (Default: now())
     (Unique: datum, mnr, fnr, schicht_typ)
 
-````
+---
 
-**Oliver: Notizbereich Allgemein**
- 
- ````
-# Projektstruktur – Vue 3 Frontend
+## 🛠 Tech Stack
+- **Frontend**: Vue 3, Tailwind CSS, Vite
+- **Backend**: Node.js, Express, PostgreSQL (`pg`)
+- **Tools**: Nodemon, Dotenv, Cors, Bcrypt
 
-src/
- ├─ assets/                            # Bilder, Icons, Fonts, Stylesheets etc.
- │    ├─ images/
- │    ├─ icons/
- │    └─ styles/
-│
-├─ views/
-│   ├─ MitarbeiterView.vue       # Container für /mitarbeiter Route
-│   ├─ FilialView.vue            # Container für /filialen Route
-│   └─ ...                       
-│
- ├─ components/
- │   ├─ global/                        # Globale Komponenten die mehrmals verwendet werden               
- │   │    ├─ Navbar.vue
- │   │    ├─ ModalBase.vue (allg. Modalvorlage)
- │   │    ├─ ModalConfirmDelete.vue (allgemeines Löschbestätigungs Modal)
- │   │    ├─ InputField.vue (allgemeine Inputfeldvorlage)
- │   │    └─ ButtonPrimary.vue (allg. Buttonvorlage)
- │
- │   ├─ mitarbeiter/                   # Alle Mitarbeiter-Komponenten   
- │   │    ├─ MitarbeiterActionBar.vue
- │   │    ├─ MitarbeiterList.vue
- │   │    ├─ MitarbeiterCard.vue
- │   │    ├─ ModalMitarbeiterCreate.vue
- │   │    ├─ ModalMitarbeiterEdit.vue (Button in MitarbeiterCard)
- │   │    └─ nutzt ModalConfirmDelete.vue (Button in MitarbeiterCard)
- │
- │   ├─ filialen/                      # Alle Filialen-Komponenten   
- │   │    ├─ FilialActionBar.vue
- │   │    ├─ FilialList.vue
- │   │    ├─ FilialCard.vue
- │   │    ├─ ModalFilialCreate.vue
- │   │    ├─ ModalFilialEdit.vue (Button in FilialenCard)
- │   │    └─ nutzt ModalConfirmDelete.vue (Button in FilialenCard)
- │   └─ ...
+---
 
-````
+## 🚀 Erste Schritte
 
-**Dumitru: Notizbereich Allgemein**
-````
+### Installation
+Um alle notwendigen Abhängigkeiten für das gesamte Projekt (Root, Frontend und Backend) zu installieren, führen Sie folgenden Befehl im Hauptverzeichnis aus:
 
-````
+npm run install-all
 
+### Projekt starten
+Dank `concurrently` können sowohl das Backend als auch das Frontend mit einem einzigen Befehl gleichzeitig gestartet werden.
 
+**Entwicklungsmodus (mit Hot-Reload):**
 
+npm run dev
 
+*Dies startet das Vue-Frontend via Vite und den Express-Server via Nodemon.*
 
+**Standard-Start:**
 
+npm start
 
+### Projekt stoppen
+Um die laufenden Server und Prozesse zu beenden, nutzen Sie im Terminal die Tastenkombination:
+`Strg + C` (Windows/Linux) bzw. `Cmd + C` (macOS).
 
-Auftraggeber: 
--HTL Pinkafeld [Fachbereich Informatik]
--Markus Luif 
-`Dienstplan_verwaltungs_programm/service;`
-
-
-__Backend-Bereich__
-<u>Alexander Haupt:</u>
-Evaluierung verschiedener Backend
-Frameworks sowie Implementierung 
-von großen Teilen der Serviceschicht
-
-<u>Lukas Atzmüller:</u>
-Evaluierung verschiedener 
-Datenbanksysteme, Erstellung des 
-Datenmodells sowie 
-Implementierung der Infrastruktur
-
-
-__Frontend-Bereich__
-<u>Oliver Bauer:</u>
-Evaluierung verschiedener Frontend
-Technologien sowie die 
-Implementierung des Frontends
-
-<u>Dumitru Jelezneac:</u>
-Evaluierung verschiedener Frontend
-Design-Frameworks; Design der 
-Benutzeroberfläche sowie 
-Implementierung von Teilen der GUI 
-
-
-<u>___Zielsetzung:___</u>
-
-````
-
-Eine Softwarelösung zur automatischen Dienstplan Erstellung und der effizienten 
-Verwaltung der Arbeitszeiten einzelner Mitarbeiter und den jeweils zugehörigen Filialen in 
-den Bezirken, Hartberg, Feldbach und Fürstenfeld. Die Anwendung soll, unter 
-Berücksichtigung gesetzlicher Regelungen, der Monatsstunden und der Verfügbarkeit 
-einzelner Mitarbeiter flexible Anpassungen ermöglichen. Zudem soll die Software im 
-Ausfall und/oder Fernbleibens eines Mitarbeiters, zum Beispiel Krankheitsfall oder Urlaub 
-automatisch Ersatzmitarbeiter vorschlagen und sich flexibel an Änderungen anpassen. 
-
-````
+---
+**Auftraggeber:** HTL Pinkafeld | **Betreuer:** Markus Luif

@@ -1,0 +1,13 @@
+{
+  "name": "personal-staff-planner-root",
+  "version": "1.0.0",
+  "description": "Root management for Frontend and Backend",
+  "scripts": {
+    "install-all": "npm install && npm install --prefix backend && npm install --prefix Frontend",
+    "dev": "concurrently \"npm run dev --prefix Frontend\" \"npm run devStart --prefix backend\"",
+    "start": "concurrently \"npm run dev --prefix Frontend\" \"npm run start --prefix backend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
