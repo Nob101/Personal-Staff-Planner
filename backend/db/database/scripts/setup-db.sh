@@ -1,4 +1,4 @@
-# 
+# Aktuell nicht mehr nötig (Docker) bleibt aber zur Einsicht bestehen
 #--Lukas
 # [alternativer installationsweg zu node.js]
 
