@@ -40,6 +40,10 @@ const pool = new Pool({
       port: process.env.DB_PORT || 5432,
   });
 
+
+
+
+
 /**
  * Initialisiert das Datenbank-Schema und führt notwendiges Seeding durch.
  */
@@ -167,9 +171,11 @@ async function initDatabase() {
     //  Externe SQL-Logik (Functions & Triggers via SoC)
     const functionsDir = path.resolve(__dirname, '../functions');
     const triggersDir = path.resolve(__dirname, '../triggers');
-    
+    const indexesDir = path.resolve(__dirname, '../indexes');
+
+
     console.log("Lade externe SQL-Skripte (Functions/Triggers)...");
-    await loadSqlFiles(client, [functionsDir, triggersDir]);
+    await loadSqlFiles(client, [functionsDir, triggersDir, indexesDir]);
 
 
 
@@ -193,3 +199,5 @@ module.exports = {
   query: (text, params) => pool.query(text, params),
   initDatabase,
 };
+
+
