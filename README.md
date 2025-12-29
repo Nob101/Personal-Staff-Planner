@@ -68,12 +68,18 @@ Das System nutzt ein relationales PostgreSQL-Datenbanksystem. Zur Sicherstellung
 ### Frontend-Bereich
 - **Oliver Bauer**: Evaluierung der Frontend-Technologien & Implementierung der Kern-Anwendung.
 - **Dumitru Jelezneac**: Design der Benutzeroberfläche & Implementierung der GUI-Komponenten.
+  
+
+---
+
 **Lukas: Notizbereich Datenbank-Struktur**
 
 > **Info!**
 > __Integrität:__ ON DELETE CASCADE stellt sicher, dass alle Mitarbeiterdaten automatisch gelöscht werden.
-> __Springer-Logik:__ Das Design erlaubt mehrere Schichten pro Tag/Mitarbeiter in unterschiedlichen Filialen. (<i>Performance via Counter</i>)
+> __Springer-Logik:__ Das Design verzichtet bewusst auf einen `UNIQUE`-Constraint über (Datum, Mitarbeiter). Dies ermöglicht es, Mitarbeiter am selben Tag in mehreren Filialen einzuteilen (z.B. Vormittag Filiale A, Nachmittag Filiale B) oder mehrere Schicht-Typen zu hinterlegen.
 > __Dienstplanung:__ Zentrale Tabelle für Schichtzuweisungen; ein Unique-Constraint verhindert doppelte Einträge und sichert die logische Korrektheit der Tagesplanung.
+> __Stunden-Berechnung:__ Die Spalte `wochenstunden_vertrag` ist das Führungsfeld. Das `stunden_konto` dient als monatlicher 'Snapshot' (Soll/Ist/Differenz), um die Performance-historie zu sichern, ohne bei jeder Abfrage das gesamte Jahr neu berechnen zu müssen.
+> __Arbeits-Validierung:__ Da die Datenbank Mehrfacheinträge erlaubt, liegt die logische Prüfung (z.B. "Hat der Mitarbeiter an Tag X insgesamt zu viele Stunden?") in der Validierungsschicht des Backends.
 
 ---
 
@@ -105,40 +111,25 @@ Spalten:
     telefon           string
     email             string
     farbe             string (Default: '#3498db')
-    algorithmid       Integer
+
 
 Tabelle arbeitstyp      (Wird mit einem Insert direkt befüllt)
 Spalten:
     akurzl (PK)       string
     text              string  
 
-Tabelle algorithmen
-Spalten:
-    id (PK)           Integer
-    name              string
-    stunden           Integer (Default: 9)
-
-Tabelle algorithmus_muster
-Spalten:
-    id (PK)           Integer
-    algorithmus_id    Integer (FK -> algorithmen)
-    reihenfolge       Integer
-    akurzl            string (FK -> arbeitstyp)
 
 
 
 Tabelle mitarbeiter
 Spalten:
-    mnr (PK)          Integer
-    vorname           string
-    nachname          string
-    fkurzl            string (FK -> filiale)
-    akurzl            string (FK -> arbeitstyp)
-    counter           Integer (Default: 0)
-    hauptfiliale_fnr  Integer (FK -> filiale)
-    stunden_soll      Integer (Default: 160)
-    springer          Boolean (Default: FALSE)
-    algorithmus_id    Integer (FK -> algorithmen)
+    mnr (PK)                    Integer
+    vorname                     string
+    nachname                    string
+    hauptfiliale_fnr            integer (FK -> filiale)
+    wochenstunden_vertrag       Integer (NOT NULL)
+    springer                    Boolean (Default: FALSE)
+
 
 Tabelle mitarbeiter_kontakt
 Spalten:
@@ -163,11 +154,20 @@ Spalten:
     email_adresse     string  -- adresse 1, adresse 2, etc.
     (PK: mnr, email_typ)
 
-Tabelle mitarbeiter_arbeitet_in_Filiale (N:M)
+
+
+Tabelle stunden_konto
 Spalten:
-    mnr               Integer (FK -> mitarbeiter)
-    fnr               Integer (FK -> filiale)
-    (PK: mnr, fnr)
+    id (PK)                 Integer
+    mnr                     Integer (FK -> mitarbeiter)
+    jahr                    Integer
+    monat                   Integer
+    soll_stunden_monat      integer
+    ist_stunden_monat       Integer 
+    differenz               Integer
+    (Unique mnr, jahr, monat)
+
+
 
 Tabelle dienstplaene
 Spalten:
@@ -178,9 +178,18 @@ Spalten:
     mnr               Integer (FK -> mitarbeiter)
     fnr               Integer (FK -> filiale)
     schicht_typ       string (FK -> arbeitstyp)
-    anmerkung         string
+    anmerkung         String
     erstellt_am       Timestamp (Default: now())
-    (Unique: datum, mnr, fnr, schicht_typ)
+
+
+Tabelle user
+    id (PK)         Integer
+    username        String (UNIQUE)
+    password_hash   String
+    role            String (Default 'user')
+
+````
+
 
 ---
 
@@ -216,4 +225,4 @@ Um die laufenden Server und Prozesse zu beenden, nutzen Sie im Terminal die Tast
 `Strg + C` (Windows/Linux) bzw. `Cmd + C` (macOS).
 
 ---
-**Auftraggeber:** HTL Pinkafeld | **Betreuer:** Markus Luif
+**Auftraggeber:** HTL Pinkafeld | **Auftraggeber:** Markus Luif
