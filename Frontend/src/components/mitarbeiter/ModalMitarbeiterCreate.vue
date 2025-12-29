@@ -2,6 +2,7 @@
 
 <script setup>
 import BaseModal from '@/components/global/BaseModal.vue'
+import Multiselect from 'vue-multiselect'
 import { ref, watch, defineProps, computed } from 'vue'
 
 
@@ -35,12 +36,18 @@ const anmerkungen = ref('')
 
 // Nebenfilialen automatisch anpassen
 watch(hauptfiliale, (newVal) => {
-  nebenfilialen.value = nebenfilialen.value.filter(id => id !== newVal)
+  if (!newVal) return
+
+  nebenfilialen.value = nebenfilialen.value.filter(
+    f => f.id !== newVal.id
+  )
 })
 
 // Filter für Nebenfilialen
 const nebenfilialenOptionen = computed(() =>
-  props.filialen.filter(f => f.id !== hauptfiliale.value)
+  props.filialen.filter(
+    f => !hauptfiliale.value || f.id !== hauptfiliale.value.id
+  )
 )
 
 // Submit
@@ -161,17 +168,26 @@ function handleSubmit() {
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label>Hauptfiliale:</label>
-            <select v-model="hauptfiliale" required class="w-full border rounded px-2 py-1">
-              <option disabled value="">Hauptfiliale wählen...</option>
-              <option v-for="filiale in filialen" :key="filiale.id" :value="filiale.id">{{ filiale.name }}</option>
-            </select>
+            <Multiselect
+              v-model="hauptfiliale"
+              :options="props.filialen"
+              label="name"
+              track-by="id"
+              placeholder="Hauptfiliale wählen"
+              :clearable="false"
+            />
           </div>
           <div>
             <label>Nebenfilialen:</label>
-            <select v-model="nebenfilialen" multiple class="w-full border rounded px-2 py-1">
-              <option disabled value="">Nebenfiliale(n) wählen...</option>
-              <option v-for="filiale in nebenfilialenOptionen" :key="filiale.id" :value="filiale.id">{{ filiale.name }}</option>
-            </select>
+            <Multiselect
+              v-model="nebenfilialen"
+              :options="nebenfilialenOptionen"
+              label="name"
+              track-by="id"
+              placeholder="Nebenfilialen wählen"
+              :multiple="true"
+              :close-on-select="false"
+            />
           </div>
         </div>
 
