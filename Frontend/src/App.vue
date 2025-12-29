@@ -5,16 +5,14 @@
 -->
 
 <script setup>
-// Funktionalitäten und Komponenten importieren
+// Import von Navbar. Die Views werden vom Router geregelt mit router-view
 import Navbar from '@/components/global/Navbar.vue';
-import MitarbeiterView from '@/views/MitarbeiterView.vue';
-import LoginView from '@/views/LoginView.vue';
+
 </script>
 
 <template>
-  <!-- <LoginView /> -->
    <Navbar />
-   <MitarbeiterView />
+   <router-view />
 </template>
 
 <style scoped> 

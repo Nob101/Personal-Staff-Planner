@@ -1,5 +1,5 @@
 <script setup>
-    import { ref } from 'vue'
+    import { useRoute } from "vue-router"
     import logo from '@/assets/icons/PSP_Logo_Transparent.png';
     import dienstplaene_icon from '@/assets/icons/dienstplaene_icon_solid.svg'
     import mitarbeiter_icon from '@/assets/icons/mitarbeiter_icon_solid.svg'
@@ -7,80 +7,84 @@
     import einstellungen_icon from '@/assets/icons/einstellungen_icon_solid.svg'
 
     //!! To-Do: Link von offener Page soll gehighlighted werden, derzeit nicht der Fall
-    const activeLink = ref('')
+    // Zugriff auf aktuelle Route
+    const route = useRoute()
 </script>
 
 <template>
-    <nav class="navbar">
-        <div class="navbar-logo">
-            <img v-bind:src="logo" alt="Personal Staff Planner Logo" class="logo-icon" />
-        </div>
+  <nav class="navbar">
+    <!-- Logo -->
+    <div class="navbar-logo">
+      <img :src="logo" alt="PSP Logo" class="icon" />
+    </div>
+
+    <!-- Navigation Links -->
     <ul class="navbar-links">
       <li>
-        <a href="Dienstpläne" v-bind:class="{ active: activeLink === 'Dienstpläne' }" @click="activeLink = 'Dienstpläne'">
-          <img v-bind:src="dienstplaene_icon" alt="dienstplaene icon" class="logo-icon" />
-          Dienstpläne
-        </a>
+        <router-link :to="{ name: 'dienstplaene' }" :class="{ active: route.name === 'dienstplaene' }">
+          <img :src="dienstplaene_icon" class="icon" /> Dienstpläne
+        </router-link>
       </li>
       <li>
-        <a href="Mitarbeiter" v-bind:class="{ active: activeLink === 'Mitarbeiter' }" @click="activeLink = 'Mitarbeiter'">
-          <img v-bind:src="mitarbeiter_icon" alt="mitarbeiter icon" class="logo-icon" />
-          Mitarbeiter
-        </a>
+        <router-link :to="{ name: 'mitarbeiter' }" :class="{ active: route.name === 'mitarbeiter' }">
+          <img :src="mitarbeiter_icon" class="icon" /> Mitarbeiter
+        </router-link>
       </li>
       <li>
-        <a href="Filialen" v-bind:class="{ active: activeLink === 'Filialen' }" @click="activeLink = 'Filialen'">
-          <img v-bind:src="filialen_icon" alt="filialen icon" class="logo-icon" />
-          Filialen
-        </a>
+        <router-link :to="{ name: 'filialen' }" :class="{ active: route.name === 'filialen' }">
+          <img :src="filialen_icon" class="icon" /> Filialen
+        </router-link>
       </li>
       <li>
-        <a href="Einstellungen" v-bind:class="{ active: activeLink === 'Einstellungen' }" @click="activeLink = 'Einstellungen'">
-          <img v-bind:src="einstellungen_icon" alt="einstellungen icon" class="logo-icon" />
-          Einstellungen
-        </a>
+        <router-link :to="{ name: 'einstellungen' }" :class="{ active: route.name === 'einstellungen' }">
+          <img :src="einstellungen_icon" class="icon" /> Einstellungen
+        </router-link>
       </li>
     </ul>
-    </nav>
+  </nav>
 </template>
+
 
 <style scoped>
 .navbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
-  background-color: #f8f9fa;
-  border-bottom: 2px solid #ccc;
+  height: 60px; 
+  padding: 0 20px;
+  background-color: #f5f5f5;
 }
+
+.navbar-logo {
+  margin-right: 40px; 
+}
+
 .navbar-links {
   display: flex;
   flex: 1;
   justify-content: space-between;
   list-style: none;
   margin: 0;
-  margin-right: 50px;
-  padding: 200;
+  padding: 0;
 }
-.navbar-links li {
-  display: flex;
-  padding: 10px 20px;
-  align-items: center;
-}
+
 .navbar-links li a {
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
+  display: inline-flex;   
+  align-items: center;    
+  padding: 5px 10px;     
+  border-radius: 4px;     
+  text-decoration: none;  
+  color: inherit;         
 }
-.navbar-links li a.active {
-  background-color: #007bff;
-  color: white;
-  border-radius: 6px;
+
+.router-link-active,
+.active {
+  background-color: #ddd;
 }
-.logo-icon {
-  width: 40px;
-  height: auto;
+
+.icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-right: 8px; 
 }
 </style>
