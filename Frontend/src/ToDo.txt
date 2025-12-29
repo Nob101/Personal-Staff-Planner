@@ -20,12 +20,10 @@ offene Implementierungen:
     -> Mitarbeiter in Filialen gruppieren? z.B.: Filiale A Container mit allen Mitarbeitern die diese als Hauptfiliale haben, usw.
 
 ->ModalMitarbeiterCreate
-    -> Dropdowns für Filialen fixen (scheint ein Problem mit select multiple zu sein): Dropdown soll nicht immer sichtbar sein und mehrere Nebenfilialen sollen gehen
-        - https://vue-multiselect.js.org/ ?
+    -> Dropdowns für Filialen Styling?
 
 ->ModalMitarbeiterEdit
-    -> Dropdowns für Filialen fixen (scheint ein Problem mit select multiple zu sein): Dropdown soll nicht immer sichtbar sein und mehrere Nebenfilialen sollen gehen
-        - https://vue-multiselect.js.org/ ?
+    -> Dropdowns für Filialen Styling?
     -> Formatierung Geburtsdatum
     -> Geburtsdatum übernimmt nicht das bereits eingetragene
 

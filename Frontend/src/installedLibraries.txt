@@ -1,0 +1,9 @@
+Installierte Bibliotheken:
+
+Vue.js
+-> Vue 3 + Vite
+-> Vue Router       (https://router.vuejs.org/guide/)
+-> Vue Multiselect  (https://vue-multiselect.js.org/#sub-getting-started)
+
+CSS/Styling
+-> Tailwind CSS
