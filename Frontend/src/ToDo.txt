@@ -20,10 +20,10 @@ offene Implementierungen:
     -> Mitarbeiter in Filialen gruppieren? z.B.: Filiale A Container mit allen Mitarbeitern die diese als Hauptfiliale haben, usw.
 
 ->ModalMitarbeiterCreate
-    -> Dropdowns für Filialen Styling?
+    -> Optional: Dropdowns für Filialen Styling?
 
 ->ModalMitarbeiterEdit
-    -> Dropdowns für Filialen Styling?
+    -> Optional: Dropdowns für Filialen Styling?
     -> Formatierung Geburtsdatum
     -> Geburtsdatum übernimmt nicht das bereits eingetragene
 
