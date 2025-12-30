@@ -47,11 +47,17 @@
 
 <style scoped>
 .navbar {
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
   display: flex;
   align-items: center;
   height: 60px; 
   padding: 0 20px;
   background-color: #f5f5f5;
+
 }
 
 .navbar-logo {
