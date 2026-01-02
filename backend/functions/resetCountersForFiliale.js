@@ -12,7 +12,7 @@ const pool = require('../db/pool');
  */
 async function resetCountersForFiliale(filialeId) {
   if (!filialeId) return;
-  await pool.query('UPDATE mitarbeiter SET counter = NULL WHERE hauptfilialeid = $1', [filialeId]);
+  await pool.query('UPDATE mitarbeiter SET counter = NULL WHERE hauptfiliale_fnr = $1', [filialeId]);
 }
 
 module.exports = { resetCountersForFiliale };

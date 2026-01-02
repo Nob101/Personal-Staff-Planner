@@ -1,7 +1,9 @@
 // functions/setCounter.js
 const mitarbeiterRepo = require('../repositories/mitarbeiter.repo.pg');
 const filialenRepo = require('../repositories/filialen.repo.pg');
-const algorithmenRepo = require('../repositories/algorithmen.repo.pg');
+// backend/services/dienstplanGenerator.js
+const { getAlgorithmus } = require("./algorithmen");
+
 
 /**
  * Initialisiert oder aktualisiert den "counter" für alle Mitarbeiter
@@ -10,27 +12,27 @@ const algorithmenRepo = require('../repositories/algorithmen.repo.pg');
  * Der Counter steuert, an welcher Stelle im Schicht-Pattern (A/E/F)
  * der Mitarbeiter beim Generieren startet.
  */
-async function setCounterForMitarbeiter(filialeId) {
-  const alleMitarbeiter = await mitarbeiterRepo.getAll();
-  const mitarbeiter = alleMitarbeiter.filter(m => m.hauptfilialeid === filialeId);
+async function setCounterForMitarbeiter(fnr) {
+  fnr = Number(fnr);
+  const alleMitarbeiter = await mitarbeiterRepo.getAllBase();
+  const mitarbeiter = alleMitarbeiter.filter(m => Number(m.hauptfiliale_fnr) === fnr);
   if (mitarbeiter.length === 0) return;
 
-  const filiale = await filialenRepo.getById(filialeId);
+  const filiale = await filialenRepo.getById(fnr);
   if (!filiale) throw new Error('Filiale nicht gefunden');
 
- const algorithm = await algorithmenRepo.getById(filiale.algorithmid);
+ const algorithm = getAlgorithmus(filiale.algorithmid);
   if (!algorithm) throw new Error('Algorithmus nicht gefunden');
 
-  const pattern = algorithm.algorythmus || algorithm.pattern;
-  if (!Array.isArray(pattern) || pattern.length === 0) return;
 
-  const patternLen = pattern.length;
+
+  const patternLen = algorithm.length;
   const step = Math.floor(patternLen / 3);
 
   // Bereits genutzte Counter-Werte ermitteln
   const usedCounters = mitarbeiter
     .filter(m => m.counter !== null && m.counter !== undefined)
-    .map(m => m.counter);
+    .map(m => Number(m.counter));
 
   let nextCounter;
   if (usedCounters.length > 0) {
@@ -45,7 +47,7 @@ async function setCounterForMitarbeiter(filialeId) {
     if (m.counter === null || m.counter === undefined) {
       m.counter = nextCounter;
       nextCounter = (nextCounter + step) % patternLen;
-      await mitarbeiterRepo.updateCounter(m.id, m.counter);
+      await mitarbeiterRepo.updateCounter(m.mnr, m.counter);
     }
   }
 }

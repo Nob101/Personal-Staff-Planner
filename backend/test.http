@@ -136,3 +136,4 @@ Content-Type: application/json
 
 ### DELETE Dienstplan Monat löschen
 DELETE http://localhost:3000/api/dienstplan/2025/5
+

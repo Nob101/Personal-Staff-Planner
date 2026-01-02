@@ -1,4 +1,86 @@
-// ============================================================================
+const { getAlgorithmus } = require("./algorithmen");
+const { getAllDatesOfMonth, getMonthlyHours } = require('./dateUtils');
+const { savePlan } = require('./savePlan');
+const filialenRepo    = require('../repositories/filialen.repo.pg');
+const mitarbeiterRepo = require('../repositories/mitarbeiter.repo.pg');
+
+
+
+// Faktor aus arbeitnehmertyp (20 / 30 / 40)
+function getFaktorFuerMitarbeiter(m) {
+  const typNum = Number(m.arbeitnehmertyp ?? 40) || 40; 
+  return typNum / 40;
+}
+
+
+async function generateDienstplan(year, month) {
+  const jahr  = Number(year);
+  const monat = Number(month);
+  const stundenProDienst = Number(9);
+  const monatsstunden = getMonthlyHours(jahr, monat);
+  const dates             = getAllDatesOfMonth(jahr, monat);
+
+  const LIMIT_PUFFER_STUNDEN = 20;
+
+  const alleMitarbeiter = await mitarbeiterRepo.getAllBase();
+  const alleFilialen    = await filialenRepo.getAll();
+
+  let dienste = []
+
+  for (const filiale of alleFilialen) {
+    const algorithm = await getAlgorithmus(filiale.algorithmid);
+    
+
+    for (const m of alleMitarbeiter) {
+      if (Number(m.hauptfiliale_fnr) === Number(filiale.fnr)) {
+        
+        const faktor       = getFaktorFuerMitarbeiter(m);
+        const zielStunden  = monatsstunden * faktor;
+        const limitStunden = zielStunden + LIMIT_PUFFER_STUNDEN;
+        let bereits = 0;
+        let counter = Number(m.counter);
+          if (!Number.isFinite(counter) || counter < 0) counter = 0;
+          for (const date of dates) {
+            let schicht_typ = algorithm[(counter) % algorithm.length];
+            dienste.push({
+              jahr,
+              monat,
+              datum: date,
+              mnr: m.mnr,
+              fnr: filiale.fnr,
+              schicht_typ: schicht_typ
+            });
+          bereits += schicht_typ !== 'F' ? stundenProDienst : 0;
+          counter = (counter + 1) % algorithm.length;
+         
+        }
+
+
+      }
+      await mitarbeiterRepo.updateCounter(m.mnr, counter);
+    }
+    await savePlan(jahr, monat, dienste);
+    }
+    
+    return { dienste };
+}
+  
+
+
+module.exports = { generateDienstplan };  
+
+
+
+
+
+
+
+
+
+
+
+
+/* // ============================================================================
 // 🧩 dienstplanGenerator.js (DB-Version, Minimal-Schema für Einsätze)
 // ----------------------------------------------------------------------------
 // Features:
@@ -14,8 +96,11 @@
 // ============================================================================
 
 const filialenRepo    = require('../repositories/filialen.repo.pg');
-const algorithmenRepo = require('../repositories/algorithmen.repo.pg');
+//const algorithmenRepo = require('../repositories/algorithmen.repo.pg');
 const mitarbeiterRepo = require('../repositories/mitarbeiter.repo.pg');
+const { getAlgorithmus } = require("./algorithmen");
+
+
 
 const { getAllDatesOfMonth, getMonthlyHours } = require('./dateUtils');
 const { setCounterForMitarbeiter }           = require('./setCounter');
@@ -59,7 +144,7 @@ async function generateDienstplan(year, month) {
   const dates             = getAllDatesOfMonth(jahr, monat);
 
   const filialen    = await filialenRepo.getAll();
-  const algorithmen = await algorithmenRepo.getAll();
+  //const algorithmen = await algorithmenRepo.getAll();
 
   if (!Array.isArray(filialen) || filialen.length === 0) {
     return {
@@ -346,6 +431,9 @@ async function generateDienstplan(year, month) {
     monatsstunden,
     filialen: resultFilialen
   };
-}
+  
+} 
+module.exports = { generateDienstplan };  
+*/
 
-module.exports = { generateDienstplan };
+
