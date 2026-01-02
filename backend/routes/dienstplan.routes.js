@@ -1,4 +1,56 @@
-// backend/routes/dienstplan.routes.js
+const express = require('express');
+const router = express.Router();
+
+const dienstplanRepo   = require('../repositories/dienstplan.repo.pg');
+const { generateDienstplan } = require('../functions/dienstplanGenerator');
+const mitarbeiterRepo  = require('../repositories/mitarbeiter.repo.pg');
+const {savePlan} = require('../functions/savePlan');
+
+
+
+router.post('/generate', async (req, res) => {
+  const { jahr, monat } = req.body;
+
+  if (!jahr || !monat) {
+    return res.status(400).json({ error: 'jahr und monat Pflicht.' });
+  }
+
+  try {
+    const j = Number(jahr);
+    const m = Number(monat);
+
+    const plan = await generateDienstplan(j, m);
+    await savePlan(j, m, plan);
+
+
+    
+
+    res.json(plan); 
+  } catch (err) {
+    console.error('POST /dienstplan/generate', err);
+    res.status(500).json({ error: 'Fehler beim Generieren.' });
+  }
+});
+
+module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* // backend/routes/dienstplan.routes.js
 // ============================================================================
 // 📅 Dienstplan-Routen (DB-Version,
 // ============================================================================
@@ -452,3 +504,4 @@ router.get('/check-ersatz', async (req, res) => {
 
 
 module.exports = router;
+ */

@@ -1,4 +1,45 @@
-/*
+const pool = require('../db/pool');
+
+
+
+
+async function save(jahr,monat,datum,mnr,fnr,schicht_typ) {
+  await pool.query(
+    `
+    INSERT INTO dienstplaene (jahr, monat, datum, mnr, fnr, schicht_typ)
+    VALUES ($1, $2, $3, $4, $5, $6)
+    `,
+    [jahr, monat, datum, mnr, fnr, schicht_typ]
+  );
+  return true;  
+}
+
+
+
+
+
+
+module.exports = { save };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 
 Spalte	                            Typ	                            Beschreibung
 
 id	                                SERIAL                          PRIMARY KEY	
@@ -7,7 +48,7 @@ monat	                              INTEGER	                        z. B. 11
 plan_data	                          JSONB	                          enthält den gesamten generierten Plan
 created_at	                        TIMESTAMP DEFAULT now()	        Zeitstempel der Erstellung
 
-*/
+
 
 // Wichtig //
 //ALTER TABLE dienstplaene ADD CONSTRAINT unique_jahr_monat UNIQUE (jahr, monat);
@@ -77,3 +118,4 @@ async function getAll() {
 }
 
 module.exports = { getByDate, save, updatePlan, remove, getAll };
+ */
