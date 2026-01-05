@@ -2,6 +2,7 @@
 
 <script setup>
 //Komponenten/Composables/Icons/Modale/etc. importieren
+import Navbar from '@/components/global/Navbar.vue'
 import { useMitarbeiter } from '@/composables/useMitarbeiter'
 import MitarbeiterActionBar from '@/components/mitarbeiter/MitarbeiterActionBar.vue'
 import MitarbeiterList from '@/components/mitarbeiter/MitarbeiterList.vue'
@@ -28,6 +29,7 @@ const {
 </script>
 
 <template>
+  <Navbar />
   <div class="mitarbeiter-view container mx-auto p-4">
     <!-- ActionBar -->
     <MitarbeiterActionBar @mitarbeiterCreate="showModalMitarbeiterCreate = true" />

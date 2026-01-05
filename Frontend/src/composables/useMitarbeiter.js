@@ -1,10 +1,10 @@
-//useMitarbeiter.js Composable
-//Hier ist gesamte Script-Logik für Mitarbeiter. MitarbeiterView  enthält nur noch mehr Template + Event-Handler-Calls
-//Alle Refs, Modale, Funktionen (Create, Edit, Delete, Daten laden) kommen
-//JSON Server Requests laufen über Service
+// useMitarbeiter.js Composable
+// Hier ist gesamte Script-Logik für Mitarbeiter. MitarbeiterView enthält nur noch Template + Event-Handler-Calls
+// Alle Refs, Modale, Funktionen (Create, Edit, Delete, Daten laden) kommen
+// JSON Server Requests laufen über Service
 
-//ref -> reaktiv, onMounted -> wird als erstes gemacht wenn ein Vue-File/Komponent geladen wird
-//getMitarbeiter und GetFilialen holt sich die Daten vom Backend übers Service
+// ref -> reaktiv, onMounted -> wird als erstes gemacht, wenn ein Vue-File/Komponent geladen wird
+// getMitarbeiter und getFilialen holt sich die Daten vom Backend übers Service
 import { ref, onMounted } from 'vue'
 import * as mitarbeiterService from "@/services/mitarbeiterService"
 import * as filialenService from "@/services/filialenService"
@@ -32,26 +32,26 @@ export function useMitarbeiter() {
       console.error("Fehler beim Laden der Daten:", err)
     }
   }
-  //onMounted -> ladet die Daten wenn ein Vue-File/Komponent "geöffnet" wird
+  // onMounted -> ladet die Daten wenn ein Vue-File/Komponent "geöffnet" wird
   onMounted(loadData)
 
   // --- CRUD Funktionen ---
   async function handleMitarbeiterCreate(neu) {
     try {
       const res = await mitarbeiterService.createMitarbeiter(neu)
-      // Antwort vom Backend (inkl. ID) direkt in das Array pushen?? Geht das so?
       mitarbeiter.value.push(res.data)
     } catch (err) {
       console.error("Fehler beim Erstellen:", err)
     }
   }
 
-  //Öffnet Ändern Modal wenn bei einem Mitarbeiter auf "Bearbeiten" geklickt wird
-  function handleEdit(mitarbeiter) {
-    selectedMitarbeiter.value = mitarbeiter
+  // Öffnet Ändern Modal wenn bei einem Mitarbeiter auf "Bearbeiten" geklickt wird
+  function handleEdit(m) {
+    selectedMitarbeiter.value = m
     showModalMitarbeiterEdit.value = true
   }
-  //Überschreibt bestehende Mitarbeiterdaten mit den geänderten Daten
+
+  // Überschreibt bestehende Mitarbeiterdaten mit den geänderten Daten
   async function handleMitarbeiterEdit(editedData) {
     try {
       const res = await mitarbeiterService.updateMitarbeiter(editedData)
@@ -63,12 +63,14 @@ export function useMitarbeiter() {
       console.error("Fehler beim Bearbeiten:", err)
     }
   }
-  //Öffnet das Bestätigungsmodal für den ausgewählten Mitarbeiter
-  function handleDelete(mitarbeiter) {
-    selectedMitarbeiterToDelete.value = mitarbeiter
+
+  // Öffnet das Bestätigungsmodal für den ausgewählten Mitarbeiter
+  function handleDelete(m) {
+    selectedMitarbeiterToDelete.value = m
     showDeleteModal.value = true
   }
-  //löscht den ausgewählten Mitarbeiter nach Bestätigung
+
+  // Löscht den ausgewählten Mitarbeiter nach Bestätigung
   async function confirmDelete() {
     if (!selectedMitarbeiterToDelete.value) return
 
@@ -81,10 +83,22 @@ export function useMitarbeiter() {
       console.error("Fehler beim Löschen:", err)
     }
   }
-  //schließt das Berstätigungs-Modal wenn Abbrechen/ESC gedrückt wird
+
+  // Schließt das Bestätigungs-Modal wenn Abbrechen/ESC gedrückt wird
   function cancelDelete() {
     selectedMitarbeiterToDelete.value = null
     showDeleteModal.value = false
+  }
+
+  // --- Zusätzliche Funktion: Verfügbare Mitarbeiter nach Filiale & Datum abrufen || unnötig?---
+  async function getVerfuegbareMitarbeiter(filialeId, datum) {
+    try {
+      const res = await mitarbeiterService.getVerfuegbareMitarbeiter(filialeId, datum)
+      return res.data
+    } catch (err) {
+      console.error("Fehler beim Abrufen verfügbarer Mitarbeiter:", err)
+      return []
+    }
   }
 
   return {
@@ -100,6 +114,7 @@ export function useMitarbeiter() {
     handleMitarbeiterEdit,
     handleDelete,
     confirmDelete,
-    cancelDelete
+    cancelDelete,
+    getVerfuegbareMitarbeiter
   }
 }
