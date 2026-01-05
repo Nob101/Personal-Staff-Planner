@@ -28,25 +28,21 @@ ZENTRALE ÄNDERUNGEN:
 CREATE TABLE IF NOT EXISTS filiale (
     fnr SERIAL PRIMARY KEY,
     filialname VARCHAR(50),
-    fkurzl VARCHAR(15) UNIQUE,
+
     strasse VARCHAR(50),
     plz VARCHAR(10),
     ort VARCHAR(50),
     land VARCHAR(55) DEFAULT 'Österreich',
     telefon VARCHAR(50),
     email VARCHAR(50),
-    farbe VARCHAR(20) DEFAULT '#3498db'
+    farbe VARCHAR(20) DEFAULT '#3498db',
+    algorithmid INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS arbeitstyp (
     akurzl VARCHAR(6) PRIMARY KEY,
     text VARCHAR(55) NOT NULL
 );
-
-/* Tabellen 'algorithmen' und 'algorithmus_muster' => entfernt!!!! 
-Als Arrays direkt im Backend-Code verwaltet werden!!!!!!!
-*/
-
 
 
 
@@ -64,7 +60,7 @@ CREATE TABLE IF NOT EXISTS mitarbeiter (
 
     -- Neu: Flexibles Stundenmodell statt fixen 160h
     counter INTEGER DEFAULT 0,
-    wochenstunden_vertrag DECIMAL(5,2) NOT NULL,
+   
     arbeitnehmertyp INTEGER DEFAULT 40,
     springeralgorithmid INTEGER,
     springer BOOLEAN DEFAULT FALSE
@@ -72,7 +68,7 @@ CREATE TABLE IF NOT EXISTS mitarbeiter (
 
 CREATE TABLE IF NOT EXISTS mitarbeiter_kontakt (
     knr SERIAL PRIMARY KEY,
-    mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
+    mnr INTEGER NOT NULL UNIQUE REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
     strasse VARCHAR(50),
     plz VARCHAR(10),
     ort VARCHAR(50),
@@ -96,6 +92,11 @@ CREATE TABLE IF NOT EXISTS mitarbeiter_email (
 );
 
 
+CREATE TABLE IF NOT EXISTS mitarbeiter_arbeitet_in_filiale (
+  mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
+  fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE CASCADE,
+  PRIMARY KEY (mnr, fnr)
+);
 
 /*
 ###############################
@@ -110,7 +111,7 @@ CREATE TABLE IF NOT EXISTS stunden_konto (
     monat INTEGER NOT NULL,
     soll_stunden_monat DECIMAL(10,2),                   --< Dynamisch berechnet vom Backend
     ist_stunden_monat DECIMAL(10,2),
-    differenz DECIMAL(10,2),
+    differenz DECIMAL(10,2),                            --< Wird im Backend berechnet und hier gespeichert
     UNIQUE(mnr, jahr, monat)
 );
 
@@ -133,7 +134,9 @@ CREATE TABLE IF NOT EXISTS dienstplaene (
     schicht_typ VARCHAR(6) REFERENCES arbeitstyp(akurzl),
     anmerkung VARCHAR(250),
 
-    erstellt_am TIMESTAMP DEFAULT now()
+    erstellt_am TIMESTAMP DEFAULT now(),
+    aktualisiert_am TIMESTAMP DEFAULT now(),   --NEU!
+    CONSTRAINT dienstplaene_unique_mnr_pro_tag UNIQUE (datum, mnr, fnr)
 
 );
 
@@ -150,3 +153,21 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash TEXT NOT NULL,
     role VARCHAR(20) DEFAULT 'user'
 );
+
+
+/*
+###############################
+-- Zusätzliche Regeln (Datenintegrität)
+################################
+*/
+
+-- AlTER TABLE mitarbeiter_kontakt
+-- ADD CONSTRAINT IF NOT EXISTS uq_mitarbeiter_kontakt_mnr UNIQUE (mnr);  --Stellt Sicher dass pro Mitarbeiter-ID NUR ein Kontaktdatensatz existiert
+
+-- ALTER TABLE dienstplaene
+-- ADD CONSTRAINT IF NOT EXISTS dienstplaene_unique_mnr_pro_tag UNIQUE (datum, mnr, fnr); 
+
+-- Dieser Constraint wäre eine technische Sperre die verhindert das Springer am selben Tag in verschiedenen Filialen Arbieten dürfen
+
+-- ALTER TABLE dienstplaene
+-- ADD CONSTRAINT dienstplaene_unique_mnr_pro_tag UNIQUE (datum, mnr); 
