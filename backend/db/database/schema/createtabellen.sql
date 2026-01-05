@@ -19,6 +19,8 @@ ZENTRALE ÄNDERUNGEN:
 */
 
 
+
+
 /*
 ###############################
 -- STAMMDATEN 
@@ -39,6 +41,8 @@ CREATE TABLE IF NOT EXISTS filiale (
     algorithmid INTEGER
 );
 
+
+
 CREATE TABLE IF NOT EXISTS arbeitstyp (
     akurzl VARCHAR(6) PRIMARY KEY,
     text VARCHAR(55) NOT NULL
@@ -56,12 +60,13 @@ CREATE TABLE IF NOT EXISTS mitarbeiter (
     mnr SERIAL PRIMARY KEY,
     vorname VARCHAR(35) NOT NULL,
     nachname VARCHAR(45) NOT NULL,
+
     hauptfiliale_fnr INTEGER REFERENCES filiale(fnr) ON DELETE SET NULL,        --Damit MA nicht gelöscht wird, wenn Filiale entfernt wird -> neuer wert NULL
 
     -- Neu: Flexibles Stundenmodell statt fixen 160h
     counter INTEGER DEFAULT 0,
-   
-    arbeitnehmertyp INTEGER DEFAULT 40,
+
+    arbeitsstunden INTEGER DEFAULT 40,
     springeralgorithmid INTEGER,
     springer BOOLEAN DEFAULT FALSE
 );
@@ -84,6 +89,7 @@ CREATE TABLE IF NOT EXISTS mitarbeiter_telefon (
     PRIMARY KEY (mnr, telefon_typ)
 );
 
+
 CREATE TABLE IF NOT EXISTS mitarbeiter_email (
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
     email_typ VARCHAR(50) NOT NULL,
@@ -92,11 +98,16 @@ CREATE TABLE IF NOT EXISTS mitarbeiter_email (
 );
 
 
+
+
 CREATE TABLE IF NOT EXISTS mitarbeiter_arbeitet_in_filiale (
   mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
   fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE CASCADE,
   PRIMARY KEY (mnr, fnr)
 );
+
+
+
 
 /*
 ###############################
@@ -154,20 +165,3 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(20) DEFAULT 'user'
 );
 
-
-/*
-###############################
--- Zusätzliche Regeln (Datenintegrität)
-################################
-*/
-
--- AlTER TABLE mitarbeiter_kontakt
--- ADD CONSTRAINT IF NOT EXISTS uq_mitarbeiter_kontakt_mnr UNIQUE (mnr);  --Stellt Sicher dass pro Mitarbeiter-ID NUR ein Kontaktdatensatz existiert
-
--- ALTER TABLE dienstplaene
--- ADD CONSTRAINT IF NOT EXISTS dienstplaene_unique_mnr_pro_tag UNIQUE (datum, mnr, fnr); 
-
--- Dieser Constraint wäre eine technische Sperre die verhindert das Springer am selben Tag in verschiedenen Filialen Arbieten dürfen
-
--- ALTER TABLE dienstplaene
--- ADD CONSTRAINT dienstplaene_unique_mnr_pro_tag UNIQUE (datum, mnr); 
