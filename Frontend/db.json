@@ -23,7 +23,7 @@
     },
     {
       "id": "2",
-      "vorname": "Lisa",
+      "vorname": "Emma",
       "nachname": "Müller",
       "geburtsdatum": "1992-06-20",
       "email1": "lisa.mueller@example.com",
@@ -35,13 +35,10 @@
       "postleitzahl": "4321",
       "land": "Österreich",
       "arbeitsstunden": 30,
-      "springer": false,
-      "hauptfiliale": 2,
-      "nebenfilialen": [
-        1,
-        3
-      ],
-      "anmerkungen": "Teilzeit"
+      "springer": "Nicht bekannt",
+      "hauptfiliale": null,
+      "nebenfilialen": null,
+      "anmerkungen": "Bald Vollzeit!"
     }
   ],
   "filialen": [
@@ -56,6 +53,18 @@
     {
       "id": "3",
       "name": "Filiale C"
+    }
+  ],
+  "benutzer": [
+    {
+      "benutzername": "Max",
+      "passwort": "1234",
+      "id": "951b"
+    },
+    {
+      "benutzername": "admin",
+      "passwort": "9999",
+      "id": "4dd7"
     }
   ]
 }

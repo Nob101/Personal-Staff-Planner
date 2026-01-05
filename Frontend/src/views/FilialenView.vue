@@ -1,4 +1,5 @@
 <script setup>
+    import Navbar from '@/components/global/Navbar.vue'
     import FilialenList from '@/components/filialen/FilialenList.vue';
 
     //TestCode
@@ -59,6 +60,7 @@ const filialen = ref([
 
 
 <template>
+    <Navbar />
     <FilialenList :filialen="filialen" :mitarbeiter="mitarbeiter" />
     <!-- <ColorPicker v-model="color" />-->
 </template>

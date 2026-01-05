@@ -1,11 +1,10 @@
-//mitarbeiterServie.js
-//Hier ist gesamte Backend-Kommunikation für Mitarbeiter
-
-//Dummy-Daten für Testzwecke sind im Json-Server db.json
-
-//BaseURL importieren
+// mitarbeiterService.js
+// Hier ist gesamte Backend-Kommunikation für Mitarbeiter
+// Dummy-Daten für Testzwecke sind im JSON-Server db.json
+// BaseURL importieren
 import { http } from "./http"
 
+// --- Mitarbeiter CRUD ---
 
 // Alle Mitarbeiter abrufen
 export function getMitarbeiter() {
@@ -32,5 +31,11 @@ export function deleteMitarbeiter(id) {
   return http.delete(`/mitarbeiter/${id}`)
 }
 
-
-
+// --- Zusätzliche Funktion: Verfügbare Mitarbeiter || unnötig?---
+// POST /mitarbeiter/verfuegbar
+export function getVerfuegbareMitarbeiter(filialeId, datum) {
+  return http.post("/mitarbeiter/verfuegbar", {
+    filialeId,
+    datum
+  })
+}
