@@ -97,6 +97,8 @@ CREATE TABLE IF NOT EXISTS mitarbeiter_email (
 );
 
 
+
+
 CREATE TABLE IF NOT EXISTS mitarbeiter_arbeitet_in_filiale (
   mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
   fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE CASCADE,
