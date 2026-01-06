@@ -1,9 +1,3 @@
-// ============================================================================
-// 🔄 resetCountersForFiliale.js (PostgreSQL-Version)
-// ---------------------------------------------------------------------------
-// Setzt alle "counter" Werte der Mitarbeiter einer bestimmten Filiale auf NULL.
-// Wird z. B. aufgerufen, wenn Mitarbeiter hinzugefügt, gelöscht oder verschoben werden.
-// ============================================================================
 const pool = require('../db/pool');
 
 /**
