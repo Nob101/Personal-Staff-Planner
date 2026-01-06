@@ -1,70 +1,78 @@
-### AUTH – Login
-POST http://localhost:3000/api/auth/login
-Content-Type: application/json
-
-{
-  "username": "admin",
-  "password": "admin123"
-}
-
 ### ---------------------------------------------------------------------------
-### MITARBEITER
+### MITARBEITER (neues Frontend-DTO)
 ### ---------------------------------------------------------------------------
 
 ### GET alle Mitarbeiter
 GET http://localhost:3000/api/mitarbeiter
 
-### GET Mitarbeiter nach ID
-GET http://localhost:3000/api/mitarbeiter/15
+### GET Mitarbeiter nach mnr
+GET http://localhost:3000/api/mitarbeiter/11
 
-### POST Mitarbeiter anlegen
+
+### POST Mitarbeiter anlegen (Frontend-Format)
 POST http://localhost:3000/api/mitarbeiter
 Content-Type: application/json
 
 {
   "vorname": "Test",
-  "nachname": "User",
-  "stammfiliale": "PINK",
-  "nebenfilialen": ["2"],
-  "arbeitnehmertyp": 40,
-  "springer": false
+  "nachname": "Frontend",
+  "arbeitsstunden": 40,
+  "springer": "Nein",
+  "hauptfiliale": { "id": 6, "name": "Zentrale Wien" },
+  "nebenfilialen": [{ "id": 7, "name": "Filiale Graz" }],
+
+  "strasse": "Testweg 1",
+  "ort": "Wien",
+  "postleitzahl": "1010",
+  "land": "Österreich",
+
+  "telefon1": "+43 660 111111",
+  "telefon2": "",
+  "email1": "test@demo.at",
+  "email2": "",
+
+  "anmerkungen": ""
 }
 
-### PUT Mitarbeiter bearbeiten
-PUT http://localhost:3000/api/mitarbeiter/1
+### PUT Mitarbeiter bearbeiten (Frontend-Format)
+PUT http://localhost:3000/api/mitarbeiter/11
 Content-Type: application/json
 
 {
-  "vorname": "Peter",
-  "nachname": "Neu"
+  "vorname": "Test-Updated",
+  "nachname": "Frontend-Updated",
+  "arbeitsstunden": 40,
+  "springer": "Nein",
+  "hauptfiliale": { "id": 6, "name": "Zentrale Wien" },
+  "nebenfilialen": [{ "id": 7, "name": "Filiale Graz" }],
+
+  "strasse": "Updateweg 9",
+  "ort": "Wien",
+  "postleitzahl": "1010",
+  "land": "Österreich",
+
+  "telefon1": "+43 660 999999",
+  "email1": "update@demo.at",
+
+  "anmerkungen": "Update Test"
 }
 
 ### DELETE Mitarbeiter
-DELETE http://localhost:3000/api/mitarbeiter/1
+DELETE http://localhost:3000/api/mitarbeiter/11
 
-### POST Verfügbare Mitarbeiter
-POST http://localhost:3000/api/mitarbeiter/verfuegbar
-Content-Type: application/json
-
-{
-  "filialeId": 1,
-  "datum": "2025-05-03",
-  "jahr": 2025,
-  "monat": 5
-}
 
 ### ---------------------------------------------------------------------------
-### FILIALEN
+### FILIALEN (neue Routes: /api/filialen)
 ### ---------------------------------------------------------------------------
 
 ### GET alle Filialen
-GET http://localhost:3000/api/filiale
+GET http://localhost:3000/api/filialen
 
-### GET Filiale nach ID
-GET http://localhost:3000/api/filiale/1
+### GET Filiale nach fnr
+GET http://localhost:3000/api/filialen/6
 
 ### POST Filiale anlegen
-POST http://localhost:3000/api/filiale
+POST http://localhost:3000/api/filialen
 Content-Type: application/json
 
 {
@@ -80,60 +88,35 @@ Content-Type: application/json
 }
 
 ### PUT Filiale bearbeiten
-PUT http://localhost:3000/api/filiale/2
+PUT http://localhost:3000/api/filialen/6
 Content-Type: application/json
 
 {
-  "filialname": "Hartberg NEU",
+  "filialname": "Zentrale Wien NEU",
   "farbe": "#00ff00"
 }
 
 ### DELETE Filiale
-DELETE http://localhost:3000/api/filiale/2
+DELETE http://localhost:3000/api/filialen/6
+
 
 ### ---------------------------------------------------------------------------
-### DIENSTPLAN
+### DIENSTPLAN (bei dir: /api/dienstplan)
 ### ---------------------------------------------------------------------------
 
-### GET Dienstplan (lädt oder erzeugt automatisch)
-GET http://localhost:3000/api/dienstplan?jahr=2025&monat=5
-
-### FORCE neu generieren
-GET http://localhost:3000/api/dienstplan?jahr=2025&monat=5&force=1
-
-### POST Dienstplan explizit generieren
+### POST Dienstplan generieren + speichern (neuer Ansatz mit Einzelzeilen)
 POST http://localhost:3000/api/dienstplan/generate
 Content-Type: application/json
 
 {
-  "jahr": 2025,
-  "monat": 5
+  "jahr": 2026,
+  "monat": 1
 }
 
-### PATCH Dienst verschieben / Schicht ändern
-PATCH http://localhost:3000/api/dienstplan/shift
-Content-Type: application/json
-
-{
-  "jahr": 2025,
-  "monat": 5,
-  "dienstId": "1-2025-05-03-A-13",
-  "neuerMitarbeiterId": 14,
-  "neueSchicht": "E"
-}
-
-### POST Krankheit mit Ersatz
-POST http://localhost:3000/api/dienstplan/krank-mit-ersatz
-Content-Type: application/json
-
-{
-  "jahr": 2025,
-  "monat": 5,
-  "dienstId": "1-2025-05-03-A-13",
-  "ersatzMitarbeiterId": 12,
-  "art": "K"
-}
 
 ### DELETE Dienstplan Monat löschen
-DELETE http://localhost:3000/api/dienstplan/2025/5
+DELETE http://localhost:3000/api/dienstplan/2026/1
 
+
+### GET Dienstplan für Monat abrufen
+GET http://localhost:3000/api/dienstplan?jahr=2026&monat=1
