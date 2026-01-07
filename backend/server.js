@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const db = require('./db/database/schema/database.js')
-const PORT = 3000;
+const PORT = 3001;
 
 
 // Middleware
