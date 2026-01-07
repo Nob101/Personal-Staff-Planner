@@ -1,6 +1,10 @@
+# CLI Befehle:
+# Wichtig: Docker Desktop muss gestartet werden/laufen
+#   docker compose up --build -d
+#   docker compose down
+#   docker compose logs -f backend
 
-
-version: '3.8'
+# version: '3.8'
 
 services:
   # --- DATENBANK BEREICH Lukas ---
