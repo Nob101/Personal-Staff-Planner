@@ -3,11 +3,17 @@
 <script setup>
 //Komponenten importieren
 import { ref } from 'vue'
-import MitarbeiterActionBar from '@/components/mitarbeiter/MitarbeiterActionBar.vue'
 import MitarbeiterList from '@/components/mitarbeiter/MitarbeiterList.vue'
 import ModalMitarbeiterCreate from '@/components/mitarbeiter/ModalMitarbeiterCreate.vue'
 import ModalMitarbeiterEdit from '@/components/mitarbeiter/ModalMitarbeiterEdit.vue'
 import BestätigungsModal from '@/components/global/BestätigungsModal.vue'
+import MitarbeiterCard from '@/components/mitarbeiter/MitarbeiterCard.vue'
+import PageBar from '@/components/ui/PageBar.vue'
+import mitarbeiter_anlegen_icon from '@/assets/icons/mitarbeiter_anlegen_icon_solid.svg'
+import filter_icon from '@/assets/icons/filter_icon_solid.svg'
+import lupe_icon from '@/assets/icons/lupe_icon_solid.svg'
+
+const search = ref('');
 
 //Dummy-Daten für Testzwecke. MÜSSEN MIT BACKEND REQUESTS ersetzt werden.
 const mitarbeiter = ref([
@@ -132,20 +138,82 @@ function cancelDelete() {
 </script>
 
 <template>
+  <!-- Leiste direkt unter Navbar -->
+  <PageBar>
+    <template #actions>
+      <!-- Neu anlegen -->
+      <button
+        @click="showModalMitarbeiterCreate = true"
+        class="group flex items-center gap-2 px-5 py-1.5
+              font-sans text-sm font-medium text-white/80
+              border-b-2 border-transparent
+              hover:border-white/60 hover:text-white
+              transition-colors"
+      >
+        <img
+          :src="mitarbeiter_anlegen_icon"
+          class="h-6 w-6 opacity-70 group-hover:opacity-100 transition-opacity"
+        />
+        Neu anlegen
+      </button>
+
+
+      <div class="w-px bg-white/10" />
+
+      <!-- Filtern -->
+      <button
+        class="group flex items-center gap-2 px-5 py-1.5
+              font-sans text-sm font-medium text-white/80
+              border-b-2 border-transparent
+              hover:border-white/60 hover:text-white
+              transition-colors"
+      >
+        <img
+          :src="filter_icon"
+          class="h-6 w-6 opacity-70 group-hover:opacity-100 transition-opacity -ml-1"
+        />
+        Filtern
+      </button>
+
+
+      <div class="w-px bg-white/10" />
+
+      <div class="w-px bg-white/10" />
+    </template>
+
+    <template #search>
+      <div class="flex items-center px-4">
+        <div class="relative">
+          <input
+            v-model="search"
+            placeholder="Suchen"
+            class="h-7 w-64 rounded-md bg-black/30 pl-12 pr-3 text-sm text-white/90
+                   outline-none ring-1 ring-white/15 focus:ring-white/30"
+          />
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-white/60">
+            <img :src="lupe_icon" alt="" class="h-6 w-6 opacity-60"/>
+          </span>
+        </div>
+      </div>
+    </template>
+  </PageBar>
+
+  <!-- Page Content -->
   <div class="mitarbeiter-view container mx-auto p-4">
-    <!-- ActionBar -->
-    <MitarbeiterActionBar @mitarbeiterCreate="showModalMitarbeiterCreate = true" />
+    <MitarbeiterList
+      :mitarbeiter="mitarbeiter"
+      :filialen="filialen"
+      @edit="handleEdit"
+      @delete="handleDelete"
+    />
 
-    <!-- Mitarbeiter Liste -->
-    <MitarbeiterList :mitarbeiter="mitarbeiter" :filialen="filialen" @edit="handleEdit" @delete="handleDelete" />
-
-    <!-- Modale am Ende -->
-    <ModalMitarbeiterCreate 
-      :show="showModalMitarbeiterCreate" 
-      :filialen="filialen" 
-      @close="showModalMitarbeiterCreate = false" 
+    <ModalMitarbeiterCreate
+      :show="showModalMitarbeiterCreate"
+      :filialen="filialen"
+      @close="showModalMitarbeiterCreate = false"
       @mitarbeiterCreate="handleMitarbeiterCreate"
     />
+
     <ModalMitarbeiterEdit
       :show="showModalMitarbeiterEdit && selectedMitarbeiter"
       :mitarbeiter="selectedMitarbeiter"
@@ -153,14 +221,16 @@ function cancelDelete() {
       @close="showModalMitarbeiterEdit = false"
       @mitarbeiterEdit="handleMitarbeiterEdit"
     />
+
     <BestätigungsModal
-    :show="showDeleteModal"
-    message="Möchtest du diesen Mitarbeiter wirklich löschen?"
-    @confirm="confirmDelete"
-    @close="cancelDelete"
+      :show="showDeleteModal"
+      message="Möchtest du diesen Mitarbeiter wirklich löschen?"
+      @confirm="confirmDelete"
+      @close="cancelDelete"
     />
   </div>
 </template>
+
 
 
 

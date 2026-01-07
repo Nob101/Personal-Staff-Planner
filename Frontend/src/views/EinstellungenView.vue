@@ -1,0 +1,1 @@
+<template><div>Einstellungen</div></template>
