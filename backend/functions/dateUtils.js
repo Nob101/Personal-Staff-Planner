@@ -29,7 +29,7 @@ function getWeekdayDates(year, month) {
     }
   }
 
-  return { dates, lastDay };
+  return dates;
 }
 
 
@@ -41,10 +41,10 @@ function getWeekdayDates(year, month) {
 // Rückgabe: { monatsstunden, lastDay }
 // ============================================================================
 function getMonthlyHours(year, month) {
-  const { dates, lastDay } = getWeekdayDates(year, month);
+  const dates = getWeekdayDates(year, month);
   const stundenProTag = 8;
   const monatsstunden = dates.length * stundenProTag;
-  return { monatsstunden, lastDay };
+  return monatsstunden;
 }
 
 
