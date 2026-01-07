@@ -25,13 +25,34 @@ async function generateDienstplan(year, month) {
   const dienste = [];
 
   for (const filiale of alleFilialen) {
-    const algorithm = await getAlgorithmus(filiale.algorithmid);
-    if (!Array.isArray(algorithm) || algorithm.length === 0) {
-      throw new Error(`Algorithmus fehlt/leer für Filiale fnr=${filiale.fnr}`);
-    }
-
     for (const m of alleMitarbeiter) {
       if (Number(m.hauptfiliale_fnr) !== Number(filiale.fnr)) continue;
+      // test logging
+      console.log(
+        "[GEN] mnr=",
+        m.mnr,
+        "filiale=",
+        filiale.fnr,
+        "springer=",
+        m.springer,
+        "springeralgo=",
+        m.springeralgorithmid,
+        "filialAlgo=",
+        filiale.algorithmid
+      );
+
+      const algoId = m.springer
+        ? m.springeralgorithmid ?? filiale.algorithmid
+        : filiale.algorithmid;
+
+      const algorithm = await getAlgorithmus(algoId);
+      if (!Array.isArray(algorithm) || algorithm.length === 0) {
+        throw new Error(
+          `Algorithmus fehlt/leer für fnr=${filiale.fnr}, mnr=${m.mnr}, algoId=${algoId}`
+        );
+      }
+      // test logging
+      console.log("[GEN] algoId=", algoId, "patternLen=", algorithm.length);
 
       const faktor = getFaktorFuerMitarbeiter(m);
       const zielStunden = monatsstunden * faktor;
@@ -45,7 +66,6 @@ async function generateDienstplan(year, month) {
       for (const date of dates) {
         let schicht_typ = algorithm[counter % algorithm.length];
 
-        // (optional) mini-limit – kannst du auch vorerst rauslassen
         if (schicht_typ !== "F" && bereits >= limitStunden) {
           schicht_typ = "F";
         }
@@ -73,4 +93,3 @@ async function generateDienstplan(year, month) {
 }
 
 module.exports = { generateDienstplan };
-

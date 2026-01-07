@@ -14,40 +14,51 @@ const { getAlgorithmus } = require("./algorithmen");
  */
 async function setCounterForMitarbeiter(fnr) {
   fnr = Number(fnr);
+
   const alleMitarbeiter = await mitarbeiterRepo.getAllBase();
-  const mitarbeiter = alleMitarbeiter.filter(m => Number(m.hauptfiliale_fnr) === fnr);
-  if (mitarbeiter.length === 0) return;
+  const inFiliale = alleMitarbeiter.filter(m => Number(m.hauptfiliale_fnr) === fnr);
 
-  const filiale = await filialenRepo.getById(fnr);
-  if (!filiale) throw new Error('Filiale nicht gefunden');
+  if (inFiliale.length === 0) return;
 
- const algorithm = getAlgorithmus(filiale.algorithmid);
-  if (!algorithm) throw new Error('Algorithmus nicht gefunden');
+  // 1) Springer aus der "Counter-Logik" rausnehmen
+  const normale = inFiliale.filter(m => m.springer !== true);  
+  const springer = inFiliale.filter(m => m.springer === true);
 
-
-
-  const patternLen = algorithm.length;
-  const step = Math.floor(patternLen / 3);
-
-  // Bereits genutzte Counter-Werte ermitteln
-  const usedCounters = mitarbeiter
-    .filter(m => m.counter !== null && m.counter !== undefined)
-    .map(m => Number(m.counter));
-
-  let nextCounter;
-  if (usedCounters.length > 0) {
-    const maxUsed = Math.max(...usedCounters);
-    nextCounter = (maxUsed + step) % patternLen;
-  } else {
-    nextCounter = 0;
+  // 2) Springer Counter fix setzen (damit er die anderen nicht beeinflusst)
+  for (const m of springer) {
+    
+    if (m.counter !== 0) {
+      await mitarbeiterRepo.updateCounter(m.mnr, 0);
+    }
   }
 
-  // Neue Counter zuweisen
-  for (const m of mitarbeiter) {
+  if (normale.length === 0) return;
+
+  const filiale = await filialenRepo.getById(fnr);
+  if (!filiale) throw new Error("Filiale nicht gefunden");
+
+  const algorithm = await getAlgorithmus(filiale.algorithmid);
+  if (!Array.isArray(algorithm) || algorithm.length === 0) {
+    throw new Error(`Algorithmus fehlt/leer für Filiale fnr=${fnr}`);
+  }
+
+  const patternLen = algorithm.length;
+  const step = Math.max(1, Math.floor(patternLen / 3));
+
+  // 3) usedCounters nur von normalen Mitarbeitern
+  const usedCounters = normale
+    .filter(m => m.counter !== null && m.counter !== undefined && Number.isFinite(Number(m.counter)))
+    .map(m => Number(m.counter));
+
+  let nextCounter = usedCounters.length > 0
+    ? (Math.max(...usedCounters) + step) % patternLen
+    : 0;
+
+  // 4) Neue Counter NUR an normale Mitarbeiter vergeben, die noch keinen haben
+  for (const m of normale) {
     if (m.counter === null || m.counter === undefined) {
-      m.counter = nextCounter;
+      await mitarbeiterRepo.updateCounter(m.mnr, nextCounter);
       nextCounter = (nextCounter + step) % patternLen;
-      await mitarbeiterRepo.updateCounter(m.mnr, m.counter);
     }
   }
 }

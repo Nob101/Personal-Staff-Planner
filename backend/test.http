@@ -3,14 +3,14 @@
 ### ---------------------------------------------------------------------------
 
 ### GET alle Mitarbeiter
-GET http://localhost:3000/api/mitarbeiter
+GET http://localhost:3001/api/mitarbeiter
 
 ### GET Mitarbeiter nach mnr
-GET http://localhost:3000/api/mitarbeiter/11
+GET http://localhost:3001/api/mitarbeiter/11
 
 
 ### POST Mitarbeiter anlegen (Frontend-Format)
-POST http://localhost:3000/api/mitarbeiter
+POST http://localhost:3001/api/mitarbeiter
 Content-Type: application/json
 
 {
@@ -18,8 +18,8 @@ Content-Type: application/json
   "nachname": "Frontend",
   "arbeitsstunden": 40,
   "springer": "Nein",
-  "hauptfiliale": { "id": 6, "name": "Zentrale Wien" },
-  "nebenfilialen": [{ "id": 7, "name": "Filiale Graz" }],
+  "hauptfiliale": 6,
+  "nebenfilialen": [7],
 
   "strasse": "Testweg 1",
   "ort": "Wien",
@@ -35,7 +35,7 @@ Content-Type: application/json
 }
 
 ### PUT Mitarbeiter bearbeiten (Frontend-Format)
-PUT http://localhost:3000/api/mitarbeiter/11
+PUT http://localhost:3001/api/mitarbeiter/11
 Content-Type: application/json
 
 {
@@ -43,8 +43,8 @@ Content-Type: application/json
   "nachname": "Frontend-Updated",
   "arbeitsstunden": 40,
   "springer": "Nein",
-  "hauptfiliale": { "id": 6, "name": "Zentrale Wien" },
-  "nebenfilialen": [{ "id": 7, "name": "Filiale Graz" }],
+  "hauptfiliale": 7,
+  "nebenfilialen": [6],
 
   "strasse": "Updateweg 9",
   "ort": "Wien",
@@ -57,8 +57,11 @@ Content-Type: application/json
   "anmerkungen": "Update Test"
 }
 
+
+
+
 ### DELETE Mitarbeiter
-DELETE http://localhost:3000/api/mitarbeiter/11
+DELETE http://localhost:3001/api/mitarbeiter/11
 
 
 ### ---------------------------------------------------------------------------
@@ -66,13 +69,13 @@ DELETE http://localhost:3000/api/mitarbeiter/11
 ### ---------------------------------------------------------------------------
 
 ### GET alle Filialen
-GET http://localhost:3000/api/filialen
+GET http://localhost:3001/api/filialen
 
 ### GET Filiale nach fnr
-GET http://localhost:3000/api/filialen/6
+GET http://localhost:3001/api/filialen/6
 
 ### POST Filiale anlegen
-POST http://localhost:3000/api/filialen
+POST http://localhost:3001/api/filialen
 Content-Type: application/json
 
 {
@@ -88,7 +91,7 @@ Content-Type: application/json
 }
 
 ### PUT Filiale bearbeiten
-PUT http://localhost:3000/api/filialen/6
+PUT http://localhost:3001/api/filialen/6
 Content-Type: application/json
 
 {
@@ -97,7 +100,7 @@ Content-Type: application/json
 }
 
 ### DELETE Filiale
-DELETE http://localhost:3000/api/filialen/6
+DELETE http://localhost:3001/api/filialen/6
 
 
 ### ---------------------------------------------------------------------------
@@ -105,7 +108,7 @@ DELETE http://localhost:3000/api/filialen/6
 ### ---------------------------------------------------------------------------
 
 ### POST Dienstplan generieren + speichern (neuer Ansatz mit Einzelzeilen)
-POST http://localhost:3000/api/dienstplan/generate
+POST http://localhost:3001/api/dienstplan/generate
 Content-Type: application/json
 
 {
@@ -115,8 +118,8 @@ Content-Type: application/json
 
 
 ### DELETE Dienstplan Monat löschen
-DELETE http://localhost:3000/api/dienstplan/2026/1
+DELETE http://localhost:3001/api/dienstplan/2026/1
 
 
 ### GET Dienstplan für Monat abrufen
-GET http://localhost:3000/api/dienstplan?jahr=2026&monat=1
+GET http://localhost:3001/api/dienstplan?jahr=2026&monat=1

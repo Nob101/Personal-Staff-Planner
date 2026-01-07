@@ -1,14 +1,15 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const mitarbeiterRepo = require('../repositories/mitarbeiter.repo.pg');
-const filialenRepo    = require('../repositories/filialen.repo.pg');
-const dienstplanRepo  = require('../repositories/dienstplan.repo.pg');
+const mitarbeiterRepo = require("../repositories/mitarbeiter.repo.pg");
+const filialenRepo = require("../repositories/filialen.repo.pg");
+const dienstplanRepo = require("../repositories/dienstplan.repo.pg");
 
-const { setCounterForMitarbeiter } = require('../functions/setCounter');
-const { resetCountersForFiliale } = require('../functions/resetCountersForFiliale');
-const { fromFrontend, toFrontend } = require("../mappers/mitarbeiter.mapper");
-
+const { setCounterForMitarbeiter } = require("../functions/setCounter");
+const {
+  resetCountersForFiliale,
+} = require("../functions/resetCountersForFiliale");
+const { fromFrontend, toFrontend, fromFrontendPatch } = require("../mappers/mitarbeiter.mapper");
 
 // -----------------------------
 // GET: alle Mitarbeiter (inkl. kontakt/telefon/email/nebenfilialen)
@@ -19,7 +20,7 @@ router.get("/", async (_req, res) => {
       mitarbeiterRepo.getAllWithDetails(),
       filialenRepo.getAll(),
     ]);
-    res.json(data.map(m => toFrontend(m, filialen)));
+    res.json(data.map((m) => toFrontend(m, filialen)));
   } catch (err) {
     console.error("Fehler GET /mitarbeiter:", err);
     res.status(500).json({ error: "Fehler beim Laden der Mitarbeiter" });
@@ -58,10 +59,19 @@ router.post("/", async (req, res) => {
   try {
     const b = req.body;
     if (!b.vorname || !b.nachname) {
-      return res.status(400).json({ error: "vorname und nachname sind Pflicht" });
+      return res
+        .status(400)
+        .json({ error: "vorname und nachname sind Pflicht" });
     }
-
+    console.log("POST /mitarbeiter body:", JSON.stringify(req.body, null, 2));
     const payload = fromFrontend(b);
+    if (payload.springer === true && payload.hauptfiliale_fnr) {
+      const filiale = await filialenRepo.getById(payload.hauptfiliale_fnr);
+      payload.springeralgorithmid = getGegenwertAlgoId(filiale.algorithmid);
+    } else {
+      payload.springeralgorithmid = null;
+    }
+    // Fehlersuche console.log("mapped payload:", payload);
     const created = await mitarbeiterRepo.addWithDetails(payload);
 
     if (created?.hauptfiliale_fnr) {
@@ -78,7 +88,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-
 router.put("/:mnr", async (req, res) => {
   try {
     const mnr = Number(req.params.mnr);
@@ -91,7 +100,18 @@ router.put("/:mnr", async (req, res) => {
       return res.status(404).json({ error: "Mitarbeiter nicht gefunden" });
     }
 
-    const updates = fromFrontend(req.body);
+    const updates = fromFrontendPatch(req.body);
+
+    if (updates.springer === true) {
+      const hf = updates.hauptfiliale_fnr ?? before.hauptfiliale_fnr;
+      if (hf) {
+        const filiale = await filialenRepo.getById(hf);
+        updates.springeralgorithmid = getGegenwertAlgoId(filiale.algorithmid);
+      }
+    } else if (updates.springer === false) {
+      updates.springeralgorithmid = null;
+    }
+
     const updated = await mitarbeiterRepo.updateWithDetails(mnr, updates);
     if (!updated) {
       return res.status(404).json({ error: "Mitarbeiter nicht gefunden" });
@@ -100,13 +120,15 @@ router.put("/:mnr", async (req, res) => {
     const oldF = before.hauptfiliale_fnr ?? null;
     const newF = updated.hauptfiliale_fnr ?? null;
 
-    if (oldF && oldF !== newF) {
-      await resetCountersForFiliale(oldF);
-      await setCounterForMitarbeiter(oldF);
-    }
-    if (newF) {
-      await resetCountersForFiliale(newF);
-      await setCounterForMitarbeiter(newF);
+    if (oldF !== newF) {
+      if (oldF) {
+        await resetCountersForFiliale(oldF);
+        await setCounterForMitarbeiter(oldF);
+      }
+      if (newF) {
+        await resetCountersForFiliale(newF);
+        await setCounterForMitarbeiter(newF);
+      }
     }
 
     const [fresh, filialen] = await Promise.all([
@@ -152,9 +174,17 @@ router.delete("/:mnr", async (req, res) => {
   }
 });
 
+/* 
+Hilfsfunktion: Gegenwert-Algorithmus-ID holen
+Wenn Filiale Algorithmus-ID 1 hat, dann Gegenwert 2, und umgekehrt.
+Falls was anderes kommt, wird das gleiche zurückgegeben (Fallback).
+ */
 
-
-
-
+function getGegenwertAlgoId(filialAlgoId) {
+  const id = Number(filialAlgoId);
+  if (id === 1) return 2;
+  if (id === 2) return 1;
+  return id; // 
+}
 
 module.exports = router;

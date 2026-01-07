@@ -262,6 +262,15 @@ async function updateWithDetails(mnr, updates) {
   try {
     await client.query("BEGIN");
 
+    if (
+      !("hauptfiliale_fnr" in updates) ||
+      updates.hauptfiliale_fnr === null ||
+      updates.hauptfiliale_fnr === undefined ||
+      Number(updates.hauptfiliale_fnr) <= 0
+    ) {
+      delete updates.hauptfiliale_fnr;
+    }
+
     // 1) BASE mitarbeiter
     const allowed = [
       "vorname",
@@ -401,7 +410,7 @@ async function updateCounter(mnr, counter) {
 
 async function getAllBase() {
   const r = await pool.query(`
-    SELECT mnr, hauptfiliale_fnr, counter
+    SELECT mnr, hauptfiliale_fnr, counter, springer, springeralgorithmid, arbeitnehmertyp
     FROM mitarbeiter
   `);
   return r.rows;
