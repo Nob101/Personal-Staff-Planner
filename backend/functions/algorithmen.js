@@ -4,7 +4,7 @@ const ALGORITHMEN = {
   2: ["A", "A", "A", "A", "F", "F", "E", "E", "E", "E","F", "F"],
 };
 
-function getAlgorithmus(id) {
+async function getAlgorithmus(id) {
   const algo = ALGORITHMEN[Number(id)];
   if (!algo) {
     throw new Error(`Unbekannter Algorithmus: ${id}`);

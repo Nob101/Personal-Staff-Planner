@@ -1,9 +1,6 @@
-const pool = require('../db/pool');
+const pool = require("../db/pool");
 
-
-
-
-async function save(jahr,monat,datum,mnr,fnr,schicht_typ) {
+async function save(jahr, monat, datum, mnr, fnr, schicht_typ) {
   await pool.query(
     `
     INSERT INTO dienstplaene (jahr, monat, datum, mnr, fnr, schicht_typ)
@@ -11,10 +8,8 @@ async function save(jahr,monat,datum,mnr,fnr,schicht_typ) {
     `,
     [jahr, monat, datum, mnr, fnr, schicht_typ]
   );
-  return true;  
+  return true;
 }
-
-
 
 async function deleteByMonth(jahr, monat) {
   const result = await pool.query(
@@ -31,7 +26,9 @@ async function deleteByMonth(jahr, monat) {
 
 async function getByDate(jahr, monat) {
   const result = await pool.query(
-    `SELECT id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung
+    `select id, jahr, monat,
+      to_char(datum, 'YYYY-MM-DD') AS datum,
+      mnr, fnr, schicht_typ, anmerkung
      FROM dienstplaene
      WHERE jahr = $1 AND monat = $2
      ORDER BY datum, fnr, mnr`,
@@ -40,11 +37,4 @@ async function getByDate(jahr, monat) {
   return result.rows;
 }
 
-
-
-
-
 module.exports = { save, deleteByMonth, getByDate };
-
-
-
