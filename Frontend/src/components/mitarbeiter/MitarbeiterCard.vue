@@ -56,10 +56,8 @@ function handleDelete() {
     <!-- Inhalt Columns -->
     <div class="mitarbeiter-card-columns">
 
-      <!-- Column 1: Name, Geburtsdatum, Email, Telefon -->
-      <div class="column">
-        <p data-label="Geburtsdatum:">{{ mitarbeiter.geburtsdatum ?? '-' }}</p>
-          
+      <!-- Column 1: Name, Email, Telefon -->
+      <div class="column">       
         <!-- Email Box -->
         <fieldset class="box">
           <legend>Email</legend>

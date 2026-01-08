@@ -85,7 +85,6 @@ function handleSubmit() {
     id: props.mitarbeiter.id,
     vorname: vorname.value,
     nachname: nachname.value,
-    geburtsdatum: geburtsdatum.value || null,
     email1: email1.value || '',
     email2: email2.value || '',
     telefon1: telefon1.value || '',
@@ -127,11 +126,6 @@ function handleSubmit() {
           </div>
         </div>
 
-        <!-- Geburtsdatum -->
-        <div>
-          <label>Geburtsdatum:</label>
-          <input type="date" v-model="geburtsdatum" class="w-full border rounded px-2 py-1"/>
-        </div>
 
         <!-- Email -->
         <div class="grid grid-cols-2 gap-4">
