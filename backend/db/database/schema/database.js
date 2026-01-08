@@ -39,7 +39,25 @@ async function initDatabase() {
         if (!markusPassword || !adminRole) {
             throw new Error(`Config-Passwörter fehlen in der .env!`);
         }
- 
+/**
+ * NEU Wenn DB bereits existiert muss nicht der ganze Block ausgeführt werden
+ * kontrolle über PG Inahltsverzeichnis welche Tabellen existieren oder nicht
+ */
+        const checkTableRes = await client.query(`
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables   --'Inhaltsverzeichnis' von Postgres über alle Tabellen
+                WHERE table_schema = 'public' 
+                AND table_name = 'dienstplaene'
+                );
+            `);
+
+        const dbExists = checkTableRes.rows[0].exists;
+        if(dbExists){
+             console.log("--- DB-Existiert bereits. Setup wird Übersprungen ---");
+             return ;
+        }
+       
+
         console.log("--- DB-Initialisierung gestartet ---");
  
         await client.query(`
