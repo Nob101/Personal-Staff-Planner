@@ -17,7 +17,7 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'delete'])
 
 // Helper für Hauptfiliale-Name, damit der Name anstatt der ID angezeigt wird
-const hauptfilialeName = computed(() => {
+/* const hauptfilialeName = computed(() => {
   const f = props.filialen.find(f => f.id === props.mitarbeiter.hauptfiliale)
   return f ? f.name : '-'
 })
@@ -29,8 +29,17 @@ const nebenfilialenNamen = computed(() => {
   return props.mitarbeiter.nebenfilialen
     .map(id => props.filialen.find(f => f.id === id)?.name || id)
     .join(', ')
-})
+}) */
 
+const hauptfilialeName = computed(() =>
+  props.mitarbeiter.hauptfiliale?.name ?? "-"
+);
+ 
+const nebenfilialenNamen = computed(() =>
+  props.mitarbeiter.nebenfilialen?.length
+    ? props.mitarbeiter.nebenfilialen.map(f => f.name).join(", ")
+    : "-"
+);
 
 function handleEdit() {
   emit('edit', props.mitarbeiter)

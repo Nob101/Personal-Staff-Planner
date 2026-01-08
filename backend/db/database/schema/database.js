@@ -44,15 +44,16 @@ async function initDatabase() {
                 );
             `);
 
-    const dbExists = checkTableRes.rows[0].exists;
-    if (dbExists) {
-      console.log("--- DB-Existiert bereits. Setup wird Übersprungen ---");
-      return;
-    }
+        const dbExists = checkTableRes.rows[0].exists;
+        if(dbExists){
+             console.log("--- DB-Existiert bereits. Setup wird Übersprungen ---");
+             return ;
+        }
+       
 
-    console.log("--- DB-Initialisierung gestartet ---");
-
-    await client.query(`
+        console.log("--- DB-Initialisierung gestartet ---");
+ 
+        await client.query(`
             DO $$
             BEGIN
                 IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'admin') THEN
@@ -60,60 +61,54 @@ async function initDatabase() {
                 END IF;
             END $$;
         `);
-
-    await client.query("BEGIN");
-
-    // Externe Skripte => laden
-    // HINWEIS: prevent_double_booking Trigger gelöscht
-    const schemaDir = __dirname;
-
-    const procedureDir = path.resolve(__dirname, "../procedures");
-    const functionsDir = path.resolve(__dirname, "../functions");
-    const triggersDir = path.resolve(__dirname, "../triggers");
-    const indexesDir = path.resolve(__dirname, "../indexes");
-    const seedsDir = path.resolve(__dirname, "../seeds");
-
-    // erst das Schema laden!!!!!!! dann alles andere
-    // Reihenfolge ist wichtig!!!
-
-    // erstens
-    await loadSqlFiles(client, [schemaDir]);
-
-    // zweitens
-    // console.log("Lade externe SQL-Skripte...");
-    await loadSqlFiles(client, [procedureDir, functionsDir]);
-
-    // drittens
-    await loadSqlFiles(client, [triggersDir, indexesDir]);
-
-    // viertens
-    await loadSqlFiles(client, [seedsDir]);
-    // console.log("....Laden der Skripte beendet");
-
-    // Query Planner bekommt die aktualisierten Datensätze
-    await client.query("CALL pr_refresh_indexes();");
-
-    // Admin-User
-    const hashPassword = await bcrypt.hash(markusPassword, saltRounds);
-
-    await client.query(
-      `
+ 
+        await client.query('BEGIN');
+ 
+        // Externe Skripte => laden
+        // HINWEIS: prevent_double_booking Trigger gellöscht
+        const schemaDir = __dirname;
+        
+        const functionsDir = path.resolve(__dirname, '../functions');
+        const triggersDir = path.resolve(__dirname, '../triggers');
+        const indexesDir = path.resolve(__dirname, '../indexes');
+        const seedsDir = path.resolve(__dirname, '../seeds');
+ 
+        // erst das Schema laden!!!!!!! dann alles andere
+        // Funktionen, Trigger usw. ...und Seeds erst zum Schluss
+ 
+        // erstens
+        await loadSqlFiles(client, [schemaDir]);
+ 
+        // zweitens
+        // console.log("Lade externe SQL-Skripte...");
+        await loadSqlFiles(client, [functionsDir, triggersDir, indexesDir]);
+ 
+        // drittens
+        await loadSqlFiles(client, [seedsDir]);
+ 
+ 
+         // Admin-User
+        const hashPassword = await bcrypt.hash(markusPassword, saltRounds);
+ 
+        await client.query(`
             INSERT INTO users (username, password_hash, role)
             VALUES ('markus', $1, 'admin') ON CONFLICT (username) DO NOTHING;
-        `,
-      [hashPassword]
-    );
-
-    await client.query("COMMIT");
-    console.log("Datenbank erfolgreich initialisiert.");
-  } catch (err) {
-    if (client) await client.query("ROLLBACK");
-    console.error("DB-Initialisierung fehlgeschlagen:", err.message);
-  } finally {
-    client.release();
-  }
+        `, [hashPassword]);
+ 
+        await client.query('COMMIT');
+        console.log("Datenbank erfolgreich an Backend-Wünsche angepasst.");
+ 
+ 
+    } catch (err) {
+        if (client) await client.query('ROLLBACK');
+        console.error("DB-Initialisierung fehlgeschlagen:", err.message);
+    } finally {
+        client.release();
+    }
 }
-
+ 
+ 
+ 
 module.exports = {
   query: (text, params) => pool.query(text, params),
   initDatabase,
