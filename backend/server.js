@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const db = require('./db/database/schema/database.js')
-const PORT = 3000;
+const PORT = 3001;
 
 
 // Middleware
@@ -22,29 +22,32 @@ app.use('/api/filialen', filialenRouter);
 const dienstplanRouter = require('./routes/dienstplan.routes');
 app.use('/api/dienstplan', dienstplanRouter);
 
-const algorithmenRouter = require('./routes/algorithmen.routes');
-app.use('/api/algorithmen', algorithmenRouter);
-
+/*
 const authRouter = require('./routes/auth.routes');
-app.use('/api/auth', authRouter);
+app.use('/api/auth', authRouter); */
 
 
 // ---------------------
 //   SERVER STARTEN
 // ---------------------
 
-async function startApp(){
-  try{
-    await db.initDatabase();
+const shouldInitDb = process.env.INIT_DB === "true";
 
-    app.listen(PORT, () => {
-        console.log(`Server läuft auf Port ${PORT}`);
-    });
-  }catch (err){
+async function startApp() {
+  try {
+    await db.initDatabase();
+    if (shouldInitDb) {
+      await db.initDatabase();
+    }
+
+
+    app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
+  } catch (err) {
     console.error("Fehler beim starten der Anwendung:", err);
     process.exit(1);
   }
 }
+
 
 startApp();
 

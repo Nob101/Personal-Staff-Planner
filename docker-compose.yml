@@ -1,6 +1,6 @@
 
 
-version: '3.8'
+# version: '3.8'
 
 services:
   # --- DATENBANK BEREICH Lukas ---
@@ -23,7 +23,7 @@ services:
     container_name: psp_backend
     restart: always
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
       # WICHTIG: Host ist hier 'db' (der Name des Services oben), nicht localhost!
       DB_HOST: db
@@ -47,7 +47,7 @@ services:
     environment:
 
       # Für den fall, dass Vue wissen muss, wo das Backend läuft:
-      VITE_API_URL: http://localhost:3000
+      VITE_API_URL: http://localhost:5173
     depends_on:
       - backend
 

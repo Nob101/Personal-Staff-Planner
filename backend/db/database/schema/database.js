@@ -1,4 +1,3 @@
-
 /**#####################################################
  * Das Modul verwaltet die Initialisierung der Datenbank
  * --------------------
@@ -19,18 +18,18 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
-
-const { loadSqlFiles } = require('./sqlLoader'); 
+ 
+const { loadSqlFiles } = require('./sqlLoader');
 const saltRounds = 10;
 
 
 async function initDatabase() {
     const client = await pool.connect();
-
+ 
     try {
         const markusPassword = process.env.INITIAL_MARKUS_PASSWORD;
         const adminRole = process.env.DB_ROLE_ADMIN_PASSWORD;
-
+ 
         if (!markusPassword || !adminRole) {
             throw new Error(`Config-Passwörter fehlen in der .env!`);
         }
@@ -54,7 +53,7 @@ async function initDatabase() {
        
 
         console.log("--- DB-Initialisierung gestartet ---");
-
+ 
         await client.query(`
             DO $$
             BEGIN
@@ -63,9 +62,9 @@ async function initDatabase() {
                 END IF;
             END $$;
         `);
-
+ 
         await client.query('BEGIN');
-
+ 
         // Externe Skripte => laden
         // HINWEIS: prevent_double_booking Trigger gelöscht
         const schemaDir = __dirname;
@@ -75,13 +74,13 @@ async function initDatabase() {
         const triggersDir = path.resolve(__dirname, '../triggers');
         const indexesDir = path.resolve(__dirname, '../indexes');
         const seedsDir = path.resolve(__dirname, '../seeds');
-
+ 
         // erst das Schema laden!!!!!!! dann alles andere
         // Reihenfolge ist wichtig!!!
 
         // erstens
         await loadSqlFiles(client, [schemaDir]);
-
+ 
         // zweitens
         // console.log("Lade externe SQL-Skripte...");
         await loadSqlFiles(client, [procedureDir, functionsDir]);
@@ -100,16 +99,16 @@ async function initDatabase() {
 
          // Admin-User
         const hashPassword = await bcrypt.hash(markusPassword, saltRounds);
-
+ 
         await client.query(`
             INSERT INTO users (username, password_hash, role)
             VALUES ('markus', $1, 'admin') ON CONFLICT (username) DO NOTHING;
         `, [hashPassword]);
-
+ 
         await client.query('COMMIT');
-        console.log("Datenbank erfolgreich initialisiert.");
-
-
+        console.log("Datenbank erfolgreich an Backend-Wünsche angepasst.");
+ 
+ 
     } catch (err) {
         if (client) await client.query('ROLLBACK');
         console.error("DB-Initialisierung fehlgeschlagen:", err.message);
@@ -117,9 +116,9 @@ async function initDatabase() {
         client.release();
     }
 }
-
-
-
+ 
+ 
+ 
 module.exports = {
     query: (text, params) => pool.query(text, params),
     initDatabase,
