@@ -2,6 +2,7 @@
 
 <script setup>
 import BaseModal from '@/components/global/BaseModal.vue'
+import Multiselect from 'vue-multiselect'
 import { ref, defineProps, watch, computed } from 'vue'
 
 
@@ -59,8 +60,8 @@ watch(
       springer.value = 
         edited.springer === 'Ja' ? true :
         edited.springer === 'Nein' ? false : undefined
-      hauptfiliale.value = edited.hauptfiliale || null
-      nebenfilialen.value = edited.nebenfilialen?.length ? edited.nebenfilialen : []
+      hauptfiliale.value = props.filialen.find(f => f.id === edited.hauptfiliale) || null
+      nebenfilialen.value = edited.nebenfilialen?.length ? props.filialen.filter(f => edited.nebenfilialen.includes(f.id)): []
       anmerkungen.value = edited.anmerkungen || ''
     }
   },
@@ -69,12 +70,14 @@ watch(
 
 // Nebenfilialen automatisch anpassen, Hauptfiliale aus Filter entfernen
 watch(hauptfiliale, (newVal) => {
-  nebenfilialen.value = nebenfilialen.value.filter(id => id !== newVal)
+  nebenfilialen.value = nebenfilialen.value.filter(
+    f => f.id !== newVal?.id
+  )
 })
 
 // Computed für Nebenfilialen-Optionen (Hauptfiliale auslassen) -> filtert diese raus damit die Hauptfiliale nicht auch als Nebenfiliale genommen werden kann
 const nebenfilialenOptionen = computed(() =>
-  props.filialen.filter(f => f.id !== hauptfiliale.value)
+  props.filialen.filter(f => f.id !== hauptfiliale.value?.id)
 )
 // Submit-Funktion
 function handleSubmit() {
@@ -93,8 +96,8 @@ function handleSubmit() {
     land: land.value || '',
     arbeitsstunden: arbeitsstunden.value ? Number(arbeitsstunden.value) : null,
     springer: springer.value === true ? 'Ja' : springer.value === false ? 'Nein' : 'Nicht bekannt',
-    hauptfiliale: hauptfiliale.value || null,
-    nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value : null,
+    hauptfiliale: hauptfiliale.value?.id || null,
+    nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.id) : null,
     anmerkungen: anmerkungen.value || ''
   })
   emit('close')
@@ -196,17 +199,26 @@ function handleSubmit() {
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label>Hauptfiliale:</label>
-            <select v-model="hauptfiliale" required class="w-full border rounded px-2 py-1">
-              <option disabled value="">Hauptfiliale wählen...</option>
-              <option v-for="filiale in filialen" :key="filiale.id" :value="filiale.id">{{ filiale.name }}</option>
-            </select>
+            <Multiselect
+              v-model="hauptfiliale"
+              :options="filialen"
+              label="name"
+              track-by="id"
+              placeholder="Hauptfiliale wählen"
+              :clearable="false"
+            />
           </div>
           <div>
             <label>Nebenfilialen:</label>
-            <select v-model="nebenfilialen" multiple class="w-full border rounded px-2 py-1">
-              <option disabled value="">Nebenfiliale(n) wählen...</option>
-              <option v-for="filiale in nebenfilialenOptionen" :key="filiale.id" :value="filiale.id">{{ filiale.name }}</option>
-            </select>
+            <Multiselect
+              v-model="nebenfilialen"
+              :options="nebenfilialenOptionen"
+              label="name"
+              track-by="id"
+              placeholder="Nebenfilialen wählen"
+              :multiple="true"
+              :close-on-select="false"
+            />
           </div>
         </div>
 

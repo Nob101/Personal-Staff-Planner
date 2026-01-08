@@ -1,0 +1,30 @@
+Installierte Bibliotheken:
+
+Vue.js
+-> Vue 3 + Vite
+-> Vue Router       (https://router.vuejs.org/guide/)
+-> Vue Multiselect  (https://vue-multiselect.js.org/#sub-getting-started)
+
+CSS/Styling
+-> Tailwind CSS
+
+
+
+Json Server zum Testen von Backend-Anbindung ohne Backend
+npm install --save-dev json-server
+
+{
+  "scripts": {
+    "api": "json-server --watch db.json --port 3001"
+  }
+}
+im Package.json damit dann mit " npm run api " in der Konsole der Json Server gestartet werden kann. WIEDER ENFERNEN WENN JSON SERVER WEGKOMMT!
+
+Axios - Um Backend-Kommunikation etwas zu vereinfachen.
+npm install axios
+
+
+
+
+
+
