@@ -51,7 +51,7 @@ async function initDatabase() {
              console.log("--- DB-Existiert bereits. Setup wird Übersprungen ---");
              return ;
         }
-       
+
 
         console.log("--- DB-Initialisierung gestartet ---");
 
