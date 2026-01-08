@@ -18,8 +18,8 @@ Content-Type: application/json
   "nachname": "Frontend",
   "arbeitsstunden": 40,
   "springer": "Nein",
-  "hauptfiliale": 6,
-  "nebenfilialen": [7],
+  "hauptfiliale": 1,
+  "nebenfilialen": [],
 
   "strasse": "Testweg 1",
   "ort": "Wien",

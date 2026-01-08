@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS filiale (
     land VARCHAR(55) DEFAULT 'Österreich',
     telefon VARCHAR(50),
     email VARCHAR(50),
-    farbe VARCHAR(20) DEFAULT '#3498db'
+    farbe VARCHAR(20) DEFAULT '#3498db',
     algorithmid INTEGER
 );
 
@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS dienstplaene (
 
 
 
-###############################
+/*###############################
 -- AUTHENTIFIZIERUNG
 ################################
 */
@@ -166,5 +166,6 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 
- ADD CONSTRAINT uq_mitarbeiter_kontakt_mnr UNIQUE (mnr);
- ADD CONSTRAINT dienstplaene_unique_mnr_pro_tag UNIQUE (datum, mnr); 
+/* ADD CONSTRAINT uq_mitarbeiter_kontakt_mnr UNIQUE (mnr);
+ ADD CONSTRAINT dienstplaene_unique_mnr_pro_tag UNIQUE (datum, mnr);
+*/
