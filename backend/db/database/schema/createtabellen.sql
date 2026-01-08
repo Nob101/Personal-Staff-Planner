@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS mitarbeiter (
     -- Neu: Flexibles Stundenmodell statt fixen 160h
     counter INTEGER DEFAULT 0,
 
-    arbeitsstunden INTEGER DEFAULT 40,
+    arbeitnehmertyp INTEGER DEFAULT 40,
     springeralgorithmid INTEGER,
     springer BOOLEAN DEFAULT FALSE
 );
