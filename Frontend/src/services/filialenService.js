@@ -7,6 +7,14 @@
 import { http } from "./http"
 
 // Alle Filialen abrufen
-export function getFilialen() {
-  return http.get("/filialen")
+export async function getFilialen() {
+  const res = await http.get("/filialen");
+  return {
+    ...res,
+    data: res.data.map(f => ({
+      id: f.fnr,
+      name: f.filialname,
+      ...f,
+    })),
+  };
 }

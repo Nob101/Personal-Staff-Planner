@@ -31,14 +31,16 @@ app.use('/api/auth', authRouter); */
 //   SERVER STARTEN
 // ---------------------
 
-// const shouldInitDb = process.env.INIT_DB === "true";
+const shouldInitDb = process.env.INIT_DB === "true";
 
 async function startApp() {
   try {
-    // if (shouldInitDb) {
-    //   await db.initDatabase();
-    // }
     await db.initDatabase();
+    if (shouldInitDb) {
+      await db.initDatabase();
+    }
+
+
     app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
   } catch (err) {
     console.error("Fehler beim starten der Anwendung:", err);
