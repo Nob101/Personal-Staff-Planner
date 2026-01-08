@@ -51,9 +51,8 @@ const springerMitarbeiter = computed(() =>
     <!-- Columns -->
     <div class="filialen-card-columns">
 
-      <!-- Column 1: Name, Email, Telefon -->
+      <!-- Column 1: Email, Telefon -->
       <div class="column">
-        <p data-label="Filialenname">{{ filialen.name ?? '-' }}</p>
         
         <fieldset class="box">
           <legend>Email</legend>
