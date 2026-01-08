@@ -111,6 +111,7 @@ Spalten:
     telefon           string
     email             string
     farbe             string (Default: '#3498db')
+    algorithmid       Integer
 
 
 Tabelle arbeitstyp      (Wird mit einem Insert direkt befüllt)
@@ -127,7 +128,10 @@ Spalten:
     vorname                     string
     nachname                    string
     hauptfiliale_fnr            integer (FK -> filiale)
+    counter                     Integer
     wochenstunden_vertrag       Integer (NOT NULL)
+    arbeitnehmertyp             Integer (Default: 40)
+    springeralgorithmid         INTEGER
     springer                    Boolean (Default: FALSE)
 
 
@@ -156,6 +160,14 @@ Spalten:
 
 
 
+
+tabelle mitarbeiter_arbeitet_in_filiale 
+    mnr               INTEGER  (FK -> mitarbeiter)
+    fnr               INTEGER  (FK -> filiale)
+    (PK: mnr, fnr)
+
+
+
 Tabelle stunden_konto
 Spalten:
     id (PK)                 Integer
@@ -180,6 +192,9 @@ Spalten:
     schicht_typ       string (FK -> arbeitstyp)
     anmerkung         String
     erstellt_am       Timestamp (Default: now())
+    aktualisiert_am   Timestamp (Default: now())
+
+    CONSTRAINT dienstplaene_unique_mnr_pro_tag (Unique datum, mnr, fnr)
 
 
 Tabelle user
@@ -203,26 +218,56 @@ Tabelle user
 ## 🚀 Erste Schritte
 
 ### Installation
-Um alle notwendigen Abhängigkeiten für das gesamte Projekt (Root, Frontend und Backend) zu installieren, führen Sie folgenden Befehl im Hauptverzeichnis aus:
+Um alle notwendigen Abhängigkeiten für das gesamte Projekt (Root, Frontend und Backend) zu installieren:
 
 npm run install-all
 
-### Projekt starten
-Dank `concurrently` können sowohl das Backend als auch das Frontend mit einem einzigen Befehl gleichzeitig gestartet werden.
+---
 
-**Entwicklungsmodus (mit Hot-Reload):**
+### Datenbank & Container starten
+Damit die App funktioniert, müssen die Docker-Container laufen.
+
+Wichtig: Wenn du neue Seeds (Testdaten) oder Änderungen am Schema (Tabellen-Struktur) gepullt hast, muss  die Datenbank einmalig "plattgemacht" werden. Nur so wird die Initialisierung neu getriggert:
+
+***Stoppt Container und löscht die alten Daten (Volumes)***
+docker compose down -v 
+
+***Startet die Container neu und baut das Backend/Datenbank frisch auf***
+docker compose up --build
+
+---
+
+**Applikation starten**
+Dank concurrently startest du Backend und Frontend gleichzeitig mit einem Befehl:**
 
 npm run dev
 
-*Dies startet das Vue-Frontend via Vite und den Express-Server via Nodemon.*
+***Wichtig: Manuelle Daten-Inserts (Testing)***
+Da wir keine Mock-Daten mehr verwenden, ist die App beim ersten Start (ohne Seeds) leer. Du kannst Test-Filialen manuell via Terminal anlegen, damit danach Mitarbeiter erstellt werden können!!! (wegen der Pflicht-Verknüpfung):
 
-**Standard-Start:**
 
-npm start
+___Testfilialen___
 
-### Projekt stoppen
-Um die laufenden Server und Prozesse zu beenden, nutzen Sie im Terminal die Tastenkombination:
-`Strg + C` (Windows/Linux) bzw. `Cmd + C` (macOS).
+``docker exec -it psp_database psql -U postgres -d dienstplan -c "INSERT INTO filiale (filialname, ort, farbe) VALUES ('Hauptzentrale', 'Wien', '#3b82f6');"``
+
+___Daten überprüfen___
+
+```
+-Filialen anzeigen
+docker exec -it psp_database psql -U postgres -d dienstplan -c "SELECT * FROM filiale;"
+
+-Mitarbeiter anzeigen
+docker exec -it psp_database psql -U postgres -d dienstplan -c "SELECT * FROM mitarbeiter;"
+```
+
+
+***Ganz wichtig!!!!***
+
+``Projekt stoppen``
+
+Um die laufenden Server im Terminal zu beenden: Strg + C (Windows/Linux) bzw. Cmd + C (macOS). (für Alex)
+
+Um die Docker-Container sauber herunterzufahren (ohne die Daten zu löschen):
 
 ---
 **Auftraggeber:** HTL Pinkafeld | **Auftraggeber:** Markus Luif

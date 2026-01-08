@@ -22,23 +22,23 @@ app.use('/api/filialen', filialenRouter);
 const dienstplanRouter = require('./routes/dienstplan.routes');
 app.use('/api/dienstplan', dienstplanRouter);
 
-/*
+// Wieder Aktiv (war auskommentiert)
 const authRouter = require('./routes/auth.routes');
-app.use('/api/auth', authRouter); */
+app.use('/api/auth', authRouter); 
 
 
 // ---------------------
 //   SERVER STARTEN
 // ---------------------
 
-const shouldInitDb = process.env.INIT_DB === "true";
+
 
 async function startApp() {
   try {
+    console.log('Docker braucht für den aufbau Länger....')
+    await new Promise(res => setTimeout(res, 5000));
     await db.initDatabase();
-    if (shouldInitDb) {
-      await db.initDatabase();
-    }
+
 
 
     app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
