@@ -7,11 +7,12 @@
  * 3. Logik: Lädt PL/pgSQL Funktionen, Trigger und Datenbank-Indizes.
  * 4. Seeds: Befüllt Tabellen mit Stammdaten (z.B. Arbeitstypen).
  * 5. Admin-User: Erstellt den Initial-User (Passwort via Bcrypt aus .env).
- *
+ * 
  * --------------------
- *  HINWEIS: Verwendet den 'sqlLoader.js', um alle Dateien in den jeweiligen
+ *  HINWEIS: Verwendet den 'sqlLoader.js', um alle Dateien in den jeweiligen 
  * Verzeichnissen automatisch auszuführen.
  */
+
 
 const pool = require("../../pool.js"); //Neu! da Der Pool wartbarer wird wenn er ausserhalb liegt
 const bcrypt = require("bcrypt");
@@ -65,28 +66,37 @@ async function initDatabase() {
         await client.query('BEGIN');
  
         // Externe Skripte => laden
-        // HINWEIS: prevent_double_booking Trigger gellöscht
+        // HINWEIS: prevent_double_booking Trigger gelöscht
         const schemaDir = __dirname;
         
+        const procedureDir = path.resolve(__dirname, '../procedures');
         const functionsDir = path.resolve(__dirname, '../functions');
         const triggersDir = path.resolve(__dirname, '../triggers');
         const indexesDir = path.resolve(__dirname, '../indexes');
         const seedsDir = path.resolve(__dirname, '../seeds');
  
         // erst das Schema laden!!!!!!! dann alles andere
-        // Funktionen, Trigger usw. ...und Seeds erst zum Schluss
- 
+        // Reihenfolge ist wichtig!!!
+
         // erstens
         await loadSqlFiles(client, [schemaDir]);
  
         // zweitens
         // console.log("Lade externe SQL-Skripte...");
-        await loadSqlFiles(client, [functionsDir, triggersDir, indexesDir]);
- 
+        await loadSqlFiles(client, [procedureDir, functionsDir]);
+
         // drittens
+        await loadSqlFiles(client, [ triggersDir, indexesDir]);
+
+        // viertens
         await loadSqlFiles(client, [seedsDir]);
- 
- 
+        // console.log("....Laden der Skripte beendet");
+
+     // Query Planner bekommt die aktualisierten Datensätze
+        await client.query('CALL pr_refresh_indexes();');
+
+
+
          // Admin-User
         const hashPassword = await bcrypt.hash(markusPassword, saltRounds);
  
