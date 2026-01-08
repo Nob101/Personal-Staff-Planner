@@ -1,60 +1,47 @@
-
 /**#####################################################
- * Das Modul verwaltet die Initialisierung der Datenbank
- * --------------------
- * ABLAUF:
- * 1. Rollen-Check: Stellt sicher, dass die 'admin'-Rolle existiert.
- * 2. Schema: Erstellt Tabellen (muss immer zuerst laufen).
- * 3. Logik: Lädt PL/pgSQL Funktionen, Trigger und Datenbank-Indizes.
- * 4. Seeds: Befüllt Tabellen mit Stammdaten (z.B. Arbeitstypen).
- * 5. Admin-User: Erstellt den Initial-User (Passwort via Bcrypt aus .env).
- * 
- * --------------------
- *  HINWEIS: Verwendet den 'sqlLoader.js', um alle Dateien in den jeweiligen 
- * Verzeichnissen automatisch auszuführen.
- */
-
-const pool = require('../../pool.js');  //Neu! da Der Pool wartbarer wird wenn er ausserhalb liegt
+* Das Modul verwaltet die Initialisierung der Datenbank
+* --------------------
+* ABLAUF:
+* 1. Rollen-Check: Stellt sicher, dass die 'admin'-Rolle existiert.
+* 2. Schema: Erstellt Tabellen (muss immer zuerst laufen).
+* 3. Logik: Lädt PL/pgSQL Funktionen, Trigger und Datenbank-Indizes.
+* 4. Seeds: Befüllt Tabellen mit Stammdaten (z.B. Arbeitstypen).
+* 5. Admin-User: Erstellt den Initial-User (Passwort via Bcrypt aus .env).
+*
+* --------------------
+*  HINWEIS: Verwendet den 'sqlLoader.js', um alle Dateien in den jeweiligen
+* Verzeichnissen automatisch auszuführen.
+*/
+ 
+const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const path = require('path');
-
 require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
-
-const { loadSqlFiles } = require('./sqlLoader'); 
+ 
+const { loadSqlFiles } = require('./sqlLoader');
 const saltRounds = 10;
-
-
+ 
+const pool = new Pool({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT || 5432,
+});
+ 
 async function initDatabase() {
     const client = await pool.connect();
-
+ 
     try {
         const markusPassword = process.env.INITIAL_MARKUS_PASSWORD;
         const adminRole = process.env.DB_ROLE_ADMIN_PASSWORD;
-
+ 
         if (!markusPassword || !adminRole) {
             throw new Error(`Config-Passwörter fehlen in der .env!`);
         }
-/**
- * NEU Wenn DB bereits existiert muss nicht der ganze Block ausgeführt werden
- * kontrolle über PG Inahltsverzeichnis welche Tabellen existieren oder nicht
- */
-        const checkTableRes = await client.query(`
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables   --'Inhaltsverzeichnis' von Postgres über alle Tabellen
-                WHERE table_schema = 'public' 
-                AND table_name = 'dienstplaene'
-                );
-            `);
-
-        const dbExists = checkTableRes.rows[0].exists;
-        if(dbExists){
-             console.log("--- DB-Existiert bereits. Setup wird Übersprungen ---");
-             return ;
-        }
-       
-
+ 
         console.log("--- DB-Initialisierung gestartet ---");
-
+ 
         await client.query(`
             DO $$
             BEGIN
@@ -63,53 +50,44 @@ async function initDatabase() {
                 END IF;
             END $$;
         `);
-
+ 
         await client.query('BEGIN');
-
+ 
         // Externe Skripte => laden
-        // HINWEIS: prevent_double_booking Trigger gelöscht
+        // HINWEIS: prevent_double_booking Trigger gellöscht
         const schemaDir = __dirname;
         
-        const procedureDir = path.resolve(__dirname, '../procedures');
         const functionsDir = path.resolve(__dirname, '../functions');
         const triggersDir = path.resolve(__dirname, '../triggers');
         const indexesDir = path.resolve(__dirname, '../indexes');
         const seedsDir = path.resolve(__dirname, '../seeds');
-
+ 
         // erst das Schema laden!!!!!!! dann alles andere
-        // Reihenfolge ist wichtig!!!
-
+        // Funktionen, Trigger usw. ...und Seeds erst zum Schluss
+ 
         // erstens
         await loadSqlFiles(client, [schemaDir]);
-
+ 
         // zweitens
         // console.log("Lade externe SQL-Skripte...");
-        await loadSqlFiles(client, [procedureDir, functionsDir]);
-
+        await loadSqlFiles(client, [functionsDir, triggersDir, indexesDir]);
+ 
         // drittens
-        await loadSqlFiles(client, [ triggersDir, indexesDir]);
-
-        // viertens
         await loadSqlFiles(client, [seedsDir]);
-        // console.log("....Laden der Skripte beendet");
-
-     // Query Planner bekommt die aktualisierten Datensätze
-        await client.query('CALL pr_refresh_indexes();');
-
-
-
+ 
+ 
          // Admin-User
         const hashPassword = await bcrypt.hash(markusPassword, saltRounds);
-
+ 
         await client.query(`
             INSERT INTO users (username, password_hash, role)
             VALUES ('markus', $1, 'admin') ON CONFLICT (username) DO NOTHING;
         `, [hashPassword]);
-
+ 
         await client.query('COMMIT');
-        console.log("Datenbank erfolgreich initialisiert.");
-
-
+        console.log("Datenbank erfolgreich an Backend-Wünsche angepasst.");
+ 
+ 
     } catch (err) {
         if (client) await client.query('ROLLBACK');
         console.error("DB-Initialisierung fehlgeschlagen:", err.message);
@@ -117,9 +95,9 @@ async function initDatabase() {
         client.release();
     }
 }
-
-
-
+ 
+ 
+ 
 module.exports = {
     query: (text, params) => pool.query(text, params),
     initDatabase,
