@@ -1,0 +1,59 @@
+# CLI Befehle:
+# Wichtig: Docker Desktop muss gestartet werden/laufen
+#   docker compose up --build -d
+#   docker compose down
+#   docker compose logs -f backend
+
+# version: '3.8'
+
+services:
+  # --- DATENBANK BEREICH Lukas ---
+  db:
+    image: postgres:15
+    container_name: psp_database
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # --- BACKEND Alexander ---
+  backend:
+    build: ./backend
+    container_name: psp_backend
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      # WICHTIG: Host ist hier 'db' (der Name des Services oben), nicht localhost!
+      DB_HOST: db
+      DB_NAME: ${DB_NAME}      # <--- fehlte im ersten durchlauf
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_ROLE_ADMIN_PASSWORD: ${DB_ROLE_ADMIN_PASSWORD}
+      INITIAL_MARKUS_PASSWORD: ${INITIAL_MARKUS_PASSWORD}
+    depends_on:
+      - db
+
+
+  # --- FRONTEND BEREICH für Oliver (VUE) und JD (TAILWIND)  ---
+  frontend:
+    # HINWEIS für das Frontend:    Docker sucht hier nach dem Ordner 'Frontend' (Großschreibung beachten!)
+    build: ./Frontend 
+    container_name: psp_frontend
+    restart: always
+    ports:
+      - "5173:5173" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen OJ!!!!
+    environment:
+
+      # Für den fall, dass Vue wissen muss, wo das Backend läuft:
+      VITE_API_URL: http://localhost:5173
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

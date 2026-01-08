@@ -5,12 +5,11 @@ RETURNS TABLE (
   mnr INTEGER,
   vorname VARCHAR,
   nachname VARCHAR,
-  fkurzl VARCHAR,
   akurzl VARCHAR
 ) AS $$
 BEGIN
   RETURN QUERY
-  SELECT m.MNr, m.Vorname, m.Nachname, m.FKurzl, m.AKurzl
+  SELECT m.MNr, m.Vorname, m.Nachname, m.AKurzl
   FROM mitarbeiter m
   JOIN mitarbeiter_arbeitet_in_Filiale mf ON m.MNr = mf.MNr
   WHERE mf.FNr = fnr;

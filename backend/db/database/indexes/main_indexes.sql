@@ -18,7 +18,9 @@ CREATE INDEX IF NOT EXISTS idx_mitarbeiter_springer ON mitarbeiter(springer) WHE
 -- Performance für joins (foreign Keys)
 CREATE INDEX IF NOT EXISTS idx_dienstplaene_mnr ON dienstplaene(mnr);
 CREATE INDEX IF NOT EXISTS idx_dienstplaene_fnr ON dienstplaene(fnr);
-CREATE INDEX IF NOT EXISTS idx_mitarbieter_fkurzl ON mitarbeiter(fkurzl);
 
+/* 
+CREATE INDEX IF NOT EXISTS idx_mitarbieter_fkurzl ON mitarbeiter(fkurzl);
+  */
 
 

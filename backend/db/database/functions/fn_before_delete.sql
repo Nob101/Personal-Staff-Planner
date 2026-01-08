@@ -1,13 +1,19 @@
 
 
---Warnt vor jedem Löscehn eines datensatzes
-CREATE OR REPLACE FUNCTION fn_warn_before_delete()
-RETURNS trigger AS $$
-BEGIN
-  IF current_user = 'markus' THEN
-    RAISE EXCEPTION 'Vorsicht! Möchten Sie wirklich diesen Datensatz löschen?';
-  END IF;
-  RETURN OLD;
-END;
-$$ LANGUAGE plpgsql;
+-- -- Warnt vor jedem Löscehn eines datensatzes
+-- -- Besser als POP UP im reinen Frontend
+-- -- Als SAFE DELETE Methode nur wenn noch zeit bleibt -> Komplex
+
+
+-- CREATE OR REPLACE FUNCTION fn_warn_before_delete()
+-- RETURNS trigger AS $$
+-- BEGIN
+
+--     RAISE EXCEPTION 'Vorsicht! Möchten Sie wirklich diesen Datensatz löschen?';
+--   RETURN OLD;
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+
+
 
