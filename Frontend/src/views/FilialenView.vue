@@ -1,5 +1,5 @@
 <script setup>
-    import Navbar from '@/components/global/Navbar.vue'
+    import Navbar_main from '@/components/global/Navbar_main.vue'
     import FilialenList from '@/components/filialen/FilialenList.vue';
 
     //TestCode

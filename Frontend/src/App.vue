@@ -6,7 +6,7 @@
 
 <script setup>
 // Import von Navbar. Die Views werden vom Router geregelt mit router-view
-import Navbar from '@/components/global/Navbar.vue';
+import Navbar_main from '@/components/global/Navbar_main.vue';
 
 </script>
 

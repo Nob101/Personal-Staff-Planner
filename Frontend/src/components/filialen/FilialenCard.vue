@@ -53,7 +53,6 @@ const springerMitarbeiter = computed(() =>
 
       <!-- Column 1: Name, Email, Telefon -->
       <div class="column">
-        <p data-label="Filialenname">{{ filialen.name ?? '-' }}</p>
         
         <fieldset class="box">
           <legend>Email</legend>
