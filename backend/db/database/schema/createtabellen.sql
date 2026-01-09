@@ -65,7 +65,6 @@ CREATE TABLE IF NOT EXISTS mitarbeiter (
 
     -- Neu: Flexibles Stundenmodell statt fixen 160h
     counter INTEGER DEFAULT 0,
-
     arbeitnehmertyp INTEGER DEFAULT 40,
     springeralgorithmid INTEGER,
     springer BOOLEAN DEFAULT FALSE
@@ -98,6 +97,13 @@ CREATE TABLE IF NOT EXISTS mitarbeiter_email (
 );
 
 
+
+
+CREATE TABLE IF NOT EXISTS mitarbeiter_arbeitet_in_filiale (
+  mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
+  fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE CASCADE,
+  PRIMARY KEY (mnr, fnr)
+);
 
 
 CREATE TABLE IF NOT EXISTS mitarbeiter_arbeitet_in_filiale (
