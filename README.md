@@ -31,15 +31,32 @@ Das Frontend basiert auf **Vue 3** mit einer komponentenbasierten Architektur:
 
 ---
 
-## 📊 Datenmodell (Auszug)
 
-Das System nutzt ein relationales Datenbanksystem mit folgenden Kern-Tabellen:
-- **mitarbeiter**: Stammdaten (PK: Mnr, Vorname, Nachname, etc.)
-- **filiale**: Standortinformationen (PK: Fnr, PLZ, Ort, etc.)
-- **mitarbeiter_arbeitet_in_Filiale**: Verknüpfung zwischen Personal und Standorten
-- **arbeitstyp**: Definition der Arbeitsmodelle
-- **mitarbeiter_kontakt/telefon/email**: Detailinformationen zur Erreichbarkeit
+## 📊 Datenmodell (Struktur)
 
+Das System nutzt ein relationales PostgreSQL-Datenbanksystem. Zur Sicherstellung der Datenintegrität werden **Constraints** und **Cascading Deletes** verwendet.
+
+### 📋 Kern-Tabellen
+- **filiale**: Stammdaten der Standorte (PK: `fnr`, Kurzbezeichnung `fkurzl`, Farbcodes für UI).
+- **mitarbeiter**: Personalstammdaten (PK: `mnr`, Soll-Stunden, Springer-Status, Algorithmus-Zuweisung).
+- **dienstplaene**: Zentrale Planungstabelle (PK: `id`). Ein Unique-Constraint auf `datum, mnr, fnr, schicht_typ` sichert die Logik.
+- **arbeitstyp**: Definition der Schichtarten (PK: `akurzl`, z. B. 'F' für Frühdienst).
+- **algorithmen / algorithmus_muster**: Steuerungstabellen für die automatisierte Dienstplanerstellung.
+
+### 🔗 Relationen & Details
+- **mitarbeiter_arbeitet_in_Filiale**: N:M Verknüpfung für Mitarbeiter, die in mehreren Filialen eingesetzt werden können.
+- **Erreichbarkeit**: Normalisierte Detailtabellen (**mitarbeiter_kontakt**, **mitarbeiter_telefon**, **mitarbeiter_email**) mit `ON DELETE CASCADE`.
+- **users**: Verwaltung der Systemzugriffe (Username, Password-Hash, Role).
+
+---
+
+## 🏗 Datenbank-Besonderheiten (Archiv)
+
+> **Integrität:** `ON DELETE CASCADE` stellt sicher, dass beim Löschen eines Mitarbeiters alle Kontaktinformationen (Telefon, Email, Anschrift) automatisch entfernt werden.
+>
+> **Springer-Logik:** Das Design erlaubt mehrere Schichten pro Tag/Mitarbeiter in unterschiedlichen Filialen. Ein automatischer `counter` in der Mitarbeitertabelle unterstützt die faire Verteilung durch den Algorithmus.
+>
+> **Sicherheit:** Passwörter werden verschlüsselt als `password_hash` gespeichert. Die Datenbank initialisiert zudem automatisch Trigger für Zeitstempel und zur Vermeidung von Doppelbuchungen.
 ---
 
 ## 👥 Projektteam & Rollen
@@ -79,6 +96,21 @@ ___Umgebungsvariablen:___  Kopiert die Datei .env.example. und bennent sie um in
 
 ---
 
+---
+
+<h3>Setup Anleitung</h3>
+
+**Einmalig**
+___Installation:___ Ladet PostgreSQL von `postgresql.org/download` herunter und installiert es.
+___WICHTIG:___ Das Passwort, das ihr bei der Installation für den User postgres vergebt, ist das `DB_PASSWORD`. Merken!
+___DB anlegen:___ Öffne pgAdmin 4, Rechtsklick auf "Databases" -> "Create" -> "Database". Name: `dienstplan` (Muss exakt so heißen).
+___Im Backend-ordenr:___ `npm install` ausführen
+___Umgebungsvariablen:___  Kopiert die Datei .env.example. und bennent sie um in `.env` ohne name oder Ähnliches und tragt das lokale Postgres passwort in  `DB_PASSWORD` ein.
+
+>Wenn Postgres nicht startet: mit windowstast + r nach services.msc suchen; und in der liste zu postgres scrollen [starten, beenden, neustarten] Näheres steht in der .env.example Datei
+
+---
+
 ````
 
 
@@ -94,6 +126,7 @@ Spalten:
     telefon           string
     email             string
     farbe             string (Default: '#3498db')
+    algorithmid       Integer
 
 
 Tabelle arbeitstyp      (Wird mit einem Insert direkt befüllt)
@@ -110,7 +143,10 @@ Spalten:
     vorname                     string
     nachname                    string
     hauptfiliale_fnr            integer (FK -> filiale)
+    counter                     Integer
     wochenstunden_vertrag       Integer (NOT NULL)
+    arbeitnehmertyp             Integer (Default: 40)
+    springeralgorithmid         INTEGER
     springer                    Boolean (Default: FALSE)
 
 
@@ -139,6 +175,14 @@ Spalten:
 
 
 
+
+tabelle mitarbeiter_arbeitet_in_filiale 
+    mnr               INTEGER  (FK -> mitarbeiter)
+    fnr               INTEGER  (FK -> filiale)
+    (PK: mnr, fnr)
+
+
+
 Tabelle stunden_konto
 Spalten:
     id (PK)                 Integer
@@ -163,6 +207,9 @@ Spalten:
     schicht_typ       string (FK -> arbeitstyp)
     anmerkung         String
     erstellt_am       Timestamp (Default: now())
+    aktualisiert_am   Timestamp (Default: now())
+
+    CONSTRAINT dienstplaene_unique_mnr_pro_tag (Unique datum, mnr, fnr)
 
 
 Tabelle user
@@ -186,26 +233,56 @@ Tabelle user
 ## 🚀 Erste Schritte
 
 ### Installation
-Um alle notwendigen Abhängigkeiten für das gesamte Projekt (Root, Frontend und Backend) zu installieren, führen Sie folgenden Befehl im Hauptverzeichnis aus:
+Um alle notwendigen Abhängigkeiten für das gesamte Projekt (Root, Frontend und Backend) zu installieren:
 
 npm run install-all
 
-### Projekt starten
-Dank `concurrently` können sowohl das Backend als auch das Frontend mit einem einzigen Befehl gleichzeitig gestartet werden.
+---
 
-**Entwicklungsmodus (mit Hot-Reload):**
+### Datenbank & Container starten
+Damit die App funktioniert, müssen die Docker-Container laufen.
+
+Wichtig: Wenn du neue Seeds (Testdaten) oder Änderungen am Schema (Tabellen-Struktur) gepullt hast, muss  die Datenbank einmalig "plattgemacht" werden. Nur so wird die Initialisierung neu getriggert:
+
+***Stoppt Container und löscht die alten Daten (Volumes)***
+docker compose down -v 
+
+***Startet die Container neu und baut das Backend/Datenbank frisch auf***
+docker compose up --build
+
+---
+
+**Applikation starten**
+Dank concurrently startest du Backend und Frontend gleichzeitig mit einem Befehl:**
 
 npm run dev
 
-*Dies startet das Vue-Frontend via Vite und den Express-Server via Nodemon.*
+***Wichtig: Manuelle Daten-Inserts (Testing)***
+Da wir keine Mock-Daten mehr verwenden, ist die App beim ersten Start (ohne Seeds) leer. Du kannst Test-Filialen manuell via Terminal anlegen, damit danach Mitarbeiter erstellt werden können!!! (wegen der Pflicht-Verknüpfung):
 
-**Standard-Start:**
 
-npm start
+___Testfilialen___
 
-### Projekt stoppen
-Um die laufenden Server und Prozesse zu beenden, nutzen Sie im Terminal die Tastenkombination:
-`Strg + C` (Windows/Linux) bzw. `Cmd + C` (macOS).
+``docker exec -it psp_database psql -U postgres -d dienstplan -c "INSERT INTO filiale (filialname, ort, farbe) VALUES ('Hauptzentrale', 'Wien', '#3b82f6');"``
+
+___Daten überprüfen___
+
+```
+-Filialen anzeigen
+docker exec -it psp_database psql -U postgres -d dienstplan -c "SELECT * FROM filiale;"
+
+-Mitarbeiter anzeigen
+docker exec -it psp_database psql -U postgres -d dienstplan -c "SELECT * FROM mitarbeiter;"
+```
+
+
+***Ganz wichtig!!!!***
+
+``Projekt stoppen``
+
+Um die laufenden Server im Terminal zu beenden: Strg + C (Windows/Linux) bzw. Cmd + C (macOS). (für Alex)
+
+Um die Docker-Container sauber herunterzufahren (ohne die Daten zu löschen):
 
 ---
 **Auftraggeber:** HTL Pinkafeld | **Auftraggeber:** Markus Luif

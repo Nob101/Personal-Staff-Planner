@@ -1,7 +1,7 @@
 /*
 Spalte	                               Typ	                            Beschreibung
 
-id	                                   SERIAL                          PRIMARY KEY	
+fnr	                                   SERIAL                          PRIMARY KEY	
 filialname	                           TEXT	                          Name oder Kürzel der Filiale
 farbe	                                 TEXT	                          HEX-Farbcode fürs Frontend
 ort	                                   TEXT	                          Standort

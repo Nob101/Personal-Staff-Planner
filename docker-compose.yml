@@ -3,6 +3,9 @@
 #   docker compose up --build -d
 #   docker compose down
 #   docker compose logs -f backend
+#   Port mapping ->   Host-Port : Container-Port   WICHTIG!!!!
+
+# docker exec -it psp_database psql -U postgres -d dienstplan -c "\dt"  zeigt alle tabellen
 
 # version: '3.8'
 
@@ -31,6 +34,7 @@ services:
     environment:
       # WICHTIG: Host ist hier 'db' (der Name des Services oben), nicht localhost!
       DB_HOST: db
+      DB_PORT: 5432
       DB_NAME: ${DB_NAME}      # <--- fehlte im ersten durchlauf
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
@@ -50,8 +54,8 @@ services:
       - "5173:5173" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen OJ!!!!
     environment:
 
-      # Für den fall, dass Vue wissen muss, wo das Backend läuft:
-      VITE_API_URL: http://localhost:5173
+      # Für den fall, dass Vue wissen muss, wo das Backend läuft: 3001  !!!
+      VITE_API_URL: http://localhost:3001
     depends_on:
       - backend
 

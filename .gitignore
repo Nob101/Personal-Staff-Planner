@@ -1,20 +1,28 @@
-# macOS
+# Node modules
+node_modules/
 .DS_Store
 
-# Node
-node_modules/
+# Umgebungsvariablen (env Dateien)
+*.env
+
+# Draw.io Dateien
+*.drawio
+*.drawio.svg
+*.drawio.png
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 
-# Env
-.env
-.env.*
-
-# Vite / Vue
+# Build-Ordner
 dist/
-.vite/
-.vscode/
+build/
 
-# Optional: build artifacts
-coverage/
+# IDEs/Editoren
+.vscode/
+.idea/
+.idea/
+
+# Betriebssystem-Spezifische Dateien
+.DS_Store
+Thumbs.db
