@@ -1,34 +1,61 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import Navbar from '@/components/global/Navbar.vue'
-import FilialenList from '@/components/filialen/FilialenList.vue';
-import { http } from '@/services/http' // Pfad zu deiner http.js anpassen!
+    import Navbar from '@/components/global/Navbar.vue'
+    import FilialenList from '@/components/filialen/FilialenList.vue';
 
-const mitarbeiter = ref([])
-const filialen = ref([])
+    //TestCode
+    import ColorPicker from '@/components/global/ColorPicker.vue'
+    import { ref } from 'vue'
+    const color = ref('#3b82f6')
 
-// Funktion zum Laden der echten Daten vom Backend
-const loadData = async () => {
-  try {
-    // 1. Filialen laden (Singular 'filiale' laut deinem Schema/Repo)
-    const resFilialen = await http.get('filiale'); 
-    filialen.value = resFilialen.data;
-
-    // 2. Mitarbeiter laden
-    const resMitarbeiter = await http.get('mitarbeiter');
-    mitarbeiter.value = resMitarbeiter.data;
-    
-    console.log("Daten erfolgreich geladen:", { 
-      filialen: filialen.value, 
-      mitarbeiter: mitarbeiter.value 
-    });
-  } catch (error) {
-    console.error("Fehler beim Laden der Backend-Daten:", error);
+//Dummy-Daten für Testzwecke. MÜSSEN MIT BACKEND REQUESTS ersetzt werden.
+const mitarbeiter = ref([
+  {
+    id: 1,
+    vorname: 'Max',
+    nachname: 'Mustermann',
+    geburtsdatum: '1990-01-15',
+    email1: 'max.mustermann@example.com',
+    email2: 'max2@example.com',
+    telefon1: '0123456789',
+    telefon2: '0123456788',
+    strasse: 'Musterstraße 1',
+    ort: 'Musterstadt',
+    postleitzahl: '2345',
+    land: 'Österreich',
+    arbeitsstunden: 40,
+    springer: true,
+    hauptfiliale: 1,
+    nebenfilialen: [2],
+    anmerkungen: 'Sehr motiviert'
+  },
+  {
+    id: 2,
+    vorname: 'Lisa',
+    nachname: 'Müller',
+    geburtsdatum: '1992-06-20',
+    email1: 'lisa.mueller@example.com',
+    email2: 'lisa2@example.com',
+    telefon1: '0987654321',
+    telefon2: '0987654322',
+    strasse: 'Beispielweg 5',
+    ort: 'Beispielstadt',
+    postleitzahl: '4321',
+    land: 'Österreich',
+    arbeitsstunden: 30,
+    springer: false,
+    hauptfiliale: 2,
+    nebenfilialen: [1, 3],
+    anmerkungen: 'Teilzeit'
   }
-}
+])
+const filialen = ref([
+  { id: 1, name: 'Filiale A', color: '#ccc' },
+  { id: 2, name: 'Filiale B', color: '#ccc' },
+  { id: 3, name: 'Filiale C', color: '#ccc' }
+])
 
-// Beim Starten der Komponente ausführen
-onMounted(loadData);
+
+
 </script>
 
 

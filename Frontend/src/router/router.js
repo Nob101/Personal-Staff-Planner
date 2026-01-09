@@ -26,14 +26,14 @@ const router = createRouter({
 })
 
 // --- temporäre Weiterleitung um Login zu skippen---
-/*
+
 router.beforeEach((to, from, next) => {
   if (to.name === "login") {
     return next({ name: "mitarbeiter" }) // temporär Login überspringen
   }
   next()
 })
-  */
+ 
 
 //Export
 export default router
