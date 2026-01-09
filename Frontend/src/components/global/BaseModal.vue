@@ -31,19 +31,24 @@ onUnmounted(() => {
 
 <template>
   <teleport to="body">
-    <div v-if="show" class="modal-overlay" @click.self="close">
-      <div class="modal-container" :style="{ width: width }">
-        <!-- Header Slot -->
+    <div
+      v-if="show"
+      class="modal-overlay"
+      @click.self="close"
+      style="position:fixed; inset:0; z-index:99999;"
+    >
+      <div
+        class="modal-container"
+        :style="{ width: width, position: 'relative', zIndex: 100000 }"
+      >
         <div v-if="$slots.header" class="modal-header flex justify-center items-center mb-4">
           <slot name="header"></slot>
         </div>
 
-        <!-- Body Slot -->
         <div class="modal-body mb-4">
           <slot name="body"></slot>
         </div>
 
-        <!-- Footer Slot -->
         <div v-if="$slots.footer" class="modal-footer mt-4 flex justify-center gap-4">
           <slot name="footer"></slot>
         </div>
@@ -61,6 +66,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 200;
 }
 
 .modal-container {
@@ -70,5 +76,7 @@ onUnmounted(() => {
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  position: relative;
+  z-index: 210;
 }
 </style>

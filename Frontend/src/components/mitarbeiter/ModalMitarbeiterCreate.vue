@@ -19,7 +19,6 @@ const props = defineProps({
 // Reaktive Formularfelder
 const vorname = ref('')
 const nachname = ref('')
-const geburtsdatum = ref('')
 const email1 = ref('')
 const email2 = ref('')
 const telefon1 = ref('')
@@ -55,7 +54,6 @@ function handleSubmit() {
   emit('mitarbeiterCreate', {
     vorname: vorname.value,
     nachname: nachname.value,
-    geburtsdatum: geburtsdatum.value || null,
     email1: email1.value || '',
     email2: email2.value || '',
     telefon1: telefon1.value || '',
@@ -94,12 +92,6 @@ function handleSubmit() {
             <label>Nachname:</label>
             <input type="text" v-model="nachname" required class="w-full border rounded px-2 py-1"/>
           </div>
-        </div>
-
-        <!-- Geburtsdatum -->
-        <div>
-          <label>Geburtsdatum:</label>
-          <input type="date" v-model="geburtsdatum" class="w-full border rounded px-2 py-1"/>
         </div>
 
         <!-- Email -->

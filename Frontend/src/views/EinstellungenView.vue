@@ -1,9 +1,9 @@
 <script setup>
-    import Navbar from '@/components/global/Navbar.vue'
+    import Navbar_main from '@/components/global/Navbar_main.vue'
 </script>
 
 
 <template>
-    <Navbar />
+    <Navbar_main />
     <h1>Einstellungen hier!</h1>
 </template>

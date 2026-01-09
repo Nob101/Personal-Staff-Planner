@@ -1,6 +1,8 @@
 <script setup>
 
 import { ref } from "vue";
+import Navbar_main from '@/components/global/Navbar_main.vue';
+import PageBar from "@/components/ui/PageBar.vue";
  
 const jahr = ref(2025);
 
@@ -20,6 +22,13 @@ function neuGenerieren() {
 </script>
  
 <template>
+  <Navbar_main />
+  <PageBar>
+    <template #actions>
+      <!-- Actions go here -->
+    </template>
+  </PageBar>
+
 <div>
 <h1 class="text-2xl font-semibold mb-4">Automatischer Dienstplan</h1>
  
