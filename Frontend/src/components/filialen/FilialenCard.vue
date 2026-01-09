@@ -51,7 +51,7 @@ const springerMitarbeiter = computed(() =>
     <!-- Columns -->
     <div class="filialen-card-columns">
 
-      <!-- Column 1: Name, Email, Telefon -->
+      <!-- Column 1: Email, Telefon -->
       <div class="column">
         
         <fieldset class="box">
