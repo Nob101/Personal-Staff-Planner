@@ -19,6 +19,7 @@ const props = defineProps({
 // Reaktive Formularfelder
 const vorname = ref('')
 const nachname = ref('')
+const geburtsdatum = ref('')
 const email1 = ref('')
 const email2 = ref('')
 const telefon1 = ref('')

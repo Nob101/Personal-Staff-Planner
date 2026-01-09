@@ -7,7 +7,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import LoginView from "@/views/LoginView.vue";
 import MitarbeiterView from "@/views/MitarbeiterView.vue";
 import FilialenView from "@/views/FilialenView.vue";
-import DienstplanView from "@/views/DienstplanView.vue";
+import DienstplaeneView from "@/views/DienstplaeneView.vue";
 import EinstellungenView from "@/views/EinstellungenView.vue";
 
 
@@ -16,7 +16,7 @@ const routes = [
   { path: "/", name: "login", component: LoginView },
   { path: "/mitarbeiter", name: "mitarbeiter", component: MitarbeiterView },
   { path: "/filialen", name: "filialen", component: FilialenView },
-  { path: "/dienstplan", name: "dienstplan", component: DienstplanView },
+  { path: "/dienstplaene", name: "dienstplaene", component: DienstplaeneView },
   { path: "/einstellungen", name: "einstellungen", component: EinstellungenView },
 ]
 
@@ -26,14 +26,14 @@ const router = createRouter({
 })
 
 // --- temporäre Weiterleitung um Login zu skippen---
-/*
+
 router.beforeEach((to, from, next) => {
   if (to.name === "login") {
     return next({ name: "mitarbeiter" }) // temporär Login überspringen
   }
   next()
 })
-  */
+ 
 
 //Export
 export default router

@@ -21,6 +21,7 @@ const props = defineProps({
 //wird verwendet damit die tatsächlichen Mitarbeiterdaten erst beim speichern überschrieben werden!
 const vorname = ref('')
 const nachname = ref('')
+const geburtsdatum = ref('')
 const email1 = ref('')
 const email2 = ref('')
 const telefon1 = ref('')
@@ -46,6 +47,7 @@ watch(
     if (edited) {
       vorname.value = edited.vorname || ''
       nachname.value = edited.nachname || ''
+      geburtsdatum.value = edited.geburtsdatum || ''
       email1.value = edited.email1 || ''
       email2.value = edited.email2 || ''
       telefon1.value = edited.telefon1 || ''
@@ -123,6 +125,7 @@ function handleSubmit() {
             <input type="text" v-model="nachname" required class="w-full border rounded px-2 py-1"/>
           </div>
         </div>
+
 
         <!-- Email -->
         <div class="grid grid-cols-2 gap-4">

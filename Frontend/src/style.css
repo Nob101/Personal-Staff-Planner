@@ -8,3 +8,11 @@ body {
     line-height: 1.5;
 }
 
+button {
+  @apply px-4 py-2 rounded-lg font-medium text-center 
+         border border-black
+         transition duration-200
+         shadow-sm
+         hover:shadow-md
+         cursor-pointer;
+}
