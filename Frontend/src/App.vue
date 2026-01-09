@@ -7,24 +7,7 @@
 <script setup>
 // Import von Navbar. Die Views werden vom Router geregelt mit router-view
 import Navbar from '@/components/global/Navbar.vue';
-
-import { onMounted } from 'vue';
-import { http } from '@/services/http.js';
-
-
-/**
- * Verbindungstest (LUKAS)
- */
-onMounted(async () => {
-  try {
-    // Abfrage an die Mitarbeiter, um die Leitung zu testen
-    const response = await http.get('mitarbeiter');
-    console.log("App.vue: Verbindung erfolgreich! Daten vom Server:", response.data);
-    
-  } catch (err) {
-    console.error("Test-Verbindung fehlgeschlagen:", err);
-  }
-});
+import ColorPicker from './components/global/ColorPicker.vue';
 
 </script>
 
