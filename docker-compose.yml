@@ -31,6 +31,9 @@ services:
     restart: always
     ports:
       - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules   #schützt die container module
     environment:
       # WICHTIG: Host ist hier 'db' (der Name des Services oben), nicht localhost!
       DB_HOST: db
@@ -52,8 +55,12 @@ services:
     restart: always
     ports:
       - "5173:5173" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen OJ!!!!
+    
+    volumes:
+      - ./Frontend:/app         # <--- SPIEGELT VUE-CODE FÜR VITE HOT RELOAD
+      - /app/node_modules       # <--- VERHINDERT ÜBERSCHREIBEN DER MODULE
+    
     environment:
-
       # Für den fall, dass Vue wissen muss, wo das Backend läuft: 3001  !!!
       VITE_API_URL: http://localhost:3001
     depends_on:

@@ -4,69 +4,53 @@ Dieses Projekt entsteht im Rahmen der Diplomarbeit an der **HTL Pinkafeld (Fachb
 
 ## 🎯 Zielsetzung
 
-Die Anwendung ermöglicht die Verwaltung von Mitarbeitern und Filialen (Bezirke Hartberg, Feldbach und Fürstenfeld). Unter Berücksichtigung gesetzlicher Regelungen, Monatsstunden und individueller Verfügbarkeiten bietet das System:
-- **Automatische Dienstplanerstellung**
-- **Flexible Anpassungen** bei Ausfällen (Krankheit, Urlaub)
-- **Ersatzvorschläge** für fehlendes Personal
+Die Anwendung ermöglicht die Verwaltung von Mitarbeitern und Filialen (Bezirke Hartberg, Feldbach, Fürstenfeld, uvm). Unter Berücksichtigung gesetzlicher Regelungen und individueller Kapazitäten bietet das System:
+
+- **Intelligente, automatische Dienstplanerstellung**: Das System verfügt über eine im Backend implementierte Logik-Engine, die eine automatisierte Dienstplanerstellung ermöglicht. Dabei werden komplexe Validierungsprozesse direkt während der Generierung durchgeführt.
+- **Flexible Anpassungen**: Bei kurzfristigen Ausfällen (Krankheit, Urlaub) auf den Springer-Pool und liefert geeignete Vorschläge für den Ersatz
+- **Ersatzvorschläge**: Das System schlägt proaktiv verfügbare Mitarbeiter vor, die für den jeweiligen Standort qualifiziert sind.
+- **Optimierte UX für Multi-Filial-Betrieb**: Durch ein konfigurierbares Farbleitsystem  können Nutzer jede Filiale individuell Farben zuweisen.Dies ermöglicht eine intuitive visuelle Trennung der Bezirke und minimiert das Risiko von Fehlbuchungen.
 
 ---
 
 ## 🏗 Projektstruktur
 
-Das Projekt ist in ein **Backend (Express/Node.js)** und ein **Frontend (Vue 3)** unterteilt.
-
-### Backend API (`/backend`)
-Die Kommunikation erfolgt über eine REST-API:
-- `GET /api/mitarbeiter` – Alle Mitarbeiter abrufen
-- `GET /api/mitarbeiter/:mnr` – Einzelnen Mitarbeiter abrufen
-- `POST /api/mitarbeiter` – Neuen Mitarbeiter erstellen
-- `PUT /api/mitarbeiter/:mnr` – Mitarbeiter aktualisieren
-- `DELETE /api/mitarbeiter/:mnr` – Mitarbeiter löschen
-
-### Frontend (`/Frontend`)
-Das Frontend basiert auf **Vue 3** mit einer komponentenbasierten Architektur:
-- `src/views/` – Hauptansichten (MitarbeiterView, FilialView)
-- `src/components/global/` – Wiederverwendbare Basis-Komponenten (Modals, Inputs, Buttons)
-- `src/components/mitarbeiter/` & `filialen/` – Fachspezifische Komponenten
+Das Projekt folgt einer modernen Web-Architektur:
+- **Frontend**: Vue 3 (Composition API) mit Tailwind CSS für ein responsives Design.
+- **Backend**: Node.js & Express REST-API zur Bereitstellung der Geschäftslogik.
+- **Datenbank**: Relationales PostgreSQL-System zur Sicherstellung der Datenintegrität.
 
 ---
 
 
-## 📊 Datenmodell (Struktur)
+## 📊 Datenmodell (Struktur) -Optimierte Version
 
-Das System nutzt ein relationales PostgreSQL-Datenbanksystem. Zur Sicherstellung der Datenintegrität werden **Constraints** und **Cascading Deletes** verwendet.
+Das System nutzt ein relationales PostgreSQL-Datenbanksystem. Die Struktur wurde im Vergleich zum ersten Entwurf für eine höhere Flexibilität (Springer-Einsätze) angepasst.
 
-### 📋 Kern-Tabellen
-- **filiale**: Stammdaten der Standorte (PK: `fnr`, Kurzbezeichnung `fkurzl`, Farbcodes für UI).
-- **mitarbeiter**: Personalstammdaten (PK: `mnr`, Soll-Stunden, Springer-Status, Algorithmus-Zuweisung).
-- **dienstplaene**: Zentrale Planungstabelle (PK: `id`). Ein Unique-Constraint auf `datum, mnr, fnr, schicht_typ` sichert die Logik.
-- **arbeitstyp**: Definition der Schichtarten (PK: `akurzl`, z. B. 'F' für Frühdienst).
-- **algorithmen / algorithmus_muster**: Steuerungstabellen für die automatisierte Dienstplanerstellung.
+### Kern-Tabellen
+- **filiale**: Stammdaten der Standorte inklusive UI-Metadaten (Farbcodes).
+- **mitarbeiter**: Personalstammdaten mit integriertem Stundenmodell (`counter`, `arbeitnehmertyp`).
+- **dienstplaene**: Zentrale Planungstabelle. Der Unique-Constraint `(datum, mnr, fnr)` ermöglicht präzise Springer-Zuweisungen (Einsätze in verschiedenen Filialen am selben Tag).
+- **stunden_konto**: Dient als monatlicher Snapshot für den Soll/Ist-Abgleich der Arbeitsstunden.
 
-### 🔗 Relationen & Details
-- **mitarbeiter_arbeitet_in_Filiale**: N:M Verknüpfung für Mitarbeiter, die in mehreren Filialen eingesetzt werden können.
-- **Erreichbarkeit**: Normalisierte Detailtabellen (**mitarbeiter_kontakt**, **mitarbeiter_telefon**, **mitarbeiter_email**) mit `ON DELETE CASCADE`.
-- **users**: Verwaltung der Systemzugriffe (Username, Password-Hash, Role).
+### Integrität & Sicherheit
+- **Cascading Deletes**: Durch `ON DELETE CASCADE` wird sichergestellt, dass bei Löschung eines Mitarbeiters alle verknüpften Kontakt- und Erreichbarkeitsdaten konsistent entfernt werden.
+- **Validierung**: Die Logikschicht des Backends prüft tagesübergreifende Arbeitszeitregeln, da die Datenbankebene bewusste Flexibilität für Mehrfacheinträge (Springer) lässt.
+- **Authentifizierung**: Der Zugriffsschutz erfolgt über gesicherte Benutzerkonten mit verschlüsselten Passwort-Hashes (`bcrypt`).
 
----
-
-## 🏗 Datenbank-Besonderheiten (Archiv)
-
-> **Integrität:** `ON DELETE CASCADE` stellt sicher, dass beim Löschen eines Mitarbeiters alle Kontaktinformationen (Telefon, Email, Anschrift) automatisch entfernt werden.
->
-> **Springer-Logik:** Das Design erlaubt mehrere Schichten pro Tag/Mitarbeiter in unterschiedlichen Filialen. Ein automatischer `counter` in der Mitarbeitertabelle unterstützt die faire Verteilung durch den Algorithmus.
->
-> **Sicherheit:** Passwörter werden verschlüsselt als `password_hash` gespeichert. Die Datenbank initialisiert zudem automatisch Trigger für Zeitstempel und zur Vermeidung von Doppelbuchungen.
 ---
 
 ## 👥 Projektteam & Rollen
 
 ### Backend-Bereich
+
 - **Alexander Haupt**: Evaluierung der Backend-Frameworks & Implementierung der Serviceschicht.
+- 
 - **Lukas Atzmüller**: Evaluierung der Datenbanksysteme, Datenmodellierung & Infrastruktur.
 
 ### Frontend-Bereich
 - **Oliver Bauer**: Evaluierung der Frontend-Technologien & Implementierung der Kern-Anwendung.
+- 
 - **Dumitru Jelezneac**: Design der Benutzeroberfläche & Implementierung der GUI-Komponenten.
   
 
@@ -85,13 +69,19 @@ Das System nutzt ein relationales PostgreSQL-Datenbanksystem. Zur Sicherstellung
 
 <h3>Setup Anleitung</h3>
 
-**Einmalig**
-___Installation:___ Ladet PostgreSQL von `postgresql.org/download` herunter und installiert es.
-___WICHTIG:___ Das Passwort, das ihr bei der Installation für den User postgres vergebt, ist das `DB_PASSWORD`. Merken!
-___DB anlegen:___ Öffne pgAdmin 4, Rechtsklick auf "Databases" -> "Create" -> "Database". Name: `dienstplan` (Muss exakt so heißen).
-___Im Backend-ordenr:___ `npm install` ausführen
-___Umgebungsvariablen:___  Kopiert die Datei .env.example. und bennent sie um in `.env` ohne name oder Ähnliches und tragt das lokale Postgres passwort in  `DB_PASSWORD` ein.
+**Voraussetzung**
+- Installiertes PostgreSQL (Lokal oder via Docker)
+- Node.js Umgebung
 
+<h2>Notiz: Setup muss an Finale version Angepasst werden start_projekt.bat</h2>
+
+### Setup
+1. **Abhängigkeiten installieren**: `npm run install-all`
+2. **Datenbank-Initialisierung**: Erstellen Sie eine Datenbank namens `dienstplan`.
+3. **Umgebungsvariablen**: Erstellen Sie eine `.env` Datei im Backend-Verzeichnis basierend auf der `.env.example`.
+4. **Start der Applikation**: `npm run dev` (Startet Frontend und Backend simultan).
+
+**Troubleshooting**
 >Wenn Postgres nicht startet: mit windowstast + r nach services.msc suchen; und in der liste zu postgres scrollen [starten, beenden, neustarten] Näheres steht in der .env.example Datei
 
 ---
@@ -253,19 +243,21 @@ ___Testfilialen___
 ___Daten überprüfen___
 
 ```
+
 -Filialen anzeigen
 docker exec -it psp_database psql -U postgres -d dienstplan -c "SELECT * FROM filiale;"
 
 -Mitarbeiter anzeigen
 docker exec -it psp_database psql -U postgres -d dienstplan -c "SELECT * FROM mitarbeiter;"
+
 ```
 
 
-***Ganz wichtig!!!!***
+***Troubleshooting***
 
 ``Projekt stoppen``
 
-Um die laufenden Server im Terminal zu beenden: Strg + C (Windows/Linux) bzw. Cmd + C (macOS). (für Alex)
+Um die laufenden Server im Terminal zu beenden: Strg + C (Windows/Linux) bzw. Cmd + C (macOS).
 
 Um die Docker-Container sauber herunterzufahren (ohne die Daten zu löschen):
 
