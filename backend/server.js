@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const db = require('./db/database/schema/database.js')
+const { deleteOldShifts } = require('./functions/cleanUpService');
 const PORT = 3001;
 
 
@@ -26,6 +27,9 @@ app.use('/api/dienstplan', dienstplanRouter);
 const authRouter = require('./routes/auth.routes');
 app.use('/api/auth', authRouter); 
 
+// NEU: Route für Export der dienstpläne in csv format
+const exportRouter = require('./routes/export.routes.js')
+app.use('/api/download', exportRouter);
 
 // ---------------------
 //   SERVER STARTEN
@@ -34,11 +38,18 @@ app.use('/api/auth', authRouter);
 
 
 async function startApp() {
+
   try {
     console.log('Docker braucht für den aufbau Länger....')
     await new Promise(res => setTimeout(res, 5000));
     await db.initDatabase();
+    await deleteOldShifts();  //erster cleanup beim starten
 
+
+     setInterval(async () => {
+          // console.log("Täglicher automatischer Cleanup...");
+      await deleteOldShifts();
+        }, 24 * 60 * 60 * 1000);  // 24 stunden täglicher Clean check
 
 
     app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
