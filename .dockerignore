@@ -1,0 +1,28 @@
+
+# NEU: Funktioniert wie gitignore
+# Hält den Container schlank
+
+
+
+# Node
+node_modules
+npm-debug.log
+
+# Docker/IDE
+.git
+.vscode
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Environment
+.env
+
+# Temporäre Test-Dateien
+test.*
+*.http
+*.txt
+temp/
+.DS_Store
+Thumbs.db
+db.json
