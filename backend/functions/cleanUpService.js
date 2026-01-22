@@ -1,5 +1,6 @@
 
 /**
+ * Lukas Atzmüller
  * INTERVAL  -> in Postgres ein spezieller Datentyp für Zeitspannen
  * mit 
  *   - Intervall '13 months' rechnet Postgres im Kalender zurück.
@@ -12,11 +13,11 @@ const pool = require('../db/pool');
 const deleteOldShifts = async () => {
     try {
 
-        // Nur bei zuvielen Rows ausführen. Gelöscht wird ab einem Zeitstempel
+        // NEU: Nur bei zuvielen Rows ausführen. Gelöscht wird ab einem Zeitstempel
         const count = await pool.query('SELECT COUNT(*) FROM dienstplaene');
         const totalRows = parseInt(count.rows[0].count);
 
-        if(totalRows > 50000){
+        if(totalRows > 70000){
 
              const query = `
             DELETE FROM dienstplaene

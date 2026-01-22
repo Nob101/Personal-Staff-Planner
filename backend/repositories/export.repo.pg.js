@@ -22,8 +22,8 @@ const query = `
         FROM dienstplaene d
         JOIN mitarbeiter m ON d.mnr = m.mnr
         JOIN filiale f ON d.fnr = f.fnr
-            WHERE d.jahr = $1 AND d.monat = $2
-            ORDER BY f.filialname ASC,   d.datum ASC, m.nachname ASC;
+            WHERE d.jahr = $1 AND d.monat = $2 AND d.fnr = $3
+            ORDER BY  d.datum ASC, m.nachname ASC;
 `;
 
 try{

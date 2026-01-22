@@ -2,8 +2,6 @@
 # NEU: Funktioniert wie gitignore
 # Hält den Container schlank
 
-
-
 # Node
 node_modules
 npm-debug.log
