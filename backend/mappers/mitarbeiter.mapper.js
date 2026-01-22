@@ -19,14 +19,13 @@ function fromFrontendPatch(b) {
     out.hauptfiliale_fnr = hf;
   }
 
-  if (has(b, "springer")) {
-    out.springer =
-      b.springer === true ? true :
-      b.springer === false ? false :
-      b.springer === "Ja" ? true :
-      b.springer === "Nein" ? false :
-      null;
-  }
+ if (has(b, "springer")) {
+  const val = b.springer;
+
+  if (val === true || val === "Ja") out.springer = true;
+  else if (val === false || val === "Nein") out.springer = false;
+ 
+}
 
   if (has(b, "arbeitnehmertyp") || has(b, "arbeitsstunden")) {
     const at =

@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dienstplan Test (Vanilla JS)</title>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: #fff;
+      color: #111;
+    }
+
+    h1 { margin: 0 0 16px 0; font-size: 20px; }
+    h2 { margin: 16px 0 10px 0; font-size: 16px; }
+
+    #controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    #controls label { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; }
+    #controls input { width: 70px; padding: 4px 6px; }
+    #controls button { padding: 6px 10px; cursor: pointer; }
+    #status { font-size: 12px; color: #555; }
+
+    .block {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 12px;
+      margin: 10px 0;
+      background: #fafafa;
+    }
+
+    .block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .block-title {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.15);
+      flex: 0 0 auto;
+    }
+
+    .subline {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .matrix {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: white;
+    }
+
+    .grid {
+      display: grid;
+      gap: 6px;
+      padding: 10px;
+      min-width: 900px;
+      align-items: center;
+    }
+
+    .cell {
+      height: 26px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      border: 1px solid rgba(0,0,0,0.08);
+      user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .cell.head {
+      height: 34px;
+      font-size: 11px;
+      color: #333;
+      background: #f3f4f6;
+      border-color: #e5e7eb;
+      flex-direction: column;
+      line-height: 1.05;
+      overflow: hidden;
+    }
+
+    /* WICHTIG: Name-Zelle darf NICHT in andere Zellen überlaufen */
+    .cell.name {
+      justify-content: flex-start;
+      padding: 0 8px;
+      font-weight: 600;
+      background: #f9fafb;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0; /* wichtig bei CSS Grid */
+    }
+
+    .cell.frei {
+      background: #fff;
+      border-color: #fff;
+    }
+
+    .cell.work { font-weight: 800; }
+
+    .small {
+      font-size: 11px;
+      color: #666;
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Dienstplan Test (Vanilla JS)</h1>
+
+  <section id="controls">
+    <label>Jahr:
+      <input type="number" id="jahrInput" value="2026" min="2000" max="2100" />
+    </label>
+
+    <label>Monat:
+      <input type="number" id="monatInput" value="1" min="1" max="12" />
+    </label>
+
+    <button id="ladenBtn" type="button">Laden</button>
+    <button id="neuGenerierenBtn" type="button">Neu generieren</button>
+
+    <span id="status"></span>
+  </section>
+
+  <section id="result"></section>
+
+  <script>
+    const API_BASE = "http://localhost:3001/api";
+
+    const jahrInput = document.getElementById("jahrInput");
+    const monatInput = document.getElementById("monatInput");
+    const ladenBtn = document.getElementById("ladenBtn");
+    const neuGenerierenBtn = document.getElementById("neuGenerierenBtn");
+    const resultEl = document.getElementById("result");
+    const statusEl = document.getElementById("status");
+
+    ladenBtn.addEventListener("click", () => {
+      const { jahr, monat } = readYm();
+      if (!jahr) return;
+      loadView(jahr, monat);
+    });
+
+    neuGenerierenBtn.addEventListener("click", async () => {
+      const { jahr, monat } = readYm();
+      if (!jahr) return;
+
+      statusEl.textContent = "Generiere…";
+      try {
+        const res = await fetch(`${API_BASE}/dienstplan/generate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jahr, monat }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `HTTP ${res.status}`);
+        }
+
+        await loadView(jahr, monat);
+      } catch (e) {
+        console.error(e);
+        statusEl.textContent = `Fehler: ${e.message}`;
+      }
+    });
+
+    function readYm() {
+      const jahr = Number(jahrInput.value);
+      const monat = Number(monatInput.value);
+
+      if (!Number.isInteger(jahr) || !Number.isInteger(monat) || monat < 1 || monat > 12) {
+        alert("Bitte gültiges Jahr und Monat eingeben.");
+        return { jahr: null, monat: null };
+      }
+      return { jahr, monat };
+    }
+
+    async function loadView(jahr, monat) {
+      resultEl.innerHTML = "<p>Lade…</p>";
+      statusEl.textContent = "";
+
+      try {
+        const res = await fetch(`${API_BASE}/dienstplan/view?jahr=${jahr}&monat=${monat}`);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        renderView(data);
+        statusEl.textContent = "ok";
+      } catch (e) {
+        console.error(e);
+        resultEl.innerHTML = `<p style="color:#b91c1c;">Fehler: ${e.message}</p>`;
+        statusEl.textContent = "fail";
+      }
+    }
+
+    function renderView(data) {
+      const { jahr, monat, tage, dienste, filialen, mitarbeiter, stunden } = data;
+
+      resultEl.innerHTML = "";
+
+      const h2 = document.createElement("h2");
+      h2.textContent = `Dienstplan für ${jahr}-${String(monat).padStart(2, "0")}`;
+      resultEl.appendChild(h2);
+
+      if (!Array.isArray(tage) || !Array.isArray(dienste) || !Array.isArray(filialen)) {
+        resultEl.appendChild(p("Fehler: Datenformat passt nicht."));
+        return;
+      }
+
+      const stByMnr = new Map((stunden || []).map(s => [Number(s.mnr), s]));
+      const filByFnr = new Map((filialen || []).map(f => [Number(f.fnr), f]));
+
+      // key = `${mnr}|${datum}`
+      const dienstMap = new Map();
+      for (const d of dienste) {
+        dienstMap.set(`${Number(d.mnr)}|${d.datum}`, d);
+      }
+
+      const maByFiliale = new Map();
+      for (const m of (mitarbeiter || [])) {
+        const fnr = Number(m.hauptfiliale_fnr);
+        if (!Number.isFinite(fnr)) continue;
+        if (!maByFiliale.has(fnr)) maByFiliale.set(fnr, []);
+        maByFiliale.get(fnr).push(m);
+      }
+
+      for (const f of filialen) {
+        const fnr = Number(f.fnr);
+        const maList = (maByFiliale.get(fnr) || []).slice();
+
+        maList.sort((a, b) => {
+          const an = `${a.nachname || ""} ${a.vorname || ""}`.trim();
+          const bn = `${b.nachname || ""} ${b.vorname || ""}`.trim();
+          return an.localeCompare(bn, "de");
+        });
+
+        resultEl.appendChild(renderFilialeBlock({
+          tage,
+          filiale: f,
+          maList,
+          dienstMap,
+          stByMnr,
+          filByFnr
+        }));
+      }
+    }
+
+    function renderFilialeBlock({ tage, filiale, maList, dienstMap, stByMnr, filByFnr }) {
+      const block = document.createElement("div");
+      block.className = "block";
+
+      const header = document.createElement("div");
+      header.className = "block-header";
+
+      const title = document.createElement("div");
+      title.className = "block-title";
+      title.textContent = `${filiale.filialname ?? "Filiale"} (ID: ${filiale.fnr})`;
+
+      const dot = document.createElement("div");
+      dot.className = "dot";
+      dot.style.backgroundColor = filiale.farbe || "#999";
+
+      header.appendChild(title);
+      header.appendChild(dot);
+      block.appendChild(header);
+
+      const sub = document.createElement("div");
+      sub.className = "subline";
+      sub.textContent = `Mitarbeiter: ${maList.length}, Tage: ${tage.length}`;
+      block.appendChild(sub);
+
+      if (!maList.length) return block;
+
+      const matrix = document.createElement("div");
+      matrix.className = "matrix";
+
+      const grid = document.createElement("div");
+      grid.className = "grid";
+
+      // 👉 linke Spalte breiter machen (damit Text weniger oft abgeschnitten wird)
+      const NAME_COL = 320;
+      grid.style.gridTemplateColumns = `${NAME_COL}px repeat(${tage.length}, 26px)`;
+
+      // Header
+      grid.appendChild(cell("", "cell head name"));
+      for (const datum of tage) {
+        const d = new Date(datum + "T00:00:00");
+        const day = String(d.getDate()).padStart(2, "0");
+        const dow = ["So","Mo","Di","Mi","Do","Fr","Sa"][d.getDay()];
+        const c = cell("", "cell head");
+        c.innerHTML = `<div class="small">${dow}</div><div>${day}</div>`;
+        grid.appendChild(c);
+      }
+
+      for (const m of maList) {
+        const st = stByMnr.get(Number(m.mnr));
+        const soll = st?.soll_stunden_monat ?? "";
+        const ist  = st?.ist_stunden_monat ?? "";
+        const diff = st?.differenz ?? "";
+
+        const name = `${m.vorname ?? ""} ${m.nachname ?? ""}`.trim() || `MA ${m.mnr}`;
+        const nameText = `${name} (MNR ${m.mnr})  Soll: ${soll}  Ist: ${ist}  Diff: ${diff}`;
+
+        const nameCell = cell(nameText, "cell name");
+        nameCell.title = nameText; // tooltip falls abgeschnitten
+        grid.appendChild(nameCell);
+
+        for (const datum of tage) {
+          const d = dienstMap.get(`${Number(m.mnr)}|${datum}`);
+
+          if (!d || !d.schicht_typ) {
+            grid.appendChild(cell("", "cell frei"));
+            continue;
+          }
+
+          const typ = String(d.schicht_typ).toUpperCase();
+          const c = cell(typ === "F" ? "" : typ, "cell");
+
+          if (typ === "F") {
+            c.classList.add("frei");
+          } else {
+            c.classList.add("work");
+            const workFiliale = filByFnr.get(Number(d.fnr));
+            const base = workFiliale?.farbe || "#888";
+
+            c.style.backgroundColor = hexToRgba(base, 0.85);
+            c.style.borderColor = hexToRgba(base, 1);
+            c.style.color = bestTextColor(base);
+
+            c.title = workFiliale?.filialname
+              ? `${typ} in ${workFiliale.filialname} (fnr ${d.fnr})`
+              : `${typ} (fnr ${d.fnr})`;
+          }
+
+          c.dataset.dienstId = String(d.id);
+          c.dataset.mnr = String(d.mnr);
+          c.dataset.fnr = String(d.fnr);
+          c.dataset.datum = String(d.datum);
+
+          grid.appendChild(c);
+        }
+      }
+
+      matrix.appendChild(grid);
+      block.appendChild(matrix);
+      return block;
+    }
+
+    function cell(text, className) {
+      const el = document.createElement("div");
+      el.className = className;
+      if (text != null) el.textContent = text;
+      return el;
+    }
+
+    function p(txt) {
+      const el = document.createElement("p");
+      el.textContent = txt;
+      return el;
+    }
+
+    function hexToRgba(hex, alpha) {
+      if (!hex) return `rgba(0,0,0,${alpha})`;
+      const h = String(hex).trim().replace("#", "");
+      const full = h.length === 3 ? h.split("").map(ch => ch + ch).join("") : h;
+      const r = parseInt(full.slice(0, 2), 16);
+      const g = parseInt(full.slice(2, 4), 16);
+      const b = parseInt(full.slice(4, 6), 16);
+      if ([r,g,b].some(n => Number.isNaN(n))) return `rgba(0,0,0,${alpha})`;
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    function bestTextColor(hex) {
+      const h = String(hex).trim().replace("#", "");
+      const full = h.length === 3 ? h.split("").map(ch => ch + ch).join("") : h;
+      const r = parseInt(full.slice(0, 2), 16);
+      const g = parseInt(full.slice(2, 4), 16);
+      const b = parseInt(full.slice(4, 6), 16);
+      if ([r,g,b].some(n => Number.isNaN(n))) return "#111";
+      const luminance = (0.2126*r + 0.7152*g + 0.0722*b) / 255;
+      return luminance < 0.55 ? "#fff" : "#111";
+    }
+
+    loadView(Number(jahrInput.value), Number(monatInput.value));
+  </script>
+</body>
+</html>
