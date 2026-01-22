@@ -16,7 +16,7 @@ COPY . .
 EXPOSE 3001
 
 #  Startbefehl für den Server [auf nodemon angepasst]
-CMD ["npm", "run", "devStart"]
+CMD ["npm", "run",  "devStart"]
 
 
 # Ich hab Docker für unsere DB-Anbindung fertiggemacht. In deinem Ordner liegt jetzt ein Dockerfile, dass deinen Node-Server 

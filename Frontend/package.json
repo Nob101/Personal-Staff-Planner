@@ -10,11 +10,11 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview"
-    
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
     "axios": "^1.13.2",
+    "nodemon": "^3.1.11",
     "tailwindcss": "^4.1.17",
     "vue": "^3.5.22",
     "vue-multiselect": "^3.4.0",

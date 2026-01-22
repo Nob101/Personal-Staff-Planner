@@ -1,10 +1,20 @@
 // server.js
+
+/**
+ * Express -> Wasserfall login muss immer erreichbar sein also oben stehen
+ * 
+ */
 const express = require('express');
 const app = express();
+
 const cors = require('cors');
 const db = require('./db/database/schema/database.js')
+
 const { deleteOldShifts } = require('./functions/cleanUpService');
 const PORT = 3001;
+
+// NEU: Lukas  -> Objekt im Arbeitsspeicher vom server,     Eine Art Gästeliste
+// const {loginAllowness} = require('./middleware/auth.middleware');
 
 
 // Middleware
@@ -14,6 +24,14 @@ app.use(cors());         // Cross-Origin-Zugriff erlauben
 // ---------------------
 //   ROUTES EINBINDEN
 // ---------------------
+
+
+const authRouter = require('./routes/auth.routes');
+app.use('/api/auth', authRouter);
+
+// Neu: Alles daach braucht eine gültige Anmeldung (darunter = geschützte routen)
+app.use(loginAllowness);
+
 const mitarbeiterRouter = require('./routes/mitarbeiter.routes');
 app.use('/api/mitarbeiter', mitarbeiterRouter);
 
@@ -23,9 +41,6 @@ app.use('/api/filialen', filialenRouter);
 const dienstplanRouter = require('./routes/dienstplan.routes');
 app.use('/api/dienstplan', dienstplanRouter);
 
-// Wieder Aktiv (war auskommentiert)
-const authRouter = require('./routes/auth.routes');
-app.use('/api/auth', authRouter); 
 
 // NEU: Route für Export der dienstpläne in csv format
 const exportRouter = require('./routes/export.routes.js')

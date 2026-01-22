@@ -88,7 +88,7 @@ services:
     container_name: psp_frontend
     restart: always
     ports:
-      - "5173:5173" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen
+      - "3000:3000" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen
     
     volumes:
       - ./Frontend:/app         # <--- SPIEGELT VUE-CODE FÜR VITE HOT RELOAD
@@ -100,19 +100,21 @@ services:
     depends_on:
       - backend
 
-# Würde den Algo nicht schneller machen kein echter mehr Mehrwert  (nur wenn mehrere User den Algo gleichzeitig verwednen würden)
+# Würde den Algo nicht schneller machen aber für Später als https -Standard wichtig!!  (nur wenn mehrere User den Algo gleichzeitig verwednen würden)
 # darum der DEPLOY oben hinzugefügt
 
-    # nginx:
-    #   image: nginx:stable-alpine
-    #   container_name: psp_proxy
-    #   ports:
-    #   - "80:80"
-    #   volumes:
-    #   - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    #   depends_on:
-    #   - frontend
-    #   - backend
+  nginx:
+    image: nginx:stable-alpine
+    container_name: psp_proxy
+    ports:
+    - "80:80"    # HTTP für Browser
+    - "443:443"   # HTTPS für später
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    - ./certs:/etc/nginx/ssl:ro    # Zertifikste
+    depends_on:
+    - frontend
+    - backend
 
 volumes:
   postgres_data:
