@@ -4,8 +4,26 @@
 import axios from "axios"
 
 export const http = axios.create({
-  baseURL: "http://localhost:3001", // JSON Server Base URL Muss mit Backend URL ersetzt werden.Heißt: http://localhost:3000/api/
+  baseURL:  '/api', // NEU: nginx fängt alles unter /api/ ab und reicht relativen pfad weiter
   headers: {
     "Content-Type": "application/json"
-  }
+  } 
+  // axios setzt header automatisch, schadet aber nicht ihn zu setzen
 })
+
+
+// NEU: Mit Interceptor wird der token bei jeder Anfrage im Header mitgeschickt
+
+
+http.interceptors.request.use(config => {
+  if (token){
+    config.headers.Authorization = `Bearer ${token}`   //Bearer ist ein KEY word signalisiert "träger" des tokens
+  }
+  return config;
+},
+  error => {
+    return Promise.reject(error);
+  }
+);
+
+export default http;

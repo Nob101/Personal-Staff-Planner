@@ -17,6 +17,7 @@ yarn-debug.log*
 # Build-Ordner
 dist/
 build/
+certs/
 
 # IDEs/Editoren
 .vscode/
@@ -26,3 +27,10 @@ build/
 # Betriebssystem-Spezifische Dateien
 .DS_Store
 Thumbs.db
+
+# Temporäre Test-Dateien
+test.*
+*.http
+*.txt
+temp/
+db.json

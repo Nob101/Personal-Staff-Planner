@@ -1,11 +1,39 @@
 # CLI Befehle:
-# Wichtig: Docker Desktop muss gestartet werden/laufen
-#   docker compose up --build -d
-#   docker compose down
-#   docker compose logs -f backend
+# Wichtig: Docker Desktop muss gestartet werden/laufen 
+
+
+##################
+# Starten & Bauen
+
+# docker compose up              Startet alle Container  (.YML)
+# docker compose up --build      Baut die Images  und startet dann.                                     Wichtig: Nach JEDEM npm install oder Dockerfile-Änderung.
+# docker compose up -d          "Detached" Modus: Container laufen im Hintergrund.                      Wenn  das Terminal für andere Befehle frei bleibnen soll.
+
+
+#########################
+# Stopp & Aufräumen
+
+# docker compose down           Stoppt alle Container und löscht diese (-v löscht auch Volumes).        Wichtig: Volumes speichern zB Datenbank Einträge auf der Festplatte .
+# docker compose stop           Pausiert den Container ohne ihn zu entfernen.                           Wie ein Shutdown. Daten bleiben erhalten.
+# docker system prune           Löscht alle ungenutzten Container, Netzwerke und alten Image-Cache.     Wenn die Festplatte voll wird
+# docker rm -f [container]      Löscht Container auch im laufenden Prozess
+
+##################
+# Fehlersuche & Leistung Analyse
+
+# docker compose logs -f        Zeigt Live-Logs aller Container (oder eines speziellen: -f backend).    Zur Fehlersuche (z.B. warum stürzt die DB ab? lol).
+# docker compose ps             Listet alle laufenden Container und deren Ports auf.                    Um zu checken: "Läuft der Container wirklich?"
+# docker exec -it [name] sh     Öffnet ein Terminal im laufenden Container.                             Wenn direkt im Container nach Dateien gesucht wird.
+
+# docker exec -it psp_database psql -U postgres -d dienstplan -c "\dt"                                  zeigt alle tabellen
+# docker compose top            Zeigt die CPU- und RAM-Last der einzelnen Container an.                 Wichtig: für Algorithmus, um zu sehen, wie viel 'Power' er verbraucht.
+# docker stats                  Zeigt Live-Tabelle über den Resourcen verbrauch                         Wichtig: Um Leistung an AG-Client anzupassen
+
+
+
 #   Port mapping ->   Host-Port : Container-Port   WICHTIG!!!!
 
-# docker exec -it psp_database psql -U postgres -d dienstplan -c "\dt"  zeigt alle tabellen
+
 
 # version: '3.8'
 
@@ -31,6 +59,9 @@ services:
     restart: always
     ports:
       - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules   #schützt die container module
     environment:
       # WICHTIG: Host ist hier 'db' (der Name des Services oben), nicht localhost!
       DB_HOST: db
@@ -42,7 +73,13 @@ services:
       INITIAL_MARKUS_PASSWORD: ${INITIAL_MARKUS_PASSWORD}
     depends_on:
       - db
-
+    deploy:                 # <- NEU: Leistungsbegränzer verhinder t den Ungewollten absturzt sollte eine Endlosschleife entstehen
+      resources:
+        limits:
+          cpus: '1'         # Ein Kern der CPU
+          memory: 2G        # Maximum / Limit
+        reservations:
+          memory: 512M      # Garantierter Speicher 
 
   # --- FRONTEND BEREICH für Oliver (VUE) und JD (TAILWIND)  ---
   frontend:
@@ -51,13 +88,33 @@ services:
     container_name: psp_frontend
     restart: always
     ports:
-      - "5173:5173" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen OJ!!!!
+      - "3000:3000" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen
+    
+    volumes:
+      - ./Frontend:/app         # <--- SPIEGELT VUE-CODE FÜR VITE HOT RELOAD
+      - /app/node_modules       # <--- VERHINDERT ÜBERSCHREIBEN DER MODULE
+    
     environment:
-
       # Für den fall, dass Vue wissen muss, wo das Backend läuft: 3001  !!!
       VITE_API_URL: http://localhost:3001
     depends_on:
       - backend
+
+# Würde den Algo nicht schneller machen aber für Später als https -Standard wichtig!!  (nur wenn mehrere User den Algo gleichzeitig verwednen würden)
+# darum der DEPLOY oben hinzugefügt
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: psp_proxy
+    ports:
+    - "80:80"    # HTTP für Browser
+    - "443:443"   # HTTPS für später
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    - ./certs:/etc/nginx/ssl:ro    # Zertifikste
+    depends_on:
+    - frontend
+    - backend
 
 volumes:
   postgres_data:
