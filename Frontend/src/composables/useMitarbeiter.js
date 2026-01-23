@@ -5,7 +5,7 @@
 
 // ref -> reaktiv, onMounted -> wird als erstes gemacht, wenn ein Vue-File/Komponent geladen wird
 // getMitarbeiter und getFilialen holt sich die Daten vom Backend übers Service
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import * as mitarbeiterService from "@/services/mitarbeiterService"
 import * as filialenService from "@/services/filialenService"
 
@@ -13,6 +13,25 @@ export function useMitarbeiter() {
   // --- State ---
   const mitarbeiter = ref([])
   const filialen = ref([])
+
+  const searchTerm = ref('')
+
+    const filteredMitarbeiter = computed(() => {
+    const q = searchTerm.value.toLowerCase().trim()
+    if (!q) return mitarbeiter.value
+
+    return mitarbeiter.value.filter(m =>
+      Object.values(m)
+        .filter(v =>
+          typeof v === 'string' ||
+          typeof v === 'number'
+        )
+        .some(v =>
+          v.toString().toLowerCase().includes(q)
+        )
+    )
+  })
+
 
   const showModalMitarbeiterCreate = ref(false)
   const showModalMitarbeiterEdit = ref(false)
@@ -23,13 +42,10 @@ export function useMitarbeiter() {
   // --- Daten vom Backend mit Service laden ---
   async function loadData() {
     try {
-      const mitarbeiterRes = await mitarbeiterService.getMitarbeiter()
-      mitarbeiter.value = mitarbeiterRes.data
-
-      const filialenRes = await filialenService.getFilialen()
-      filialen.value = filialenRes.data
+      mitarbeiter.value = (await mitarbeiterService.getMitarbeiter()).data
+      filialen.value = (await filialenService.getFilialen()).data
     } catch (err) {
-      console.error("Fehler beim Laden der Daten:", err)
+      console.error(err)
     }
   }
   // onMounted -> ladet die Daten wenn ein Vue-File/Komponent "geöffnet" wird
@@ -104,6 +120,8 @@ export function useMitarbeiter() {
   return {
     mitarbeiter,
     filialen,
+    searchTerm,
+    filteredMitarbeiter,
     showModalMitarbeiterCreate,
     showModalMitarbeiterEdit,
     selectedMitarbeiter,

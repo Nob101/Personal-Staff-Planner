@@ -4,7 +4,6 @@
       "id": "1",
       "vorname": "Max",
       "nachname": "Mustermann",
-      "geburtsdatum": "1990-01-15",
       "email1": "max.mustermann@example.com",
       "email2": "max2@example.com",
       "telefon1": "0123456789",
@@ -15,9 +14,9 @@
       "land": "Österreich",
       "arbeitsstunden": 40,
       "springer": true,
-      "hauptfiliale": 1,
+      "hauptfiliale": "1",
       "nebenfilialen": [
-        2
+        "2"
       ],
       "anmerkungen": "Sehr motiviert"
     },
@@ -25,7 +24,6 @@
       "id": "2",
       "vorname": "Emma",
       "nachname": "Müller",
-      "geburtsdatum": "1992-06-20",
       "email1": "lisa.mueller@example.com",
       "email2": "lisa2@example.com",
       "telefon1": "0987654321",
@@ -35,8 +33,8 @@
       "postleitzahl": "4321",
       "land": "Österreich",
       "arbeitsstunden": 30,
-      "springer": "Nicht bekannt",
-      "hauptfiliale": null,
+      "springer": false,
+      "hauptfiliale": "1",
       "nebenfilialen": null,
       "anmerkungen": "Bald Vollzeit!"
     }
@@ -44,15 +42,45 @@
   "filialen": [
     {
       "id": "1",
-      "name": "Filiale A"
+      "name": "Filiale A",
+      "strasse": "Hauptstraße 12",
+      "ort": "Musterstadt",
+      "postleitzahl": "12345",
+      "land": "Deutschland",
+      "telefon1": "+49 123 4567890",
+      "telefon2": "+49 123 4567891",
+      "email1": "a@filiale.de",
+      "email2": "kontakt@filiale-a.de",
+      "color": "#FF5733",
+      "anmerkungen": "Filiale im Zentrum von Musterstadt."
     },
     {
       "id": "2",
-      "name": "Filiale B"
+      "name": "Filiale B",
+      "strasse": "Nebenweg 5",
+      "postleitzahl": "23456",
+      "ort": "Beispielstadt",
+      "land": "Deutschland",
+      "email1": "b@filiale.de",
+      "email2": "",
+      "telefon1": "+49 234 5678901",
+      "telefon2": "",
+      "color": "#33C3FF",
+      "anmerkungen": "Kleine Filiale."
     },
     {
       "id": "3",
-      "name": "Filiale C"
+      "name": "Filiale C",
+      "strasse": "Marktplatz 1",
+      "postleitzahl": "34567",
+      "ort": "Demostadt",
+      "land": "Deutschland",
+      "email1": "c@filiale.de",
+      "email2": "info@filiale-c.de",
+      "telefon1": "+49 345 6789012",
+      "telefon2": "+49 345 6789013",
+      "color": "#82FF33",
+      "anmerkungen": "Hauptfiliale mit großem Team."
     }
   ],
   "benutzer": [

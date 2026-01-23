@@ -1,58 +1,31 @@
 <script setup>
-    import Navbar from '@/components/global/Navbar.vue'
-    import FilialenList from '@/components/filialen/FilialenList.vue';
+  import Navbar from '@/components/global/Navbar.vue'
+  import { useFilialen } from '@/composables/useFilialen'
+  import FilialenActionBar from '@/components/filialen/FilialenActionBar.vue';
+  import FilialenList from '@/components/filialen/FilialenList.vue';
+  import ModalFilialeCreate from '@/components/filialen/ModalFilialenCreate.vue';
+  import ModalFilialeEdit from '@/components/filialen/ModalFilialenEdit.vue';
+  import BestätigungsModal from '@/components/global/BestätigungsModal.vue'
 
-    //TestCode
-    import ColorPicker from '@/components/global/ColorPicker.vue'
-    import { ref } from 'vue'
-    const color = ref('#3b82f6')
+  const {
+  filialen,
+  mitarbeiter,
+  searchTerm,
+  filteredFilialen,
+  showModalFilialeCreate,
+  showModalFilialeEdit,
+  showDeleteModal,
+  selectedFiliale,
+  handleFilialeCreate,
+  handleEdit,
+  handleFilialeEdit,
+  handleDelete,
+  confirmDelete,
+  cancelDelete,
+} = useFilialen()
 
-//Dummy-Daten für Testzwecke. MÜSSEN MIT BACKEND REQUESTS ersetzt werden.
-const mitarbeiter = ref([
-  {
-    id: 1,
-    vorname: 'Max',
-    nachname: 'Mustermann',
-    geburtsdatum: '1990-01-15',
-    email1: 'max.mustermann@example.com',
-    email2: 'max2@example.com',
-    telefon1: '0123456789',
-    telefon2: '0123456788',
-    strasse: 'Musterstraße 1',
-    ort: 'Musterstadt',
-    postleitzahl: '2345',
-    land: 'Österreich',
-    arbeitsstunden: 40,
-    springer: true,
-    hauptfiliale: 1,
-    nebenfilialen: [2],
-    anmerkungen: 'Sehr motiviert'
-  },
-  {
-    id: 2,
-    vorname: 'Lisa',
-    nachname: 'Müller',
-    geburtsdatum: '1992-06-20',
-    email1: 'lisa.mueller@example.com',
-    email2: 'lisa2@example.com',
-    telefon1: '0987654321',
-    telefon2: '0987654322',
-    strasse: 'Beispielweg 5',
-    ort: 'Beispielstadt',
-    postleitzahl: '4321',
-    land: 'Österreich',
-    arbeitsstunden: 30,
-    springer: false,
-    hauptfiliale: 2,
-    nebenfilialen: [1, 3],
-    anmerkungen: 'Teilzeit'
-  }
-])
-const filialen = ref([
-  { id: 1, name: 'Filiale A', color: '#ccc' },
-  { id: 2, name: 'Filiale B', color: '#ccc' },
-  { id: 3, name: 'Filiale C', color: '#ccc' }
-])
+
+
 
 
 
@@ -60,7 +33,41 @@ const filialen = ref([
 
 
 <template>
-    <Navbar />
-    <FilialenList :filialen="filialen" :mitarbeiter="mitarbeiter" />
-    <!-- <ColorPicker v-model="color" />-->
+  <Navbar />
+  <div class="filialen-view container mx-auto p-4">
+    <!-- ActionBar -->
+    <FilialenActionBar @searchFiliale="val => searchTerm = val" @filialeCreate="showModalFilialeCreate = true" />
+
+    <!-- Filialen Liste -->
+    <FilialenList :filialen="filteredFilialen" :mitarbeiter="mitarbeiter" @edit="handleEdit" @delete="handleDelete"/>
+
+    <!-- Modale am Ende -->
+    <ModalFilialeCreate 
+      :show="showModalFilialeCreate" 
+      :filialen="filialen"
+      :mitarbeiter="mitarbeiter" 
+      @close="showModalFilialeCreate = false" 
+      @filialeCreate="handleFilialeCreate"
+    />
+
+    <ModalFilialeEdit
+      v-if="showModalFilialeEdit && !!selectedFiliale"
+      :show="showModalFilialeEdit"
+      :filiale="selectedFiliale"
+      @close="showModalFilialeEdit = false"
+      @filialeEdit="handleFilialeEdit"
+    />
+
+    <BestätigungsModal
+    :show="showDeleteModal"
+    message="Möchtest du diese Filiale wirklich löschen?"
+    @confirm="confirmDelete"
+    @close="cancelDelete"
+    />
+
+
+
+
+     
+    </div>
 </template>

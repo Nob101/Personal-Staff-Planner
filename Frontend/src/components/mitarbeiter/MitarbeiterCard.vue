@@ -89,7 +89,7 @@ function handleDelete() {
         <fieldset class="box">
           <legend>Arbeit</legend>
           <p data-label="Arbeitsstunden:">{{ mitarbeiter.arbeitsstunden ?? '-' }}</p>
-          <p data-label="Springer:">{{ mitarbeiter.springer === true ? 'Ja' : mitarbeiter.springer === false ? 'Nein' : 'Nicht bekannt' }}</p>
+          <p data-label="Springer:">{{ mitarbeiter.springer ? 'Ja' : 'Nein' }}</p>
         </fieldset>
         <!-- Filialen Box -->
         <fieldset class="box">

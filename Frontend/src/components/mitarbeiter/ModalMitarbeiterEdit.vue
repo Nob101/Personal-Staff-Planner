@@ -31,7 +31,7 @@ const ort = ref('')
 const postleitzahl = ref('')
 const land = ref('')
 const arbeitsstunden = ref('')
-const springer = ref(undefined)
+const springer = ref(false)
 const hauptfiliale = ref(null)
 const nebenfilialen = ref([])
 const anmerkungen = ref('')
@@ -44,26 +44,25 @@ const anmerkungen = ref('')
 watch(
   () => props.mitarbeiter,
   (edited) => {
-    if (edited) {
-      vorname.value = edited.vorname || ''
-      nachname.value = edited.nachname || ''
-      geburtsdatum.value = edited.geburtsdatum || ''
-      email1.value = edited.email1 || ''
-      email2.value = edited.email2 || ''
-      telefon1.value = edited.telefon1 || ''
-      telefon2.value = edited.telefon2 || ''
-      strasse.value = edited.strasse || ''
-      ort.value = edited.ort || ''
-      postleitzahl.value = edited.postleitzahl || ''
-      land.value = edited.land || ''
-      arbeitsstunden.value = edited.arbeitsstunden ?? ''
-      springer.value = 
-        edited.springer === 'Ja' ? true :
-        edited.springer === 'Nein' ? false : undefined
-      hauptfiliale.value = props.filialen.find(f => f.id === edited.hauptfiliale) || null
-      nebenfilialen.value = edited.nebenfilialen?.length ? props.filialen.filter(f => edited.nebenfilialen.includes(f.id)): []
-      anmerkungen.value = edited.anmerkungen || ''
-    }
+    if (!edited) return // Nichts machen, wenn kein Mitarbeiter ausgewählt
+    vorname.value = edited.vorname || ''
+    nachname.value = edited.nachname || ''
+    geburtsdatum.value = edited.geburtsdatum || ''
+    email1.value = edited.email1 || ''
+    email2.value = edited.email2 || ''
+    telefon1.value = edited.telefon1 || ''
+    telefon2.value = edited.telefon2 || ''
+    strasse.value = edited.strasse || ''
+    ort.value = edited.ort || ''
+    postleitzahl.value = edited.postleitzahl || ''
+    land.value = edited.land || ''
+    arbeitsstunden.value = edited.arbeitsstunden ?? ''
+        springer.value = edited.springer ?? false
+    hauptfiliale.value = props.filialen.find(f => f.id === edited.hauptfiliale) || null
+    nebenfilialen.value = edited.nebenfilialen?.length 
+        ? props.filialen.filter(f => edited.nebenfilialen.includes(f.id))
+        : []
+    anmerkungen.value = edited.anmerkungen || ''
   },
   { immediate: true }
 )
@@ -94,7 +93,7 @@ function handleSubmit() {
     postleitzahl: postleitzahl.value || '',
     land: land.value || '',
     arbeitsstunden: arbeitsstunden.value ? Number(arbeitsstunden.value) : null,
-    springer: springer.value === true ? 'Ja' : springer.value === false ? 'Nein' : 'Nicht bekannt',
+    springer: springer.value,
     hauptfiliale: hauptfiliale.value?.id || null,
     nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.id) : null,
     anmerkungen: anmerkungen.value || ''
@@ -105,7 +104,7 @@ function handleSubmit() {
 </script>
 
 <template>
-  <BaseModal :show="show" @close="emit('close')" width="500px">
+  <BaseModal v-if="mitarbeiter" :show="show" @close="emit('close')" width="500px">
     <!-- Header Slot -->
     <template #header>
       <h2 class="text-2xl font-semibold">Mitarbeiter bearbeiten: {{ mitarbeiter.vorname }} {{ mitarbeiter.nachname }}</h2>
