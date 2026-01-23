@@ -1,0 +1,176 @@
+@baseUrl = http://localhost:3001/api
+@jahr = 2026
+@monat = 1
+
+### ============================================================================
+### HEALTH / QUICK CHECK
+### ============================================================================
+
+### (optional) Root check (falls du sowas hast)
+# GET {{baseUrl}}/
+
+
+### ============================================================================
+### MITARBEITER (Frontend DTO)
+### ============================================================================
+
+### GET alle Mitarbeiter
+GET {{baseUrl}}/mitarbeiter
+
+### GET Mitarbeiter nach mnr
+@MNR = 1
+GET {{baseUrl}}/mitarbeiter/{{MNR}}
+
+### POST Mitarbeiter anlegen (Frontend-Format)
+POST {{baseUrl}}/mitarbeiter
+Content-Type: application/json
+
+{
+  "vorname": "Test 9",
+  "nachname": "Frontend",
+  "arbeitsstunden": 40,
+  "springer": "Nein",
+  "hauptfiliale": 1,
+  "nebenfilialen": [],
+
+  "strasse": "Testweg 1",
+  "ort": "Wien",
+  "postleitzahl": "1010",
+  "land": "Österreich",
+
+  "telefon1": "+43 660 111111",
+  "telefon2": "",
+  "email1": "test@demo.at",
+  "email2": "",
+
+  "anmerkungen": ""
+}
+
+### PUT Mitarbeiter bearbeiten (Frontend-Format)
+@MNR_UPDATE = 11
+PUT {{baseUrl}}/mitarbeiter/{{MNR_UPDATE}}
+Content-Type: application/json
+
+{
+  "vorname": "Test-Updated",
+  "nachname": "Frontend-Updated",
+  "arbeitsstunden": 40,
+  "springer": "Nein",
+  "hauptfiliale": 7,
+  "nebenfilialen": [6],
+
+  "strasse": "Updateweg 9",
+  "ort": "Wien",
+  "postleitzahl": "1010",
+  "land": "Österreich",
+
+  "telefon1": "+43 660 999999",
+  "email1": "update@demo.at",
+
+  "anmerkungen": "Update Test"
+}
+
+### DELETE Mitarbeiter
+@MNR_DELETE = 10
+DELETE {{baseUrl}}/mitarbeiter/{{MNR_DELETE}}
+
+
+### ============================================================================
+### FILIALEN (Routes: /api/filialen)
+### ============================================================================
+
+### GET alle Filialen
+GET {{baseUrl}}/filialen
+
+### GET Filiale nach fnr
+@FNR = 1
+GET {{baseUrl}}/filialen/{{FNR}}
+
+### POST Filiale anlegen
+POST {{baseUrl}}/filialen
+Content-Type: application/json
+
+{
+  "filialname": "Graz",
+  "farbe": "#6cb364",
+  "ort": "Graz",
+  "strasse": "Hauptplatz 1",
+  "plz": "8200",
+  "land": "Österreich",
+  "email": "g@firma.at",
+  "telefon": "+43 3332 12345",
+  "algorithmid": 2
+}
+
+### PUT Filiale bearbeiten
+@FNR_UPDATE = 6
+PUT {{baseUrl}}/filialen/{{FNR_UPDATE}}
+Content-Type: application/json
+
+{
+  "filialname": "Zentrale Wien NEU",
+  "farbe": "#00ff00"
+}
+
+### DELETE Filiale
+@FNR_DELETE = 6
+DELETE {{baseUrl}}/filialen/{{FNR_DELETE}}
+
+
+### ============================================================================
+### DIENSTPLAN (Routes: /api/dienstplan)
+### ============================================================================
+
+### POST Dienstplan generieren + speichern
+POST {{baseUrl}}/dienstplan/generate
+Content-Type: application/json
+
+{
+  "jahr": {{jahr}},
+  "monat": {{monat}}
+}
+
+### GET Dienstplan (raw)
+GET {{baseUrl}}/dienstplan?jahr={{jahr}}&monat={{monat}}
+
+### GET Dienstplan Ansicht (View fürs Frontend)
+GET {{baseUrl}}/dienstplan/view?jahr={{jahr}}&monat={{monat}}
+
+### DELETE Dienstplan Monat löschen
+DELETE {{baseUrl}}/dienstplan/{{jahr}}/{{monat}}
+
+
+### ============================================================================
+### SHIFT (ein Dienst)
+### ============================================================================
+
+### POST shift: Einen Dienst-Typ ändern (A/E/F/K/U)
+@DIENST_ID = 2755
+POST {{baseUrl}}/dienstplan/shift
+Content-Type: application/json
+
+{
+  "id": {{DIENST_ID}},
+  "schicht_typ": "F"
+}
+
+
+### ============================================================================
+### SHIFT MIT ERSATZ (zwei Dienste)
+### ============================================================================
+
+### POST shiftMitErsatz:
+### altId -> wird z.B. auf K oder F gesetzt
+### neuId -> bekommt den ursprünglichen Typ vom altDienst + fnr vom altDienst
+@ALT_ID = 2755
+@NEU_ID = 2848
+POST {{baseUrl}}/dienstplan/shiftMitErsatz
+Content-Type: application/json
+
+{
+  "altId": {{ALT_ID}},
+  "neuId": {{NEU_ID}},
+  "schicht_typ": "K"
+}
+
+

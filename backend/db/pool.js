@@ -1,13 +1,16 @@
 // Importiere Pool aus dem pg-Modul
 const { Pool } = require('pg');
+require('dotenv').config();  //werte aus der .env Datei
+
 
 // Neue Verbindung (Pool) zur Datenbank
 const pool = new Pool({
-  user: 'postgres',       // oder dein DB-User
-  host: 'localhost',
-  database: 'dienstplan', // Name der DB
-  password: 'password',   // Passwort (oder das, was Horst verwendet)
-  port: 5432,             // Standardport für PostgreSQL
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
 });
 
 module.exports = pool;
+ 
