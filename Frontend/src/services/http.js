@@ -4,7 +4,8 @@
 import axios from "axios"
 
 export const http = axios.create({
-  baseURL:  '/api', // NEU: nginx fängt alles unter /api/ ab und reicht relativen pfad weiter
+  baseURL: 'http://localhost:3001',
+  //baseURL:  '/api', // NEU: nginx fängt alles unter /api/ ab und reicht relativen pfad weiter
   headers: {
     "Content-Type": "application/json"
   } 
@@ -13,13 +14,12 @@ export const http = axios.create({
 
 
 // NEU: Mit Interceptor wird der token bei jeder Anfrage im Header mitgeschickt
-
-
 http.interceptors.request.use(config => {
-  if (token){
-    config.headers.Authorization = `Bearer ${token}`   //Bearer ist ein KEY word signalisiert "träger" des tokens
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
   }
-  return config;
+  return config
 },
   error => {
     return Promise.reject(error);
