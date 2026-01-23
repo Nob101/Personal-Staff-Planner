@@ -1,8 +1,9 @@
 # Node modules
 node_modules/
+.DS_Store
 
 # Umgebungsvariablen (env Dateien)
-.env
+*.env
 
 # Draw.io Dateien
 *.drawio
@@ -16,11 +17,20 @@ yarn-debug.log*
 # Build-Ordner
 dist/
 build/
+certs/
 
 # IDEs/Editoren
 .vscode/
+.idea/
 .idea/
 
 # Betriebssystem-Spezifische Dateien
 .DS_Store
 Thumbs.db
+
+# Temporäre Test-Dateien
+test.*
+*.http
+*.txt
+temp/
+db.json
