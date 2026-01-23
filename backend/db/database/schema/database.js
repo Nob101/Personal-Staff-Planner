@@ -19,27 +19,30 @@ const pool = require('../../pool.js');  //Neu! da Der Pool wartbarer wird wenn e
 const bcrypt = require('bcrypt');
 const path = require('path');
 
-require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
- 
-const { loadSqlFiles } = require('./sqlLoader');
+const pool = require("../../pool.js"); //Neu! da Der Pool wartbarer wird wenn er ausserhalb liegt
+const bcrypt = require("bcrypt");
+const path = require("path");
+
+require("dotenv").config({ path: path.resolve(__dirname, "../../../.env") });
+
+const { loadSqlFiles } = require("./sqlLoader");
 const saltRounds = 10;
 
-
 async function initDatabase() {
-    const client = await pool.connect();
- 
-    try {
-        const markusPassword = process.env.INITIAL_MARKUS_PASSWORD;
-        const adminRole = process.env.DB_ROLE_ADMIN_PASSWORD;
- 
-        if (!markusPassword || !adminRole) {
-            throw new Error(`Config-Passwörter fehlen in der .env!`);
-        }
-/**
- * NEU Wenn DB bereits existiert muss nicht der ganze Block ausgeführt werden
- * kontrolle über PG Inahltsverzeichnis welche Tabellen existieren oder nicht
- */
-        const checkTableRes = await client.query(`
+  const client = await pool.connect();
+
+  try {
+    const markusPassword = process.env.INITIAL_MARKUS_PASSWORD;
+    const adminRole = process.env.DB_ROLE_ADMIN_PASSWORD;
+
+    if (!markusPassword || !adminRole) {
+      throw new Error(`Config-Passwörter fehlen in der .env!`);
+    }
+    /**
+     * NEU Wenn DB bereits existiert muss nicht der ganze Block ausgeführt werden
+     * kontrolle über PG Inahltsverzeichnis welche Tabellen existieren oder nicht
+     */
+    const checkTableRes = await client.query(`
             SELECT EXISTS (
                 SELECT FROM information_schema.tables   --'Inhaltsverzeichnis' von Postgres über alle Tabellen
                 WHERE table_schema = 'public' 

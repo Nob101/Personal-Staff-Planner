@@ -410,11 +410,13 @@ async function updateCounter(mnr, counter) {
 
 async function getAllBase() {
   const r = await pool.query(`
-    SELECT mnr, hauptfiliale_fnr, counter, springer, springeralgorithmid, arbeitnehmertyp
+    SELECT mnr,vorname,nachname, hauptfiliale_fnr, counter, springer, springeralgorithmid, arbeitnehmertyp
     FROM mitarbeiter
   `);
   return r.rows;
 }
+
+      
 
 
 
