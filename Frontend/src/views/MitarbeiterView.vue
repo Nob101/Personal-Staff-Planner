@@ -14,6 +14,8 @@ import BestätigungsModal from '@/components/global/BestätigungsModal.vue'
 const {
   mitarbeiter,
   filialen,
+  searchTerm,
+  filteredMitarbeiter,
   showModalMitarbeiterCreate,
   showModalMitarbeiterEdit,
   selectedMitarbeiter,
@@ -32,10 +34,10 @@ const {
   <Navbar />
   <div class="mitarbeiter-view container mx-auto p-4">
     <!-- ActionBar -->
-    <MitarbeiterActionBar @mitarbeiterCreate="showModalMitarbeiterCreate = true" />
+    <MitarbeiterActionBar @searchMitarbeiter="val => searchTerm = val" @mitarbeiterCreate="showModalMitarbeiterCreate = true" />
 
     <!-- Mitarbeiter Liste -->
-    <MitarbeiterList :mitarbeiter="mitarbeiter" :filialen="filialen" @edit="handleEdit" @delete="handleDelete" />
+    <MitarbeiterList :mitarbeiter="filteredMitarbeiter" :filialen="filialen" @edit="handleEdit" @delete="handleDelete" />
 
     <!-- Modale am Ende -->
     <ModalMitarbeiterCreate 
@@ -45,7 +47,8 @@ const {
       @mitarbeiterCreate="handleMitarbeiterCreate"
     />
     <ModalMitarbeiterEdit
-      :show="showModalMitarbeiterEdit && selectedMitarbeiter"
+    v-if="showModalMitarbeiterEdit && !!selectedMitarbeiter"
+      :show="showModalMitarbeiterEdit"
       :mitarbeiter="selectedMitarbeiter"
       :filialen="filialen"
       @close="showModalMitarbeiterEdit = false"

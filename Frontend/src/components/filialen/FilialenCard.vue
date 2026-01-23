@@ -5,10 +5,7 @@
 import { defineProps, defineEmits, computed } from 'vue'
 
 const props = defineProps({
-  filialen: {
-    type: Object,
-    required: true
-  },
+  filialen: { type: Object, required: true},
   mitarbeiter: { type: Array, required: true }
 })
 
@@ -24,8 +21,11 @@ function handleDelete() {
 }
 
 // Helper-Funktion: Hauptmitarbeiter dieser Filiale
+
 const hauptMitarbeiter = computed(() =>
-  props.mitarbeiter.filter(m => m.hauptfiliale === props.filialen.id)
+  props.mitarbeiter.filter(
+    m => Number(m.hauptfiliale) === Number(props.filialen.id)
+  )
 )
 
 // Helper-Funktion: Springer dieser Filiale

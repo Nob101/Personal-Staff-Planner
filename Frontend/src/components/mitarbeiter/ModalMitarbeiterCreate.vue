@@ -11,7 +11,6 @@ const emit = defineEmits(['close', 'mitarbeiterCreate'])
 
 // Props
 const props = defineProps({
-  mitarbeiter: { type: Object, required: true },
   filialen: { type: Array, required: true },
   show: { type: Boolean, required: true }                   // wird von Parent gesteuert
 })
@@ -19,7 +18,6 @@ const props = defineProps({
 // Reaktive Formularfelder
 const vorname = ref('')
 const nachname = ref('')
-const geburtsdatum = ref('')
 const email1 = ref('')
 const email2 = ref('')
 const telefon1 = ref('')
@@ -29,7 +27,7 @@ const ort = ref('')
 const postleitzahl = ref('')
 const land = ref('')
 const arbeitsstunden = ref('')
-const springer = ref(undefined)
+const springer = ref(undefined) // undefined, nichts vorausgewählt
 const hauptfiliale = ref(null)
 const nebenfilialen = ref([])
 const anmerkungen = ref('')
@@ -64,7 +62,7 @@ function handleSubmit() {
     postleitzahl: postleitzahl.value || '',
     land: land.value || '',
     arbeitsstunden: arbeitsstunden.value ? Number(arbeitsstunden.value) : null,
-    springer: springer.value === true ? 'Ja' : springer.value === false ? 'Nein' : 'Nicht bekannt',
+    springer: springer.value ?? false, // wenn undefined, dann false
     hauptfiliale: hauptfiliale.value || null,
     nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value : null,
     anmerkungen: anmerkungen.value || ''
