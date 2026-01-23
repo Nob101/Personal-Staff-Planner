@@ -12,7 +12,7 @@ const props = defineProps({
 })
 
 // Lokale Kopien der Felder
-const name = ref('')
+const filialenname = ref('')
 const strasse = ref('')
 const ort = ref('')
 const postleitzahl = ref('')
@@ -29,7 +29,7 @@ watch(
   () => props.filiale,
   (edited) => {
     if (!edited) return
-    name.value = edited.name || ''
+    filialenname.value = edited.name || ''
     strasse.value = edited.strasse || ''
     ort.value = edited.ort || ''
     postleitzahl.value = edited.postleitzahl || ''
@@ -48,7 +48,7 @@ watch(
 function handleSubmit() {
   emit('filialeEdit', {
     id: props.filiale.id,
-    name: name.value,
+    filialenname: filialenname.value,
     strasse: strasse.value || '',
     ort: ort.value || '',
     postleitzahl: postleitzahl.value || '',
@@ -69,7 +69,7 @@ function handleSubmit() {
     <!-- Header -->
     <template #header>
       <h2 class="text-2xl font-semibold">
-        Filiale bearbeiten: {{ filiale.name }}
+        Filiale bearbeiten: {{ filiale.filialenname }}
       </h2>
     </template>
 
@@ -78,8 +78,8 @@ function handleSubmit() {
       <form @submit.prevent="handleSubmit" class="space-y-4">
 
         <div>
-          <label>Name:</label>
-          <input v-model="name" required class="w-full border rounded px-2 py-1" />
+          <label>Filialenname:</label>
+          <input v-model="filialenname" required class="w-full border rounded px-2 py-1" />
         </div>
 
         <fieldset class="border rounded p-3">
@@ -103,7 +103,7 @@ function handleSubmit() {
         </div>
 
         <div>
-          <label>Filialfarbe:</label>
+          <label>Filialenfarbe:</label>
           <input type="color" v-model="color" />
         </div>
 
