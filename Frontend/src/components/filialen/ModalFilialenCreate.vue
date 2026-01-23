@@ -59,7 +59,7 @@ function handleSubmit() {
 
         <!-- Name -->
         <div>
-          <label>Filialname:</label>
+          <label>Filialenname:</label>
           <input
             type="text"
             v-model="filialenname"
@@ -117,7 +117,7 @@ function handleSubmit() {
 
         <!-- Farbe -->
         <div>
-          <label>FilialenFarbe:</label>
+          <label>Filialenfarbe:</label>
           <input
             type="color"
             v-model="color"
