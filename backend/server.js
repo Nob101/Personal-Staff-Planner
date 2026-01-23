@@ -50,7 +50,14 @@ app.use('/api/download', exportRouter);
 //   SERVER STARTEN
 // ---------------------
 
+// ROUTES
+app.use("/api/mitarbeiter", require("./routes/mitarbeiter.routes"));
+app.use("/api/filialen", require("./routes/filialen.routes"));
+app.use("/api/dienstplan", require("./routes/dienstplan.routes"));
+app.use("/api/auth", require("./routes/auth.routes"));
 
+// SERVER STARTEN
+const shouldInitDb = String(process.env.INIT_DB).toLowerCase() === "true";
 
 async function startApp() {
 
@@ -74,6 +81,4 @@ async function startApp() {
   }
 }
 
-
 startApp();
-
