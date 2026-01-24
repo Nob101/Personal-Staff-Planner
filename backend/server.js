@@ -30,7 +30,7 @@ const authRouter = require('./routes/auth.routes');
 app.use('/api/auth', authRouter);
 
 // Neu: Alles daach braucht eine gültige Anmeldung (darunter = geschützte routen)
-app.use(loginAllowness);
+// app.use(loginAllowness);
 
 const mitarbeiterRouter = require('./routes/mitarbeiter.routes');
 app.use('/api/mitarbeiter', mitarbeiterRouter);
