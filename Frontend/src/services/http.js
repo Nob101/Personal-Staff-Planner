@@ -12,12 +12,12 @@ export const http = axios.create({
 })
 
 
-// NEU: Mit Interceptor wird der token bei jeder Anfrage im Header mitgeschickt
-
+// NEU: Mit Interceptor wird der token bei jeder Anfrage im Header mitgeschickt und geprüft
 
 http.interceptors.request.use(config => {
+  const token = localStorage.getItem('userToken');
   if (token){
-    config.headers.Authorization = `Bearer ${token}`   //Bearer ist ein KEY word signalisiert "träger" des tokens
+    config.headers.Authorization = token;      //NEU: token aus dem localstorage direkt holen
   }
   return config;
 },
