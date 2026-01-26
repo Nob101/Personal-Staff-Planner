@@ -19,10 +19,6 @@ const pool = require('../../pool.js');  //Neu! da Der Pool wartbarer wird wenn e
 const bcrypt = require('bcrypt');
 const path = require('path');
 
-const pool = require("../../pool.js"); //Neu! da Der Pool wartbarer wird wenn er ausserhalb liegt
-const bcrypt = require("bcrypt");
-const path = require("path");
-
 require("dotenv").config({ path: path.resolve(__dirname, "../../../.env") });
 
 const { loadSqlFiles } = require("./sqlLoader");

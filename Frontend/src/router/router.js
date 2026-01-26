@@ -25,14 +25,24 @@ const router = createRouter({
   routes
 })
 
-// --- temporäre Weiterleitung um Login zu skippen---
+// router.js
 
+// NEU: Die Skipp login methode mit überprüfung des tokens
 router.beforeEach((to, from, next) => {
-  if (to.name === "login") {
-    return next({ name: "mitarbeiter" }) // temporär Login überspringen
+  const isAuthenticated = localStorage.getItem('userToken');
+
+  // Wenn man nicht eingeloggt ist und versucht auf eine interne Seite zu gehen:
+  if (to.name !== 'login' && !isAuthenticated) {
+    next({ name: 'login' });
+  } 
+  // Wenn man eingeloggt ist und versucht zum Login zu gehen:
+  else if (to.name === 'login' && isAuthenticated) {
+    next({ name: 'mitarbeiter' });
   }
-  next()
-})
+  else {
+    next();
+  }
+});
  
 
 //Export
