@@ -1,5 +1,5 @@
 const pool = require("../db/pool");
-
+ 
 async function save(jahr, monat, datum, mnr, fnr, schicht_typ) {
   await pool.query(
     `
@@ -10,7 +10,7 @@ async function save(jahr, monat, datum, mnr, fnr, schicht_typ) {
   );
   return true;
 }
-
+ 
 async function deleteByMonth(jahr, monat) {
   const result = await pool.query(
     `
@@ -20,10 +20,10 @@ async function deleteByMonth(jahr, monat) {
     `,
     [jahr, monat]
   );
-
+ 
   return result.rowCount; // wie viele Einträge gelöscht wurden
 }
-
+ 
 async function getByDate(jahr, monat) {
   const result = await pool.query(
     `select id, jahr, monat,
@@ -36,16 +36,17 @@ async function getByDate(jahr, monat) {
   );
   return result.rows;
 }
-
+ 
 async function getByIdTx(client, id) {
   const r = await client.query(
     `SELECT id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung
-     FROM dienstplaene WHERE id=$1`,
+     FROM dienstplaene
+     WHERE id = $1`,
     [id]
   );
   return r.rows[0] ?? null;
 }
-
+ 
 async function dienstShiftTx(client, id, schicht_typ) {
   const r = await client.query(
     `
@@ -58,7 +59,7 @@ async function dienstShiftTx(client, id, schicht_typ) {
   );
   return r.rows[0] ?? null;
 }
-
+ 
 async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
   const r = await client.query(
     `
@@ -72,8 +73,8 @@ async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
   );
   return r.rows[0] ?? null;
 }
-
-
+ 
+ 
 async function findErsatzKandidatenByDienstId(dienstId) {
   const q = `
     SELECT
@@ -101,11 +102,12 @@ async function findErsatzKandidatenByDienstId(dienstId) {
   const r = await pool.query(q, [dienstId]);
   return r.rows;
 }
-
-
-
-
-
-
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 module.exports = { save, deleteByMonth, getByDate, dienstShiftTx, getByIdTx, dienstShiftMitErsatzTx, findErsatzKandidatenByDienstId };
+ 
