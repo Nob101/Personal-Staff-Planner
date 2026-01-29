@@ -60,9 +60,9 @@ watch(
     land.value = edited.land || ''
     arbeitsstunden.value = edited.arbeitsstunden ?? ''
         springer.value = edited.springer ?? false
-    hauptfiliale.value = props.filialen.find(f => f.id === edited.hauptfiliale) || null
+    hauptfiliale.value = props.filialen.find(f => f.fnr === edited.hauptfiliale) || null
     nebenfilialen.value = edited.nebenfilialen?.length 
-        ? props.filialen.filter(f => edited.nebenfilialen.includes(f.id))
+        ? props.filialen.filter(f => edited.nebenfilialen.includes(f.fnr))
         : []
     anmerkungen.value = edited.anmerkungen || ''
   },
@@ -72,15 +72,16 @@ watch(
 // Nebenfilialen automatisch anpassen, Hauptfiliale aus Filter entfernen
 watch(hauptfiliale, (newVal) => {
   nebenfilialen.value = nebenfilialen.value.filter(
-    f => f.id !== newVal?.id
+    f => f.fnr !== newVal?.fnr
   )
 })
+
 
 
 // Filter für Nebenfilialen (Hauptfiliale ausschließen) und beim aussuchen alphabetisch sortiert anzeigen
 const nebenfilialenOptionen = computed(() =>
   props.filialen
-    .filter(f => !hauptfiliale.value || f.id !== hauptfiliale.value.id)
+    .filter(f => !hauptfiliale.value || f.fnr !== hauptfiliale.value.fnr)
     .sort((a, b) => a.filialname.localeCompare(b.filialname))
 )
 
@@ -129,8 +130,8 @@ function handleSubmit() {
     land: land.value || '',
     arbeitsstunden: arbeitsstunden.value ? Number(arbeitsstunden.value) : null,
     springer: springer.value,
-    hauptfiliale: hauptfiliale.value?.id || null,
-    nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.id) : null,
+    hauptfiliale: hauptfiliale.value?.fnr || null,
+    nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.fnr) : null,
     anmerkungen: anmerkungen.value || ''
   })
   emit('close')
@@ -237,7 +238,7 @@ function handleSubmit() {
               v-model="hauptfiliale"
               :options="props.filialen.sort((a,b)=>a.filialname.localeCompare(b.filialname))"
               label="filialname"
-              track-by="id"
+              track-by="fnr"
               placeholder="Hauptfiliale wählen"
               :clearable="false"
             />
@@ -248,7 +249,7 @@ function handleSubmit() {
               v-model="sortedNebenfilialen"
               :options="nebenfilialenOptionen"
               label="filialname"
-              track-by="id"
+              track-by="fnr"
               placeholder="Nebenfiliale(n) wählen"
               :multiple="true"
               :close-on-select="false"
