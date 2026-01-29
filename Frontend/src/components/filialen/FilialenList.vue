@@ -26,7 +26,7 @@ const emit = defineEmits(['edit', 'delete'])
   <div class="filialen-list grid gap-4">
     <FilialenCard
       v-for="f in filialen"
-      :key="f.id"
+      :key="f.fnr"
       :filialen="f"
       :mitarbeiter="mitarbeiter"
       @edit="() => emit('edit', f)"

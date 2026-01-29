@@ -26,10 +26,10 @@ POST {{baseUrl}}/mitarbeiter
 Content-Type: application/json
 
 {
-  "vorname": "Test 9",
+  "vorname": "Test 12",
   "nachname": "Frontend",
   "arbeitsstunden": 40,
-  "springer": "Nein",
+  "springer": "Ja",
   "hauptfiliale": 1,
   "nebenfilialen": [],
 
