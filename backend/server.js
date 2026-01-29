@@ -11,10 +11,11 @@ const cors = require('cors');
 const db = require('./db/database/schema/database.js')
 
 const { deleteOldShifts } = require('./functions/cleanUpService');
-const PORT = 3001;
 
 // NEU: Lukas  -> Objekt im Arbeitsspeicher vom server,     Eine Art Gästeliste
-// const {loginAllowness} = require('./middleware/auth.middleware');
+const {loginAllowness} = require('./middleware/auth.middleware');
+const PORT = 3001;
+
 
 
 // Middleware
@@ -30,7 +31,7 @@ const authRouter = require('./routes/auth.routes');
 app.use('/api/auth', authRouter);
 
 // Neu: Alles daach braucht eine gültige Anmeldung (darunter = geschützte routen)
-app.use(loginAllowness);
+// app.use(loginAllowness);
 
 const mitarbeiterRouter = require('./routes/mitarbeiter.routes');
 app.use('/api/mitarbeiter', mitarbeiterRouter);
@@ -46,18 +47,7 @@ app.use('/api/dienstplan', dienstplanRouter);
 const exportRouter = require('./routes/export.routes.js')
 app.use('/api/download', exportRouter);
 
-// ---------------------
-//   SERVER STARTEN
-// ---------------------
 
-// ROUTES
-app.use("/api/mitarbeiter", require("./routes/mitarbeiter.routes"));
-app.use("/api/filialen", require("./routes/filialen.routes"));
-app.use("/api/dienstplan", require("./routes/dienstplan.routes"));
-app.use("/api/auth", require("./routes/auth.routes"));
-
-// SERVER STARTEN
-const shouldInitDb = String(process.env.INIT_DB).toLowerCase() === "true";
 
 async function startApp() {
 
