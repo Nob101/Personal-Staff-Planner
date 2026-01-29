@@ -24,20 +24,20 @@ function handleDelete() {
 
 const hauptMitarbeiter = computed(() =>
   props.mitarbeiter.filter(
-    m => Number(m.hauptfiliale) === Number(props.filialen.id)
+    m => Number(m.hauptfiliale) === Number(props.filialen.fnr)
   )
 )
 
 // Helper-Funktion: Springer dieser Filiale
 const springerMitarbeiter = computed(() =>
   props.mitarbeiter.filter(
-    m => m.hauptfiliale === props.filialen.id && m.springer === true
+    m => m.hauptfiliale === props.filialen.fnr && m.springer === true
   )
 )
 </script>
 
 <template>
-  <div class="filialen-card" :style="{ borderLeft: '6px solid ' + (filialen.color || '#ccc') }">
+  <div class="filialen-card" :style="{ borderLeft: '6px solid ' + (filialen.farbe || '#ccc') }">
 
     <!-- Edit/Delete Buttons -->
     <div class="card-actions">
@@ -46,7 +46,7 @@ const springerMitarbeiter = computed(() =>
     </div>
 
     <!-- Titel -->
-    <h1 class="text-3xl font-semibold">{{ filialen.name }}</h1>
+    <h1 class="text-3xl font-semibold">{{ filialen.filialname }}</h1>
 
     <!-- Columns -->
     <div class="filialen-card-columns">
@@ -56,14 +56,12 @@ const springerMitarbeiter = computed(() =>
         
         <fieldset class="box">
           <legend>Email</legend>
-          <p data-label="Email 1:">{{ filialen.email1 || '-' }}</p>
-          <p data-label="Email 2:">{{ filialen.email2 || '-' }}</p>
+          <p data-label="Email:">{{ filialen.email || '-' }}</p>
         </fieldset>
 
         <fieldset class="box">
           <legend>Telefon</legend>
-          <p data-label="Telefon 1:">{{ filialen.telefon1 || '-' }}</p>
-          <p data-label="Telefon 2:">{{ filialen.telefon2 || '-' }}</p>
+          <p data-label="Telefon:">{{ filialen.telefon || '-' }}</p>
         </fieldset>
       </div>
 
@@ -72,7 +70,7 @@ const springerMitarbeiter = computed(() =>
         <fieldset class="box">
           <legend>Adresse</legend>
           <p data-label="Straße:">{{ filialen.strasse || '-' }}</p>
-          <p data-label="Postleitzahl:">{{ filialen.postleitzahl || '-' }}</p>
+          <p data-label="Postleitzahl:">{{ filialen.plz || '-' }}</p>
           <p data-label="Ort:">{{ filialen.ort || '-' }}</p>
           <p data-label="Land:">{{ filialen.land || '-' }}</p>
         </fieldset>
@@ -83,8 +81,8 @@ const springerMitarbeiter = computed(() =>
         <fieldset class="box">
           <legend>Filialenfarbe</legend>
           <div class="color-row">
-            <span class="color-preview" :style="{ backgroundColor: filialen.color || '#ccc' }"></span>
-            <span>{{ filialen.color || 'Keine Farbe gesetzt' }}</span>
+            <span class="color-preview" :style="{ backgroundColor: filialen.farbe || '#ccc' }"></span>
+            <span>{{ filialen.farbe || 'Keine Farbe gesetzt' }}</span>
           </div>
         </fieldset>
 
@@ -93,7 +91,7 @@ const springerMitarbeiter = computed(() =>
 
           <p data-label="Hauptmitarbeiter:">
             <span v-if="hauptMitarbeiter.length">
-              <template v-for="(m, index) in hauptMitarbeiter" :key="m.id">
+              <template v-for="(m, index) in hauptMitarbeiter" :key="m.fnr">
                 {{ m.vorname }} {{ m.nachname }}<span v-if="index < hauptMitarbeiter.length - 1">, </span>
               </template>
             </span>
@@ -102,7 +100,7 @@ const springerMitarbeiter = computed(() =>
 
           <p data-label="Springer dieser Filiale:">
             <span v-if="springerMitarbeiter.length">
-              <template v-for="(m, index) in springerMitarbeiter" :key="m.id">
+              <template v-for="(m, index) in springerMitarbeiter" :key="m.fnr">
                 {{ m.vorname }} {{ m.nachname }}<span v-if="index < springerMitarbeiter.length - 1">, </span>
               </template>
             </span>
@@ -128,7 +126,7 @@ const springerMitarbeiter = computed(() =>
   position: relative;
   text-align: center;
   border: 1px solid #ccc;
-  padding: 24px;
+  padding: 48px 24px 24px 24px;
   border-radius: 8px;
   margin-bottom: 16px;
 }

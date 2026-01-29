@@ -1,7 +1,7 @@
 Mitarbeiter To-Do
 
 Bugs/Korrekturen Allgemein
--> Wenn neue Mitarbeiter erstellt werden und der erste mehrmals gelöscht wird, dann löscht es alle. (Bug nur mit Test-Array?, Anderer Grund?)
+-> 
 
 
 
@@ -9,26 +9,31 @@ Bugs/Korrekturen Allgemein
 offene Implementierungen:
 
 -> MitarbeiterActionBar
-    -> Suchfeld/Filteroptionen (Alphabetisch,Filiale, etc.) + Standard-Filter, derzeit wird der Mitarbeiter Array einfach durchgegangen
     -> Icons
 
 -> MitarbeiterCard
     -> Icons
-    -> Geburtsdatum anders anzeigen? Nicht passend momentan
 
 -> MitarbeiterList
-    -> Mitarbeiter in Filialen gruppieren? z.B.: Filiale A Container mit allen Mitarbeitern die diese als Hauptfiliale haben, usw.
+    -> 
 
 ->ModalMitarbeiterCreate
-    -> Optional: Dropdowns für Filialen Styling?
+    ->
 
 ->ModalMitarbeiterEdit
-    -> Optional: Dropdowns für Filialen Styling?
-    -> Formatierung Geburtsdatum
-    -> Geburtsdatum übernimmt nicht das bereits eingetragene
+    ->
+    ->
+    ->
 
 ->MitarbeiterView
-    -> Mitarbeiter ID: Was passiert wenn ein Mitarbeiter gelöscht wird? Neuvergabe der IDs?
-    -> Dummy-Daten mit Backend-Anbindung ersetzen
+    ->
+    ->
+
+->Filialen
+    -> Selben Filialname mehrmals vergebbar? -> da verschiedene FilialenID's
+    -> Design/Styling mit Dumitru
+
+->Mitarbeiter
+    -> Design/Styling mit Dumitru
 
 

@@ -1,7 +1,7 @@
 <!-- BaseModal.vue -->
 <!-- Eine Vorlage für Modale mit Funktionen und Styling die bei allen Modalen verwendet werden sollen -->
 <script setup>
-import { defineProps, onMounted, onUnmounted } from 'vue'
+import { defineProps, onMounted, onUnmounted, ref } from 'vue'
 
 const emit = defineEmits(['close'])
 
@@ -11,6 +11,9 @@ const props = defineProps({
   closeOnEsc: { type: Boolean, default: true }
 })
 
+// Merkt sich, ob der Mausklick außerhalb des Modals gestartet wurde
+const mouseDownOutside = ref(false)
+
 function close() {
   emit('close')
 }
@@ -18,6 +21,17 @@ function close() {
 // ESC-Taste nur registrieren, wenn closeOnEsc true (ESC-Taste zum Schließen vom Modal)
 function handleEsc(e) {
   if (e.key === 'Escape') close()
+}
+
+// Prüft beim Drücken der Maustaste, ob der Klick außerhalb des Modals beginnt
+function onMouseDown(e) {
+  mouseDownOutside.value = e.target.classList.contains('modal-overlay')
+}
+
+// Modal nur schließen, wenn Maus auch außerhalb losgelassen wurde
+function onOverlayClick() {
+  if (mouseDownOutside.value) close()
+  mouseDownOutside.value = false
 }
 
 onMounted(() => {
@@ -31,7 +45,12 @@ onUnmounted(() => {
 
 <template>
   <teleport to="body">
-    <div v-if="show" class="modal-overlay" @click.self="close">
+    <div
+      v-if="show"
+      class="modal-overlay"
+      @mousedown="onMouseDown"
+      @click="onOverlayClick"
+    >
       <div class="modal-container" :style="{ width: width }">
         <!-- Header Slot -->
         <div v-if="$slots.header" class="modal-header flex justify-center items-center mb-4">
@@ -51,7 +70,6 @@ onUnmounted(() => {
     </div>
   </teleport>
 </template>
-
 
 <style scoped>
 .modal-overlay {
