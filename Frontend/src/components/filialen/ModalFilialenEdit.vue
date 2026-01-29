@@ -1,7 +1,7 @@
 <!-- ModalFilialenEdit.vue -->
 
 <script setup>
-import { ref, defineProps, defineEmits, watch } from 'vue'
+import { ref, defineProps, watch } from 'vue'
 import BaseModal from '@/components/global/BaseModal.vue'
 
 const emit = defineEmits(['close', 'filialeEdit'])

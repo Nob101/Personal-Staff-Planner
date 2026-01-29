@@ -1,7 +1,7 @@
 <!-- BestätigungsModal.vue -->
 <!-- Allgemeines BestätigungsModal für z.b. löschen von einem Mitarbeiters oder Filiale. Der angezeigte Text wird im dementsprechenden Modalaufruf im View übergeben-->
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { defineProps } from 'vue'
 
 const emit = defineEmits(['confirm', 'close'])
 const props = defineProps({

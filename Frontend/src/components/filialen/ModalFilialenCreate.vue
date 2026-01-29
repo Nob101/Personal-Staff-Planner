@@ -2,7 +2,7 @@
 
 <script setup>
 import BaseModal from '@/components/global/BaseModal.vue'
-import { ref, watch, defineProps, computed } from 'vue'
+import { ref, defineProps } from 'vue'
 
 
 // Emits

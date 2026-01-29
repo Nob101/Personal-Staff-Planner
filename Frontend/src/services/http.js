@@ -4,7 +4,7 @@
 import axios from "axios"
 
 export const http = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: '/api',
   //baseURL:  '/api', // NEU: nginx fängt alles unter /api/ ab und reicht relativen pfad weiter
   headers: {
     "Content-Type": "application/json"
