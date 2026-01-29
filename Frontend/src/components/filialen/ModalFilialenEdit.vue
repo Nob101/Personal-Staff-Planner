@@ -1,8 +1,9 @@
 <!-- ModalFilialenEdit.vue -->
 
 <script setup>
-import { ref, defineProps, defineEmits, watch } from 'vue'
+import { ref, defineProps, watch } from 'vue'
 import BaseModal from '@/components/global/BaseModal.vue'
+import ColorPicker from '@/components/global/ColorPicker.vue'
 
 const emit = defineEmits(['close', 'filialeEdit'])
 
@@ -12,52 +13,60 @@ const props = defineProps({
 })
 
 // Lokale Kopien der Felder
-const filialenname = ref('')
+const filialname = ref('')
 const strasse = ref('')
 const ort = ref('')
-const postleitzahl = ref('')
+const plz = ref('')
 const land = ref('')
-const telefon1 = ref('')
-const telefon2 = ref('')
-const email1 = ref('')
-const email2 = ref('')
-const color = ref('')
+const telefon = ref('')
+const email = ref('')
+const farbe = ref('')
 const anmerkungen = ref('')
+const nameFehler = ref(false)
 
 // Props → lokale Refs kopieren
 watch(
   () => props.filiale,
   (edited) => {
     if (!edited) return
-    filialenname.value = edited.name || ''
+    filialname.value = edited.filialname || ''
     strasse.value = edited.strasse || ''
     ort.value = edited.ort || ''
-    postleitzahl.value = edited.postleitzahl || ''
+    plz.value = edited.plz || ''
     land.value = edited.land || ''
-    telefon1.value = edited.telefon1 || ''
-    telefon2.value = edited.telefon2 || ''
-    email1.value = edited.email1 || ''
-    email2.value = edited.email2 || ''
-    color.value = edited.color || '#cccccc'
+    telefon.value = edited.telefon || ''
+    email.value = edited.email || ''
+    farbe.value = edited.farbe || '#ffffff' // Fallback auf Weiß, wenn nicht gesetzt
     anmerkungen.value = edited.anmerkungen || ''
   },
   { immediate: true }
 )
 
+// entfernt Reset Fehler Meldung bei Schließen des Modals
+watch(() => props.show, (newVal) => {
+  if (!newVal) {
+    nameFehler.value = false
+  }
+})
+
 // Submit
 function handleSubmit() {
+    if (!filialname.value.trim()) {
+    nameFehler.value = true
+    return
+  }
+  nameFehler.value = false
+
   emit('filialeEdit', {
-    id: props.filiale.id,
-    filialenname: filialenname.value,
+    fnr: props.filiale.fnr,
+    filialname: filialname.value,
     strasse: strasse.value || '',
     ort: ort.value || '',
-    postleitzahl: postleitzahl.value || '',
+    plz: plz.value || '',
     land: land.value || '',
-    telefon1: telefon1.value || '',
-    telefon2: telefon2.value || '',
-    email1: email1.value || '',
-    email2: email2.value || '',
-    color: color.value || '',
+    telefon: telefon.value || '',
+    email: email.value || '',
+    farbe: farbe.value || '',
     anmerkungen: anmerkungen.value || ''
   })
   emit('close')
@@ -69,7 +78,7 @@ function handleSubmit() {
     <!-- Header -->
     <template #header>
       <h2 class="text-2xl font-semibold">
-        Filiale bearbeiten: {{ filiale.filialenname }}
+        Filiale bearbeiten: {{ filiale.filialname }}
       </h2>
     </template>
 
@@ -79,7 +88,18 @@ function handleSubmit() {
 
         <div>
           <label>Filialenname:</label>
-          <input v-model="filialenname" required class="w-full border rounded px-2 py-1" />
+          <input placeholder="Name der Filiale" v-model="filialname" required class="w-full border rounded px-2 py-1" />
+          <p v-if="nameFehler" class="text-red-600 mt-1 text-sm">Filialenname ist erforderlich</p>
+        </div>
+
+        <div>
+          <label>Telefon:</label>
+          <input placeholder="Telefon" v-model="telefon" class="w-full border rounded px-2 py-1" />
+        </div>
+
+        <div>
+          <label>Email:</label>
+          <input placeholder="Email" v-model="email" class="w-full border rounded px-2 py-1" />
         </div>
 
         <fieldset class="border rounded p-3">
@@ -87,24 +107,13 @@ function handleSubmit() {
           <div class="grid grid-cols-2 gap-4">
             <input placeholder="Straße" v-model="strasse" class="border rounded px-2 py-1" />
             <input placeholder="Ort" v-model="ort" class="border rounded px-2 py-1" />
-            <input placeholder="Postleitzahl" v-model="postleitzahl" class="border rounded px-2 py-1" />
+            <input placeholder="Postleitzahl" v-model="plz" class="border rounded px-2 py-1" />
             <input placeholder="Land" v-model="land" class="border rounded px-2 py-1" />
           </div>
         </fieldset>
 
-        <div class="grid grid-cols-2 gap-4">
-          <input placeholder="Telefon 1" v-model="telefon1" class="border rounded px-2 py-1" />
-          <input placeholder="Telefon 2" v-model="telefon2" class="border rounded px-2 py-1" />
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <input placeholder="Email 1" v-model="email1" class="border rounded px-2 py-1" />
-          <input placeholder="Email 2" v-model="email2" class="border rounded px-2 py-1" />
-        </div>
-
         <div>
-          <label>Filialenfarbe:</label>
-          <input type="color" v-model="color" />
+          <ColorPicker v-model="farbe" />
         </div>
 
         <div>
