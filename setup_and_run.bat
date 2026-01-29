@@ -1,4 +1,5 @@
 @echo off   
+title Personal Staff Planner
 echo -------------------------------------
 echo PSP-Dienstplan: System check und start
 echo -------------------------------------

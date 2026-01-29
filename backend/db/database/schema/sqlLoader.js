@@ -3,7 +3,7 @@
 /*
 ###############################
 
--- ZUm Laden der Trigger usw. (sql-files)
+-- Zum Laden der Trigger usw. (sql-files)
 
 ################################
 */
@@ -14,13 +14,13 @@ const fs = require('fs');
 const path = require('path');
 
 
-// *.sql asu den ordnern Laden
+// *.sql -Files aus den ordnern Laden
 
 async function loadSqlFiles(client, directories) {
   for (const dir of directories) {  //sucht in alle Verzeichnisse
     
     if (fs.existsSync(dir)) {
-      const files = fs.readdirSync(dir).filter(f => f.endsWith('.sql')).sort(); //lädt gezielt .sql-FIles
+      const files = fs.readdirSync(dir).filter(file => file.endsWith('.sql')).sort(); //lädt gezielt .sql-FIles
 
 
       for (const file of files) {
