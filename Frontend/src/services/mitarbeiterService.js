@@ -17,13 +17,24 @@ export function getMitarbeiterById(id) {
 }
 
 // Neuen Mitarbeiter erstellen
-export function createMitarbeiter(mitarbeiter) {
-  return http.post("/mitarbeiter", mitarbeiter)
+export function createMitarbeiter(m) {
+  console.log(
+    "AXIOS POST → /mitarbeiter",
+    JSON.stringify(m, null, 2)
+  )
+
+  return api.post("/mitarbeiter", m)
 }
 
 // Mitarbeiter aktualisieren
-export function updateMitarbeiter(mitarbeiter) {
-  return http.put(`/mitarbeiter/${mitarbeiter.id}`, mitarbeiter)
+export function updateMitarbeiter(m) {
+  console.log(
+    "AXIOS PUT →",
+    `/mitarbeiter/${m.id}`,
+    JSON.stringify(m, null, 2)
+  )
+
+  return api.put(`/mitarbeiter/${m.id}`, m)
 }
 
 // Mitarbeiter löschen
