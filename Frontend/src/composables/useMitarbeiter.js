@@ -53,6 +53,11 @@ export function useMitarbeiter() {
 
   // --- CRUD Funktionen ---
   async function handleMitarbeiterCreate(neu) {
+    console.log(
+      "CREATE → Payload an Backend:",
+      JSON.stringify(neu, null, 2)
+    )
+
     try {
       const res = await mitarbeiterService.createMitarbeiter(neu)
       mitarbeiter.value.push(res.data)
@@ -69,6 +74,11 @@ export function useMitarbeiter() {
 
   // Überschreibt bestehende Mitarbeiterdaten mit den geänderten Daten
   async function handleMitarbeiterEdit(editedData) {
+    console.log(
+      "EDIT → Payload an Backend:",
+      JSON.stringify(editedData, null, 2)
+    )
+
     try {
       const res = await mitarbeiterService.updateMitarbeiter(editedData)
       const index = mitarbeiter.value.findIndex(m => m.id === editedData.id)
