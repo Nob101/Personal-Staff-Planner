@@ -2,7 +2,7 @@
 
 <script setup>
 // Funktionalitäten und Komponenten importieren
-import { defineProps, defineEmits, computed } from 'vue'
+import { defineProps, computed } from 'vue'
 
 const props = defineProps({
   filialen: { type: Object, required: true},

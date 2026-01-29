@@ -1,7 +1,7 @@
 <!-- BaseModal.vue -->
 <!-- Eine Vorlage für Modale mit Funktionen und Styling die bei allen Modalen verwendet werden sollen -->
 <script setup>
-import { defineProps, defineEmits, onMounted, onUnmounted } from 'vue'
+import { defineProps, onMounted, onUnmounted } from 'vue'
 
 const emit = defineEmits(['close'])
 
