@@ -17,7 +17,7 @@ const deleteOldShifts = async () => {
         const count = await pool.query('SELECT COUNT(*) FROM dienstplaene');
         const totalRows = parseInt(count.rows[0].count);
 
-        if(totalRows > 70000){
+        if(totalRows > 170000){
 
              const query = `
             DELETE FROM dienstplaene

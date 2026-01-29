@@ -25,7 +25,7 @@
 # docker compose ps             Listet alle laufenden Container und deren Ports auf.                    Um zu checken: "Läuft der Container wirklich?"
 # docker exec -it [name] sh     Öffnet ein Terminal im laufenden Container.                             Wenn direkt im Container nach Dateien gesucht wird.
 
-# docker exec -it psp_database psql -U postgres -d dienstplan -c "\dt"                                  zeigt alle tabellen
+# docker exec -it psp_database psql -U postgres -d dienstplan                                           zeigt alle tabellen
 # docker compose top            Zeigt die CPU- und RAM-Last der einzelnen Container an.                 Wichtig: für Algorithmus, um zu sehen, wie viel 'Power' er verbraucht.
 # docker stats                  Zeigt Live-Tabelle über den Resourcen verbrauch                         Wichtig: Um Leistung an AG-Client anzupassen
 
@@ -56,7 +56,7 @@ services:
   backend:
     build: ./backend
     container_name: psp_backend
-    restart: on-failure
+    restart: on-failure:3
     ports:
       - "3001:3001"
     volumes:
@@ -86,7 +86,7 @@ services:
     # HINWEIS für das Frontend:    Docker sucht hier nach dem Ordner 'Frontend' (Großschreibung beachten!)
     build: ./Frontend 
     container_name: psp_frontend
-    restart: on-failure
+    restart: on-failure:3
     ports:
       - "3000:3000" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen
     
@@ -112,7 +112,7 @@ services:
     - "443:443"   # HTTPS für später
     volumes:
     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    - ./certs:/etc/nginx/ssl:ro    # Zertifikste
+    - ./certs:/etc/nginx/ssl:ro    # Zertifikate
     depends_on:
     - frontend
     - backend
