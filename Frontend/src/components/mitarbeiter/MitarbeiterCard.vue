@@ -18,8 +18,8 @@ const emit = defineEmits(['edit', 'delete'])
 
 // Helper für Hauptfiliale-Name, damit der Name anstatt der ID angezeigt wird
 const hauptfilialeName = computed(() => {
-  const f = props.filialen.find(f => f.id === props.mitarbeiter.hauptfiliale)
-  return f ? f.filialname : '-'
+  const filial = props.filialen.find(f => f.fnr === props.mitarbeiter.hauptfiliale)
+  return filial ? filial.filialname : '-'
 })
 
 // Helper für Nebenfilialen-Namen, damit der Name anstatt der ID angezeigt wird
@@ -27,7 +27,7 @@ const hauptfilialeName = computed(() => {
 const nebenfilialenNamen = computed(() => {
   if (!props.mitarbeiter.nebenfilialen?.length) return '-'
   return props.mitarbeiter.nebenfilialen
-    .map(id => props.filialen.find(f => f.id === id)?.filialname || id)
+    .map(fnr => props.filialen.find(f => f.fnr === fnr)?.filialname || fnr)
     .join(', ')
 })
 
