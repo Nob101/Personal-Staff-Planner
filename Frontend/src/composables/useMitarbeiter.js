@@ -107,9 +107,9 @@ export function useMitarbeiter() {
   }
 
   // --- Zusätzliche Funktion: Verfügbare Mitarbeiter nach Filiale & Datum abrufen || unnötig?---
-  async function getVerfuegbareMitarbeiter(filialeId, datum) {
+  async function getVerfuegbareMitarbeiter(filialeFNR, datum) {
     try {
-      const res = await mitarbeiterService.getVerfuegbareMitarbeiter(filialeId, datum)
+      const res = await mitarbeiterService.getVerfuegbareMitarbeiter(filialeFNR, datum)
       return res.data
     } catch (err) {
       console.error("Fehler beim Abrufen verfügbarer Mitarbeiter:", err)
