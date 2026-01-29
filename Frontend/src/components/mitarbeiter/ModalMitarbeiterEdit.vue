@@ -35,6 +35,8 @@ const springer = ref(false)
 const hauptfiliale = ref(null)
 const nebenfilialen = ref([])
 const anmerkungen = ref('')
+const vornameFehler = ref(false)
+const nachnameFehler = ref(false)
 
 
 // Watch füllt die lokalen Refs mit den Prop-Daten
@@ -74,12 +76,45 @@ watch(hauptfiliale, (newVal) => {
   )
 })
 
-// Computed für Nebenfilialen-Optionen (Hauptfiliale auslassen) -> filtert diese raus damit die Hauptfiliale nicht auch als Nebenfiliale genommen werden kann
+
+// Filter für Nebenfilialen (Hauptfiliale ausschließen) und beim aussuchen alphabetisch sortiert anzeigen
 const nebenfilialenOptionen = computed(() =>
-  props.filialen.filter(f => f.id !== hauptfiliale.value?.id)
+  props.filialen
+    .filter(f => !hauptfiliale.value || f.id !== hauptfiliale.value.id)
+    .sort((a, b) => a.filialname.localeCompare(b.filialname))
 )
+
+// Ausgewählte Nebenfilialen alphabetisch anzeigen
+const sortedNebenfilialen = computed({
+  get: () => [...nebenfilialen.value].sort((a, b) => a.filialname.localeCompare(b.filialname)),
+  set: val => nebenfilialen.value = val
+})
+
+// entfernt Reset Fehler Meldung bei Schließen des Modals
+watch(() => props.show, (val) => {
+  if (!val) {
+    vornameFehler.value = false
+    nachnameFehler.value = false
+  }
+})
+
 // Submit-Funktion
 function handleSubmit() {
+  vornameFehler.value = false
+  nachnameFehler.value = false
+
+  if (!vorname.value.trim()) {
+    vornameFehler.value = true
+  }
+
+  if (!nachname.value.trim()) {
+    nachnameFehler.value = true
+  }
+
+  if (vornameFehler.value || nachnameFehler.value) return // Sammel-validierung -> So kommt die Fehlermeldung für Vorname u. Nachname wenn beide fehlen, anstatt nur eine!
+
+
+
   emit('mitarbeiterEdit', {
     id: props.mitarbeiter.id,
     vorname: vorname.value,
@@ -118,10 +153,16 @@ function handleSubmit() {
           <div>
             <label>Vorname:</label>
             <input type="text" v-model="vorname" required class="w-full border rounded px-2 py-1"/>
+            <p v-if="vornameFehler" class="text-red-600 mt-1 text-sm">
+              Vorname ist erforderlich
+            </p>
           </div>
           <div>
             <label>Nachname:</label>
             <input type="text" v-model="nachname" required class="w-full border rounded px-2 py-1"/>
+            <p v-if="nachnameFehler" class="text-red-600 mt-1 text-sm">
+              Nachname ist erforderlich
+            </p>
           </div>
         </div>
 
@@ -194,8 +235,8 @@ function handleSubmit() {
             <label>Hauptfiliale:</label>
             <Multiselect
               v-model="hauptfiliale"
-              :options="filialen"
-              label="name"
+              :options="props.filialen.sort((a,b)=>a.filialname.localeCompare(b.filialname))"
+              label="filialname"
               track-by="id"
               placeholder="Hauptfiliale wählen"
               :clearable="false"
@@ -204,11 +245,11 @@ function handleSubmit() {
           <div>
             <label>Nebenfilialen:</label>
             <Multiselect
-              v-model="nebenfilialen"
+              v-model="sortedNebenfilialen"
               :options="nebenfilialenOptionen"
-              label="name"
+              label="filialname"
               track-by="id"
-              placeholder="Nebenfilialen wählen"
+              placeholder="Nebenfiliale(n) wählen"
               :multiple="true"
               :close-on-select="false"
             />

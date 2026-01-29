@@ -2,7 +2,7 @@
 
 <script setup>
 // Funktionalitäten und Komponenten importieren
-import { defineEmits, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 const emit = defineEmits(['filialeCreate', 'searchFiliale'])  
 
 const search = ref('')

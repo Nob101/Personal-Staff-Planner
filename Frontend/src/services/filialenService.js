@@ -1,4 +1,61 @@
+// filialenService.js
+// TEMP-Version für JSON-Server kompatibel
+// Frontend arbeitet nur mit fnr
+// Intern wird id automatisch aus fnr gesetzt für JSON-Server
+
+import { http } from "./http"
+
+// --- Alle Filialen abrufen ---
+export async function getFilialen() {
+  const res = await http.get("/filialen")
+  return {
+    data: res.data.map(f => {
+      const internalId = f.id || generateId()
+      return {
+        ...f,
+        id: internalId,  // JSON-Server benötigt id
+        fnr: internalId  // Frontend arbeitet nur mit fnr = id
+      }
+    })
+  }
+}
+
+// --- Einzelne Filiale abrufen ---
+export function getFilialeByFNR(fnr) {
+  return http.get(`/filialen/${fnr}`)
+}
+
+// --- Neue Filiale erstellen ---
+export async function createFiliale(filiale) {
+  const newId = generateId()
+  const payload = {
+    ...filiale,
+    id: newId,
+    fnr: newId // fnr = id
+  }
+  return http.post("/filialen", payload)
+}
+
+// --- Filiale aktualisieren ---
+export async function updateFiliale(filiale) {
+  return http.put(`/filialen/${filiale.fnr}`, filiale)
+}
+
+// --- Filiale löschen ---
+export async function deleteFiliale(fnr) {
+  return http.delete(`/filialen/${fnr}`)
+}
+
+// --- Hilfsfunktion für TEMP ---
+function generateId() {
+  return Math.random().toString(36).substring(2, 10) // zufällige id
+}
+
+/* -------------------------------------------------------------------- */
+/* DAS "RICHTIGE" SERVICE FILE FÜR SPÄTERE ECHTE BACKEND-API
+   JSON-SERVER braucht id, Frontend arbeitet aber nur mit fnr, deshalb die obrige TEMP-Lösung. fnr wird dann im Backend generiert und verwaltet.
 //filialenService.js
+
 //Hier ist gesamte Backend-Kommunikation für Filialen
 
 //Dummy-Daten für Testzwecke sind im Json-Server db.json
@@ -12,8 +69,8 @@ export function getFilialen() {
 }
 
 // Einzelne Filiale abrufen (optional)
-export function getFilialeById(id) {
-  return http.get(`/filialen/${id}`)
+export function getFilialeByFNR(fnr) {
+  return http.get(`/filialen/${fnr}`)
 }
 
 // Neue Filiale erstellen
@@ -23,10 +80,13 @@ export function createFiliale(filiale) {
 
 // Filiale aktualisieren
 export function updateFiliale(filiale) {
-  return http.put(`/filialen/${filiale.id}`, filiale)
+  return http.put(`/filialen/${filiale.fnr}`, filiale)
 }
 
 // Filiale löschen
-export function deleteFiliale(id) {
-  return http.delete(`/filialen/${id}`)
+export function deleteFiliale(fnr) {
+  return http.delete(`/filialen/${fnr}`)
 }
+
+
+*/
