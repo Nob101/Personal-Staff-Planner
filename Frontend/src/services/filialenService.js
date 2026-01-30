@@ -1,4 +1,5 @@
 // filialenService.js
+/*
 // TEMP-Version für JSON-Server kompatibel
 // Frontend arbeitet nur mit fnr
 // Intern wird id automatisch aus fnr gesetzt für JSON-Server
@@ -50,10 +51,11 @@ export async function deleteFiliale(fnr) {
 function generateId() {
   return Math.random().toString(36).substring(2, 10) // zufällige id
 }
+*/
 
-/* -------------------------------------------------------------------- */
-/* DAS "RICHTIGE" SERVICE FILE FÜR SPÄTERE ECHTE BACKEND-API
-   JSON-SERVER braucht id, Frontend arbeitet aber nur mit fnr, deshalb die obrige TEMP-Lösung. fnr wird dann im Backend generiert und verwaltet.
+
+// DAS "RICHTIGE" SERVICE FILE FÜR SPÄTERE ECHTE BACKEND-API
+//  JSON-SERVER braucht id, Frontend arbeitet aber nur mit fnr, deshalb die obrige TEMP-Lösung. fnr wird dann im Backend generiert und verwaltet.
 //filialenService.js
 
 //Hier ist gesamte Backend-Kommunikation für Filialen
