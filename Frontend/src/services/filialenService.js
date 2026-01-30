@@ -89,6 +89,3 @@ export function updateFiliale(filiale) {
 export function deleteFiliale(fnr) {
   return http.delete(`/filialen/${fnr}`)
 }
-
-
-*/
