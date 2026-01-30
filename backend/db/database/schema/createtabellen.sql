@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS mitarbeiter_kontakt (
 
 CREATE TABLE IF NOT EXISTS mitarbeiter_telefon (
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
-    -- telefon_typ VARCHAR(50) NOT NULL,
+    telefon_typ VARCHAR(50) NOT NULL DEFAULT 'MOBIL',
     nummer VARCHAR(55) NOT NULL,
     PRIMARY KEY (mnr, telefon_typ)
 );
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS mitarbeiter_telefon (
 
 CREATE TABLE IF NOT EXISTS mitarbeiter_email (
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
-    -- email_typ VARCHAR(50) NOT NULL,
+    email_typ VARCHAR(50)  NOT NULL DEFAULT 'PRIVAT',
     email_adresse VARCHAR(100) NOT NULL,
     PRIMARY KEY (mnr, email_typ)
 );
@@ -120,14 +120,6 @@ CREATE TABLE IF NOT EXISTS mitarbeiter_arbeitet_in_filiale (
   fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE CASCADE,
   PRIMARY KEY (mnr, fnr)
 );
-
-
-CREATE TABLE IF NOT EXISTS mitarbeiter_arbeitet_in_filiale (
-  mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
-  fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE CASCADE,
-  PRIMARY KEY (mnr, fnr)
-);
-
 
 
 

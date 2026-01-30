@@ -26,12 +26,12 @@ POST {{baseUrl}}/mitarbeiter
 Content-Type: application/json
 
 {
-  "vorname": "Test 12",
-  "nachname": "Frontend",
+  "vorname": "Alex",
+  "nachname": "van H.",
   "arbeitsstunden": 40,
-  "springer": "Ja",
-  "hauptfiliale": 1,
-  "nebenfilialen": [],
+  "springer": "Nein",
+  "hauptfiliale": 2,
+  "nebenfilialen": [3],
 
   "strasse": "Testweg 1",
   "ort": "Wien",
@@ -43,7 +43,7 @@ Content-Type: application/json
   "email1": "test@demo.at",
   "email2": "",
 
-  "anmerkungen": ""
+  "anmerkungen": "test_"
 }
 
 ### PUT Mitarbeiter bearbeiten (Frontend-Format)
