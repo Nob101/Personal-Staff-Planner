@@ -14,7 +14,7 @@ export const http = axios.create({
 
 
 // NEU: Mit Interceptor wird der token bei jeder Anfrage im Header mitgeschickt und geprüft
-// Entfernen für Frontend Tests
+// Auskommentieren für Frontend Tests
  http.interceptors.request.use(config => {
   const token = localStorage.getItem('userToken');
   if (token){
