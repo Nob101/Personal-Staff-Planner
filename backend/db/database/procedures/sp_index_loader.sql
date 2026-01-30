@@ -11,10 +11,10 @@ AS $$
 BEGIN
     -- PostgreSQL -> REINDEX TABLE für alle Indizes einer Tabelle
     --  effizienter als jeden Index einzeln zu benennen (ORACLE zB)
-    REINDEX TABLE CONCURRENTLY dienstplaene;
-    REINDEX TABLE CONCURRENTLY mitarbeiter;
-    REINDEX TABLE CONCURRENTLY mitarbeiter_arbeitet_in_filiale;
-    REINDEX TABLE CONCURRENTLY stunden_konto;
+    REINDEX TABLE  dienstplaene;
+    REINDEX TABLE mitarbeiter;
+    REINDEX TABLE  mitarbeiter_arbeitet_in_filiale;
+    REINDEX TABLE  stunden_konto;
 
     -- Statistiken aktualisieren für QUERY Planner -> speichert werte in der System-Statistik (Intern) pg_statistic
     ANALYZE dienstplaene;
