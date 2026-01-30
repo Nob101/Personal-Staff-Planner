@@ -33,7 +33,7 @@ const konvertDienstplan2CSV = async (jahr, monat) => {
         // Neue Instanz
         const json2csvParser = new Parser({ 
             fields, 
-            delimiter: ';', 
+            delimiter: ';',             //Wichtig: EXCEL erkennt Spalten meistens automatisch und sortiert   (, und . wären Fehleranfälliger [US,EU])
             quote: '' 
         });
 
