@@ -2,7 +2,7 @@
 // Hier ist gesamte Backend-Kommunikation für Mitarbeiter
 // Dummy-Daten für Testzwecke sind im JSON-Server db.json
 // BaseURL importieren
-import { http } from "./http"
+import http from "./http"
 
 // --- Mitarbeiter CRUD ---
 
@@ -23,7 +23,7 @@ export function createMitarbeiter(m) {
     JSON.stringify(m, null, 2)
   )
 
-  return api.post("/mitarbeiter", m)
+  return http.post("/mitarbeiter", m)
 }
 
 // Mitarbeiter aktualisieren
@@ -34,7 +34,7 @@ export function updateMitarbeiter(m) {
     JSON.stringify(m, null, 2)
   )
 
-  return api.put(`/mitarbeiter/${m.id}`, m)
+  return http.put(`/mitarbeiter/${m.id}`, m)
 }
 
 // Mitarbeiter löschen

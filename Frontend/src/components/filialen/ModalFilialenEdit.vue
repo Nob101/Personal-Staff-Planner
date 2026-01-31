@@ -3,6 +3,7 @@
 <script setup>
 import { ref, defineProps, watch } from 'vue'
 import BaseModal from '@/components/global/BaseModal.vue'
+import Multiselect from 'vue-multiselect'
 import ColorPicker from '@/components/global/ColorPicker.vue'
 
 const emit = defineEmits(['close', 'filialeEdit'])
@@ -11,6 +12,12 @@ const props = defineProps({
   filiale: { type: Object, required: true },
   show: { type: Boolean, required: true }
 })
+
+// Algorithmus Optionen
+const algorithmOptions = [
+  { label: 'Algorithmus 1', value: 1 },
+  { label: 'Algorithmus 2', value: 2 }
+]
 
 // Lokale Kopien der Felder
 const filialname = ref('')
@@ -23,6 +30,7 @@ const email = ref('')
 const farbe = ref('')
 const anmerkungen = ref('')
 const nameFehler = ref(false)
+const algorithmid = ref(null)
 
 // Props → lokale Refs kopieren
 watch(
@@ -38,6 +46,9 @@ watch(
     email.value = edited.email || ''
     farbe.value = edited.farbe || '#ffffff' // Fallback auf Weiß, wenn nicht gesetzt
     anmerkungen.value = edited.anmerkungen || ''
+    algorithmid.value = algorithmOptions.find(
+        opt => opt.value === edited.algorithmid
+      ) || null
   },
   { immediate: true }
 )
@@ -67,7 +78,8 @@ function handleSubmit() {
     telefon: telefon.value || '',
     email: email.value || '',
     farbe: farbe.value || '',
-    anmerkungen: anmerkungen.value || ''
+    anmerkungen: anmerkungen.value || '',
+    algorithmid: algorithmid.value ? algorithmid.value.value : null
   })
   emit('close')
 }
@@ -111,6 +123,21 @@ function handleSubmit() {
             <input placeholder="Land" v-model="land" class="border rounded px-2 py-1" />
           </div>
         </fieldset>
+
+        <div>
+          <label>Algorithmus:</label>
+          <Multiselect
+            v-model="algorithmid"
+            :options="algorithmOptions"
+            :multiple="false"
+            placeholder="Algorithmus wählen"
+            selectLabel=""
+            deselectLabel=""
+            selectedLabel=""
+            label="label"
+            track-by="value"
+          />
+        </div>
 
         <div>
           <ColorPicker v-model="farbe" />

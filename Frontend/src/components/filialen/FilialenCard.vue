@@ -2,11 +2,10 @@
 
 <script setup>
 // Funktionalitäten und Komponenten importieren
-import { defineProps, computed } from 'vue'
+import { defineProps } from 'vue'
 
 const props = defineProps({
   filialen: { type: Object, required: true},
-  mitarbeiter: { type: Array, required: true }
 })
 
 // Events: Bearbeiten und Löschen Klicks an Parent (FilialenList.vue) weitergeben, diese gibt es dann an FilialenView.vue weiter.
@@ -20,6 +19,8 @@ function handleDelete() {
   emit('delete', props.filialen)
 }
 
+/*
+// ZU ENTFERNEN in finaler Version, NICHT GEBRAUCHT
 // Helper-Funktion: Hauptmitarbeiter dieser Filiale
 
 const hauptMitarbeiter = computed(() =>
@@ -34,6 +35,7 @@ const springerMitarbeiter = computed(() =>
     m => m.hauptfiliale === props.filialen.fnr && m.springer === true
   )
 )
+*/
 </script>
 
 <template>
@@ -85,7 +87,7 @@ const springerMitarbeiter = computed(() =>
             <span>{{ filialen.farbe || 'Keine Farbe gesetzt' }}</span>
           </div>
         </fieldset>
-
+        <!-- ZU ENTFERNEN in finaler Version, NICHT GEBRAUCHT
         <fieldset class="box">
           <legend>Mitarbeiter</legend>
 
@@ -106,7 +108,11 @@ const springerMitarbeiter = computed(() =>
             </span>
             <span v-else>-</span>
           </p>
-
+        </fieldset>
+        -->
+        <fieldset class="box">
+          <legend>Algorithmus</legend>
+          <p data-label="Algorithmus:">{{ filialen.algorithmid ?? '-' }}</p>
         </fieldset>
       </div>
 
