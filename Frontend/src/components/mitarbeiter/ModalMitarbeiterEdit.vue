@@ -239,6 +239,9 @@ function handleSubmit() {
               track-by="fnr"
               placeholder="Hauptfiliale wählen"
               :clearable="false"
+              selectLabel=""
+              deselectLabel=""
+              selectedLabel=""
             />
           </div>
           <div>
@@ -251,6 +254,9 @@ function handleSubmit() {
               placeholder="Nebenfiliale(n) wählen"
               :multiple="true"
               :close-on-select="false"
+              selectLabel=""
+              deselectLabel=""
+              selectedLabel=""
             />
           </div>
         </div>
