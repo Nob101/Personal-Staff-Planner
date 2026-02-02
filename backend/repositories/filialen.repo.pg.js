@@ -1,22 +1,4 @@
-/*
-Spalte	                               Typ	                            Beschreibung
-
-fnr	                                   SERIAL                          PRIMARY KEY	
-filialname	                           TEXT	                          Name oder Kürzel der Filiale
-farbe	                                 TEXT	                          HEX-Farbcode fürs Frontend
-ort	                                   TEXT	                          Standort
-strasse	                               TEXT	                          Adresse
-plz	                                   TEXT	                          Postleitzahl
-land	                                 TEXT	                          Land
-email	                                 TEXT	                          Kontaktadresse
-telefon	                               TEXT	                          Telefonnummer
-algorithmid	                           INTEGER	                      Referenz auf Algorithmus
-*/
-
-
 const pool = require("../db/pool");
-//const { get } = require("../routes/mitarbeiter.routes");
-
 
 
 async function add(f){
