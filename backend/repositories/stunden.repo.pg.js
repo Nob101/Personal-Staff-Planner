@@ -68,6 +68,20 @@ async function updateIstStundenTx(client, mnr, jahr, monat, delta) {
   return r.rows[0] ?? null;
 }
 
+async function updateIstStundenManuellTx(client, { mnr, jahr, monat, ist }) {
+  const sql = `
+    UPDATE stunden_konto
+    SET
+      ist_stunden_monat = $4::numeric,
+      differenz = $4::numeric - soll_stunden_monat
+    WHERE mnr = $1 AND jahr = $2 AND monat = $3
+    RETURNING id, mnr, jahr, monat, soll_stunden_monat, ist_stunden_monat, differenz;
+  `;
+
+  const r = await client.query(sql, [mnr, jahr, monat, ist]);
+  return r.rows[0] || null;
+}
+
 
 module.exports = {
   saveStunden,
@@ -75,4 +89,5 @@ module.exports = {
   deleteStunden,
   getStundenForMonthYear,
   updateIstStundenTx,
+  updateIstStundenManuellTx,
 };

@@ -2,12 +2,7 @@
 @jahr = 2026
 @monat = 1
 
-### ============================================================================
-### HEALTH / QUICK CHECK
-### ============================================================================
 
-### (optional) Root check (falls du sowas hast)
-# GET {{baseUrl}}/
 
 
 ### ============================================================================
@@ -18,7 +13,7 @@
 GET {{baseUrl}}/mitarbeiter
 
 ### GET Mitarbeiter nach mnr
-@MNR = 1
+@MNR = 6
 GET {{baseUrl}}/mitarbeiter/{{MNR}}
 
 ### POST Mitarbeiter anlegen (Frontend-Format)
@@ -26,12 +21,12 @@ POST {{baseUrl}}/mitarbeiter
 Content-Type: application/json
 
 {
-  "vorname": "Test 12",
+  "vorname": "Test 14",
   "nachname": "Frontend",
   "arbeitsstunden": 40,
-  "springer": "Ja",
+  "springer": "Nein",
   "hauptfiliale": 1,
-  "nebenfilialen": [],
+  "nebenfilialen": [2],
 
   "strasse": "Testweg 1",
   "ort": "Wien",
@@ -47,7 +42,7 @@ Content-Type: application/json
 }
 
 ### PUT Mitarbeiter bearbeiten (Frontend-Format)
-@MNR_UPDATE = 11
+@MNR_UPDATE = 10
 PUT {{baseUrl}}/mitarbeiter/{{MNR_UPDATE}}
 Content-Type: application/json
 
@@ -55,9 +50,9 @@ Content-Type: application/json
   "vorname": "Test-Updated",
   "nachname": "Frontend-Updated",
   "arbeitsstunden": 40,
-  "springer": "Nein",
-  "hauptfiliale": 7,
-  "nebenfilialen": [6],
+  "springer": "Ja",
+  "hauptfiliale": 2,
+  "nebenfilialen": [1],
 
   "strasse": "Updateweg 9",
   "ort": "Wien",
@@ -91,15 +86,15 @@ POST {{baseUrl}}/filialen
 Content-Type: application/json
 
 {
-  "filialname": "Graz",
-  "farbe": "#6cb364",
-  "ort": "Graz",
+  "filialname": "Wien",
+  "farbe": "#5c18bbff",
+  "ort": "Wien",
   "strasse": "Hauptplatz 1",
-  "plz": "8200",
+  "plz": "1000",
   "land": "Österreich",
   "email": "g@firma.at",
   "telefon": "+43 3332 12345",
-  "algorithmid": 2
+  "algorithmid": 1
 }
 
 ### PUT Filiale bearbeiten
@@ -145,7 +140,7 @@ DELETE {{baseUrl}}/dienstplan/{{jahr}}/{{monat}}
 ### ============================================================================
 
 ### POST shift: Einen Dienst-Typ ändern (A/E/F/K/U)
-@DIENST_ID = 2755
+@DIENST_ID = 218
 POST {{baseUrl}}/dienstplan/shift
 Content-Type: application/json
 
@@ -162,8 +157,8 @@ Content-Type: application/json
 ### POST shiftMitErsatz:
 ### altId -> wird z.B. auf K oder F gesetzt
 ### neuId -> bekommt den ursprünglichen Typ vom altDienst + fnr vom altDienst
-@ALT_ID = 2755
-@NEU_ID = 2848
+@ALT_ID = 160
+@NEU_ID = 253
 POST {{baseUrl}}/dienstplan/shiftMitErsatz
 Content-Type: application/json
 
@@ -174,3 +169,26 @@ Content-Type: application/json
 }
 
 
+
+### ============================================================================
+### ERSATZ-KANDIDATEN (für einen Dienst)
+### ============================================================================
+
+### GET :id/ersatz
+### dienstId -> Dienst, für den Ersatz gesucht wird
+### Rückgabe: kandidaten[] (meist F-Dienste am selben Tag, die in der Filiale arbeiten dürfen)
+@DIENST_ID = 3318
+GET {{baseUrl}}/dienstplan/{{DIENST_ID}}/ersatz
+Accept: application/json
+
+
+### PUT Stunden manuell ändern (Soll-Stunden setzen)
+PUT {{baseUrl}}/dienstplan/stunden
+Content-Type: application/json
+
+{
+  "mnr": 14,
+  "jahr": 2026,
+  "monat": 1,
+  "ist_stunden_monat": 166
+}
