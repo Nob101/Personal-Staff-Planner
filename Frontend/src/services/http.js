@@ -4,8 +4,8 @@
 import axios from "axios"
 
 export const http = axios.create({
-  baseURL: 'http://localhost:3001', // JSON Server für Entwicklung. Muss auf /api geändert werden, wenn Backend läuft
-  //baseURL:  '/api', // NEU: nginx fängt alles unter /api/ ab und reicht relativen pfad weiter
+  //  baseURL: 'http://localhost:3001', // JSON Server für Entwicklung. Muss auf /api geändert werden, wenn Backend läuft
+  baseURL:  '/api', // NEU: nginx fängt alles unter /api/ ab und reicht relativen pfad weiter
   headers: {
     "Content-Type": "application/json"
   } 
@@ -15,7 +15,7 @@ export const http = axios.create({
 
 // NEU: Mit Interceptor wird der token bei jeder Anfrage im Header mitgeschickt und geprüft
 // Entfernen für Frontend Tests
-/* http.interceptors.request.use(config => {
+ http.interceptors.request.use(config => {
   const token = localStorage.getItem('userToken');
   if (token){
     config.headers.Authorization = token;      //NEU: token aus dem localstorage direkt holen
@@ -26,5 +26,5 @@ export const http = axios.create({
     return Promise.reject(error);
   }
 );
-*/
+
 export default http;
