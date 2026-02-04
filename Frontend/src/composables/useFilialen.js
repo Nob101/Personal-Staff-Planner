@@ -47,11 +47,16 @@ export function useFilialen() {
 
   // --- CRUD ---
   async function handleFilialeCreate(neu) {
+    console.log(
+      "CREATE Filiale → Payload:",
+      JSON.stringify(neu, null, 2)
+    )
+
     try {
       const res = await filialenService.createFiliale(neu)
       filialen.value.push(res.data)
     } catch (err) {
-      console.error('Fehler beim Erstellen:', err)
+      console.error("Fehler beim Erstellen:", err)
     }
   }
 
@@ -60,17 +65,22 @@ export function useFilialen() {
     showModalFilialeEdit.value = true
   }
 
-  async function handleFilialeEdit(editedData) {
-    try {
-      const res = await filialenService.updateFiliale(editedData)
-      const index = filialen.value.findIndex(f => f.fnr === editedData.fnr)
-      if (index !== -1) {
-        filialen.value[index] = res.data
-      }
-    } catch (err) {
-      console.error('Fehler beim Bearbeiten:', err)
+async function handleFilialeEdit(editedData) {
+  console.log(
+    "EDIT Filiale → Payload:",
+    JSON.stringify(editedData, null, 2)
+  )
+
+  try {
+    const res = await filialenService.updateFiliale(editedData)
+    const index = filialen.value.findIndex(f => f.fnr === editedData.fnr)
+    if (index !== -1) {
+      filialen.value[index] = res.data
     }
+  } catch (err) {
+    console.error("Fehler beim Bearbeiten:", err)
   }
+}
 
   function handleDelete(f) {
     selectedFilialeToDelete.value = f

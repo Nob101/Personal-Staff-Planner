@@ -31,6 +31,8 @@ offene Implementierungen:
 
 ->Filialen
     -> Selben Filialname mehrmals vergebbar? -> da verschiedene FilialenID's
+    -> Mitarbeiter der Filiale & Springer entfernen
+    -> AlgortithmusID hinzufügen anstatt der Mitarbeiter
     -> Design/Styling mit Dumitru
 
 ->Mitarbeiter
