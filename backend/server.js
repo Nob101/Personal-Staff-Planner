@@ -45,8 +45,11 @@ app.use("/api/auth", authRouter);
 
 // Zugriffsschutz für alle nachfolgenden Routen.
 // Aktivieren, wenn Login/Token-Pflicht im Projekt gefordert ist.
-// (Wenn auskommentiert, sind die Routen ohne Authentifizierung erreichbar.)
-// app.use(loginAllowness);
+app.use(loginAllowness);
+
+// Middleware
+app.use(express.json()); // JSON-Body verarbeiten
+app.use(cors());         // Cross-Origin-Zugriff erlauben
 
 const mitarbeiterRouter = require("./routes/mitarbeiter.routes");
 app.use("/api/mitarbeiter", mitarbeiterRouter);

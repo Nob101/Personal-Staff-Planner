@@ -21,7 +21,6 @@ const props = defineProps({
 //wird verwendet damit die tatsächlichen Mitarbeiterdaten erst beim speichern überschrieben werden!
 const vorname = ref('')
 const nachname = ref('')
-const geburtsdatum = ref('')
 const email1 = ref('')
 const email2 = ref('')
 const telefon1 = ref('')
@@ -35,6 +34,8 @@ const springer = ref(false)
 const hauptfiliale = ref(null)
 const nebenfilialen = ref([])
 const anmerkungen = ref('')
+const vornameFehler = ref(false)
+const nachnameFehler = ref(false)
 
 
 // Watch füllt die lokalen Refs mit den Prop-Daten
@@ -47,7 +48,6 @@ watch(
     if (!edited) return // Nichts machen, wenn kein Mitarbeiter ausgewählt
     vorname.value = edited.vorname || ''
     nachname.value = edited.nachname || ''
-    geburtsdatum.value = edited.geburtsdatum || ''
     email1.value = edited.email1 || ''
     email2.value = edited.email2 || ''
     telefon1.value = edited.telefon1 || ''
@@ -58,9 +58,9 @@ watch(
     land.value = edited.land || ''
     arbeitsstunden.value = edited.arbeitsstunden ?? ''
         springer.value = edited.springer ?? false
-    hauptfiliale.value = props.filialen.find(f => f.id === edited.hauptfiliale) || null
+    hauptfiliale.value = props.filialen.find(f => f.fnr === edited.hauptfiliale) || null
     nebenfilialen.value = edited.nebenfilialen?.length 
-        ? props.filialen.filter(f => edited.nebenfilialen.includes(f.id))
+        ? props.filialen.filter(f => edited.nebenfilialen.includes(f.fnr))
         : []
     anmerkungen.value = edited.anmerkungen || ''
   },
@@ -70,16 +70,50 @@ watch(
 // Nebenfilialen automatisch anpassen, Hauptfiliale aus Filter entfernen
 watch(hauptfiliale, (newVal) => {
   nebenfilialen.value = nebenfilialen.value.filter(
-    f => f.id !== newVal?.id
+    f => f.fnr !== newVal?.fnr
   )
 })
 
-// Computed für Nebenfilialen-Optionen (Hauptfiliale auslassen) -> filtert diese raus damit die Hauptfiliale nicht auch als Nebenfiliale genommen werden kann
+
+
+// Filter für Nebenfilialen (Hauptfiliale ausschließen) und beim aussuchen alphabetisch sortiert anzeigen
 const nebenfilialenOptionen = computed(() =>
-  props.filialen.filter(f => f.id !== hauptfiliale.value?.id)
+  props.filialen
+    .filter(f => !hauptfiliale.value || f.fnr !== hauptfiliale.value.fnr)
+    .sort((a, b) => a.filialname.localeCompare(b.filialname))
 )
+
+// Ausgewählte Nebenfilialen alphabetisch anzeigen
+const sortedNebenfilialen = computed({
+  get: () => [...nebenfilialen.value].sort((a, b) => a.filialname.localeCompare(b.filialname)),
+  set: val => nebenfilialen.value = val
+})
+
+// entfernt Reset Fehler Meldung bei Schließen des Modals
+watch(() => props.show, (val) => {
+  if (!val) {
+    vornameFehler.value = false
+    nachnameFehler.value = false
+  }
+})
+
 // Submit-Funktion
 function handleSubmit() {
+  vornameFehler.value = false
+  nachnameFehler.value = false
+
+  if (!vorname.value.trim()) {
+    vornameFehler.value = true
+  }
+
+  if (!nachname.value.trim()) {
+    nachnameFehler.value = true
+  }
+
+  if (vornameFehler.value || nachnameFehler.value) return // Sammel-validierung -> So kommt die Fehlermeldung für Vorname u. Nachname wenn beide fehlen, anstatt nur eine!
+
+
+
   emit('mitarbeiterEdit', {
     id: props.mitarbeiter.id,
     vorname: vorname.value,
@@ -94,8 +128,8 @@ function handleSubmit() {
     land: land.value || '',
     arbeitsstunden: arbeitsstunden.value ? Number(arbeitsstunden.value) : null,
     springer: springer.value,
-    hauptfiliale: hauptfiliale.value?.id || null,
-    nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.id) : null,
+    hauptfiliale: hauptfiliale.value?.fnr || null,
+    nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.fnr) : null,
     anmerkungen: anmerkungen.value || ''
   })
   emit('close')
@@ -118,10 +152,16 @@ function handleSubmit() {
           <div>
             <label>Vorname:</label>
             <input type="text" v-model="vorname" required class="w-full border rounded px-2 py-1"/>
+            <p v-if="vornameFehler" class="text-red-600 mt-1 text-sm">
+              Vorname ist erforderlich
+            </p>
           </div>
           <div>
             <label>Nachname:</label>
             <input type="text" v-model="nachname" required class="w-full border rounded px-2 py-1"/>
+            <p v-if="nachnameFehler" class="text-red-600 mt-1 text-sm">
+              Nachname ist erforderlich
+            </p>
           </div>
         </div>
 
@@ -194,23 +234,29 @@ function handleSubmit() {
             <label>Hauptfiliale:</label>
             <Multiselect
               v-model="hauptfiliale"
-              :options="filialen"
-              label="name"
-              track-by="id"
+              :options="props.filialen.sort((a,b)=>a.filialname.localeCompare(b.filialname))"
+              label="filialname"
+              track-by="fnr"
               placeholder="Hauptfiliale wählen"
               :clearable="false"
+              selectLabel=""
+              deselectLabel=""
+              selectedLabel=""
             />
           </div>
           <div>
             <label>Nebenfilialen:</label>
             <Multiselect
-              v-model="nebenfilialen"
+              v-model="sortedNebenfilialen"
               :options="nebenfilialenOptionen"
-              label="name"
-              track-by="id"
-              placeholder="Nebenfilialen wählen"
+              label="filialname"
+              track-by="fnr"
+              placeholder="Nebenfiliale(n) wählen"
               :multiple="true"
               :close-on-select="false"
+              selectLabel=""
+              deselectLabel=""
+              selectedLabel=""
             />
           </div>
         </div>

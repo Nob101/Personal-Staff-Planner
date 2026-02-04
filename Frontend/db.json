@@ -43,45 +43,54 @@
   "filialen": [
     {
       "id": "1",
-      "name": "Filiale A",
+      "filialname": "Filiale A",
       "strasse": "Hauptstraße 12",
       "ort": "Musterstadt",
-      "postleitzahl": "12345",
+      "plz": "12345",
       "land": "Deutschland",
-      "telefon1": "+49 123 4567890",
-      "telefon2": "+49 123 4567891",
-      "email1": "a@filiale.de",
-      "email2": "kontakt@filiale-a.de",
-      "color": "#FF5733",
-      "anmerkungen": "Filiale im Zentrum von Musterstadt."
+      "telefon": "+49 123 4567890",
+      "email": "a@filiale.de",
+      "farbe": "#FF5733",
+      "anmerkungen": "Filiale im Zentrum von Musterstadt.",
+      "fnr": "1"
     },
     {
       "id": "2",
-      "name": "Filiale B",
+      "filialname": "Filiale B",
       "strasse": "Nebenweg 5",
-      "postleitzahl": "23456",
+      "plz": "23456",
       "ort": "Beispielstadt",
       "land": "Deutschland",
-      "email1": "b@filiale.de",
-      "email2": "",
-      "telefon1": "+49 234 5678901",
-      "telefon2": "",
-      "color": "#33C3FF",
-      "anmerkungen": "Kleine Filiale."
+      "email": "b@filiale.de",
+      "telefon": "+49 234 5678901",
+      "farbe": "#33C3FF",
+      "anmerkungen": "Kleine Filiale.",
+      "fnr": "2"
     },
     {
       "id": "3",
-      "name": "Filiale C",
+      "filialname": "Filiale C",
       "strasse": "Marktplatz 1",
-      "postleitzahl": "34567",
+      "plz": "34567",
       "ort": "Demostadt",
       "land": "Deutschland",
-      "email1": "c@filiale.de",
-      "email2": "info@filiale-c.de",
-      "telefon1": "+49 345 6789012",
-      "telefon2": "+49 345 6789013",
-      "color": "#82FF33",
-      "anmerkungen": "Hauptfiliale mit großem Team."
+      "email": "c@filiale.de",
+      "telefon": "+49 345 6789012",
+      "farbe": "#82FF33",
+      "anmerkungen": "Hauptfiliale mit großem Team.",
+      "fnr": "3"
+    },
+    {
+      "id": "lrhoxlo7",
+      "filialname": "1",
+      "email": "",
+      "telefon": "",
+      "strasse": "",
+      "ort": "",
+      "plz": "",
+      "land": "",
+      "farbe": "#ffffff",
+      "fnr": "lrhoxlo7"
     }
   ],
   "benutzer": [
