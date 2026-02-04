@@ -31,25 +31,54 @@ const springer = ref(undefined) // undefined, nichts vorausgewählt
 const hauptfiliale = ref(null)
 const nebenfilialen = ref([])
 const anmerkungen = ref('')
+const vornameFehler = ref(false)
+const nachnameFehler = ref(false)
 
 // Nebenfilialen automatisch anpassen
 watch(hauptfiliale, (newVal) => {
   if (!newVal) return
 
   nebenfilialen.value = nebenfilialen.value.filter(
-    f => f.id !== newVal.id
+    f => f.fnr !== newVal.fnr
   )
 })
 
-// Filter für Nebenfilialen
+// Filter für Nebenfilialen (Hauptfiliale ausschließen) und beim aussuchen alphabetisch sortiert anzeigen
 const nebenfilialenOptionen = computed(() =>
-  props.filialen.filter(
-    f => !hauptfiliale.value || f.id !== hauptfiliale.value.id
-  )
+  props.filialen
+    .filter(f => !hauptfiliale.value || f.fnr !== hauptfiliale.value.fnr)
+    .sort((a, b) => a.filialname.localeCompare(b.filialname))
 )
+
+// Ausgewählte Nebenfilialen alphabetisch anzeigen
+const sortedNebenfilialen = computed({
+  get: () => [...nebenfilialen.value].sort((a, b) => a.filialname.localeCompare(b.filialname)),
+  set: val => nebenfilialen.value = val
+})
+
+// entfernt Reset Fehler Meldung bei Schließen des Modals
+watch(() => props.show, (val) => {
+  if (!val) {
+    vornameFehler.value = false
+    nachnameFehler.value = false
+  }
+})
 
 // Submit
 function handleSubmit() {
+  vornameFehler.value = false
+  nachnameFehler.value = false
+
+  if (!vorname.value.trim()) {
+    vornameFehler.value = true
+  }
+
+  if (!nachname.value.trim()) {
+    nachnameFehler.value = true
+  }
+
+  if (vornameFehler.value || nachnameFehler.value) return // Sammel-validierung -> So kommt die Fehlermeldung für Vorname u. Nachname wenn beide fehlen, anstatt nur eine!
+
   emit('mitarbeiterCreate', {
     vorname: vorname.value,
     nachname: nachname.value,
@@ -63,10 +92,28 @@ function handleSubmit() {
     land: land.value || '',
     arbeitsstunden: arbeitsstunden.value ? Number(arbeitsstunden.value) : null,
     springer: springer.value ?? false, // wenn undefined, dann false
-    hauptfiliale: hauptfiliale.value || null,
-    nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value : null,
+    hauptfiliale: hauptfiliale.value?.fnr || null,
+    nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.fnr) : null,
     anmerkungen: anmerkungen.value || ''
   })
+
+  // Formular zurücksetzen
+  vorname.value = ''
+  nachname.value = ''
+  email1.value = ''
+  email2.value = ''
+  telefon1.value = ''
+  telefon2.value = ''
+  strasse.value = ''
+  ort.value = ''
+  postleitzahl.value = ''
+  land.value = ''
+  arbeitsstunden.value = ''
+  springer.value = undefined
+  hauptfiliale.value = null
+  nebenfilialen.value = []
+  anmerkungen.value = ''
+
   emit('close')
 }
 </script>
@@ -86,10 +133,16 @@ function handleSubmit() {
           <div>
             <label>Vorname:</label>
             <input type="text" v-model="vorname" required class="w-full border rounded px-2 py-1"/>
+              <p v-if="vornameFehler" class="text-red-600 mt-1 text-sm">
+                Vorname ist erforderlich
+              </p>
           </div>
           <div>
             <label>Nachname:</label>
             <input type="text" v-model="nachname" required class="w-full border rounded px-2 py-1"/>
+              <p v-if="nachnameFehler" class="text-red-600 mt-1 text-sm">
+                Nachname ist erforderlich
+              </p>
           </div>
         </div>
 
@@ -161,23 +214,29 @@ function handleSubmit() {
             <label>Hauptfiliale:</label>
             <Multiselect
               v-model="hauptfiliale"
-              :options="props.filialen"
-              label="name"
-              track-by="id"
+              :options="props.filialen.sort((a,b)=>a.filialname.localeCompare(b.filialname))"
+              label="filialname"
+              track-by="fnr"
               placeholder="Hauptfiliale wählen"
               :clearable="false"
+              selectLabel=""
+              deselectLabel=""
+              selectedLabel=""
             />
           </div>
           <div>
             <label>Nebenfilialen:</label>
             <Multiselect
-              v-model="nebenfilialen"
+              v-model="sortedNebenfilialen"
               :options="nebenfilialenOptionen"
-              label="name"
-              track-by="id"
-              placeholder="Nebenfilialen wählen"
+              label="filialname"
+              track-by="fnr"
+              placeholder="Nebenfiliale(n) wählen"
               :multiple="true"
               :close-on-select="false"
+                selectLabel=""
+                deselectLabel=""
+                selectedLabel=""
             />
           </div>
         </div>

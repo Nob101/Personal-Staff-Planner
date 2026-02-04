@@ -1,3 +1,4 @@
+-- Wurde an database.js ausgelagert und dient nur noch zur Einsicht
 
 -- Benutzer "admin" anlegen mit LOGIN und Passwort
 -- sudo rwx

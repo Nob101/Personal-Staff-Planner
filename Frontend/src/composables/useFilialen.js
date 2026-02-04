@@ -15,18 +15,13 @@ export function useFilialen() {
   const searchTerm = ref('')
 
   const filteredFilialen = computed(() => {
-    const q = searchTerm.value.toLowerCase().trim()
-    if (!q) return filialen.value
+   const suchBegriff = searchTerm.value.toLowerCase().trim()
+    if (!suchBegriff) return filialen.value
 
-    return filialen.value.filter(f =>
-      Object.values(f)
-        .filter(v =>
-          typeof v === 'string' ||
-          typeof v === 'number'
-        )
-        .some(v =>
-          v.toString().toLowerCase().includes(q)
-        )
+    return filialen.value.filter(filiale =>
+      Object.values(filiale)
+      .filter(wert => typeof wert === 'string' || typeof wert === 'number')
+      .some(wert => wert.toString().toLowerCase().includes(suchBegriff))
     )
   })
 
@@ -52,11 +47,16 @@ export function useFilialen() {
 
   // --- CRUD ---
   async function handleFilialeCreate(neu) {
+    console.log(
+      "CREATE Filiale → Payload:",
+      JSON.stringify(neu, null, 2)
+    )
+
     try {
       const res = await filialenService.createFiliale(neu)
       filialen.value.push(res.data)
     } catch (err) {
-      console.error('Fehler beim Erstellen:', err)
+      console.error("Fehler beim Erstellen:", err)
     }
   }
 
@@ -65,17 +65,22 @@ export function useFilialen() {
     showModalFilialeEdit.value = true
   }
 
-  async function handleFilialeEdit(editedData) {
-    try {
-      const res = await filialenService.updateFiliale(editedData)
-      const index = filialen.value.findIndex(f => f.id === editedData.id)
-      if (index !== -1) {
-        filialen.value[index] = res.data
-      }
-    } catch (err) {
-      console.error('Fehler beim Bearbeiten:', err)
+async function handleFilialeEdit(editedData) {
+  console.log(
+    "EDIT Filiale → Payload:",
+    JSON.stringify(editedData, null, 2)
+  )
+
+  try {
+    const res = await filialenService.updateFiliale(editedData)
+    const index = filialen.value.findIndex(f => f.fnr === editedData.fnr)
+    if (index !== -1) {
+      filialen.value[index] = res.data
     }
+  } catch (err) {
+    console.error("Fehler beim Bearbeiten:", err)
   }
+}
 
   function handleDelete(f) {
     selectedFilialeToDelete.value = f
@@ -86,10 +91,8 @@ export function useFilialen() {
     if (!selectedFilialeToDelete.value) return
 
     try {
-      await filialenService.deleteFiliale(selectedFilialeToDelete.value.id)
-      filialen.value = filialen.value.filter(
-        f => f.id !== selectedFilialeToDelete.value.id
-      )
+      await filialenService.deleteFiliale(selectedFilialeToDelete.value.fnr)
+      filialen.value = filialen.value.filter(f => f.fnr !== selectedFilialeToDelete.value.fnr)
       selectedFilialeToDelete.value = null
       showDeleteModal.value = false
     } catch (err) {
@@ -129,3 +132,4 @@ export function useFilialen() {
     cancelDelete
   }
 }
+

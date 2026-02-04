@@ -1,0 +1,8 @@
+
+# NEU: Damit weiter gepusht werden kann, ohne sensible Daten aus der DB hochzuladen
+
+# Dieser Ordner muss für Git erhalten bleiben,
+# damit die Datenbank-Struktur (Bind-Mount) funktioniert.
+
+# Die echten Daten werden per .gitignore ausgeschlossen.
+

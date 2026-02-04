@@ -2,7 +2,9 @@
 
 <script setup>
 import BaseModal from '@/components/global/BaseModal.vue'
-import { ref, watch, defineProps, computed } from 'vue'
+import Multiselect from 'vue-multiselect'
+import { ref, defineProps, watch } from 'vue'
+import ColorPicker from '@/components/global/ColorPicker.vue'
 
 
 // Emits
@@ -11,36 +13,66 @@ const emit = defineEmits(['close', 'filialeCreate'])
 // Props
 const props = defineProps({
   mitarbeiter: { type: Object, required: false },
-  filialen: { type: Array, required: true },
+  filialen: { type: Object, required: true },
   show: { type: Boolean, required: true }                   // wird von Parent gesteuert
 })
 
+// Algorithmus Optionen
+const algorithmOptions = [
+  { label: 'Algorithmus 1', value: 1 },
+  { label: 'Algorithmus 2', value: 2 }
+]
+
 // Reaktive Formularfelder
-const filialenname = ref('')
-const email1 = ref('')
-const email2 = ref('')
-const telefon1 = ref('')
-const telefon2 = ref('')
+const filialname = ref('')
+const email = ref('')
+const telefon = ref('')
 const strasse = ref('')
 const ort = ref('')
-const postleitzahl = ref('')
+const plz = ref('')
 const land = ref('')
-const color = ref('')
+const farbe = ref('#ffffff') // Startfarbe Weiß
+const algorithmid = ref(null)
+const nameFehler = ref(false)
+
+// entfernt Reset Fehler Meldung bei Schließen des Modals
+watch(() => props.show, (newVal) => {
+  if (!newVal) {
+    nameFehler.value = false
+  }
+})
+
 
 // Submit
 function handleSubmit() {
+    if (!filialname.value.trim()) {
+    nameFehler.value = true
+    return
+  }
+  nameFehler.value = false
+
   emit('filialeCreate', {
-    name: filialenname.value,
-    email1: email1.value || '',
-    email2: email2.value || '',
-    telefon1: telefon1.value || '',
-    telefon2: telefon2.value || '',
+    filialname: filialname.value,
+    email: email.value || '',
+    telefon: telefon.value || '',
     strasse: strasse.value || '',
     ort: ort.value || '',
-    postleitzahl: postleitzahl.value || '',
+    plz: plz.value || '',
     land: land.value || '',
-    color: color.value
+    farbe: farbe.value,
+    algorithmid: algorithmid.value ? algorithmid.value.value : null
   })
+
+  // Formular zurücksetzen
+  filialname.value = ''
+  email.value = ''
+  telefon.value = ''
+  strasse.value = ''
+  ort.value = ''
+  plz.value = ''
+  land.value = ''
+  farbe.value = '#ffffff'
+  algorithmid.value = null
 
   emit('close')
 }
@@ -62,33 +94,26 @@ function handleSubmit() {
           <label>Filialenname:</label>
           <input
             type="text"
-            v-model="filialenname"
+            v-model="filialname"
             required
             class="w-full border rounded px-2 py-1"
           />
+          <p v-if="nameFehler" class="text-red-600 mt-1 text-sm">Filialenname ist erforderlich</p>
         </div>
 
         <!-- Email -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label>Email 1:</label>
-            <input type="email" v-model="email1" class="w-full border rounded px-2 py-1"/>
-          </div>
-          <div>
-            <label>Email 2:</label>
-            <input type="email" v-model="email2" class="w-full border rounded px-2 py-1"/>
+            <label>Email:</label>
+            <input type="email" v-model="email" class="w-full border rounded px-2 py-1"/>
           </div>
         </div>
 
         <!-- Telefon -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label>Telefon 1:</label>
-            <input type="tel" v-model="telefon1" class="w-full border rounded px-2 py-1"/>
-          </div>
-          <div>
-            <label>Telefon 2:</label>
-            <input type="tel" v-model="telefon2" class="w-full border rounded px-2 py-1"/>
+            <label>Telefon:</label>
+            <input type="tel" v-model="telefon" class="w-full border rounded px-2 py-1"/>
           </div>
         </div>
 
@@ -106,23 +131,32 @@ function handleSubmit() {
             </div>
             <div>
               <label>Postleitzahl:</label>
-              <input type="text" v-model="postleitzahl" class="w-full border rounded px-2 py-1"/>
+              <input type="text" v-model="plz" class="w-full border rounded px-2 py-1"/>
             </div>
             <div>
               <label>Land:</label>
               <input type="text" v-model="land" class="w-full border rounded px-2 py-1"/>
+            </div>
+            <div>
+              <label>Algorithmus:</label>
+              <Multiselect
+                v-model="algorithmid"
+                :options="algorithmOptions"
+                :multiple="false"
+                placeholder="Algorithmus wählen"
+                selectLabel=""
+                deselectLabel=""
+                selectedLabel=""
+                label="label"
+                track-by="value"
+              />
             </div>
           </div>
         </fieldset>
 
         <!-- Farbe -->
         <div>
-          <label>Filialenfarbe:</label>
-          <input
-            type="color"
-            v-model="color"
-            class="w-20 h-10 p-0 border rounded"
-          />
+          <ColorPicker v-model="farbe" />
         </div>
 
       </form>
@@ -139,3 +173,4 @@ function handleSubmit() {
     </template>
   </BaseModal>
 </template>
+
