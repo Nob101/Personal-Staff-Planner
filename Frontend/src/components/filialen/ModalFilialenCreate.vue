@@ -2,6 +2,7 @@
 
 <script setup>
 import BaseModal from '@/components/global/BaseModal.vue'
+import Multiselect from 'vue-multiselect'
 import { ref, defineProps, watch } from 'vue'
 import ColorPicker from '@/components/global/ColorPicker.vue'
 
@@ -16,6 +17,12 @@ const props = defineProps({
   show: { type: Boolean, required: true }                   // wird von Parent gesteuert
 })
 
+// Algorithmus Optionen
+const algorithmOptions = [
+  { label: 'Algorithmus 1', value: 1 },
+  { label: 'Algorithmus 2', value: 2 }
+]
+
 // Reaktive Formularfelder
 const filialname = ref('')
 const email = ref('')
@@ -25,6 +32,7 @@ const ort = ref('')
 const plz = ref('')
 const land = ref('')
 const farbe = ref('#ffffff') // Startfarbe Weiß
+const algorithmid = ref(null)
 const nameFehler = ref(false)
 
 // entfernt Reset Fehler Meldung bei Schließen des Modals
@@ -51,7 +59,8 @@ function handleSubmit() {
     ort: ort.value || '',
     plz: plz.value || '',
     land: land.value || '',
-    farbe: farbe.value
+    farbe: farbe.value,
+    algorithmid: algorithmid.value ? algorithmid.value.value : null
   })
 
   // Formular zurücksetzen
@@ -63,6 +72,7 @@ function handleSubmit() {
   plz.value = ''
   land.value = ''
   farbe.value = '#ffffff'
+  algorithmid.value = null
 
   emit('close')
 }
@@ -126,6 +136,20 @@ function handleSubmit() {
             <div>
               <label>Land:</label>
               <input type="text" v-model="land" class="w-full border rounded px-2 py-1"/>
+            </div>
+            <div>
+              <label>Algorithmus:</label>
+              <Multiselect
+                v-model="algorithmid"
+                :options="algorithmOptions"
+                :multiple="false"
+                placeholder="Algorithmus wählen"
+                selectLabel=""
+                deselectLabel=""
+                selectedLabel=""
+                label="label"
+                track-by="value"
+              />
             </div>
           </div>
         </fieldset>

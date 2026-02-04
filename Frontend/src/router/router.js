@@ -30,7 +30,7 @@ const router = createRouter({
 // NEU: Die Skipp login methode mit überprüfung des tokens
 // Skippen des Logins ohne Token: einfach gesamten router.beforeEach auskommentieren und im Browser direkte Routen verwenden
 
-/*
+
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('userToken');
 
@@ -46,7 +46,7 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-*/
+
 
 //Export
 export default router

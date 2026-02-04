@@ -1,8 +1,11 @@
 // filialenService.js
+/*
 // TEMP-Version für JSON-Server kompatibel
 // Frontend arbeitet nur mit fnr
 // Intern wird id automatisch aus fnr gesetzt für JSON-Server
 
+/*
+// TEMP-Version für JSON-Server kompatibel
 import { http } from "./http"
 
 // --- Alle Filialen abrufen ---
@@ -50,10 +53,11 @@ export async function deleteFiliale(fnr) {
 function generateId() {
   return Math.random().toString(36).substring(2, 10) // zufällige id
 }
+*/
 
-/* -------------------------------------------------------------------- */
-/* DAS "RICHTIGE" SERVICE FILE FÜR SPÄTERE ECHTE BACKEND-API
-   JSON-SERVER braucht id, Frontend arbeitet aber nur mit fnr, deshalb die obrige TEMP-Lösung. fnr wird dann im Backend generiert und verwaltet.
+
+// DAS "RICHTIGE" SERVICE FILE FÜR SPÄTERE ECHTE BACKEND-API
+//  JSON-SERVER braucht id, Frontend arbeitet aber nur mit fnr, deshalb die obrige TEMP-Lösung. fnr wird dann im Backend generiert und verwaltet.
 //filialenService.js
 
 //Hier ist gesamte Backend-Kommunikation für Filialen
@@ -75,11 +79,21 @@ export function getFilialeByFNR(fnr) {
 
 // Neue Filiale erstellen
 export function createFiliale(filiale) {
+  console.log(
+    "AXIOS POST → /filialen",
+    JSON.stringify(filiale, null, 2)
+  )
+
   return http.post("/filialen", filiale)
 }
 
-// Filiale aktualisieren
 export function updateFiliale(filiale) {
+  console.log(
+    "AXIOS PUT →",
+    `/filialen/${filiale.fnr}`,
+    JSON.stringify(filiale, null, 2)
+  )
+
   return http.put(`/filialen/${filiale.fnr}`, filiale)
 }
 
@@ -87,6 +101,3 @@ export function updateFiliale(filiale) {
 export function deleteFiliale(fnr) {
   return http.delete(`/filialen/${fnr}`)
 }
-
-
-*/
