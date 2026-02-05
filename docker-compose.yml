@@ -31,6 +31,13 @@
 
 
 
+##################
+# den neuen Postgres Ordner direkt durchsuchen
+# docker exec -it psp_database psql -U postgres -d dienstplan -c "SELECT relname, relfilenode FROM pg_class WHERE relname = 'mitarbeiter';"
+# lokal zu finden unter C:\...\Diplomarbeit\postgres\data\base\[Ordner-ID]\16408
+
+
+
 #   Port mapping ->   Host-Port : Container-Port   WICHTIG!!!!
 
 
@@ -50,18 +57,20 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/data:/var/lib/postgresql/data      #NEU: von named volumes zu mount gewechselt (daten werden im db-Ordner gespeichert)
 
   # --- BACKEND Alexander ---
   backend:
     build: ./backend
     container_name: psp_backend
     restart: on-failure:3
+    working_dir: /app
     ports:
       - "3001:3001"
     volumes:
       - ./backend:/app
       - /app/node_modules   #schützt die container module
+    command: npm run devStart 
     environment:
       # WICHTIG: Host ist hier 'db' (der Name des Services oben), nicht localhost!
       DB_HOST: db
@@ -96,7 +105,7 @@ services:
     
     environment:
       # Für den fall, dass Vue wissen muss, wo das Backend läuft: 3001  !!!
-      VITE_API_URL: http://localhost:3001
+      - VITE_API_URL=/api
     depends_on:
       - backend
 
@@ -117,5 +126,3 @@ services:
     - frontend
     - backend
 
-volumes:
-  postgres_data:
