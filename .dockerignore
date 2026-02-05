@@ -2,6 +2,10 @@
 # NEU: Funktioniert wie gitignore
 # Hält den Container schlank
 
+# NEU: Datenbank-Daten vom Build-Kontext ausschließen
+/postgres/
+/db/data/
+
 # Node
 node_modules
 npm-debug.log

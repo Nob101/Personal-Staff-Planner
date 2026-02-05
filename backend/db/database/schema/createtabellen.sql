@@ -19,11 +19,10 @@ CLEANUP-STRATEGIE (Automatisierung):
    (alle 13 Monate wenn tupel > 70000), um die Performance zu erhalten. Erst nach dieser 
    Frist/Bedingung werden  alte Daten  entfernt.
 
-SOFT-DELETE: 
-   Mitarbeiter (MA) und Filialen werden physisch NICHT aus der Datenbank 
-   gelöscht. Das Attribut 'aktiv' (Boolean) steuert die Sichtbarkeit im 
-   Frontend. Vorteil: Historische Dienstpläne bleiben für die gesetzliche 
-   Einsichtnahme und den Export in CSV-files erhalten.
+SOFT-DELETE & DATA RETENTION: 
+   Mitarbeiter (MA) und Filialen werden beim Ausscheiden auf 'aktiv = FALSE' gesetzt. 
+   Historische Daten bleiben für 13 Monate erhalten. Erst nach dieser Frist 
+   werden inaktive Stammdaten ohne Referenzen physisch durch den Cleanup-Service gelöscht.
 
 ------------------------------------------------------------------------
 */
@@ -157,7 +156,7 @@ CREATE TABLE IF NOT EXISTS dienstplaene (
     --WICHTIG: RESTRICT verhindert, dass  Markus einen MA
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE RESTRICT,
     fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE RESTRICT,
-    schicht_typ VARCHAR(6) REFERENCES arbeitstyp(akurzl),
+    schicht_typ VARCHAR(6) REFERENCES arbeitstyp(akurzl) ON DELETE RESTRICT,
     anmerkung VARCHAR(250),
 
     erstellt_am TIMESTAMP DEFAULT now(),

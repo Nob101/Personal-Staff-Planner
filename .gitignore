@@ -1,3 +1,7 @@
+# NEU Datenbank-Daten dürfen nicht in Git landen
+/postgres
+
+
 # Node modules
 node_modules/
 .DS_Store

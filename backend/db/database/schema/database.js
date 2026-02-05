@@ -52,7 +52,7 @@ async function initDatabase() {
              console.log("--- DB-Existiert bereits. Setup wird Übersprungen ---");
              return ;
         }
-       
+    
 
         console.log("--- DB-Initialisierung gestartet ---");
         // im Do Block da Postgres kein Create Role if not Exists kennt (nicht in der userTabelle)
