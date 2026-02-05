@@ -33,6 +33,7 @@ const nebenfilialen = ref([])
 const anmerkungen = ref('')
 const vornameFehler = ref(false)
 const nachnameFehler = ref(false)
+const hauptfilialeFehler = ref(false)
 
 // Nebenfilialen automatisch anpassen
 watch(hauptfiliale, (newVal) => {
@@ -61,6 +62,7 @@ watch(() => props.show, (val) => {
   if (!val) {
     vornameFehler.value = false
     nachnameFehler.value = false
+    hauptfilialeFehler.value = false
   }
 })
 
@@ -68,16 +70,15 @@ watch(() => props.show, (val) => {
 function handleSubmit() {
   vornameFehler.value = false
   nachnameFehler.value = false
+  hauptfilialeFehler.value = false
 
-  if (!vorname.value.trim()) {
-    vornameFehler.value = true
-  }
+  // Validierung
+  if (!vorname.value.trim()) vornameFehler.value = true
+  if (!nachname.value.trim()) nachnameFehler.value = true
+  if (!hauptfiliale.value) hauptfilialeFehler.value = true
 
-  if (!nachname.value.trim()) {
-    nachnameFehler.value = true
-  }
-
-  if (vornameFehler.value || nachnameFehler.value) return // Sammel-validierung -> So kommt die Fehlermeldung für Vorname u. Nachname wenn beide fehlen, anstatt nur eine!
+  // Wenn ein Fehler existiert, abbrechen
+  if (vornameFehler.value || nachnameFehler.value || hauptfilialeFehler.value) return // Sammel-validierung -> So kommt die Fehlermeldung für Vorname, Nachname und Huaptfiliale wenn alle fehlen, anstatt nur eine!
 
   emit('mitarbeiterCreate', {
     vorname: vorname.value,
@@ -223,6 +224,7 @@ function handleSubmit() {
               deselectLabel=""
               selectedLabel=""
             />
+            <p v-if="hauptfilialeFehler" class="text-red-600 mt-1 text-sm">Hauptfiliale ist erforderlich</p>
           </div>
           <div>
             <label>Nebenfilialen:</label>

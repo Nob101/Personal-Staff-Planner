@@ -16,6 +16,10 @@ const {
   filialen,
   searchTerm,
   filteredMitarbeiter,
+  sortedMitarbeiter,
+  sortOption,
+  sortOptions,
+  isLoading,
   showModalMitarbeiterCreate,
   showModalMitarbeiterEdit,
   selectedMitarbeiter,
@@ -34,10 +38,19 @@ const {
   <Navbar />
   <div class="mitarbeiter-view container mx-auto p-4">
     <!-- ActionBar -->
-    <MitarbeiterActionBar @searchMitarbeiter="val => searchTerm = val" @mitarbeiterCreate="showModalMitarbeiterCreate = true" />
+    <MitarbeiterActionBar 
+      v-model:modelValue="sortOption"  
+      :sortOptions="sortOptions"
+      @searchMitarbeiter="val => searchTerm = val" 
+      @mitarbeiterCreate="showModalMitarbeiterCreate = true" />
 
     <!-- Mitarbeiter Liste -->
-    <MitarbeiterList :mitarbeiter="filteredMitarbeiter" :filialen="filialen" @edit="handleEdit" @delete="handleDelete" />
+    <MitarbeiterList 
+      :mitarbeiter="sortedMitarbeiter" 
+      :filialen="filialen" 
+      :isLoading="isLoading" 
+      @edit="handleEdit" 
+      @delete="handleDelete" />
 
     <!-- Modale am Ende -->
     <ModalMitarbeiterCreate 
