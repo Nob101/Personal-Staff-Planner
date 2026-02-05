@@ -6,7 +6,6 @@ import Multiselect from 'vue-multiselect'
 import { ref, defineProps, watch } from 'vue'
 import ColorPicker from '@/components/global/ColorPicker.vue'
 
-
 // Emits
 const emit = defineEmits(['close', 'filialeCreate'])
 
@@ -14,7 +13,7 @@ const emit = defineEmits(['close', 'filialeCreate'])
 const props = defineProps({
   mitarbeiter: { type: Object, required: false },
   filialen: { type: Object, required: true },
-  show: { type: Boolean, required: true }                   // wird von Parent gesteuert
+  show: { type: Boolean, required: true }
 })
 
 // Algorithmus Optionen
@@ -31,25 +30,43 @@ const strasse = ref('')
 const ort = ref('')
 const plz = ref('')
 const land = ref('')
-const farbe = ref('#ffffff') // Startfarbe Weiß
+const farbe = ref('#ffffff')
 const algorithmid = ref(null)
-const nameFehler = ref(false)
 
-// entfernt Reset Fehler Meldung bei Schließen des Modals
+// Validierungs-States
+const nameFehler = ref(false)
+const algorithmFehler = ref(false)
+
+// Reset der Fehlermeldungen beim Schließen des Modals
 watch(() => props.show, (newVal) => {
   if (!newVal) {
     nameFehler.value = false
+    algorithmFehler.value = false
   }
 })
 
-
 // Submit
 function handleSubmit() {
-    if (!filialname.value.trim()) {
-    nameFehler.value = true
-    return
-  }
+  // Reset Fehler-States für neue Prüfung
   nameFehler.value = false
+  algorithmFehler.value = false
+  
+  let hatFehler = false
+
+  // Filialname Pflichtfeld-Prüfung
+  if (!filialname.value.trim()) {
+    nameFehler.value = true
+    hatFehler = true
+  }
+
+  // Algorithmus Pflichtfeld-Prüfung
+  if (!algorithmid.value) {
+    algorithmFehler.value = true
+    hatFehler = true
+  }
+
+  // Wenn Fehler vorhanden sind, hier abbrechen (beide Warnungen bleiben sichtbar)
+  if (hatFehler) return
 
   emit('filialeCreate', {
     filialname: filialname.value,
@@ -64,6 +81,11 @@ function handleSubmit() {
   })
 
   // Formular zurücksetzen
+  resetFormFields()
+  emit('close')
+}
+
+function resetFormFields() {
   filialname.value = ''
   email.value = ''
   telefon.value = ''
@@ -73,23 +95,20 @@ function handleSubmit() {
   land.value = ''
   farbe.value = '#ffffff'
   algorithmid.value = null
-
-  emit('close')
+  nameFehler.value = false
+  algorithmFehler.value = false
 }
 </script>
 
 <template>
   <BaseModal :show="show" @close="emit('close')" width="450px">
-    <!-- Header -->
     <template #header>
       <h1 class="text-2xl font-semibold">Neue Filiale</h1>
     </template>
 
-    <!-- Body -->
     <template #body>
       <form @submit.prevent="handleSubmit" class="space-y-4">
 
-        <!-- Name -->
         <div>
           <label>Filialenname:</label>
           <input
@@ -101,7 +120,6 @@ function handleSubmit() {
           <p v-if="nameFehler" class="text-red-600 mt-1 text-sm">Filialenname ist erforderlich</p>
         </div>
 
-        <!-- Email -->
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label>Email:</label>
@@ -109,7 +127,6 @@ function handleSubmit() {
           </div>
         </div>
 
-        <!-- Telefon -->
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label>Telefon:</label>
@@ -117,7 +134,6 @@ function handleSubmit() {
           </div>
         </div>
 
-        <!-- Adresse -->
         <fieldset class="border rounded p-3">
           <legend>Adresse</legend>
           <div class="grid grid-cols-2 gap-4">
@@ -150,11 +166,11 @@ function handleSubmit() {
                 label="label"
                 track-by="value"
               />
+              <p v-if="algorithmFehler" class="text-red-600 mt-1 text-sm">Algorithmus ist erforderlich</p>
             </div>
           </div>
         </fieldset>
 
-        <!-- Farbe -->
         <div>
           <ColorPicker v-model="farbe" />
         </div>
@@ -162,7 +178,6 @@ function handleSubmit() {
       </form>
     </template>
 
-    <!-- Footer -->
     <template #footer>
       <button type="button" class="bg-blue-300" @click="handleSubmit">
         Erstellen
@@ -173,4 +188,3 @@ function handleSubmit() {
     </template>
   </BaseModal>
 </template>
-

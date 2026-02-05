@@ -31,11 +31,12 @@ offene Implementierungen:
 
 ->Filialen
     -> Selben Filialname mehrmals vergebbar? -> da verschiedene FilialenID's
-    -> Mitarbeiter der Filiale & Springer entfernen
-    -> AlgortithmusID hinzufügen anstatt der Mitarbeiter
     -> Design/Styling mit Dumitru
 
 ->Mitarbeiter
+    -> Falls Backend absichtlich so, useMitarbeiter umschreiben und Filialen-Objekte "entpacken" damit
+        mit ihnen gearbeitet werden kann wie erwartet und dann wieder verpacken. Multiselects, etc. sind simple
+        und "flach" -> Formulare, Multiselects, Vue, etc. arbeitet nur mit einfachen Werten
     -> Design/Styling mit Dumitru
 
 
