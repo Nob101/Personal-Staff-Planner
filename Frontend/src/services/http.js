@@ -27,4 +27,23 @@ export const http = axios.create({
   }
 );
 
+// NEU: Auf fehler 403 reagieren damit der localstorage (token) gelöscht wird
+http.interceptors.response.use(
+  response => response, // Wenn alles okay ist, einfach weitergeben
+  error => {
+    // Wenn der Server 403 (Verboten) antwortet -> Sitzung im Backend existiert nicht mehr
+    if (error.response && error.response.status === 403) {
+      console.warn("Sitzung abgelaufen (403). Lösche LocalStorage...");
+      
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('user');
+      
+      // Seite neu laden oder zum Login schicken
+      // Das zwingt die App, den ungültigen Zustand zu verlassen
+      window.location.href = '/login'; 
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default http;
