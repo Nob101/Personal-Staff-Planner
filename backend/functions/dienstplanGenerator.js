@@ -24,7 +24,7 @@ const STUNDEN_PRO_DIENST = 9;
 // Puffer über Sollstunden in Phase 1.
 // Idee: Phase 1 soll schnell einen "brauchbaren" Plan erzeugen,
 // auch wenn er danach noch korrigiert (gekürzt) wird.
-const LIMIT_PUFFER_STUNDEN = 10;
+const LIMIT_PUFFER_STUNDEN = 100;
 
 // Kürzung: nie die letzte A oder E Schicht eines Tages entfernen.
 // MIN_WORKERS_PRO_SCHICHT = 1 heißt: mind. 1x A und mind. 1x E muss bleiben.
