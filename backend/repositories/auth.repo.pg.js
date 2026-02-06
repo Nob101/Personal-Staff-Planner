@@ -1,12 +1,3 @@
-/*
-Tabelle: auth
----------------------------------------------
-id           SERIAL PRIMARY KEY
-username     TEXT UNIQUE
-password     TEXT
-
-*/
-
 const pool = require('../db/pool');
 const bcrypt = require('bcrypt');
 

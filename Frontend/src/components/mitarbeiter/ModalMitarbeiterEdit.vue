@@ -36,6 +36,7 @@ const nebenfilialen = ref([])
 const anmerkungen = ref('')
 const vornameFehler = ref(false)
 const nachnameFehler = ref(false)
+const hauptfilialeFehler = ref(false)
 
 
 // Watch füllt die lokalen Refs mit den Prop-Daten
@@ -58,10 +59,12 @@ watch(
     land.value = edited.land || ''
     arbeitsstunden.value = edited.arbeitsstunden ?? ''
         springer.value = edited.springer ?? false
-    hauptfiliale.value = props.filialen.find(f => f.fnr === edited.hauptfiliale) || null
-    nebenfilialen.value = edited.nebenfilialen?.length 
-        ? props.filialen.filter(f => edited.nebenfilialen.includes(f.fnr))
-        : []
+        hauptfiliale.value = edited.hauptfiliale ? props.filialen.find(f => f.fnr === edited.hauptfiliale.id) : null
+    nebenfilialen.value = edited.nebenfilialen?.length
+      ? props.filialen.filter(f =>
+          edited.nebenfilialen.some(nf => nf.id === f.fnr)
+        )
+      : []
     anmerkungen.value = edited.anmerkungen || ''
   },
   { immediate: true }
@@ -94,6 +97,7 @@ watch(() => props.show, (val) => {
   if (!val) {
     vornameFehler.value = false
     nachnameFehler.value = false
+    hauptfilialeFehler.value = false
   }
 })
 
@@ -101,16 +105,15 @@ watch(() => props.show, (val) => {
 function handleSubmit() {
   vornameFehler.value = false
   nachnameFehler.value = false
+  hauptfilialeFehler.value = false
 
-  if (!vorname.value.trim()) {
-    vornameFehler.value = true
-  }
+  // Validierung
+  if (!vorname.value.trim()) vornameFehler.value = true
+  if (!nachname.value.trim()) nachnameFehler.value = true
+  if (!hauptfiliale.value) hauptfilialeFehler.value = true
 
-  if (!nachname.value.trim()) {
-    nachnameFehler.value = true
-  }
-
-  if (vornameFehler.value || nachnameFehler.value) return // Sammel-validierung -> So kommt die Fehlermeldung für Vorname u. Nachname wenn beide fehlen, anstatt nur eine!
+  // Wenn ein Fehler existiert, abbrechen
+  if (vornameFehler.value || nachnameFehler.value || hauptfilialeFehler.value) return // Sammel-validierung -> So kommt die Fehlermeldung für Vorname, Nachname und Huaptfiliale wenn alle fehlen, anstatt nur eine!
 
 
 
@@ -243,6 +246,7 @@ function handleSubmit() {
               deselectLabel=""
               selectedLabel=""
             />
+            <p v-if="hauptfilialeFehler" class="text-red-600 mt-1 text-sm">Hauptfiliale ist erforderlich</p>
           </div>
           <div>
             <label>Nebenfilialen:</label>
