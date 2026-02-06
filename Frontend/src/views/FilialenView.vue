@@ -1,17 +1,29 @@
+<!-- FilialenView.vue -->
 <script setup>
-  import Navbar from '@/components/global/Navbar.vue'
-  import { useFilialen } from '@/composables/useFilialen'
-  import FilialenActionBar from '@/components/filialen/FilialenActionBar.vue';
-  import FilialenList from '@/components/filialen/FilialenList.vue';
-  import ModalFilialeCreate from '@/components/filialen/ModalFilialenCreate.vue';
-  import ModalFilialeEdit from '@/components/filialen/ModalFilialenEdit.vue';
-  import BestätigungsModal from '@/components/global/BestätigungsModal.vue'
+/**
+ * View für die Filialen-Verwaltung.
+ * Nutzt das useFilialen Composable für die gesamte Logik.
+ * FilialenView enthält nur Template + Event-Handler-Calls.
+ */
+import Navbar from '@/components/global/Navbar.vue'
+import { useFilialen } from '@/composables/useFilialen'
 
-  const {
+// Komponenten-Importe für die Filialen-Ansicht
+import FilialenActionBar from '@/components/filialen/FilialenActionBar.vue'
+import FilialenList from '@/components/filialen/FilialenList.vue'
+import ModalFilialeCreate from '@/components/filialen/ModalFilialenCreate.vue'
+import ModalFilialeEdit from '@/components/filialen/ModalFilialenEdit.vue'
+import BestätigungsModal from '@/components/global/BestätigungsModal.vue'
+
+// Holt alle Daten, Funktionen und States aus dem Composable
+const {
   filialen,
   mitarbeiter,
   searchTerm,
-  filteredFilialen,
+  sortedFilialen,
+  sortOption,
+  sortOptions,
+  isLoading,
   showModalFilialeCreate,
   showModalFilialeEdit,
   showDeleteModal,
@@ -23,25 +35,27 @@
   confirmDelete,
   cancelDelete,
 } = useFilialen()
-
-
-
-
-
-
 </script>
-
 
 <template>
   <Navbar />
+  
   <div class="filialen-view container mx-auto p-4">
-    <!-- ActionBar -->
-    <FilialenActionBar @searchFiliale="val => searchTerm = val" @filialeCreate="showModalFilialeCreate = true" />
+    <FilialenActionBar 
+      v-model:modelValue="sortOption" 
+      :sortOptions="sortOptions"
+      @searchFiliale="val => searchTerm = val" 
+      @filialeCreate="showModalFilialeCreate = true" 
+    />
 
-    <!-- Filialen Liste -->
-    <FilialenList :filialen="filteredFilialen" :mitarbeiter="mitarbeiter" @edit="handleEdit" @delete="handleDelete"/>
+    <FilialenList 
+      :filialen="sortedFilialen" 
+      :mitarbeiter="mitarbeiter" 
+      :isLoading="isLoading" 
+      @edit="handleEdit" 
+      @delete="handleDelete"
+    />
 
-    <!-- Modale am Ende -->
     <ModalFilialeCreate 
       :show="showModalFilialeCreate" 
       :filialen="filialen"
@@ -59,15 +73,10 @@
     />
 
     <BestätigungsModal
-    :show="showDeleteModal"
-    message="Möchtest du diese Filiale wirklich löschen?"
-    @confirm="confirmDelete"
-    @close="cancelDelete"
+      :show="showDeleteModal"
+      message="Möchtest du diese Filiale wirklich löschen?"
+      @confirm="confirmDelete"
+      @close="cancelDelete"
     />
-
-
-
-
-     
-    </div>
+  </div>
 </template>

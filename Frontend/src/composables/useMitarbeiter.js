@@ -13,24 +13,73 @@ export function useMitarbeiter() {
   // --- State ---
   const mitarbeiter = ref([])
   const filialen = ref([])
-
+  const isLoading = ref(true)
   const searchTerm = ref('')
+  const sortOption = ref('nameAsc') // Default: alphabetisch aufsteigend
 
-    const filteredMitarbeiter = computed(() => {
-    const q = searchTerm.value.toLowerCase().trim()
-    if (!q) return mitarbeiter.value
+    // --- Sortiermöglichkeiten ---
+  const sortOptions = [
+    { label: 'Alphabetisch (A → Z)', value: 'nameAsc' },
+    { label: 'Alphabetisch (Z → A)', value: 'nameDesc' },
+    { label: 'Nach Filiale (A → Z)', value: 'filialeName' },
+    { label: 'Nach Filiale (Z → A)', value: 'filialeNameDesc' }
 
-    return mitarbeiter.value.filter(m =>
-      Object.values(m)
-        .filter(v =>
-          typeof v === 'string' ||
-          typeof v === 'number'
-        )
-        .some(v =>
-          v.toString().toLowerCase().includes(q)
-        )
+  ]
+
+  
+const filteredMitarbeiter = computed(() => {
+  const q = searchTerm.value.toLowerCase().trim()
+  if (!q) return mitarbeiter.value
+
+  return mitarbeiter.value.filter(m => {
+    // 1. Alle flachen Werte des Mitarbeiters prüfen (vorname, nachname, email1, email2, telefon1, telefon2, strasse, ort, plz, anmerkungen...)
+    const mainFieldsMatch = Object.values(m).some(val => 
+      (typeof val === 'string' || typeof val === 'number') && 
+      val.toString().toLowerCase().includes(q)
     )
+
+    // 2. Hauptfiliale (Name)
+    const hauptfilialeMatch = m.hauptfiliale?.name?.toLowerCase().includes(q)
+
+    // 3. Alle Nebenfilialen (Namen) im Array prüfen
+    const nebenfilialenMatch = m.nebenfilialen?.some(f => 
+      f.name?.toLowerCase().includes(q)
+    )
+
+    return mainFieldsMatch || hauptfilialeMatch || nebenfilialenMatch
   })
+})
+
+  const sortedMitarbeiter = computed(() => {
+  const list = [...filteredMitarbeiter.value]
+  switch (sortOption.value) {
+    case 'nameAsc':
+      return list.sort((a,b) => (a.vorname + ' ' + a.nachname).toLowerCase().localeCompare((b.vorname + ' ' + b.nachname).toLowerCase()))
+    case 'nameDesc':
+      return list.sort((a,b) => (b.vorname + ' ' + b.nachname).toLowerCase().localeCompare((a.vorname + ' ' + a.nachname).toLowerCase()))
+    case 'filialeName':
+      return list.sort((a,b) => {
+        const filialeA = a.hauptfiliale?.name?.toLowerCase() || ''
+        const filialeB = b.hauptfiliale?.name?.toLowerCase() || ''
+        if (filialeA === filialeB) {
+          return (a.vorname + ' ' + a.nachname).toLowerCase().localeCompare((b.vorname + ' ' + b.nachname).toLowerCase())
+        }
+        return filialeA.localeCompare(filialeB)
+      })
+    case 'filialeNameDesc':
+      return list.sort((a,b) => {
+        const filialeA = a.hauptfiliale?.name?.toLowerCase() || ''
+        const filialeB = b.hauptfiliale?.name?.toLowerCase() || ''
+        if (filialeA === filialeB) {
+          return (a.vorname + ' ' + a.nachname).toLowerCase().localeCompare((b.vorname + ' ' + b.nachname).toLowerCase())
+        }
+        return filialeB.localeCompare(filialeA)
+      })
+
+    default:
+      return list
+  }
+})
 
 
   const showModalMitarbeiterCreate = ref(false)
@@ -46,7 +95,9 @@ export function useMitarbeiter() {
       filialen.value = (await filialenService.getFilialen()).data
     } catch (err) {
       console.error(err)
-    }
+    } finally {
+    isLoading.value = false
+  }
   }
   // onMounted -> ladet die Daten wenn ein Vue-File/Komponent "geöffnet" wird
   onMounted(loadData)
@@ -120,8 +171,12 @@ export function useMitarbeiter() {
   return {
     mitarbeiter,
     filialen,
+    isLoading,
     searchTerm,
     filteredMitarbeiter,
+    sortedMitarbeiter,
+    sortOption,
+    sortOptions,
     showModalMitarbeiterCreate,
     showModalMitarbeiterEdit,
     selectedMitarbeiter,
@@ -132,7 +187,6 @@ export function useMitarbeiter() {
     handleMitarbeiterEdit,
     handleDelete,
     confirmDelete,
-    cancelDelete,
-    getVerfuegbareMitarbeiter
+    cancelDelete
   }
 }

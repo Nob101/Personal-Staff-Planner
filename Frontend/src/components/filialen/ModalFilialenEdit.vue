@@ -29,8 +29,11 @@ const telefon = ref('')
 const email = ref('')
 const farbe = ref('')
 const anmerkungen = ref('')
-const nameFehler = ref(false)
 const algorithmid = ref(null)
+
+// Validierungs-States
+const nameFehler = ref(false)
+const algorithmFehler = ref(false)
 
 // Props → lokale Refs kopieren
 watch(
@@ -57,16 +60,32 @@ watch(
 watch(() => props.show, (newVal) => {
   if (!newVal) {
     nameFehler.value = false
+    algorithmFehler.value = false
   }
 })
 
 // Submit
 function handleSubmit() {
-    if (!filialname.value.trim()) {
-    nameFehler.value = true
-    return
-  }
+  // Zurücksetzen der Fehler-States für neue Prüfung
   nameFehler.value = false
+  algorithmFehler.value = false
+  
+  let hatFehler = false
+
+  // Filialname Pflichtfeld-Prüfung
+  if (!filialname.value.trim()) {
+    nameFehler.value = true
+    hatFehler = true
+  }
+
+  // Algorithmus Pflichtfeld-Prüfung
+  if (!algorithmid.value) {
+    algorithmFehler.value = true
+    hatFehler = true
+  }
+
+  // Wenn Fehler vorhanden sind, hier abbrechen (beide Meldungen bleiben stehen)
+  if (hatFehler) return
 
   emit('filialeEdit', {
     fnr: props.filiale.fnr,
@@ -87,14 +106,12 @@ function handleSubmit() {
 
 <template>
   <BaseModal v-if="filiale" :show="show" @close="emit('close')" width="500px">
-    <!-- Header -->
     <template #header>
       <h2 class="text-2xl font-semibold">
         Filiale bearbeiten: {{ filiale.filialname }}
       </h2>
     </template>
 
-    <!-- Body -->
     <template #body>
       <form @submit.prevent="handleSubmit" class="space-y-4">
 
@@ -137,6 +154,7 @@ function handleSubmit() {
             label="label"
             track-by="value"
           />
+          <p v-if="algorithmFehler" class="text-red-600 mt-1 text-sm">Algorithmus ist erforderlich</p>
         </div>
 
         <div>
@@ -151,7 +169,6 @@ function handleSubmit() {
       </form>
     </template>
 
-    <!-- Footer -->
     <template #footer>
       <div class="flex justify-center gap-4 mt-4">
         <button class="bg-blue-300 px-4 py-2 rounded" @click="handleSubmit">
