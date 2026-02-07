@@ -11,7 +11,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { konvertDienstplan2CSV } = require('../services/exportService');
+const { konvertDienstplan2CSV } = require('../functions/exportService');
 
 
 

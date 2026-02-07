@@ -20,7 +20,13 @@ router.post('/login', async (req, res) => {
 
     // NEU: token erstellen und speichern
     const token = crypto.randomBytes(24).toString('hex');
-    sessionTrue.set(token, user.mnr);
+    // sessionTrue.set(token, user.mnr);    
+
+    // NEU: Zeitstempel um token automatisch zu löschen nach ablauf der Zeit nach Anmeldung
+    sessionTrue.set(token, {
+      mnr: user.mnr,
+      createdAt: Date.now()
+    });
 
     res.json({
       success: true,
@@ -34,6 +40,14 @@ router.post('/login', async (req, res) => {
   }
 });
 
- 
+
+router.post('/logout', (req, res) => {
+    const token = req.headers['authorization'];
+    if (token) {
+        sessionTrue.delete(token);      // Löscht Markus aus der 'Gästeliste'
+    }
+    res.json({ success: true, message: 'Erfolgreich abgemeldet' });
+});
+
 
 module.exports = router;

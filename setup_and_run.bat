@@ -68,7 +68,7 @@ echo Zertifikate erfolgreich erstellt!
 :start_docker
 ::  Docker ausfuehren
 echo Starte Docker-container...
-docker-compose up -d
+docker-compose up --build -d 
 
 :: ...setTimeOut damit der Dienst verbindet wenn ALLE kontainer bereit sind
 timeout /t 15 /nobreak >nul

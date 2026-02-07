@@ -17,6 +17,8 @@ const pool = require('../db/pool');
  */
 
 
+// NEU: Tippfehler bei query $1AND -> $1 AND und [filialeId] hat gefehlt
+
 async function resetCountersForFiliale(filialeId) {
   // Sicherheitsprüfung: ohne Filial-ID keine Aktion
   if (!filialeId) return;
@@ -24,7 +26,8 @@ async function resetCountersForFiliale(filialeId) {
   // Alle Mitarbeiter dieser Filiale verlieren ihren aktuellen Startpunkt
   // im Schicht-Pattern (Rotation beginnt neu)
   await pool.query(
-    'UPDATE mitarbeiter SET counter = NULL WHERE hauptfiliale_fnr = $1AND aktiv = true',
+    'UPDATE mitarbeiter SET counter = NULL WHERE hauptfiliale_fnr = $1 AND aktiv = true',
+    [filialeId]
   );
 }
 
