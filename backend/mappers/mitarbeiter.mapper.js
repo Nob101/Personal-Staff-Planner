@@ -43,6 +43,7 @@ function fromFrontendPatch(b) {
   // Basisfelder (wenn vorhanden übernehmen)
   if (has(b, "vorname")) out.vorname = b.vorname;
   if (has(b, "nachname")) out.nachname = b.nachname;
+  if (has(b, "anmerkung")) out.anmerkung = b.anmerkung;
 
   /**
    * Hauptfiliale:
@@ -228,6 +229,7 @@ function fromFrontend(b) {
     arbeitnehmertyp,
     springer,
     springeralgorithmid: b.springeralgorithmid ?? null,
+    anmerkung: b.anmerkung ?? null,
     kontakt,
     telefone,
     emails,
@@ -325,7 +327,7 @@ function toFrontend(ma, filialen = []) {
     hauptfiliale,
     nebenfilialen,
 
-    anmerkungen: "",
+    anmerkung: ma.anmerkung ?? "",
   };
 }
 
