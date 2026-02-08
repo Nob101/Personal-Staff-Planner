@@ -25,6 +25,7 @@ function mapRowToDto(row) {
     counter: row.counter,
     springeralgorithmid: row.springeralgorithmid,
     aktiv: row.aktiv,
+    anmerkung: row.anmerkung ?? "",
 
     // Detaildaten sind in der DB ausgelagert (Normalisierung)
     kontakt: row.kontakt ?? null,          // 0..1
@@ -61,6 +62,7 @@ async function getAllWithDetails() {
       m.counter,
       m.springeralgorithmid,
       m.aktiv,
+      m.anmerkung,
 
       -- kontakt (0..1): als JSON Objekt
       (
@@ -130,6 +132,7 @@ async function getByIdWithDetails(mnr) {
       m.counter,
       m.springeralgorithmid,
       m.aktiv,
+      m.anmerkung,
 
       (
         SELECT jsonb_build_object(
@@ -207,9 +210,10 @@ async function addWithDetails(payload) {
         counter,
         arbeitnehmertyp,
         springeralgorithmid,
-        springer
+        springer,
+        anmerkung
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
       RETURNING mnr;
     `;
 
@@ -221,6 +225,7 @@ async function addWithDetails(payload) {
       payload.arbeitnehmertyp ?? 40,
       payload.springeralgorithmid ?? null,
       payload.springer ?? false,
+      payload.anmerkung ?? null,
     ];
 
     const maRes = await client.query(insertMaSql, insertMaValues);
@@ -356,7 +361,8 @@ async function updateWithDetails(mnr, updates) {
       "springer",
       "counter",
       "springeralgorithmid",
-      "aktiv"
+      "aktiv",
+      "anmerkung",
     ];
 
     const baseFields = Object.keys(updates).filter((f) => allowed.includes(f));
