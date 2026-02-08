@@ -1,9 +1,21 @@
 // server.js
+
+/**
+ * Express -> Wasserfall login muss immer erreichbar sein also oben stehen
+ * 
+ */
 const express = require('express');
 const app = express();
+
 const cors = require('cors');
 const db = require('./db/database/schema/database.js')
+
+const { deleteOldShifts } = require('./functions/cleanUpService');
+
+// NEU: Lukas  -> Objekt im Arbeitsspeicher vom server,     Eine Art Gästeliste
+const {loginAllowness} = require('./middleware/auth.middleware');
 const PORT = 3001;
+
 
 
 // Middleware
@@ -13,6 +25,14 @@ app.use(cors());         // Cross-Origin-Zugriff erlauben
 // ---------------------
 //   ROUTES EINBINDEN
 // ---------------------
+
+
+const authRouter = require('./routes/auth.routes');
+app.use('/api/auth', authRouter);
+
+// Neu: Alles daach braucht eine gültige Anmeldung (darunter = geschützte routen)
+// app.use(loginAllowness);
+
 const mitarbeiterRouter = require('./routes/mitarbeiter.routes');
 app.use('/api/mitarbeiter', mitarbeiterRouter);
 
@@ -22,23 +42,26 @@ app.use('/api/filialen', filialenRouter);
 const dienstplanRouter = require('./routes/dienstplan.routes');
 app.use('/api/dienstplan', dienstplanRouter);
 
-// Wieder Aktiv (war auskommentiert)
-const authRouter = require('./routes/auth.routes');
-app.use('/api/auth', authRouter); 
 
-
-// ---------------------
-//   SERVER STARTEN
-// ---------------------
+// NEU: Route für Export der dienstpläne in csv format
+//const exportRouter = require('./routes/export.routes.js')
+//app.use('/api/download', exportRouter);
 
 
 
 async function startApp() {
+
   try {
     console.log('Docker braucht für den aufbau Länger....')
     await new Promise(res => setTimeout(res, 5000));
     await db.initDatabase();
+    await deleteOldShifts();  //erster cleanup beim starten
 
+
+     setInterval(async () => {
+          // console.log("Täglicher automatischer Cleanup...");
+      await deleteOldShifts();
+        }, 24 * 60 * 60 * 1000);  // 24 stunden täglicher Clean check
 
 
     app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
@@ -48,6 +71,4 @@ async function startApp() {
   }
 }
 
-
 startApp();
-

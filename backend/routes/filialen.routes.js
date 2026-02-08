@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const filialeRepo = require("../repositories/filialen.repo.pg");
 
+
 router.post("/", async (req, res) => {
   try {
     const { filialname, strasse, plz, land, telefon, email, farbe, ort, algorithmid } = req.body;
@@ -83,6 +84,8 @@ router.delete("/:fnr", async (req, res) => {
     res.status(500).json({ error: "Fehler beim Löschen der Filiale" });
   }
 });
+
+
 
 module.exports = router;
 

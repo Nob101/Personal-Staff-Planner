@@ -14,9 +14,10 @@
  */
 
 
-const pool = require("../../pool.js"); //Neu! da Der Pool wartbarer wird wenn er ausserhalb liegt
-const bcrypt = require("bcrypt");
-const path = require("path");
+
+const pool = require('../../pool.js');  //Neu! da Der Pool wartbarer wird wenn er ausserhalb liegt
+const bcrypt = require('bcrypt');
+const path = require('path');
 
 require("dotenv").config({ path: path.resolve(__dirname, "../../../.env") });
 
@@ -53,7 +54,8 @@ async function initDatabase() {
        
 
         console.log("--- DB-Initialisierung gestartet ---");
- 
+        // im Do Block da Postgres kein CReate Role if not Exists kennt (nicht in der userTabelle)
+        // admin hat Superuser Rechte (Create, Delete, usw. DB) '%L' verhindert das Sonderzeichen im Passwort das SQL-Kommando zerstört
         await client.query(`
             DO $$
             BEGIN
@@ -74,7 +76,7 @@ async function initDatabase() {
         const triggersDir = path.resolve(__dirname, '../triggers');
         const indexesDir = path.resolve(__dirname, '../indexes');
         const seedsDir = path.resolve(__dirname, '../seeds');
- 
+
         // erst das Schema laden!!!!!!! dann alles andere
         // Reihenfolge ist wichtig!!!
 
@@ -120,6 +122,8 @@ async function initDatabase() {
  
  
 module.exports = {
-  query: (text, params) => pool.query(text, params),
-  initDatabase,
+    query: (text, params) => pool.query(text, params),
+    initDatabase,
 };
+
+

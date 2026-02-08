@@ -1,26 +1,40 @@
-import { ref, onMounted } from "vue";
+// src/composables/useDarkMode.js
+import { ref } from "vue";
 
 const isDark = ref(false);
+let initialized = false;
 
-function apply(value) {
-  document.documentElement.classList.toggle("dark", value);
+function applyClass(v) {
+  document.documentElement.classList.toggle("dark", !!v);
 }
 
 export function useDarkMode() {
-  function toggle() {
-    isDark.value = !isDark.value;
-    apply(isDark.value);
-    localStorage.setItem("theme", isDark.value ? "dark" : "light");
+  if (!initialized) {
+    initialized = true;
+
+    // 1) aus localStorage laden
+    const saved = localStorage.getItem("darkmode");
+    if (saved !== null) {
+      isDark.value = saved === "true";
+    } else {
+      // 2) fallback: system preference
+      isDark.value = window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ?? false;
+    }
+
+    applyClass(isDark.value);
   }
 
-  onMounted(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "dark") isDark.value = true;
-    else if (saved === "light") isDark.value = false;
-    else isDark.value = window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
+  function toggle() {
+    isDark.value = !isDark.value;
+    localStorage.setItem("darkmode", String(isDark.value));
+    applyClass(isDark.value);
+  }
 
-    apply(isDark.value);
-  });
+  function setDark(v) {
+    isDark.value = !!v;
+    localStorage.setItem("darkmode", String(isDark.value));
+    applyClass(isDark.value);
+  }
 
-  return { isDark, toggle };
+  return { isDark, toggle, setDark };
 }

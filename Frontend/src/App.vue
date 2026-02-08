@@ -12,7 +12,9 @@ import ColorPicker from './components/global/ColorPicker.vue';
 </script>
 
 <template>
-   <router-view />
+        <Navbar />
+        <router-view />
+
 </template>
 
 <style scoped> 

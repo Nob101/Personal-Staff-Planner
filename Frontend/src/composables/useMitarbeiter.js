@@ -5,13 +5,30 @@
 
 // ref -> reaktiv, onMounted -> wird als erstes gemacht, wenn ein Vue-File/Komponent geladen wird
 // getMitarbeiter und getFilialen holt sich die Daten vom Backend übers Service
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, h } from 'vue'
 import * as mitarbeiterService from "@/services/mitarbeiterService"
 import * as filialenService from "@/services/filialenService"
 
 export function useMitarbeiter() {
   // --- State ---
-  const mitarbeiter = ref([])
+  const mitarbeiter = ref([{ // Beispiel-Daten für Vorschau
+      id: 1,
+      vorname: "Max",
+      nachname: "Mustermann",
+      telefon1: "0664 123456",
+      email1: "max.mustermann@test.at",
+      hauptfiliale: 1,
+    },
+    {
+      id: 2,
+      vorname: "Anna",
+      nachname: "Musterfrau",
+      telefon1: "0676 987654",
+      email1: "anna@test.at",
+      hauptfiliale: 2,
+    },])
+
+
   const filialen = ref([])
 
   const showModalMitarbeiterCreate = ref(false)
@@ -57,7 +74,11 @@ export function useMitarbeiter() {
       const res = await mitarbeiterService.updateMitarbeiter(editedData)
       const index = mitarbeiter.value.findIndex(m => m.id === editedData.id)
       if (index !== -1) {
-        mitarbeiter.value[index] = res.data
+        mitarbeiter.value[index] = { ...res.data }
+      }
+  // Zusatz, um Mitarbeiter aktualisiert anzuzeigen
+      if (selectedMitarbeiter.value && selectedMitarbeiter.value.id === editedData.id) {
+        selectedMitarbeiter.value = { ...res.data }
       }
     } catch (err) {
       console.error("Fehler beim Bearbeiten:", err)
@@ -71,18 +92,29 @@ export function useMitarbeiter() {
   }
 
   // Löscht den ausgewählten Mitarbeiter nach Bestätigung
-  async function confirmDelete() {
-    if (!selectedMitarbeiterToDelete.value) return
+async function confirmDelete() {
+  if (!selectedMitarbeiterToDelete.value) return
 
-    try {
-      await mitarbeiterService.deleteMitarbeiter(selectedMitarbeiterToDelete.value.id)
-      mitarbeiter.value = mitarbeiter.value.filter(m => m.id !== selectedMitarbeiterToDelete.value.id)
-      selectedMitarbeiterToDelete.value = null
-      showDeleteModal.value = false
-    } catch (err) {
-      console.error("Fehler beim Löschen:", err)
+  try {
+    const deletedId = selectedMitarbeiterToDelete.value.id
+
+    await mitarbeiterService.deleteMitarbeiter(deletedId)
+
+    // aus der Liste entfernen
+    mitarbeiter.value = mitarbeiter.value.filter(m => m.id !== deletedId)
+
+    // Detail-Overlay schließen, wenn genau dieser Mitarbeiter offen ist
+    if (selectedMitarbeiter.value?.id === deletedId) {
+      selectedMitarbeiter.value = null
     }
+
+    selectedMitarbeiterToDelete.value = null
+    showDeleteModal.value = false
+  } catch (err) {
+    console.error("Fehler beim Löschen:", err)
   }
+}
+
 
   // Schließt das Bestätigungs-Modal wenn Abbrechen/ESC gedrückt wird
   function cancelDelete() {
@@ -101,6 +133,16 @@ export function useMitarbeiter() {
     }
   }
 
+  // Neue Funktionen um von MitarbeiterList in die MitarbeiterCard zu wechseln
+  function handleSelect(m) {
+    selectedMitarbeiter.value = m
+  }
+
+  // Schließt die Detailansicht und wechselt zurück in MitarbeiterList
+  function closeDetails() {
+    selectedMitarbeiter.value = null
+  }
+
   return {
     mitarbeiter,
     filialen,
@@ -115,6 +157,8 @@ export function useMitarbeiter() {
     handleDelete,
     confirmDelete,
     cancelDelete,
-    getVerfuegbareMitarbeiter
+    getVerfuegbareMitarbeiter,
+    handleSelect,
+    closeDetails
   }
 }
