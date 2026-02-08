@@ -1,5 +1,5 @@
 @baseUrl = https://localhost/api
-@token = 869ff7fb116612d5349e5276883960de7ab864915f4c4de0
+@token = b6ff0a70421278345a94c4f728ca86bf1afcada6e0ed8baa
 @jahr = 2026
 @monat = 2
 
@@ -27,7 +27,7 @@ GET {{baseUrl}}/mitarbeiter
 Authorization: {{token}}
 
 ### GET Mitarbeiter nach mnr
-@MNR = 7
+@MNR = 5
 GET {{baseUrl}}/mitarbeiter/{{MNR}}
 Authorization: {{token}}
 
@@ -53,7 +53,7 @@ Content-Type: application/json
   "email1": "test@demo.at",
   "email2": "",
 
-  "anmerkung": "test_"
+  "anmerkungen": "Hallo"
 }
 
 ### PUT Mitarbeiter bearbeiten
