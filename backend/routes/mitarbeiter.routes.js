@@ -5,11 +5,16 @@ const mitarbeiterRepo = require("../repositories/mitarbeiter.repo.pg");
 const filialenRepo = require("../repositories/filialen.repo.pg");
 const dienstplanRepo = require("../repositories/dienstplan.repo.pg");
 
+
 const { setCounterForMitarbeiter } = require("../functions/setCounter");
 const {
   resetCountersForFiliale,
 } = require("../functions/resetCountersForFiliale");
-const { fromFrontend, toFrontend, fromFrontendPatch } = require("../mappers/mitarbeiter.mapper");
+const {
+  fromFrontend,
+  toFrontend,
+  fromFrontendPatch,
+} = require("../mappers/mitarbeiter.mapper");
 
 // -----------------------------
 // GET: alle Mitarbeiter (inkl. kontakt/telefon/email/nebenfilialen)
@@ -25,7 +30,7 @@ router.get("/", async (_req, res) => {
     console.error("Fehler GET /mitarbeiter:", err);
     res.status(500).json({ error: "Fehler beim Laden der Mitarbeiter" });
   }
-});
+});   
 
 // -----------------------------
 // GET: Mitarbeiter by mnr (inkl. details)
@@ -102,13 +107,24 @@ router.put("/:mnr", async (req, res) => {
 
     const updates = fromFrontendPatch(req.body);
 
-    if (updates.springer === true) {
-      const hf = updates.hauptfiliale_fnr ?? before.hauptfiliale_fnr;
-      if (hf) {
-        const filiale = await filialenRepo.getById(hf);
+    const springerAfter =
+      updates.springer !== undefined ? updates.springer : before.springer;
+
+    const hfAfter =
+      updates.hauptfiliale_fnr !== undefined
+        ? updates.hauptfiliale_fnr
+        : before.hauptfiliale_fnr;
+
+    if (springerAfter === true) {
+      if (hfAfter) {
+        const filiale = await filialenRepo.getById(hfAfter);
         updates.springeralgorithmid = getGegenwertAlgoId(filiale.algorithmid);
+      } else {
+        updates.springeralgorithmid = null;
       }
-    } else if (updates.springer === false) {
+    }
+
+    if (springerAfter === false) {
       updates.springeralgorithmid = null;
     }
 
@@ -184,7 +200,7 @@ function getGegenwertAlgoId(filialAlgoId) {
   const id = Number(filialAlgoId);
   if (id === 1) return 2;
   if (id === 2) return 1;
-  return id; // 
+  return id; //
 }
 
 module.exports = router;

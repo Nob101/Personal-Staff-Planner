@@ -59,7 +59,7 @@ function getAllDatesOfMonth(year, month) {
   const dates = [];
 
   // Schleife startet bei 2 und endet bei lastDay+1 
-  for (let d = 2; d <= lastDay + 1; d++) {
+  for (let d = 1; d <= lastDay; d++) {
     const date = new Date(year, month - 1, d);
     dates.push(date.toISOString().split('T')[0]);
   }

@@ -1,23 +1,16 @@
 <script setup>
-    import Navbar from '@/components/global/Navbar.vue'
-    import FilialenList from '@/components/filialen/FilialenList.vue';
+import FilialenList from '@/components/filialen/FilialenList.vue'
+import FilialenCard from '@/components/filialen/FilialenCard.vue'
+import { ref } from 'vue'
 
-    //TestCode
-    import ColorPicker from '@/components/global/ColorPicker.vue'
-    import { ref } from 'vue'
-    const color = ref('#3b82f6')
-
-//Dummy-Daten für Testzwecke. MÜSSEN MIT BACKEND REQUESTS ersetzt werden.
+// Dummy-Daten
 const mitarbeiter = ref([
   {
     id: 1,
     vorname: 'Max',
     nachname: 'Mustermann',
-    geburtsdatum: '1990-01-15',
     email1: 'max.mustermann@example.com',
-    email2: 'max2@example.com',
     telefon1: '0123456789',
-    telefon2: '0123456788',
     strasse: 'Musterstraße 1',
     ort: 'Musterstadt',
     postleitzahl: '2345',
@@ -32,11 +25,8 @@ const mitarbeiter = ref([
     id: 2,
     vorname: 'Lisa',
     nachname: 'Müller',
-    geburtsdatum: '1992-06-20',
     email1: 'lisa.mueller@example.com',
-    email2: 'lisa2@example.com',
     telefon1: '0987654321',
-    telefon2: '0987654322',
     strasse: 'Beispielweg 5',
     ort: 'Beispielstadt',
     postleitzahl: '4321',
@@ -48,19 +38,67 @@ const mitarbeiter = ref([
     anmerkungen: 'Teilzeit'
   }
 ])
+
 const filialen = ref([
-  { id: 1, name: 'Filiale A', color: '#ccc' },
-  { id: 2, name: 'Filiale B', color: '#ccc' },
-  { id: 3, name: 'Filiale C', color: '#ccc' }
+  { id: 1, name: 'Filiale A', color: '#' },
+  { id: 2, name: 'Filiale B', color: '#' },
+  { id: 3, name: 'Filiale C', color: '#' }
 ])
 
+// wie selectedMitarbeiter
+const selectedFiliale = ref(null)
 
+function handleSelect(f) {
+  selectedFiliale.value = f
+}
 
+function closeDetails() {
+  selectedFiliale.value = null
+}
+
+// Platzhalter (später wie bei dir: Modal Edit/Delete etc.)
+function handleEdit() {}
+function handleDelete() {}
 </script>
 
-
 <template>
-    <Navbar />
-    <FilialenList :filialen="filialen" :mitarbeiter="mitarbeiter" />
-    <!-- <ColorPicker v-model="color" />-->
+
+  <div class="mx-auto w-full max-w-[1400px] px-6 py-6 font-sans">
+    <!-- DETAIL OVERLAY -->
+    <div
+      v-if="selectedFiliale"
+      class="fixed inset-0 z-9999 flex items-start justify-center p-6
+             bg-black/50 backdrop-blur-sm overflow-auto"
+      @click.self="closeDetails"
+    >
+      <div class="w-full max-w-6xl" @click.stop>
+        <button
+          type="button"
+          class="mb-4 font-sans text-white/80 hover:text-white
+                 transition-colors focus:outline-none focus:ring-0"
+          @click="closeDetails"
+        >
+          ❮ Zurück zur Übersicht
+        </button>
+
+        <FilialenCard
+          :filialen="selectedFiliale"
+          :mitarbeiter="mitarbeiter"
+          @edit="handleEdit"
+          @delete="handleDelete"
+        />
+      </div>
+    </div>
+
+    <!-- Filialen Liste -->
+    <FilialenList
+      v-else
+      :filialen="filialen"
+      :mitarbeiter="mitarbeiter"
+      @select="handleSelect"
+      @edit="handleEdit"
+      @delete="handleDelete"
+      @create="showModalFilialeCreate = true"
+    />
+  </div>
 </template>

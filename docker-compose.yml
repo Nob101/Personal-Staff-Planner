@@ -4,11 +4,11 @@
 #   docker compose down
 #   docker compose logs -f backend
 #   Port mapping ->   Host-Port : Container-Port   WICHTIG!!!!
-
+ 
 # docker exec -it psp_database psql -U postgres -d dienstplan -c "\dt"  zeigt alle tabellen
-
+ 
 # version: '3.8'
-
+ 
 services:
   # --- DATENBANK BEREICH Lukas ---
   db:
@@ -23,8 +23,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  # --- BACKEND Alexander ---
+ 
   backend:
     build: ./backend
     container_name: psp_backend
@@ -32,32 +31,35 @@ services:
     ports:
       - "3001:3001"
     environment:
-      # WICHTIG: Host ist hier 'db' (der Name des Services oben), nicht localhost!
       DB_HOST: db
       DB_PORT: 5432
-      DB_NAME: ${DB_NAME}      # <--- fehlte im ersten durchlauf
+      DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_ROLE_ADMIN_PASSWORD: ${DB_ROLE_ADMIN_PASSWORD}
       INITIAL_MARKUS_PASSWORD: ${INITIAL_MARKUS_PASSWORD}
+      INIT_DB: "false"
     depends_on:
       - db
-
-
-  # --- FRONTEND BEREICH für Oliver (VUE) und JD (TAILWIND)  ---
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run devStart
+ 
   frontend:
-    # HINWEIS für das Frontend:    Docker sucht hier nach dem Ordner 'Frontend' (Großschreibung beachten!)
-    build: ./Frontend 
+    build: ./Frontend
     container_name: psp_frontend
     restart: always
     ports:
-      - "5173:5173" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen OJ!!!!
+      - "5173:5173"
     environment:
-
-      # Für den fall, dass Vue wissen muss, wo das Backend läuft: 3001  !!!
       VITE_API_URL: http://localhost:3001
     depends_on:
       - backend
-
+    volumes:
+      - ./Frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0 --port 5173
+ 
 volumes:
   postgres_data:

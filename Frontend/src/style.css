@@ -4,15 +4,13 @@
 @import "tailwindcss";
 
 body {
-    font-family: 'Times New Roman', Times, serif;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
     line-height: 1.5;
+    background-color: white;
 }
 
-button {
-  @apply px-4 py-2 rounded-lg font-medium text-center 
-         border border-black
-         transition duration-200
-         shadow-sm
-         hover:shadow-md
-         cursor-pointer;
+.dark body {
+    background-color: #18181b;
+    color: white;
 }
+
