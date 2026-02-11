@@ -2,37 +2,42 @@
 <!--Zum wählen von Farben für Filialen, etc.-->
 
 <script setup>
-    import { computed } from 'vue'
+import { computed } from 'vue'
 
-    const props = defineProps({
-        modelValue: {
-            type: String,
-            default: '#3b82f6'
-        }
-    })
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: '#ffffff'
+  }
+})
 
-    const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue'])
 
-    const presetColors = [
-        '#1f2937',
-        '#3b82f6',
-        '#22c55e',
-        '#f97316',
-        '#ef4444',
-        '#a855f7'
-    ]
+const presetColors = [
+  '#facc15', // Gelb
+  '#f97316', // Orange
+  '#f43f5e', // Pink
+  '#ef4444', // Rot
+  '#22c55e', // Grün
+  '#3b82f6', // Blau
+  '#a855f7', // Lila
+  '#64748b', // Grau-Blau
+  '#1f2937'  // Dunkelgrau
+]
 
-    function updateColor(color) {
-    emit('update:modelValue', color)
-    }
+function updateColor(color) {
+  emit('update:modelValue', color)
+}
 
-    const isValidHex = computed(() =>
-    /^#([0-9A-Fa-f]{6})$/.test(props.modelValue)
-    )
+const isValidHex = computed(() =>
+  /^#([0-9A-Fa-f]{6})$/.test(props.modelValue)
+)
 </script>
 
 <template>
-  <div class="color-picker">
+  <fieldset class="color-picker-box">
+    
+
     <!-- Presets -->
     <div class="presets">
       <button
@@ -46,14 +51,13 @@
       ></button>
     </div>
 
-    <!-- Custom -->
+    <!-- Custom Color Picker -->
     <div class="custom">
       <input
         type="color"
         :value="modelValue"
         @input="updateColor($event.target.value)"
       />
-
       <input
         type="text"
         :value="modelValue"
@@ -62,26 +66,22 @@
         :class="{ invalid: !isValidHex }"
       />
     </div>
-  </div>
+  </fieldset>
 </template>
 
 <style scoped>
-.color-picker {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+
+
 
 .presets {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .preset {
-  width: 22px;
-  height: 22px;
-  border-radius: 4px;
-  border: 1px solid #999;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
 }
 
@@ -91,15 +91,15 @@
 
 .custom {
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 8px;
 }
 
 .custom input[type="text"] {
   width: 100px;
-  padding: 2px 6px;
-  border: 1px solid #999;
-  border-radius: 4px;
+  padding: 2px 5px;
+  margin-bottom: 10px;
+  
 }
 
 .custom input.invalid {
@@ -107,3 +107,6 @@
 }
 </style>
 
+
+
+<!-- https://www.npmjs.com/package/vue-color implementieren? -->

@@ -1,7 +1,12 @@
-/**
- * Farb-Helfer für Dienstplan Grid
- */
-export function hexToRgba(hex, alpha = 1) {
+// src/utils/dienstplan/color.js
+
+/* ============================================================================
+ * Farb-Utilities
+ * - hexToRgba: #RRGGBB -> rgba()
+ * - bestTextColor: entscheidet schwarz/weiß für Kontrast
+ * ========================================================================== */
+
+export function hexToRgba(hex, alpha) {
   const h = String(hex || "").trim().replace("#", "");
   const full = h.length === 3 ? h.split("").map((ch) => ch + ch).join("") : h;
 

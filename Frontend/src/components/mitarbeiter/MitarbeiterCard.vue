@@ -1,98 +1,112 @@
+<!-- MitarbeiterCard.vue -->
+
 <script setup>
-import { defineProps, defineEmits, computed } from "vue";
-import bearbeiten_icon from "@/assets/icons/bearbeiten_icon_solid.png";
-import loeschen_icon from "@/assets/icons/loeschen_icon_solid.png";
+// Funktionalitäten und Komponenten importieren
+import { defineProps, computed } from 'vue'
+import bearbeiten_icon from '@/assets/icons/bearbeiten_icon_solid.png'
+import loeschen_icon from '@/assets/icons/loeschen_icon_solid.png'
 
 const props = defineProps({
   mitarbeiter: {
     type: Object,
-    required: true,
+    required: true
   },
   filialen: { type: Array, required: true },
+
+  
+  // WHY: Design hat zwei Layouts (list + detail). Ohne prop kann man das nicht umschalten.
   variant: {
     type: String,
-    default: "detail",
-  },
-});
+    default: 'detail'
+  }
+})
 
-const emit = defineEmits(["select", "edit", "delete"]);
+// Events: Bearbeiten und Löschen Klicks an Parent (MitarbeiterList.vue) weitergeben, diese gibt es dann an MitarbeiterView.vue weiter.
+const emit = defineEmits([
+  'edit',
+  'delete',
 
+  // (notwendig fürs Design): select Event
+  // WHY: In List-Ansicht soll ein Klick auf die Card den Mitarbeiter "auswählen" (Overlay/Detail).
+  'select'
+])
+
+// Helper für Hauptfiliale-Name, damit der Name anstatt der ID angezeigt wird
 const hauptfilialeName = computed(() =>
-  props.mitarbeiter.hauptfiliale?.name ?? "-"
+ props.mitarbeiter.hauptfiliale?.name ?? "-"
 );
 
+// Helper für Nebenfilialen-Namen, damit der Name anstatt der ID angezeigt wird
+////map geht jedes Element des Arrays durch und gibt für jede ID den Filialnamen zurück, so dass am Ende ein neues Array mit Namen entsteht
 const nebenfilialenNamen = computed(() =>
-  props.mitarbeiter.nebenfilialen?.length
-    ? props.mitarbeiter.nebenfilialen.map(f => f.name).join(", ")
-    : "-"
+ props.mitarbeiter.nebenfilialen?.length
+   ? props.mitarbeiter.nebenfilialen.map(f => f.name).join(", ")
+   : "-"
 );
+
 
 function handleEdit() {
-  emit("edit", props.mitarbeiter);
+  emit('edit', props.mitarbeiter)
 }
 
 function handleDelete() {
-  emit("delete", props.mitarbeiter);
+  emit('delete', props.mitarbeiter)
 }
 
+
+// WHY: List-Card klickbar -> parent kann Detail-Overlay öffnen
 function handleSelect() {
-  emit("select", props.mitarbeiter);
+  emit('select', props.mitarbeiter)
 }
 </script>
 
 <template>
-  <!-- LIST CARD (gleiche Farben wie FilialenCard, ohne Farbstreifen) -->
+  <!-- LIST VARIANT (Design) -->
   <article
     v-if="variant === 'list'"
-    class="relative cursor-pointer rounded-2xl border border-white/10
-           bg-linear-to-b from-zinc-700/70 to-zinc-900/80
-           p-6 shadow-[0_12px_30px_rgba(0,0,0,0.45)]
-           hover:border-white/20 hover:-translate-y-0.5 transition font-sans
-           overflow-hidden"
+    class="relative cursor-pointer rounded-2xl
+       border border-black/10 dark:border-white/10
+       bg-white dark:bg-linear-to-b dark:from-zinc-700/70 dark:to-zinc-900/80
+       p-6 shadow-[0_12px_30px_rgba(0,0,0,0.45)]
+       hover:border-black/20 dark:hover:border-white/20 hover:-translate-y-0.5 transition font-sans"
     @click="handleSelect"
   >
     <div class="flex items-center justify-between gap-3">
-      <h3 class="text-xl font-extrabold tracking-tight text-white">
+      <h3 class="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
         {{ mitarbeiter.vorname }} {{ mitarbeiter.nachname }}
       </h3>
     </div>
 
-    <div class="mt-5 grid grid-cols-2 gap-5 text-sm text-white/85">
+    <div class="mt-5 grid grid-cols-2 gap-5 text-sm text-zinc-700 dark:text-white/85">
       <!-- LINKS -->
       <div class="space-y-2">
         <div class="flex justify-between gap-3">
-          <span class="font-semibold text-white">Hauptfiliale:</span>
+          <span class="font-semibold text-zinc-900 dark:text-white">Hauptfiliale:</span>
           <span class="text-right min-w-0 truncate">{{ hauptfilialeName }}</span>
         </div>
 
         <div class="flex justify-between gap-3">
-          <span class="font-semibold text-white">Arbeitsstunden:</span>
+          <span class="font-semibold text-zinc-900 dark:text-white">Arbeitsstunden:</span>
           <span class="text-right">
-            {{ mitarbeiter.arbeitsstunden ?? mitarbeiter.wochenstunden ?? "-" }}
+            {{ mitarbeiter.arbeitsstunden ?? mitarbeiter.wochenstunden ?? mitarbeiter.arbeitnehmertyp ?? "-" }}
           </span>
         </div>
 
         <div class="flex justify-between gap-3">
-          <span class="font-semibold text-white">Telefon:</span>
-          <span class="text-right min-w-0 truncate">
-            {{ mitarbeiter.telefon1 ?? "-" }}
-          </span>
+          <span class="font-semibold text-zinc-900 dark:text-white">Telefon:</span>
+          <span class="text-right min-w-0 truncate">{{ mitarbeiter.telefon1 ?? "-" }}</span>
         </div>
 
         <div class="flex justify-between gap-3 min-w-0">
-          <span class="font-semibold text-white shrink-0">Email:</span>
-          <span class="text-right min-w-0 truncate">
-            {{ mitarbeiter.email1 ?? "-" }}
-          </span>
+          <span class="font-semibold text-zinc-900 dark:text-white shrink-0">Email:</span>
+          <span class="text-right min-w-0 truncate">{{ mitarbeiter.email1 ?? "-" }}</span>
         </div>
       </div>
 
       <!-- RECHTS -->
       <div class="space-y-2 border-l border-white/15 pl-5">
-        <div class="font-semibold text-white">Nebenfilialen:</div>
-        <div class="text-white/90 min-w-0 truncate">
-          {{ nebenfilialenNamen }}
-        </div>
+        <div class="font-semibold text-zinc-900 dark:text-white">Nebenfilialen:</div>
+        <div class="text-white/90 min-w-0 truncate">{{ nebenfilialenNamen }}</div>
       </div>
     </div>
 
@@ -101,21 +115,19 @@ function handleSelect() {
     </div>
   </article>
 
-  <!-- DETAIL CARD (unverändert) -->
+  <!--  DETAIL VARIANT (Design) -->
   <article
     v-else
     class="font-sans relative rounded-3xl
-           border border-black/10 dark:border-white/10
-           bg-white dark:bg-linear-to-b dark:from-zinc-800/70 dark:to-zinc-900/80
-           p-10 shadow-[0_18px_45px_rgba(0,0,0,0.55)]"
+       border border-black/10 dark:border-white/10
+       bg-white dark:bg-linear-to-b dark:from-zinc-800/70 dark:to-zinc-900/80
+       p-10 shadow-[0_18px_45px_rgba(0,0,0,0.55)]"
   >
     <!-- Actions oben rechts -->
     <div class="absolute right-6 top-6 flex gap-3">
       <button
         @click="handleEdit"
-        class="flex items-center justify-center rounded-xl
-               border border-white/15 bg-blue-500/35
-               px-3 py-3 hover:bg-blue-500 transition"
+        class="flex items-center justify-center rounded-xl border border-white/15 bg-blue-500/35 px-3 py-3 hover:bg-blue-500 transition"
         type="button"
         title="Bearbeiten"
       >
@@ -124,9 +136,7 @@ function handleSelect() {
 
       <button
         @click="handleDelete"
-        class="flex items-center justify-center rounded-xl
-               border border-red-400/30 bg-red-500/35
-               px-3 py-3 hover:bg-red-500 transition"
+        class="flex items-center justify-center rounded-xl border border-red-400/30 bg-red-500/35 px-3 py-3 hover:bg-red-500 transition"
         type="button"
         title="Löschen"
       >
@@ -147,61 +157,43 @@ function handleSelect() {
       <!-- LINKS -->
       <section class="space-y-6">
         <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
-          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">
-            Email
-          </legend>
+          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Email</legend>
           <div class="space-y-2">
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Email 1</span>
-              <span class="min-w-0 text-right text-white truncate">
-                {{ mitarbeiter.email1 || "-" }}
-              </span>
+              <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.email1 || "-" }}</span>
             </div>
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Email 2</span>
-              <span class="min-w-0 text-right text-white truncate">
-                {{ mitarbeiter.email2 || "-" }}
-              </span>
+              <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.email2 || "-" }}</span>
             </div>
           </div>
         </fieldset>
 
         <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
-          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">
-            Telefon
-          </legend>
+          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Telefon</legend>
           <div class="space-y-2">
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Telefon 1</span>
-              <span class="min-w-0 text-right text-white truncate">
-                {{ mitarbeiter.telefon1 || "-" }}
-              </span>
+              <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.telefon1 || "-" }}</span>
             </div>
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Telefon 2</span>
-              <span class="min-w-0 text-right text-white truncate">
-                {{ mitarbeiter.telefon2 || "-" }}
-              </span>
+              <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.telefon2 || "-" }}</span>
             </div>
           </div>
         </fieldset>
 
         <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
-          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">
-            Filialen
-          </legend>
+          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Filialen</legend>
           <div class="space-y-3">
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Hauptfiliale</span>
-              <span class="min-w-0 text-right text-white truncate">
-                {{ hauptfilialeName }}
-              </span>
+              <span class="min-w-0 text-right text-white truncate">{{ hauptfilialeName }}</span>
             </div>
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Nebenfilialen</span>
-              <span class="min-w-0 text-right text-white truncate">
-                {{ nebenfilialenNamen }}
-              </span>
+              <span class="min-w-0 text-right text-white truncate">{{ nebenfilialenNamen }}</span>
             </div>
           </div>
         </fieldset>
@@ -213,65 +205,45 @@ function handleSelect() {
       <!-- RECHTS -->
       <section class="space-y-6">
         <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
-          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">
-            Adresse
-          </legend>
+          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Adresse</legend>
           <div class="space-y-2">
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Straße</span>
-              <span class="min-w-0 text-right text-white truncate">
-                {{ mitarbeiter.strasse || "-" }}
-              </span>
+              <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.strasse || "-" }}</span>
             </div>
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Postleitzahl</span>
-              <span class="min-w-0 text-right text-white truncate">
-                {{ mitarbeiter.postleitzahl || "-" }}
-              </span>
+              <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.postleitzahl || "-" }}</span>
             </div>
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Ort</span>
-              <span class="min-w-0 text-right text-white truncate">
-                {{ mitarbeiter.ort || "-" }}
-              </span>
+              <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.ort || "-" }}</span>
             </div>
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Land</span>
-              <span class="min-w-0 text-right text-white truncate">
-                {{ mitarbeiter.land || "-" }}
-              </span>
+              <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.land || "-" }}</span>
             </div>
           </div>
         </fieldset>
 
         <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
-          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">
-            Arbeit
-          </legend>
+          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Arbeit</legend>
           <div class="space-y-2">
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Arbeitsstunden</span>
-              <span class="min-w-0 text-right text-white truncate">
-                {{ mitarbeiter.arbeitsstunden ?? "-" }}
-              </span>
+              <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.arbeitsstunden ?? "-" }}</span>
             </div>
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Springer</span>
               <span class="min-w-0 text-right text-white truncate">
-                {{ mitarbeiter.springer === true
-                  ? "Ja"
-                  : mitarbeiter.springer === false
-                  ? "Nein"
-                  : "Nicht bekannt" }}
+                {{ mitarbeiter.springer ? 'Ja' : 'Nein' }}
               </span>
             </div>
           </div>
         </fieldset>
 
         <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
-          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">
-            Anmerkungen
-          </legend>
+          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Anmerkungen</legend>
           <textarea
             rows="4"
             :value="mitarbeiter.anmerkungen || ''"

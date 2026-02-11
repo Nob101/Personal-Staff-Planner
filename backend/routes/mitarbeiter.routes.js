@@ -1,40 +1,74 @@
 const express = require("express");
 const router = express.Router();
 
+// Repositories kapseln den Datenbankzugriff (CRUD + komplexere Queries)
 const mitarbeiterRepo = require("../repositories/mitarbeiter.repo.pg");
 const filialenRepo = require("../repositories/filialen.repo.pg");
-const dienstplanRepo = require("../repositories/dienstplan.repo.pg");
 
-
+// Counter-Logik für faire Startpositionen im Algorithmus (Rotation im Dienstplan)
 const { setCounterForMitarbeiter } = require("../functions/setCounter");
-const {
-  resetCountersForFiliale,
-} = require("../functions/resetCountersForFiliale");
-const {
-  fromFrontend,
-  toFrontend,
-  fromFrontendPatch,
-} = require("../mappers/mitarbeiter.mapper");
+const { resetCountersForFiliale } = require("../functions/resetCountersForFiliale");
 
-// -----------------------------
-// GET: alle Mitarbeiter (inkl. kontakt/telefon/email/nebenfilialen)
-// -----------------------------
+// Mapper: trennt Frontend-Format (UI) von Backend/DB-Format (DTO)
+const { fromFrontend, toFrontend, fromFrontendPatch } = require("../mappers/mitarbeiter.mapper");
+
+// ============================================================================
+// GET /mitarbeiter
+// ----------------------------------------------------------------------------
+// Liefert alle Mitarbeiter inkl. Detaildaten:
+// - kontakt, telefone, emails, nebenfilialen
+//
+// Zusätzlich werden Filial-Daten geladen, um im Response nicht nur fnr,
+// sondern auch lesbare Namen (z.B. "Graz") zurückzugeben.
+// ============================================================================
 router.get("/", async (_req, res) => {
   try {
+    // Parallel laden -> reduziert Wartezeit, weil DB-Abfragen unabhängig sind
     const [data, filialen] = await Promise.all([
       mitarbeiterRepo.getAllWithDetails(),
       filialenRepo.getAll(),
     ]);
-    res.json(data.map((m) => toFrontend(m, filialen)));
+
+    // Mapping in ein Frontend-freundliches Format (IDs + Namen, flache Felder)
+    res.json(data.filter(m => m.aktiv === true).map((m) => toFrontend(m, filialen))); // nur aktive MA zurückgeben
   } catch (err) {
     console.error("Fehler GET /mitarbeiter:", err);
     res.status(500).json({ error: "Fehler beim Laden der Mitarbeiter" });
   }
 });   
 
-// -----------------------------
-// GET: Mitarbeiter by mnr (inkl. details)
-// -----------------------------
+// ============================================================================
+// GET /mitarbeiter/archiv
+// ----------------------------------------------------------------------------
+// Liefert alle INAKTIVEN Mitarbeiter (Archiv).
+// Zweck:
+// - Einsicht in frühere Mitarbeiter
+// - Kontakt-/Historienabfragen
+// - NICHT für Dienstplan-Generierung
+// ============================================================================
+router.get("/archiv", async (_req, res) => {
+  try {
+    const [data, filialen] = await Promise.all([
+      mitarbeiterRepo.getAllWithDetails(),
+      filialenRepo.getAll(),
+    ]);
+
+    // nur inaktive Mitarbeiter
+    const archiv = data.filter((m) => m.aktiv === false);
+
+    res.json(archiv.map((m) => toFrontend(m, filialen)));
+  } catch (err) {
+    console.error("Fehler GET /mitarbeiter/archiv:", err);
+    res.status(500).json({ error: "Fehler beim Laden des Archivs" });
+  }
+});
+ 
+// ============================================================================
+// GET /mitarbeiter/:mnr
+// ----------------------------------------------------------------------------
+// Liefert einen einzelnen Mitarbeiter inkl. Details.
+// Validiert Parameter (mnr muss Zahl sein) und gibt passende HTTP-Statuscodes.
+// ============================================================================
 router.get("/:mnr", async (req, res) => {
   try {
     const mnr = Number(req.params.mnr);
@@ -57,33 +91,48 @@ router.get("/:mnr", async (req, res) => {
     res.status(500).json({ error: "Fehler beim Laden" });
   }
 });
-// -----------------------------
-// POST: Mitarbeiter anlegen (inkl. kontakt/telefon/email/nebenfilialen)
-// -----------------------------
+
+// ============================================================================
+// POST /mitarbeiter
+// ----------------------------------------------------------------------------
+// Legt einen Mitarbeiter an (inkl. Kontakt/Telefon/E-Mail/Nebenfilialen).
+//
+// Wichtiger Punkt für die Dienstplan-Generierung:
+// Nach dem Anlegen wird der Counter der betroffenen Hauptfiliale neu verteilt,
+// damit Startpositionen im Schichtmuster fair bleiben.
+// ============================================================================
 router.post("/", async (req, res) => {
   try {
     const b = req.body;
+
+    // Minimalvalidierung (weitere Checks können im Mapper/Repo folgen)
     if (!b.vorname || !b.nachname) {
-      return res
-        .status(400)
-        .json({ error: "vorname und nachname sind Pflicht" });
+      return res.status(400).json({ error: "vorname und nachname sind Pflicht" });
     }
-    console.log("POST /mitarbeiter body:", JSON.stringify(req.body, null, 2));
+
+    // Frontend -> DB DTO (Formatvereinheitlichung + Typkonvertierung)
     const payload = fromFrontend(b);
+
+    // Springer-Logik:
+    // Für Springer wird ein "Gegenwert"-Algorithmus vergeben (1 <-> 2),
+    // um Überschneidungen zu reduzieren und die Abdeckung zu verbessern.
     if (payload.springer === true && payload.hauptfiliale_fnr) {
       const filiale = await filialenRepo.getById(payload.hauptfiliale_fnr);
       payload.springeralgorithmid = getGegenwertAlgoId(filiale.algorithmid);
     } else {
       payload.springeralgorithmid = null;
     }
-    // Fehlersuche console.log("mapped payload:", payload);
+
+    // DB Insert (inkl. Detailtabellen)
     const created = await mitarbeiterRepo.addWithDetails(payload);
 
+    // Counter neu verteilen, weil sich die Mitarbeiteranzahl in der Filiale geändert hat
     if (created?.hauptfiliale_fnr) {
       await resetCountersForFiliale(created.hauptfiliale_fnr);
       await setCounterForMitarbeiter(created.hauptfiliale_fnr);
     }
 
+    // Frischen Datensatz inkl. Details zurückgeben (konsistenter Response)
     const fresh = await mitarbeiterRepo.getByIdWithDetails(created.mnr);
     const filialen = await filialenRepo.getAll();
     res.status(201).json(toFrontend(fresh, filialen));
@@ -93,6 +142,16 @@ router.post("/", async (req, res) => {
   }
 });
 
+// ============================================================================
+// PUT /mitarbeiter/:mnr
+// ----------------------------------------------------------------------------
+// Bearbeitet einen Mitarbeiter (partiell über fromFrontendPatch).
+//
+// Zusätzlich:
+// - Springer-Status kann springeralgorithmid setzen/entfernen
+// - Bei Änderung der Hauptfiliale müssen Counter in alter UND neuer Filiale
+//   neu verteilt werden, damit der Dienstplan-Generator sauber rotiert.
+// ============================================================================
 router.put("/:mnr", async (req, res) => {
   try {
     const mnr = Number(req.params.mnr);
@@ -100,21 +159,20 @@ router.put("/:mnr", async (req, res) => {
       return res.status(400).json({ error: "Ungültige mnr" });
     }
 
+    // Vorzustand laden (für Vergleich: Filiale alt vs neu, Springer alt vs neu)
     const before = await mitarbeiterRepo.getByIdWithDetails(mnr);
     if (!before) {
       return res.status(404).json({ error: "Mitarbeiter nicht gefunden" });
     }
 
+    // Nur übermittelte Felder übernehmen, damit nichts unbeabsichtigt überschrieben wird
     const updates = fromFrontendPatch(req.body);
 
-    const springerAfter =
-      updates.springer !== undefined ? updates.springer : before.springer;
+    // Effektiver Wert nach Update (wenn nicht gesendet -> vorheriger Wert bleibt)
+    const springerAfter = updates.springer !== undefined ? updates.springer : before.springer;
+    const hfAfter = updates.hauptfiliale_fnr !== undefined ? updates.hauptfiliale_fnr : before.hauptfiliale_fnr;
 
-    const hfAfter =
-      updates.hauptfiliale_fnr !== undefined
-        ? updates.hauptfiliale_fnr
-        : before.hauptfiliale_fnr;
-
+    // Wenn Springer aktiv: passenden Springer-Algorithmus setzen
     if (springerAfter === true) {
       if (hfAfter) {
         const filiale = await filialenRepo.getById(hfAfter);
@@ -124,15 +182,18 @@ router.put("/:mnr", async (req, res) => {
       }
     }
 
+    // Wenn Springer deaktiviert: springeralgorithmid entfernen
     if (springerAfter === false) {
       updates.springeralgorithmid = null;
     }
 
+    // Update in DB durchführen (inkl. Details)
     const updated = await mitarbeiterRepo.updateWithDetails(mnr, updates);
     if (!updated) {
       return res.status(404).json({ error: "Mitarbeiter nicht gefunden" });
     }
 
+    // Wenn die Hauptfiliale gewechselt wurde: Counter beider Filialen neu verteilen
     const oldF = before.hauptfiliale_fnr ?? null;
     const newF = updated.hauptfiliale_fnr ?? null;
 
@@ -147,6 +208,7 @@ router.put("/:mnr", async (req, res) => {
       }
     }
 
+    // Frische Daten zurückgeben
     const [fresh, filialen] = await Promise.all([
       mitarbeiterRepo.getByIdWithDetails(mnr),
       filialenRepo.getAll(),
@@ -159,6 +221,13 @@ router.put("/:mnr", async (req, res) => {
   }
 });
 
+// ============================================================================
+// DELETE /mitarbeiter/:mnr
+// ----------------------------------------------------------------------------
+// Löscht einen Mitarbeiter.
+// Danach wird der Counter der betroffenen Hauptfiliale neu verteilt,
+// da sich die Mitarbeiteranzahl geändert hat.
+// ============================================================================
 router.delete("/:mnr", async (req, res) => {
   try {
     const mnr = Number(req.params.mnr);
@@ -166,41 +235,45 @@ router.delete("/:mnr", async (req, res) => {
       return res.status(400).json({ error: "Ungültige mnr" });
     }
 
-    // Vorher holen (damit wir wissen, welche Filiale betroffen ist)
+    // Vorher holen: wichtig, um zu wissen welche Filiale betroffen ist
     const before = await mitarbeiterRepo.getByIdWithDetails(mnr);
     if (!before) {
       return res.status(404).json({ error: "Mitarbeiter nicht gefunden" });
     }
 
-    const removed = await mitarbeiterRepo.remove(mnr);
+   const removed = await mitarbeiterRepo.deactivate(mnr); // Soft Delete
     if (!removed) {
       return res.status(404).json({ error: "Mitarbeiter nicht gefunden" });
     }
 
-    // Counter der Filiale neu verteilen
+    // Counter neu verteilen (faire Rotation bleibt erhalten)
     if (before.hauptfiliale_fnr) {
       await resetCountersForFiliale(before.hauptfiliale_fnr);
       await setCounterForMitarbeiter(before.hauptfiliale_fnr);
     }
 
-    res.json({ message: "Mitarbeiter gelöscht" });
+    res.json({ message: "Mitarbeiter deaktiviert" });
   } catch (err) {
     console.error("Fehler DELETE /mitarbeiter/:mnr:", err);
     res.status(500).json({ error: "Fehler beim Löschen" });
   }
 });
 
-/* 
-Hilfsfunktion: Gegenwert-Algorithmus-ID holen
-Wenn Filiale Algorithmus-ID 1 hat, dann Gegenwert 2, und umgekehrt.
-Falls was anderes kommt, wird das gleiche zurückgegeben (Fallback).
- */
 
+
+// ============================================================================
+// Hilfsfunktion: Gegenwert-Algorithmus bestimmen
+// ----------------------------------------------------------------------------
+// Ziel: Springer sollen bewusst ein anderes Schichtmuster als die Filiale
+// verwenden (1 <-> 2), um Überschneidungen zu reduzieren.
+// Fallback: wenn unbekannt, gleiche ID zurückgeben.
+// ============================================================================
 function getGegenwertAlgoId(filialAlgoId) {
   const id = Number(filialAlgoId);
   if (id === 1) return 2;
   if (id === 2) return 1;
-  return id; //
+  return id;
 }
+
 
 module.exports = router;

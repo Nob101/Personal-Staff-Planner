@@ -1,6 +1,7 @@
 /**#####################################################
  * Das Modul verwaltet die Initialisierung der Datenbank
  * --------------------
+ * 
  * ABLAUF:
  * 1. Rollen-Check: Stellt sicher, dass die 'admin'-Rolle existiert.
  * 2. Schema: Erstellt Tabellen (muss immer zuerst laufen).
@@ -35,7 +36,7 @@ async function initDatabase() {
       throw new Error(`Config-Passwörter fehlen in der .env!`);
     }
     /**
-     * NEU Wenn DB bereits existiert muss nicht der ganze Block ausgeführt werden
+     * NEU: Wenn DB bereits existiert muss nicht der ganze Block ausgeführt werden
      * kontrolle über PG Inahltsverzeichnis welche Tabellen existieren oder nicht
      */
     const checkTableRes = await client.query(`
@@ -51,10 +52,10 @@ async function initDatabase() {
              console.log("--- DB-Existiert bereits. Setup wird Übersprungen ---");
              return ;
         }
-       
+    
 
         console.log("--- DB-Initialisierung gestartet ---");
-        // im Do Block da Postgres kein CReate Role if not Exists kennt (nicht in der userTabelle)
+        // im Do Block da Postgres kein Create Role if not Exists kennt (nicht in der userTabelle)
         // admin hat Superuser Rechte (Create, Delete, usw. DB) '%L' verhindert das Sonderzeichen im Passwort das SQL-Kommando zerstört
         await client.query(`
             DO $$
@@ -77,8 +78,8 @@ async function initDatabase() {
         const indexesDir = path.resolve(__dirname, '../indexes');
         const seedsDir = path.resolve(__dirname, '../seeds');
 
-        // erst das Schema laden!!!!!!! dann alles andere
-        // Reihenfolge ist wichtig!!!
+        // Erst das Schema laden!
+        // Reihenfolge ist wichtig!
 
         // erstens
         await loadSqlFiles(client, [schemaDir]);
@@ -118,9 +119,9 @@ async function initDatabase() {
         client.release();
     }
 }
- 
- 
- 
+
+
+
 module.exports = {
     query: (text, params) => pool.query(text, params),
     initDatabase,

@@ -44,7 +44,7 @@ const emit = defineEmits(["load", "generate", "remove"]);
         title="Alle Dienstpläne generieren"
         @click="emit('generate')"
       >
-        <img :src="magic" class="h-4 w-4" alt="Generieren" />
+       <img :src="magic" class="h-4 w-4" alt="Generieren" /> 
         <span class="text-sm font-semibold">Generieren</span>
       </button>
 

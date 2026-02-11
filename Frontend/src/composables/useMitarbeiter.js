@@ -5,31 +5,82 @@
 
 // ref -> reaktiv, onMounted -> wird als erstes gemacht, wenn ein Vue-File/Komponent geladen wird
 // getMitarbeiter und getFilialen holt sich die Daten vom Backend übers Service
-import { ref, onMounted, h } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import * as mitarbeiterService from "@/services/mitarbeiterService"
 import * as filialenService from "@/services/filialenService"
 
 export function useMitarbeiter() {
   // --- State ---
-  const mitarbeiter = ref([{ // Beispiel-Daten für Vorschau
-      id: 1,
-      vorname: "Max",
-      nachname: "Mustermann",
-      telefon1: "0664 123456",
-      email1: "max.mustermann@test.at",
-      hauptfiliale: 1,
-    },
-    {
-      id: 2,
-      vorname: "Anna",
-      nachname: "Musterfrau",
-      telefon1: "0676 987654",
-      email1: "anna@test.at",
-      hauptfiliale: 2,
-    },])
-
-
+  const mitarbeiter = ref([])
   const filialen = ref([])
+  const isLoading = ref(true)
+  const searchTerm = ref('')
+  const sortOption = ref('nameAsc') // Default: alphabetisch aufsteigend
+
+    // --- Sortiermöglichkeiten ---
+  const sortOptions = [
+    { label: 'Alphabetisch (A → Z)', value: 'nameAsc' },
+    { label: 'Alphabetisch (Z → A)', value: 'nameDesc' },
+    { label: 'Nach Filiale (A → Z)', value: 'filialeName' },
+    { label: 'Nach Filiale (Z → A)', value: 'filialeNameDesc' }
+
+  ]
+
+  
+const filteredMitarbeiter = computed(() => {
+  const q = searchTerm.value.toLowerCase().trim()
+  if (!q) return mitarbeiter.value
+
+  return mitarbeiter.value.filter(m => {
+    // 1. Alle flachen Werte des Mitarbeiters prüfen (vorname, nachname, email1, email2, telefon1, telefon2, strasse, ort, plz, anmerkungen...)
+    const mainFieldsMatch = Object.values(m).some(val => 
+      (typeof val === 'string' || typeof val === 'number') && 
+      val.toString().toLowerCase().includes(q)
+    )
+
+    // 2. Hauptfiliale (Name)
+    const hauptfilialeMatch = m.hauptfiliale?.name?.toLowerCase().includes(q)
+
+    // 3. Alle Nebenfilialen (Namen) im Array prüfen
+    const nebenfilialenMatch = m.nebenfilialen?.some(f => 
+      f.name?.toLowerCase().includes(q)
+    )
+
+    return mainFieldsMatch || hauptfilialeMatch || nebenfilialenMatch
+  })
+})
+
+  const sortedMitarbeiter = computed(() => {
+  const list = [...filteredMitarbeiter.value]
+  switch (sortOption.value) {
+    case 'nameAsc':
+      return list.sort((a,b) => (a.vorname + ' ' + a.nachname).toLowerCase().localeCompare((b.vorname + ' ' + b.nachname).toLowerCase()))
+    case 'nameDesc':
+      return list.sort((a,b) => (b.vorname + ' ' + b.nachname).toLowerCase().localeCompare((a.vorname + ' ' + a.nachname).toLowerCase()))
+    case 'filialeName':
+      return list.sort((a,b) => {
+        const filialeA = a.hauptfiliale?.name?.toLowerCase() || ''
+        const filialeB = b.hauptfiliale?.name?.toLowerCase() || ''
+        if (filialeA === filialeB) {
+          return (a.vorname + ' ' + a.nachname).toLowerCase().localeCompare((b.vorname + ' ' + b.nachname).toLowerCase())
+        }
+        return filialeA.localeCompare(filialeB)
+      })
+    case 'filialeNameDesc':
+      return list.sort((a,b) => {
+        const filialeA = a.hauptfiliale?.name?.toLowerCase() || ''
+        const filialeB = b.hauptfiliale?.name?.toLowerCase() || ''
+        if (filialeA === filialeB) {
+          return (a.vorname + ' ' + a.nachname).toLowerCase().localeCompare((b.vorname + ' ' + b.nachname).toLowerCase())
+        }
+        return filialeB.localeCompare(filialeA)
+      })
+
+    default:
+      return list
+  }
+})
+
 
   const showModalMitarbeiterCreate = ref(false)
   const showModalMitarbeiterEdit = ref(false)
@@ -40,14 +91,13 @@ export function useMitarbeiter() {
   // --- Daten vom Backend mit Service laden ---
   async function loadData() {
     try {
-      const mitarbeiterRes = await mitarbeiterService.getMitarbeiter()
-      mitarbeiter.value = mitarbeiterRes.data
-
-      const filialenRes = await filialenService.getFilialen()
-      filialen.value = filialenRes.data
+      mitarbeiter.value = (await mitarbeiterService.getMitarbeiter()).data
+      filialen.value = (await filialenService.getFilialen()).data
     } catch (err) {
-      console.error("Fehler beim Laden der Daten:", err)
-    }
+      console.error(err)
+    } finally {
+    isLoading.value = false
+  }
   }
   // onMounted -> ladet die Daten wenn ein Vue-File/Komponent "geöffnet" wird
   onMounted(loadData)
@@ -74,12 +124,16 @@ export function useMitarbeiter() {
       const res = await mitarbeiterService.updateMitarbeiter(editedData)
       const index = mitarbeiter.value.findIndex(m => m.id === editedData.id)
       if (index !== -1) {
-        mitarbeiter.value[index] = { ...res.data }
+        mitarbeiter.value[index] = res.data
       }
-  // Zusatz, um Mitarbeiter aktualisiert anzuzeigen
+
+      /* WHY: Design/Overlay zeigt selectedMitarbeiter separat.
+         Wenn du im Detail-Overlay bearbeitest, bleibt sonst der alte Stand angezeigt,
+         obwohl die Liste schon aktualisiert ist. */
       if (selectedMitarbeiter.value && selectedMitarbeiter.value.id === editedData.id) {
-        selectedMitarbeiter.value = { ...res.data }
+        selectedMitarbeiter.value = res.data
       }
+
     } catch (err) {
       console.error("Fehler beim Bearbeiten:", err)
     }
@@ -92,29 +146,29 @@ export function useMitarbeiter() {
   }
 
   // Löscht den ausgewählten Mitarbeiter nach Bestätigung
-async function confirmDelete() {
-  if (!selectedMitarbeiterToDelete.value) return
+  async function confirmDelete() {
+    if (!selectedMitarbeiterToDelete.value) return
 
-  try {
-    const deletedId = selectedMitarbeiterToDelete.value.id
+    try {
+      const deletedId = selectedMitarbeiterToDelete.value.id
 
-    await mitarbeiterService.deleteMitarbeiter(deletedId)
+      await mitarbeiterService.deleteMitarbeiter(deletedId)
 
-    // aus der Liste entfernen
-    mitarbeiter.value = mitarbeiter.value.filter(m => m.id !== deletedId)
+      mitarbeiter.value = mitarbeiter.value.filter(m => m.id !== deletedId)
 
-    // Detail-Overlay schließen, wenn genau dieser Mitarbeiter offen ist
-    if (selectedMitarbeiter.value?.id === deletedId) {
-      selectedMitarbeiter.value = null
+      /* WHY: Wenn der gelöschte Mitarbeiter gerade im Detail-Overlay offen ist,
+         muss das Overlay geschlossen werden, sonst zeigt es einen Datensatz,
+         den es in der Liste nicht mehr gibt. */
+      if (selectedMitarbeiter.value?.id === deletedId) {
+        selectedMitarbeiter.value = null
+      }
+
+      selectedMitarbeiterToDelete.value = null
+      showDeleteModal.value = false
+    } catch (err) {
+      console.error("Fehler beim Löschen:", err)
     }
-
-    selectedMitarbeiterToDelete.value = null
-    showDeleteModal.value = false
-  } catch (err) {
-    console.error("Fehler beim Löschen:", err)
   }
-}
-
 
   // Schließt das Bestätigungs-Modal wenn Abbrechen/ESC gedrückt wird
   function cancelDelete() {
@@ -123,9 +177,9 @@ async function confirmDelete() {
   }
 
   // --- Zusätzliche Funktion: Verfügbare Mitarbeiter nach Filiale & Datum abrufen || unnötig?---
-  async function getVerfuegbareMitarbeiter(filialeId, datum) {
+  async function getVerfuegbareMitarbeiter(filialeFNR, datum) {
     try {
-      const res = await mitarbeiterService.getVerfuegbareMitarbeiter(filialeId, datum)
+      const res = await mitarbeiterService.getVerfuegbareMitarbeiter(filialeFNR, datum)
       return res.data
     } catch (err) {
       console.error("Fehler beim Abrufen verfügbarer Mitarbeiter:", err)
@@ -133,12 +187,13 @@ async function confirmDelete() {
     }
   }
 
-  // Neue Funktionen um von MitarbeiterList in die MitarbeiterCard zu wechseln
+  /* WHY: Design hat eine List-Ansicht + Detail-Overlay.
+     Klick auf eine Card soll den Mitarbeiter "auswählen". */
   function handleSelect(m) {
     selectedMitarbeiter.value = m
   }
 
-  // Schließt die Detailansicht und wechselt zurück in MitarbeiterList
+  /* WHY: Design braucht eine saubere Möglichkeit, das Detail-Overlay zu schließen. */
   function closeDetails() {
     selectedMitarbeiter.value = null
   }
@@ -146,6 +201,12 @@ async function confirmDelete() {
   return {
     mitarbeiter,
     filialen,
+    isLoading,
+    searchTerm,
+    filteredMitarbeiter,
+    sortedMitarbeiter,
+    sortOption,
+    sortOptions,
     showModalMitarbeiterCreate,
     showModalMitarbeiterEdit,
     selectedMitarbeiter,
