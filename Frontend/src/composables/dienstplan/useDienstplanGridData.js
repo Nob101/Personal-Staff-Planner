@@ -1,6 +1,6 @@
 import { computed } from "vue";
-import { hexToRgba, bestTextColor } from "@/utils/colors";
-import { dow, day } from "@/utils/dates";
+import { hexToRgba, bestTextColor } from "@/utils/color";
+import { dow, day } from "@/utils/date";
 
 /**
  * Liefert alle "reinen" Daten-/Formatierungs-Helfer für das Dienstplan-Grid.

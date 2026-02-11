@@ -1,70 +1,60 @@
+<!-- FilialenView.vue -->
 <script setup>
+/**
+ * View für die Filialen-Verwaltung.
+ * Nutzt das useFilialen Composable für die gesamte Logik.
+ * FilialenView enthält nur Template + Event-Handler-Calls.
+ */
+
+import { useFilialen } from '@/composables/useFilialen'
+
+// Komponenten-Importe für die Filialen-Ansicht
+import FilialenActionBar from '@/components/filialen/FilialenActionBar.vue'
 import FilialenList from '@/components/filialen/FilialenList.vue'
+import ModalFilialeCreate from '@/components/filialen/ModalFilialenCreate.vue'
+import ModalFilialeEdit from '@/components/filialen/ModalFilialenEdit.vue'
+import BestätigungsModal from '@/components/global/BestätigungsModal.vue'
+
+// (Design/Overlay): Detail-Card für Overlay
 import FilialenCard from '@/components/filialen/FilialenCard.vue'
-import { ref } from 'vue'
 
-// Dummy-Daten
-const mitarbeiter = ref([
-  {
-    id: 1,
-    vorname: 'Max',
-    nachname: 'Mustermann',
-    email1: 'max.mustermann@example.com',
-    telefon1: '0123456789',
-    strasse: 'Musterstraße 1',
-    ort: 'Musterstadt',
-    postleitzahl: '2345',
-    land: 'Österreich',
-    arbeitsstunden: 40,
-    springer: true,
-    hauptfiliale: 1,
-    nebenfilialen: [2],
-    anmerkungen: 'Sehr motiviert'
-  },
-  {
-    id: 2,
-    vorname: 'Lisa',
-    nachname: 'Müller',
-    email1: 'lisa.mueller@example.com',
-    telefon1: '0987654321',
-    strasse: 'Beispielweg 5',
-    ort: 'Beispielstadt',
-    postleitzahl: '4321',
-    land: 'Österreich',
-    arbeitsstunden: 30,
-    springer: false,
-    hauptfiliale: 2,
-    nebenfilialen: [1, 3],
-    anmerkungen: 'Teilzeit'
-  }
-])
+// Holt alle Daten, Funktionen und States aus dem Composable
+const {
+  filialen,
+  mitarbeiter,
+  searchTerm,
+  sortedFilialen,
+  sortOption,
+  sortOptions,
+  isLoading,
+  showModalFilialeCreate,
+  showModalFilialeEdit,
+  showDeleteModal,
+  selectedFiliale,
 
-const filialen = ref([
-  { id: 1, name: 'Filiale A', color: '#' },
-  { id: 2, name: 'Filiale B', color: '#' },
-  { id: 3, name: 'Filiale C', color: '#' }
-])
+  handleFilialeCreate,
+  handleEdit,
+  handleFilialeEdit,
+  handleDelete,
+  confirmDelete,
+  cancelDelete,
 
-// wie selectedMitarbeiter
-const selectedFiliale = ref(null)
-
-function handleSelect(f) {
-  selectedFiliale.value = f
-}
-
-function closeDetails() {
-  selectedFiliale.value = null
-}
-
-// Platzhalter (später wie bei dir: Modal Edit/Delete etc.)
-function handleEdit() {}
-function handleDelete() {}
+  // (Design/Overlay): neu aus Composable
+  handleSelect,
+  closeDetails
+} = useFilialen()
 </script>
 
 <template>
+  <div class="filialen-view container mx-auto p-4">
+    <FilialenActionBar 
+      v-model:modelValue="sortOption" 
+      :sortOptions="sortOptions"
+      @searchFiliale="val => searchTerm = val" 
+      @filialeCreate="showModalFilialeCreate = true" 
+    />
 
-  <div class="mx-auto w-full max-w-[1400px] px-6 py-6 font-sans">
-    <!-- DETAIL OVERLAY -->
+    <!-- DETAIL OVERLAY (wie bei Mitarbeiter) -->
     <div
       v-if="selectedFiliale"
       class="fixed inset-0 z-9999 flex items-start justify-center p-6
@@ -84,21 +74,45 @@ function handleDelete() {}
         <FilialenCard
           :filialen="selectedFiliale"
           :mitarbeiter="mitarbeiter"
+          @select="handleSelect"
           @edit="handleEdit"
           @delete="handleDelete"
         />
       </div>
     </div>
 
-    <!-- Filialen Liste -->
-    <FilialenList
+    <!-- LISTE -->
+    <FilialenList 
       v-else
-      :filialen="filialen"
-      :mitarbeiter="mitarbeiter"
+      :filialen="sortedFilialen" 
+      :mitarbeiter="mitarbeiter" 
+      :isLoading="isLoading" 
       @select="handleSelect"
-      @edit="handleEdit"
+      @edit="handleEdit" 
       @delete="handleDelete"
-      @create="showModalFilialeCreate = true"
+    />
+
+    <ModalFilialeCreate 
+      :show="showModalFilialeCreate" 
+      :filialen="filialen"
+      :mitarbeiter="mitarbeiter" 
+      @close="showModalFilialeCreate = false" 
+      @filialeCreate="handleFilialeCreate"
+    />
+
+    <ModalFilialeEdit
+      v-if="showModalFilialeEdit && !!selectedFiliale"
+      :show="showModalFilialeEdit"
+      :filiale="selectedFiliale"
+      @close="showModalFilialeEdit = false"
+      @filialeEdit="handleFilialeEdit"
+    />
+
+    <BestätigungsModal
+      :show="showDeleteModal"
+      message="Möchtest du diese Filiale wirklich löschen?"
+      @confirm="confirmDelete"
+      @close="cancelDelete"
     />
   </div>
 </template>

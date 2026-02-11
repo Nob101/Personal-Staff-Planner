@@ -4,7 +4,7 @@ import ModalErsatz from "@/components/dienstplan/ModalErsatz.vue";
 
 import FilialeGridSection from "@/components/dienstplan/FilialeGridSection.vue";
 import { useDienstplanGridData } from "@/composables/dienstplan/useDienstplanGridData.js";
-import { useInlineShiftEdit } from "@/componsables/dienstplan/useInlineShiftEdit.js";
+import { useInlineShiftEdit } from "@/composables/dienstplan/useInlineShiftEdit.js";
 
 const props = defineProps({
   view: { type: Object, default: null },

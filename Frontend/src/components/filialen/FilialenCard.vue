@@ -2,24 +2,24 @@
 
 <script setup>
 // Funktionalitäten und Komponenten importieren
-import { defineProps, defineEmits, computed } from 'vue'
+import { defineProps } from 'vue'
+
+// (Design) Icon-Buttons statt Textbuttons
 import bearbeiten_icon from '@/assets/icons/bearbeiten_icon_solid.png'
 import loeschen_icon from '@/assets/icons/loeschen_icon_solid.png'
 
 const props = defineProps({
-  filialen: {
-    type: Object,
-    required: true
-  },
-  mitarbeiter: { type: Array, required: true },
-  variant: {  // für Listenasicht
+  filialen: { type: Object, required: true },
+
+  // (Design) Zwei Layouts (list + detail). Ohne das kann man nicht umschalten.
+  variant: {
     type: String,
     default: 'detail'
   }
 })
 
 // Events: Bearbeiten und Löschen Klicks an Parent (FilialenList.vue) weitergeben, diese gibt es dann an FilialenView.vue weiter.
-const emit = defineEmits(['select', 'edit', 'delete'])
+const emit = defineEmits(['edit', 'delete', 'select'])
 
 function handleEdit() {
   emit('edit', props.filialen)
@@ -29,42 +29,51 @@ function handleDelete() {
   emit('delete', props.filialen)
 }
 
+// (Design) List-Card klickbar -> parent kann Detail-Overlay öffnen
 function handleSelect() {
   emit('select', props.filialen)
 }
 
+/*
+// ZU ENTFERNEN in finaler Version, NICHT GEBRAUCHT
 // Helper-Funktion: Hauptmitarbeiter dieser Filiale
+
 const hauptMitarbeiter = computed(() =>
-  props.mitarbeiter.filter(m => m.hauptfiliale === props.filialen.id)
+  props.mitarbeiter.filter(
+    m => Number(m.hauptfiliale) === Number(props.filialen.fnr)
+  )
 )
 
 // Helper-Funktion: Springer dieser Filiale
 const springerMitarbeiter = computed(() =>
   props.mitarbeiter.filter(
-    m => m.hauptfiliale === props.filialen.id && m.springer === true
+    m => m.hauptfiliale === props.filialen.fnr && m.springer === true
   )
 )
+*/
 </script>
 
 <template>
+  <!-- LIST VARIANT (Design) -->
   <article
     v-if="variant === 'list'"
-    class="relative cursor-pointer rounded-2xl border border-white/10
+    class="relative cursor-pointer rounded-2xl
+           border border-white/10
            bg-linear-to-b from-zinc-700/70 to-zinc-900/80
            p-6 shadow-[0_12px_30px_rgba(0,0,0,0.45)]
            hover:border-white/20 hover:-translate-y-0.5 transition font-sans
            overflow-hidden"
     @click="handleSelect"
   >
-    <!-- Farbleiste links -->
+    <!-- Farbleiste links (Logik: farbe) -->
     <div
       class="absolute left-0 top-0 h-full w-1.5 opacity-90"
-      :style="{ backgroundColor: filialen.color || '#ccc' }"
+      :style="{ backgroundColor: filialen.farbe || '#ccc' }"
     />
 
     <div class="flex items-center justify-between gap-3">
       <h3 class="text-xl font-extrabold tracking-tight text-white">
-        {{ filialen.name }}
+        {{ filialen.filialname }}
       </h3>
     </div>
 
@@ -73,30 +82,29 @@ const springerMitarbeiter = computed(() =>
       <div class="space-y-2">
         <div class="flex justify-between gap-3">
           <span class="font-semibold text-white">Telefon:</span>
-          <span class="text-right min-w-0 truncate">{{ filialen.telefon1 || "-" }}</span>
+          <span class="text-right min-w-0 truncate">{{ filialen.telefon || '-' }}</span>
         </div>
 
         <div class="flex justify-between gap-3 min-w-0">
           <span class="font-semibold text-white shrink-0">Email:</span>
-          <span class="text-right min-w-0 truncate">{{ filialen.email1 || "-" }}</span>
+          <span class="text-right min-w-0 truncate">{{ filialen.email || '-' }}</span>
         </div>
 
         <div class="flex justify-between gap-3">
           <span class="font-semibold text-white">Ort:</span>
-          <span class="text-right min-w-0 truncate">{{ filialen.ort || "-" }}</span>
+          <span class="text-right min-w-0 truncate">{{ filialen.ort || '-' }}</span>
         </div>
       </div>
 
       <!-- RECHTS -->
       <div class="space-y-2 border-l border-white/15 pl-5">
-        <div class="font-semibold text-white">Springer:</div>
-        <div class="text-white/90 min-w-0 truncate">
-          <template v-if="springerMitarbeiter.length">
-            <template v-for="(m, index) in springerMitarbeiter" :key="m.id">
-              {{ m.vorname }} {{ m.nachname }}<span v-if="index < springerMitarbeiter.length - 1">, </span>
-            </template>
-          </template>
-          <template v-else>-</template>
+        <div class="font-semibold text-white">Farbe:</div>
+        <div class="flex items-center gap-2 text-white/90 min-w-0 truncate">
+          <span
+            class="inline-block h-3 w-3 rounded-sm border border-white/20"
+            :style="{ backgroundColor: filialen.farbe || '#ccc' }"
+          />
+          <span>{{ filialen.farbe || 'Keine Farbe gesetzt' }}</span>
         </div>
       </div>
     </div>
@@ -106,6 +114,7 @@ const springerMitarbeiter = computed(() =>
     </div>
   </article>
 
+  <!-- DETAIL VARIANT (Design) -->
   <article
     v-else
     class="font-sans relative rounded-3xl border border-white/10
@@ -113,13 +122,13 @@ const springerMitarbeiter = computed(() =>
            p-10 shadow-[0_18px_45px_rgba(0,0,0,0.55)]
            overflow-hidden"
   >
-    <!-- Farbleiste links -->
+    <!-- Farbleiste links (Logik: farbe) -->
     <div
       class="absolute left-0 top-0 h-full w-1.5 opacity-90"
-      :style="{ backgroundColor: filialen.color || '#ccc' }"
+      :style="{ backgroundColor: filialen.farbe || '#ccc' }"
     />
 
-    <!-- Edit/Delete Buttons -->
+    <!-- Edit/Delete Buttons (Design) -->
     <div class="absolute right-6 top-6 flex gap-3">
       <button
         @click="handleEdit"
@@ -143,12 +152,12 @@ const springerMitarbeiter = computed(() =>
     <!-- Titel -->
     <div class="flex flex-col gap-3">
       <h1 class="text-4xl font-extrabold tracking-tight text-white">
-        {{ filialen.name }}
+        {{ filialen.filialname }}
       </h1>
       <div class="h-px w-full bg-white/10" />
     </div>
 
-    <!-- Columns -->
+    <!-- LINKS | LINIE | RECHTS -->
     <div class="mt-10 grid grid-cols-[1fr_1px_1fr] gap-12 text-lg text-white/90">
       <!-- LINKS -->
       <section class="space-y-6">
@@ -156,12 +165,8 @@ const springerMitarbeiter = computed(() =>
           <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Email</legend>
           <div class="space-y-2">
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Email 1</span>
-              <span class="min-w-0 text-right text-white truncate">{{ filialen.email1 || "-" }}</span>
-            </div>
-            <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Email 2</span>
-              <span class="min-w-0 text-right text-white truncate">{{ filialen.email2 || "-" }}</span>
+              <span class="font-semibold text-white">Email</span>
+              <span class="min-w-0 text-right text-white truncate">{{ filialen.email || '-' }}</span>
             </div>
           </div>
         </fieldset>
@@ -170,13 +175,28 @@ const springerMitarbeiter = computed(() =>
           <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Telefon</legend>
           <div class="space-y-2">
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Telefon 1</span>
-              <span class="min-w-0 text-right text-white truncate">{{ filialen.telefon1 || "-" }}</span>
+              <span class="font-semibold text-white">Telefon</span>
+              <span class="min-w-0 text-right text-white truncate">{{ filialen.telefon || '-' }}</span>
             </div>
-            <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Telefon 2</span>
-              <span class="min-w-0 text-right text-white truncate">{{ filialen.telefon2 || "-" }}</span>
-            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
+          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Filialenfarbe</legend>
+          <div class="flex items-center gap-3">
+            <span
+              class="h-5 w-5 rounded-md border border-white/20"
+              :style="{ backgroundColor: filialen.farbe || '#ccc' }"
+            />
+            <span class="text-white/90">{{ filialen.farbe || 'Keine Farbe gesetzt' }}</span>
+          </div>
+        </fieldset>
+
+        <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
+          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Algorithmus</legend>
+          <div class="flex justify-between gap-4">
+            <span class="font-semibold text-white">Algorithmus</span>
+            <span class="min-w-0 text-right text-white truncate">{{ filialen.algorithmid ?? '-' }}</span>
           </div>
         </fieldset>
       </section>
@@ -191,49 +211,19 @@ const springerMitarbeiter = computed(() =>
           <div class="space-y-2">
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Straße</span>
-              <span class="min-w-0 text-right text-white truncate">{{ filialen.strasse || "-" }}</span>
+              <span class="min-w-0 text-right text-white truncate">{{ filialen.strasse || '-' }}</span>
             </div>
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Postleitzahl</span>
-              <span class="min-w-0 text-right text-white truncate">{{ filialen.postleitzahl || "-" }}</span>
+              <span class="min-w-0 text-right text-white truncate">{{ filialen.plz || '-' }}</span>
             </div>
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Ort</span>
-              <span class="min-w-0 text-right text-white truncate">{{ filialen.ort || "-" }}</span>
+              <span class="min-w-0 text-right text-white truncate">{{ filialen.ort || '-' }}</span>
             </div>
             <div class="flex justify-between gap-4">
               <span class="font-semibold text-white">Land</span>
-              <span class="min-w-0 text-right text-white truncate">{{ filialen.land || "-" }}</span>
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
-          <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Mitarbeiter</legend>
-
-          <div class="space-y-3">
-            <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Hauptmitarbeiter</span>
-              <span class="min-w-0 text-right text-white truncate">
-                <template v-if="hauptMitarbeiter.length">
-                  <template v-for="(m, index) in hauptMitarbeiter" :key="m.id">
-                    {{ m.vorname }} {{ m.nachname }}<span v-if="index < hauptMitarbeiter.length - 1">, </span>
-                  </template>
-                </template>
-                <template v-else>-</template>
-              </span>
-            </div>
-
-            <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Springer dieser Filiale</span>
-              <span class="min-w-0 text-right text-white truncate">
-                <template v-if="springerMitarbeiter.length">
-                  <template v-for="(m, index) in springerMitarbeiter" :key="m.id">
-                    {{ m.vorname }} {{ m.nachname }}<span v-if="index < springerMitarbeiter.length - 1">, </span>
-                  </template>
-                </template>
-                <template v-else>-</template>
-              </span>
+              <span class="min-w-0 text-right text-white truncate">{{ filialen.land || '-' }}</span>
             </div>
           </div>
         </fieldset>
@@ -251,3 +241,7 @@ const springerMitarbeiter = computed(() =>
     </div>
   </article>
 </template>
+
+<style scoped>
+/* absichtlich leer: Design läuft über Tailwind-Klassen */
+</style>

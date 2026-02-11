@@ -6,15 +6,15 @@
 
 <script setup>
 // Import von Navbar. Die Views werden vom Router geregelt mit router-view
-import Navbar from '@/components/global/Navbar.vue';
+import Navbar from '@/components/global/Navbar.vue'
 import ColorPicker from './components/global/ColorPicker.vue';
 
 </script>
 
 <template>
+       
         <Navbar />
-        <router-view />
-
+   <router-view />
 </template>
 
 <style scoped> 

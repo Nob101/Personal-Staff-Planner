@@ -3,14 +3,4 @@
 
 @import "tailwindcss";
 
-body {
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
-    line-height: 1.5;
-    background-color: white;
-}
-
-.dark body {
-    background-color: #18181b;
-    color: white;
-}
 

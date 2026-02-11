@@ -1,0 +1,33 @@
+
+# NEU: Funktioniert wie gitignore
+# Hält den Container schlank
+
+# NEU: Datenbank-Daten vom Build-Kontext ausschließen
+/postgres/
+/db/data/
+
+# Node
+node_modules
+npm-debug.log
+
+# Docker/IDE
+.git
+.vscode
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+#Dir
+certs/
+
+# Environment
+.env
+
+# Temporäre Test-Dateien
+test.*
+*.http
+*.txt
+temp/
+.DS_Store
+Thumbs.db
+db.json

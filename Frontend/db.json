@@ -4,7 +4,6 @@
       "id": "1",
       "vorname": "Max",
       "nachname": "Mustermann",
-      "geburtsdatum": "1990-01-15",
       "email1": "max.mustermann@example.com",
       "email2": "max2@example.com",
       "telefon1": "0123456789",
@@ -15,9 +14,10 @@
       "land": "Österreich",
       "arbeitsstunden": 40,
       "springer": true,
-      "hauptfiliale": 1,
+      "hauptfiliale": "1",
       "nebenfilialen": [
-        2
+        "3",
+        "2"
       ],
       "anmerkungen": "Sehr motiviert"
     },
@@ -25,7 +25,6 @@
       "id": "2",
       "vorname": "Emma",
       "nachname": "Müller",
-      "geburtsdatum": "1992-06-20",
       "email1": "lisa.mueller@example.com",
       "email2": "lisa2@example.com",
       "telefon1": "0987654321",
@@ -35,8 +34,8 @@
       "postleitzahl": "4321",
       "land": "Österreich",
       "arbeitsstunden": 30,
-      "springer": "Nicht bekannt",
-      "hauptfiliale": null,
+      "springer": false,
+      "hauptfiliale": "1",
       "nebenfilialen": null,
       "anmerkungen": "Bald Vollzeit!"
     }
@@ -44,15 +43,54 @@
   "filialen": [
     {
       "id": "1",
-      "name": "Filiale A"
+      "filialname": "Filiale A",
+      "strasse": "Hauptstraße 12",
+      "ort": "Musterstadt",
+      "plz": "12345",
+      "land": "Deutschland",
+      "telefon": "+49 123 4567890",
+      "email": "a@filiale.de",
+      "farbe": "#FF5733",
+      "anmerkungen": "Filiale im Zentrum von Musterstadt.",
+      "fnr": "1"
     },
     {
       "id": "2",
-      "name": "Filiale B"
+      "filialname": "Filiale B",
+      "strasse": "Nebenweg 5",
+      "plz": "23456",
+      "ort": "Beispielstadt",
+      "land": "Deutschland",
+      "email": "b@filiale.de",
+      "telefon": "+49 234 5678901",
+      "farbe": "#33C3FF",
+      "anmerkungen": "Kleine Filiale.",
+      "fnr": "2"
     },
     {
       "id": "3",
-      "name": "Filiale C"
+      "filialname": "Filiale C",
+      "strasse": "Marktplatz 1",
+      "plz": "34567",
+      "ort": "Demostadt",
+      "land": "Deutschland",
+      "email": "c@filiale.de",
+      "telefon": "+49 345 6789012",
+      "farbe": "#82FF33",
+      "anmerkungen": "Hauptfiliale mit großem Team.",
+      "fnr": "3"
+    },
+    {
+      "id": "lrhoxlo7",
+      "filialname": "1",
+      "email": "",
+      "telefon": "",
+      "strasse": "",
+      "ort": "",
+      "plz": "",
+      "land": "",
+      "farbe": "#ffffff",
+      "fnr": "lrhoxlo7"
     }
   ],
   "benutzer": [
