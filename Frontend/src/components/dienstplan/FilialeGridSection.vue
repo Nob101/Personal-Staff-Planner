@@ -4,6 +4,8 @@ import { computed } from "vue";
 const props = defineProps({
   view: { type: Object, required: true },
   filiale: { type: Object, required: true },
+  jahr: { type: Number, required: true },
+  monat: { type: Number, required: true },
 
   // data helpers
   mitarbeiterByFiliale: { type: Function, required: true },
@@ -34,11 +36,14 @@ const localTyp = computed({
 </script>
 
 <template>
-  <div class="rounded-2xl border border-white/10 bg-black/25 p-4">
+  <div class="rounded-2xl
+         border border-black/10 dark:border-white/10
+         bg-white dark:bg-linear-to-b dark:from-zinc-700/70 dark:to-zinc-900/80
+         p-4">
     <!-- HEADER -->
     <div class="mb-2 flex items-center justify-between">
       <div class="flex items-center gap-2 font-bold text-xl text-white">
-        <span>{{ filiale.filialname }} (ID: {{ filiale.fnr }})</span>
+        <span>{{ filiale.filialname }}</span>
         <span
           class="inline-block h-3 w-3 rounded-full border border-white/20"
           :style="{ backgroundColor: filiale.farbe || '#999' }"
@@ -51,7 +56,7 @@ const localTyp = computed({
       Tage: {{ view.tage.length }}
     </div>
 
-    <div class="overflow-x-auto rounded-2xl border border-white/10 bg-black/20">
+    <div class="overflow-x-auto rounded-2xl border border-white/10 bg-black/50">
       <div
         class="grid gap-1 p-2 min-w-[900px]"
         :style="{

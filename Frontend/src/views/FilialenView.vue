@@ -46,13 +46,17 @@ const {
 </script>
 
 <template>
-  <div class="filialen-view container mx-auto p-4">
+  <div class="min-h-screen bg-white text-black dark:bg-[#18181b] dark:text-white">
+
     <FilialenActionBar 
       v-model:modelValue="sortOption" 
       :sortOptions="sortOptions"
       @searchFiliale="val => searchTerm = val" 
       @filialeCreate="showModalFilialeCreate = true" 
     />
+
+    <div class="mx-auto w-full max-w-[1400px] px-6 py-6 font-sans">
+
 
     <!-- DETAIL OVERLAY (wie bei Mitarbeiter) -->
     <div
@@ -114,5 +118,6 @@ const {
       @confirm="confirmDelete"
       @close="cancelDelete"
     />
+  </div>
   </div>
 </template>

@@ -132,7 +132,7 @@ function resetFormFields() {
             @click="handleSubmit"
             class="flex items-center justify-center rounded-xl
                    border border-green-400/30 bg-green-500/35
-                   px-3 py-3 hover:bg-green-500/25 transition"
+                   px-3 py-3 hover:bg-green-500/80 transition"
             title="Erstellen"
           >
             <img :src="speichern_icon" class="h-5 w-5" alt="Erstellen" />
@@ -143,7 +143,7 @@ function resetFormFields() {
             @click="emit('close')"
             class="flex items-center justify-center rounded-xl
                    border border-red-400/30 bg-red-500/35
-                   px-3 py-3 hover:bg-red-500/25 transition"
+                   px-3 py-3 hover:bg-red-500/80 transition"
             title="Abbrechen"
           >
             <img :src="abbrechen_icon" class="h-5 w-5" alt="Abbrechen" />

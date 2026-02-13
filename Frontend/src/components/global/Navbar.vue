@@ -24,20 +24,28 @@ console.log("Navbar mounted, isDark:", isDark.value)
 
 
 <template>
-  <header class="border-b border-black/10 dark:border-white/10 bg-zinc-200 dark:bg-zinc-500">
+  <header class="border-b border-black/10 dark:border-white/10
+              bg-linear-to-b from-zinc-100 to-zinc-200
+              dark:from-zinc-700/70 dark:to-zinc-900/80">
+
     <div class="mx-auto flex h-16 w-full max-w-[1400px] items-center justify-between px-6">
 
       <!-- Logo links -->
-      <div class="flex items-baseline gap-3">
-        <img :src="logo" alt="Personal Staff Planner Logo" class="h-15 w-15" />
-      </div>
+<div class="flex items-center gap-3">
+  <img
+    :src="logo"
+    alt="Personal Staff Planner Logo"
+    class="h-12 w-12"
+  />
+</div>
+
 
       <!-- Navigation -->
       <nav class="flex items-center gap-6">
         <!-- Dienstpläne -->
         <RouterLink
           to="/dienstplaene"
-          class="flex items-center gap-2 px-4 py-2 text-xl 
+          class="flex items-center gap-2 px-4 py-2 text-xl
                 font-sans font-medium
                 text-zinc-700 dark:text-white/70
                 border-b-2 border-transparent
@@ -46,9 +54,10 @@ console.log("Navbar mounted, isDark:", isDark.value)
                 transition-colors"
           active-class="border-zinc-900 text-zinc-900 dark:border-white dark:text-white"
         >
-          <img :src="dienstplaene_icon" alt="" class="h-7 w-7 -ml-1.75" />
+          <img :src="dienstplaene_icon" alt="" class="h-7 w-7" />
           <span>Dienstpläne</span>
         </RouterLink>
+
 
         <!-- Mitarbeiter -->
         <RouterLink
@@ -62,7 +71,7 @@ console.log("Navbar mounted, isDark:", isDark.value)
                 transition-colors"
           active-class="border-zinc-900 text-zinc-900 dark:border-white dark:text-white"
         >
-          <img :src="mitarbeiter_icon" class="h-7 w-7 -ml-2" />
+          <img :src="mitarbeiter_icon" class="h-7 w-7 -ml-1" />
           Mitarbeiter
         </RouterLink>
 
@@ -78,7 +87,7 @@ console.log("Navbar mounted, isDark:", isDark.value)
                 transition-colors"
           active-class="border-zinc-900 text-zinc-900 dark:border-white dark:text-white"
         >
-          <img :src="filialen_icon" alt="" class="h-7 w-7 -ml-1" />
+          <img :src="filialen_icon" alt="" class="h-7 w-7" />
           <span>Filialen</span>
         </RouterLink>
 
@@ -94,12 +103,12 @@ console.log("Navbar mounted, isDark:", isDark.value)
                 transition-colors"
           active-class="border-zinc-900 text-zinc-900 dark:border-white dark:text-white"
         >
-          <img :src="einstellungen_icon" alt="" class="h-7 w-7 -ml-2" />
+          <img :src="einstellungen_icon" alt="" class="h-7 w-7 -ml-0.5" />
           <span>Einstellungen</span>
         </RouterLink>
       </nav>
 
-      <!-- RECHTS: Search + Darkmode -->
+      <!-- RECHTS: Darkmode -->
       <div class="flex items-center gap-4">
         
 

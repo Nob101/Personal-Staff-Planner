@@ -31,3 +31,8 @@ export async function shiftMitErsatz({ altId, neuId, schicht_typ }) {
   const res = await http.post("dienstplan/shiftMitErsatz", { altId, neuId, schicht_typ });
   return res.data;
 }
+
+export async function updateStunden({ mr, jahr, monat, ist_stunden_monat }) {
+  const { data } = await http.put("dienstplan/updateStunden", { mr, jahr, monat, ist_stunden_monat });
+  return data;
+}
