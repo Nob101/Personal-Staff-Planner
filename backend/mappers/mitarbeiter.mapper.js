@@ -90,6 +90,31 @@ function fromFrontendPatch(b) {
     out.arbeitnehmertyp = at;
   }
 
+  if (has(b, "strasse") || has(b, "postleitzahl") || has(b, "ort") || has(b, "land")) {
+    out.kontakt = {
+      strasse: has(b, "strasse") ? (b.strasse ?? null) : undefined,
+      plz: has(b, "postleitzahl") ? (b.postleitzahl ?? null) : undefined,
+      ort: has(b, "ort") ? (b.ort ?? null) : undefined,
+      land: has(b, "land") ? (b.land ?? null) : undefined,
+    };
+  }
+
+  // Telefone (0..n) aus telefon1/telefon2
+    if (has(b, "telefon1") || has(b, "telefon2")) {
+    const tel = [];
+    if (b.telefon1) tel.push({ telefon_typ: "mobil", nummer: String(b.telefon1) });
+    if (b.telefon2) tel.push({ telefon_typ: "fix", nummer: String(b.telefon2) });
+    out.telefone = tel;
+  }
+
+  // Emails (0..n) aus email1/email2
+    if (has(b, "email1") || has(b, "email2")) {
+    const em = [];
+    if (b.email1) em.push({ email_typ: "privat", email_adresse: String(b.email1) });
+    if (b.email2) em.push({ email_typ: "firma", email_adresse: String(b.email2) });
+    out.emails = em;
+  }
+
   /**
    * Nebenfilialen:
    * Erwartet wird ein Array von Filialnummern.
