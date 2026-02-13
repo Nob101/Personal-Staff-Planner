@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useDienstplan } from "@/composables/dienstplan/useDienstplan.js";
 import DienstplanHeader from "@/components/dienstplan/DienstplanHeader.vue";
 import DienstplanGrid from "@/components/dienstplan/DienstplanGrid.vue";
@@ -10,7 +10,7 @@ const monat = ref(1);
 const {
   view, loading, error,
   load, generate, remove,
-  doShift, getErsatz, doShiftMitErsatz
+  doShift, getErsatz, doShiftMitErsatz,
 } = useDienstplan();
  
 function onLoad(j, m) {
@@ -41,6 +41,16 @@ function onRemoveAll() {
  
 // initial load
 load(jahr.value, monat.value);
+
+const selectedFilialen = ref([]);
+
+const filialenToShow = computed(() => {
+  const all = view.value?.filialen ?? [];
+  if (!selectedFilialen.value.length) return all; // leer = alle
+  const chosen = new Set(selectedFilialen.value.map(f => f.fnr));
+  return all.filter(f => chosen.has(f.fnr));
+});
+
 </script>
  
 <template>
@@ -53,17 +63,20 @@ load(jahr.value, monat.value);
         :loading="loading"
         :error="error"
         :hasView="!!view"
+        :filialen="view?.filialen ?? []"
+        v-model="selectedFilialen"
         @load="onLoad"
         @generate="onGenerateAll"
         @remove="onRemoveAll"
       />
- 
+
       <DienstplanGrid
         :view="view"
+        :filialen="filialenToShow"
         :onShift="doShift"
         :onGetErsatz="getErsatz"
         :onShiftMitErsatz="doShiftMitErsatz"
       />
-    </div>
+    </div>    
   </div>
 </template>

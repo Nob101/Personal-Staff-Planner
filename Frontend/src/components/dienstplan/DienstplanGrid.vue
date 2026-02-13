@@ -8,6 +8,7 @@ import { useInlineShiftEdit } from "@/composables/dienstplan/useInlineShiftEdit.
 
 const props = defineProps({
   view: { type: Object, default: null },
+  filialen: { type: Array, default: null },
   onShift: { type: Function, default: null },
   onGetErsatz: { type: Function, default: null },
   onShiftMitErsatz: { type: Function, default: null },
@@ -66,10 +67,13 @@ const {
 
   <div v-if="view" class="space-y-4">
     <FilialeGridSection
-      v-for="f in view.filialen"
+      v-for="f in (filialen ?? view.filialen)"
       :key="f.fnr"
       :view="view"
       :filiale="f"
+      :jahr="jahr"
+      :monat="monat"
+      :onSaveStunden="onSaveStunden"
       :mitarbeiterByFiliale="mitarbeiterByFiliale"
       :fullName="fullName"
       :stundenByMnr="stundenByMnr"
@@ -83,6 +87,7 @@ const {
       :options="options"
       :openDropdown="openDropdown"
       :saveDropdown="saveDropdown"
+      @saveStunden="saveStunden"
     />
   </div>
 </template>

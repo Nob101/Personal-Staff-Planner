@@ -77,38 +77,57 @@ function handleSelect() {
       </h3>
     </div>
 
-    <div class="mt-5 grid grid-cols-2 gap-5 text-sm text-zinc-700 dark:text-white/85">
-      <!-- LINKS -->
-      <div class="space-y-2">
-        <div class="flex justify-between gap-3">
-          <span class="font-semibold text-zinc-900 dark:text-white">Hauptfiliale:</span>
-          <span class="text-right min-w-0 truncate">{{ hauptfilialeName }}</span>
+    <div class="mt-5 grid grid-cols-[1fr_1px_1fr] gap-5 text-sm text-zinc-700 dark:text-white/85">
+      <!-- LINKS: Kontakt -->
+      <div class="space-y-3 min-w-0">
+        <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-800/80">
+          Kontakt
         </div>
 
-        <div class="flex justify-between gap-3">
-          <span class="font-semibold text-zinc-900 dark:text-white">Arbeitsstunden:</span>
-          <span class="text-right">
-            {{ mitarbeiter.arbeitsstunden ?? mitarbeiter.wochenstunden ?? mitarbeiter.arbeitnehmertyp ?? "-" }}
-          </span>
-        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between gap-3 min-w-0">
+            <span class="text-right min-w-0 truncate">{{ mitarbeiter.telefon1 ?? '-' }}</span>
+          </div>
 
-        <div class="flex justify-between gap-3">
-          <span class="font-semibold text-zinc-900 dark:text-white">Telefon:</span>
-          <span class="text-right min-w-0 truncate">{{ mitarbeiter.telefon1 ?? "-" }}</span>
-        </div>
+          <div class="flex justify-between gap-3 min-w-0">
+            <span class="text-right min-w-0 truncate">{{ mitarbeiter.email1 ?? '-' }}</span>
+          </div>
 
-        <div class="flex justify-between gap-3 min-w-0">
-          <span class="font-semibold text-zinc-900 dark:text-white shrink-0">Email:</span>
-          <span class="text-right min-w-0 truncate">{{ mitarbeiter.email1 ?? "-" }}</span>
+          <div class="flex justify-between gap-3 min-w-0">
+            <span class="shrink-0">Filiale {{ hauptfilialeName }}</span>
+          </div>
+
+          <div class="flex justify-between gap-3 min-w-0">
+            <span class="shrink-0">{{ mitarbeiter.arbeitsstunden ?? mitarbeiter.wochenstunden ?? mitarbeiter.arbeitnehmertyp ?? '-' }} Arbeitsstunden</span>
+          </div>
         </div>
       </div>
 
-      <!-- RECHTS -->
-      <div class="space-y-2 border-l border-white/15 pl-5">
-        <div class="font-semibold text-zinc-900 dark:text-white">Nebenfilialen:</div>
-        <div class="text-white/90 min-w-0 truncate">{{ nebenfilialenNamen }}</div>
+      <!-- Linie -->
+      <div class="bg-black/10 dark:bg-white/15"></div>
+
+      <!-- RECHTS: Nebenfilialen (List) -->
+      <div class="space-y-2 min-w-0">
+        <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-800/80">
+          Nebenfilialen
+        </div>
+
+        <div class="line-clamp-3">
+          <div class="flex flex-wrap gap-1">
+            <span
+              v-for="f in mitarbeiter.nebenfilialen"
+              :key="f.id"
+              class="rounded-full border border-black/10 dark:border-white/10
+                    bg-black/5 dark:bg-white/10
+                    px-2 py-0.5 text-xs text-zinc-700 dark:text-white/90"
+            >
+              {{ f.name }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
+
 
     <div class="mt-4 text-xs text-white/50">
       Klicken für Details →
@@ -118,16 +137,16 @@ function handleSelect() {
   <!--  DETAIL VARIANT (Design) -->
   <article
     v-else
-    class="font-sans relative rounded-3xl
-       border border-black/10 dark:border-white/10
-       bg-white dark:bg-linear-to-b dark:from-zinc-800/70 dark:to-zinc-900/80
-       p-10 shadow-[0_18px_45px_rgba(0,0,0,0.55)]"
+    class="font-sans relative rounded-3xl border border-white/10
+           bg-linear-to-b from-zinc-800/70 to-zinc-900/80
+           p-10 shadow-[0_18px_45px_rgba(0,0,0,0.55)]
+           overflow-hidden"
   >
     <!-- Actions oben rechts -->
     <div class="absolute right-6 top-6 flex gap-3">
       <button
         @click="handleEdit"
-        class="flex items-center justify-center rounded-xl border border-white/15 bg-blue-500/35 px-3 py-3 hover:bg-blue-500 transition"
+        class="flex items-center justify-center rounded-xl border border-white/15 bg-blue-500/35 px-3 py-3 hover:bg-blue-500/80 transition"
         type="button"
         title="Bearbeiten"
       >
@@ -136,7 +155,7 @@ function handleSelect() {
 
       <button
         @click="handleDelete"
-        class="flex items-center justify-center rounded-xl border border-red-400/30 bg-red-500/35 px-3 py-3 hover:bg-red-500 transition"
+        class="flex items-center justify-center rounded-xl border border-red-400/30 bg-red-500/35 px-3 py-3 hover:bg-red-500/80 transition"
         type="button"
         title="Löschen"
       >
@@ -160,11 +179,11 @@ function handleSelect() {
           <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Email</legend>
           <div class="space-y-2">
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Email 1</span>
+              <span class="font-semibold text-white">Email 1:</span>
               <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.email1 || "-" }}</span>
             </div>
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Email 2</span>
+              <span class="font-semibold text-white">Email 2:</span>
               <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.email2 || "-" }}</span>
             </div>
           </div>
@@ -174,11 +193,11 @@ function handleSelect() {
           <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Telefon</legend>
           <div class="space-y-2">
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Telefon 1</span>
+              <span class="font-semibold text-white">Telefon 1:</span>
               <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.telefon1 || "-" }}</span>
             </div>
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Telefon 2</span>
+              <span class="font-semibold text-white">Telefon 2:</span>
               <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.telefon2 || "-" }}</span>
             </div>
           </div>
@@ -188,12 +207,21 @@ function handleSelect() {
           <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Filialen</legend>
           <div class="space-y-3">
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Hauptfiliale</span>
+              <span class="font-semibold text-white">Hauptfiliale:</span>
               <span class="min-w-0 text-right text-white truncate">{{ hauptfilialeName }}</span>
             </div>
-            <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Nebenfilialen</span>
-              <span class="min-w-0 text-right text-white truncate">{{ nebenfilialenNamen }}</span>
+            <div class="space-y-2">
+              <div class="font-semibold text-white">Nebenfilialen:</div>
+
+              <div class="flex flex-wrap gap-2">
+                <span
+                  v-for="f in mitarbeiter.nebenfilialen"
+                  :key="f.id"
+                  class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-white/90"
+                >
+                  {{ f.name }}
+                </span>
+              </div>
             </div>
           </div>
         </fieldset>
@@ -208,19 +236,19 @@ function handleSelect() {
           <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Adresse</legend>
           <div class="space-y-2">
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Straße</span>
+              <span class="font-semibold text-white">Straße:</span>
               <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.strasse || "-" }}</span>
             </div>
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Postleitzahl</span>
+              <span class="font-semibold text-white">Postleitzahl:</span>
               <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.postleitzahl || "-" }}</span>
             </div>
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Ort</span>
+              <span class="font-semibold text-white">Ort:</span>
               <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.ort || "-" }}</span>
             </div>
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Land</span>
+              <span class="font-semibold text-white">Land:</span>
               <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.land || "-" }}</span>
             </div>
           </div>
@@ -230,11 +258,11 @@ function handleSelect() {
           <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">Arbeit</legend>
           <div class="space-y-2">
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Arbeitsstunden</span>
+              <span class="font-semibold text-white">Arbeitsstunden:</span>
               <span class="min-w-0 text-right text-white truncate">{{ mitarbeiter.arbeitsstunden ?? "-" }}</span>
             </div>
             <div class="flex justify-between gap-4">
-              <span class="font-semibold text-white">Springer</span>
+              <span class="font-semibold text-white">Springer:</span>
               <span class="min-w-0 text-right text-white truncate">
                 {{ mitarbeiter.springer ? 'Ja' : 'Nein' }}
               </span>

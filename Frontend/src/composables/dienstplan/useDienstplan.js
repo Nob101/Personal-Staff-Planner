@@ -7,6 +7,7 @@ import {
   shiftDienst,
   ersatzKandidaten,
   shiftMitErsatz,
+  updateStunden
 } from "@/services/dienstplanService.js";
 
 export function useDienstplan() {
@@ -23,6 +24,21 @@ export function useDienstplan() {
       console.error(e);
       error.value = e?.response?.data?.error || e?.message || "Fehler beim Laden";
       view.value = null;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function saveStunden({ jahr, monat, mnr, ist_stunden_monat }) {
+    loading.value = true;
+    error.value = "";
+    try {
+      await updateStunden({ jahr, monat, mnr, ist_stunden_monat });
+      await load(jahr, monat);
+    } catch (e) {
+      console.error(e);
+      error.value =
+        e?.response?.data?.error || e?.message || "Fehler beim Speichern der Stunden";
     } finally {
       loading.value = false;
     }
@@ -104,5 +120,20 @@ export function useDienstplan() {
     doShift,
     getErsatz,
     doShiftMitErsatz,
+    saveStunden
   };
+}
+
+async function saveStunden({ jahr, monat, mr, ist_stunden_monat }) {
+  loading.value = true;
+  error.value = "";
+  try {
+    await updateStunden({ jahr, monat, mr, ist_stunden_monat });
+    await load(jahr, monat);
+  } catch (e) {
+    console.error(e);
+    error.value = e?.response?.data?.error || e?.message || "Fehler beim Speichern der Stunden";
+  } finally {
+    loading.value = false;
+  }
 }

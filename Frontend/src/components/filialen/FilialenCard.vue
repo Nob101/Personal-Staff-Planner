@@ -58,11 +58,11 @@ const springerMitarbeiter = computed(() =>
   <article
     v-if="variant === 'list'"
     class="relative cursor-pointer rounded-2xl
-           border border-white/10
-           bg-linear-to-b from-zinc-700/70 to-zinc-900/80
-           p-6 shadow-[0_12px_30px_rgba(0,0,0,0.45)]
-           hover:border-white/20 hover:-translate-y-0.5 transition font-sans
-           overflow-hidden"
+         border border-black/10 dark:border-white/10
+         bg-white dark:bg-linear-to-b dark:from-zinc-700/70 dark:to-zinc-900/80
+         p-6 shadow-[0_12px_30px_rgba(0,0,0,0.45)]
+         hover:border-black/20 dark:hover:border-white/20 hover:-translate-y-0.5 transition font-sans
+         overflow-hidden"
     @click="handleSelect"
   >
     <!-- Farbleiste links (Logik: farbe) -->
@@ -72,42 +72,50 @@ const springerMitarbeiter = computed(() =>
     />
 
     <div class="flex items-center justify-between gap-3">
-      <h3 class="text-xl font-extrabold tracking-tight text-white">
+      <h3 class="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
         {{ filialen.filialname }}
       </h3>
     </div>
 
-    <div class="mt-5 grid grid-cols-2 gap-5 text-sm text-white/85">
-      <!-- LINKS -->
-      <div class="space-y-2">
-        <div class="flex justify-between gap-3">
-          <span class="font-semibold text-white">Telefon:</span>
-          <span class="text-right min-w-0 truncate">{{ filialen.telefon || '-' }}</span>
-        </div>
+    <div class="mt-5 grid grid-cols-[1fr_1px_1fr] gap-5 text-sm text-zinc-700 dark:text-white/85">
+  <!-- LINKS: Kontakt -->
+  <div class="space-y-3 min-w-0">
+    <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-800/80">
+      Kontakt
+    </div>
 
-        <div class="flex justify-between gap-3 min-w-0">
-          <span class="font-semibold text-white shrink-0">Email:</span>
-          <span class="text-right min-w-0 truncate">{{ filialen.email || '-' }}</span>
-        </div>
-
-        <div class="flex justify-between gap-3">
-          <span class="font-semibold text-white">Ort:</span>
-          <span class="text-right min-w-0 truncate">{{ filialen.ort || '-' }}</span>
-        </div>
+    <div class="space-y-2">
+      <div class="flex justify-between gap-3 min-w-0">
+        <span class="text-right min-w-0 truncate">{{ filialen.telefon || '-' }}</span>
       </div>
 
-      <!-- RECHTS -->
-      <div class="space-y-2 border-l border-white/15 pl-5">
-        <div class="font-semibold text-white">Farbe:</div>
-        <div class="flex items-center gap-2 text-white/90 min-w-0 truncate">
-          <span
-            class="inline-block h-3 w-3 rounded-sm border border-white/20"
-            :style="{ backgroundColor: filialen.farbe || '#ccc' }"
-          />
-          <span>{{ filialen.farbe || 'Keine Farbe gesetzt' }}</span>
-        </div>
+      <div class="flex justify-between gap-3 min-w-0">
+        <span class="text-right min-w-0 truncate">{{ filialen.email || '-' }}</span>
       </div>
     </div>
+  </div>
+
+  <!-- Linie -->
+  <div class="bg-white/15"></div>
+
+  <!-- RECHTS: Adresse -->
+  <div class="space-y-3 min-w-0">
+    <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-800/80">
+      Adresse
+    </div>
+
+    <div class="space-y-2">
+      <div class="flex justify-between gap-3 min-w-0">
+        <span class="text-right min-w-0 truncate">{{ filialen.strasse || '-' }}</span>
+      </div>
+
+      <div class="flex justify-between gap-3 min-w-0">
+        <span class="text-right min-w-0 truncate">{{ filialen.plz || '-' }} {{ filialen.ort || '-' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 
     <div class="mt-4 text-xs text-white/50">
       Klicken für Details →
@@ -132,7 +140,7 @@ const springerMitarbeiter = computed(() =>
     <div class="absolute right-6 top-6 flex gap-3">
       <button
         @click="handleEdit"
-        class="flex items-center justify-center rounded-xl border border-white/15 bg-blue-500/35 px-3 py-3 hover:bg-blue-500/15 transition"
+        class="flex items-center justify-center rounded-xl border border-white/15 bg-blue-500/35 px-3 py-3 hover:bg-blue-500/80 transition"
         type="button"
         title="Bearbeiten"
       >
@@ -141,7 +149,7 @@ const springerMitarbeiter = computed(() =>
 
       <button
         @click="handleDelete"
-        class="flex items-center justify-center rounded-xl border border-red-400/30 bg-red-500/35 px-3 py-3 hover:bg-red-500/25 transition"
+        class="flex items-center justify-center rounded-xl border border-red-400/30 bg-red-500/35 px-3 py-3 hover:bg-red-500/80 transition"
         type="button"
         title="Löschen"
       >

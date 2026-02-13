@@ -59,15 +59,3 @@ const emit = defineEmits(['select', 'edit', 'delete'])
     />
   </div>
 </template>
-
-<style scoped>
-.hint {
-  border: 1px dashed #ccc;
-  background-color: #f9f9f9;
-  color: #555;
-  text-align: center;
-  padding: 24px;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-</style>
