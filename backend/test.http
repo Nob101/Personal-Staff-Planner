@@ -1,5 +1,5 @@
 @baseUrl = https://localhost/api
-@token = b6ff0a70421278345a94c4f728ca86bf1afcada6e0ed8baa
+@token = d8ef0267afad403137d13a6c6c221c12ed3cd32a43929e5e
 @jahr = 2026
 @monat = 1
 
@@ -42,7 +42,7 @@ Content-Type: application/json
 }
 
 ### PUT Mitarbeiter bearbeiten
-@MNR_UPDATE = 6
+@MNR_UPDATE = 1
 PUT {{baseUrl}}/mitarbeiter/{{MNR_UPDATE}}
 Authorization: {{token}}
 Content-Type: application/json
@@ -57,7 +57,7 @@ Content-Type: application/json
 
   "strasse": "Updateweg 9",
   "ort": "Wien",
-  "postleitzahl": "1010",
+  "postleitzahl": "1011",
   "land": "Österreich",
 
   "telefon1": "+43 660 999999",
@@ -98,6 +98,7 @@ Content-Type: application/json
   "plz": "1000",
   "land": "Österreich",
   "email": "g@firma.at",
+  "anmerkungen": "Zentrale Filiale",
   "telefon": "+43 3332 12345",
   "algorithmid": 1
 }
@@ -109,9 +110,9 @@ Authorization: {{token}}
 Content-Type: application/json
 
 {
-  "filialname": "Zentrale Wien ALT",
-  "farbe": "#23db69",
-  "algorithmid": 1
+  "filialname": "Zentrale Wien NEU",
+  "farbe": "#00ff00",
+  "anmerkungen": "Update Anmerkung"
 }
 
 ### DELETE Filiale
