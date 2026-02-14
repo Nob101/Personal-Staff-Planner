@@ -354,7 +354,7 @@ router.post("/shiftMitErsatz", async (req, res) => {
     res.status(500).json({ error: "Fehler beim Aktualisieren der Schicht mit Ersatz" });
   } finally {
     client.release();
-  }
+  } 
 });
 
 /* ============================================================================
