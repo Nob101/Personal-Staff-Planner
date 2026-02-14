@@ -30,13 +30,18 @@ offene Implementierungen:
     ->
 
 ->Filialen
-    -> Selben Filialname mehrmals vergebbar? -> da verschiedene FilialenID's
     -> Design/Styling mit Dumitru
 
 ->Mitarbeiter
-    -> Falls Backend absichtlich so, useMitarbeiter umschreiben und Filialen-Objekte "entpacken" damit
-        mit ihnen gearbeitet werden kann wie erwartet und dann wieder verpacken. Multiselects, etc. sind simple
-        und "flach" -> Formulare, Multiselects, Vue, etc. arbeitet nur mit einfachen Werten
     -> Design/Styling mit Dumitru
+
+->Benutzer
+    -> Benutzer anlegen (username password), Sicherheitsvoraussetzungen? mindestens 1 Zahl in PW? Einstellbar?
+    -> Benutzer ändern (username password)
+    -> Benutzer löschen
+    -> Liste aller angelegten Nutzer (username password)
+    OPTIONAL
+    ->Benutzer anlegen mit Ablaufdatum (automatische Löschung)
+    -> Hinweis-Boxen
 
 

@@ -21,8 +21,8 @@ export function useMitarbeiter() {
   const sortOptions = [
     { label: 'Alphabetisch (A → Z)', value: 'nameAsc' },
     { label: 'Alphabetisch (Z → A)', value: 'nameDesc' },
-    { label: 'Nach Filiale (A → Z)', value: 'filialeName' },
-    { label: 'Nach Filiale (Z → A)', value: 'filialeNameDesc' }
+    { label: 'Nach Hauptfiliale (A → Z)', value: 'filialeName' },
+    { label: 'Nach Hauptfiliale (Z → A)', value: 'filialeNameDesc' }
 
   ]
 

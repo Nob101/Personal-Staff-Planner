@@ -19,7 +19,9 @@ export function useFilialen() {
   const sortOption = ref('nameAsc')
   const sortOptions = [
     { label: 'Filialname (A → Z)', value: 'nameAsc' },
-    { label: 'Filialname (Z → A)', value: 'nameDesc' }
+    { label: 'Filialname (Z → A)', value: 'nameDesc' },
+    { label: 'Postleitzahl (aufsteigend)', value: 'plzAsc' },
+    { label: 'Postleitzahl (absteigend)', value: 'plzDesc' }
   ]
 
   // --- Filter-Logik für die Suche ---
@@ -34,7 +36,7 @@ export function useFilialen() {
     )
   })
 
-  // --- Sortier-Logik (alphabetisch nach filialname) ---
+  // --- Sortier-Logik ---
   const sortedFilialen = computed(() => {
     const list = [...filteredFilialen.value]
     switch (sortOption.value) {
@@ -42,6 +44,11 @@ export function useFilialen() {
         return list.sort((a, b) => (a.filialname || '').localeCompare(b.filialname || ''))
       case 'nameDesc':
         return list.sort((a, b) => (b.filialname || '').localeCompare(a.filialname || ''))
+      case 'plzAsc':
+        // Sortiert numerisch oder als String, falls PLZ führende Nullen hat
+        return list.sort((a, b) => (a.plz || '').toString().localeCompare((b.plz || '').toString(), undefined, { numeric: true }))
+      case 'plzDesc':
+        return list.sort((a, b) => (b.plz || '').toString().localeCompare((a.plz || '').toString(), undefined, { numeric: true }))
       default:
         return list
     }
@@ -55,7 +62,6 @@ export function useFilialen() {
   const selectedFilialeToDelete = ref(null)
 
   // --- Daten laden ---
-  // onMounted wird ausgeführt, wenn das entsprechende Vue-File geladen wird
   async function loadData() {
     isLoading.value = true
     try {
@@ -76,7 +82,6 @@ export function useFilialen() {
 
   // --- CRUD Funktionen ---
 
-  // Erstellt eine neue Filiale im Backend
   async function handleFilialeCreate(neu) {
     try {
       const res = await filialenService.createFiliale(neu)
@@ -86,13 +91,11 @@ export function useFilialen() {
     }
   }
 
-  // Öffnet das Bearbeiten-Modal
   function handleEdit(f) {
     selectedFiliale.value = f
     showModalFilialeEdit.value = true
   }
 
-  // Aktualisiert eine bestehende Filiale
   async function handleFilialeEdit(editedData) {
     try {
       const res = await filialenService.updateFiliale(editedData)
@@ -105,13 +108,11 @@ export function useFilialen() {
     }
   }
 
-  // Öffnet das Bestätigungsmodal zum Löschen
   function handleDelete(f) {
     selectedFilialeToDelete.value = f
     showDeleteModal.value = true
   }
 
-  // Löscht die Filiale nach Bestätigung endgültig
   async function confirmDelete() {
     if (!selectedFilialeToDelete.value) return
     try {
@@ -124,7 +125,6 @@ export function useFilialen() {
     }
   }
 
-  // Schließt das Löschmodal ohne Aktion
   function cancelDelete() {
     selectedFilialeToDelete.value = null
     showDeleteModal.value = false

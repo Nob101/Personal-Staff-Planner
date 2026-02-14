@@ -3,8 +3,8 @@
     import logo from '@/assets/icons/PSP_Logo_Transparent.png';
     import dienstplaene_icon from '@/assets/icons/dienstplaene_icon_solid.svg'
     import mitarbeiter_icon from '@/assets/icons/mitarbeiter_icon_solid.svg'
-    import  filialen_icon from '@/assets/icons/filialen_icon_solid.svg'
-    import einstellungen_icon from '@/assets/icons/einstellungen_icon_solid.svg'
+    import filialen_icon from '@/assets/icons/filialen_icon_solid.svg'
+    import benutzer_icon from '@/assets/icons/benutzer_icon_solid.svg' //Alternativen: https://www.svgrepo.com/vectors/admin/
 
     //!! To-Do: Link von offener Page soll gehighlighted werden, derzeit nicht der Fall
     // Zugriff auf aktuelle Route
@@ -36,8 +36,8 @@
         </router-link>
       </li>
       <li>
-        <router-link :to="{ name: 'einstellungen' }" :class="{ active: route.name === 'einstellungen' }">
-          <img :src="einstellungen_icon" class="icon" /> Einstellungen
+        <router-link :to="{ name: 'benutzer' }" :class="{ active: route.name === 'benutzer' }">
+          <img :src="benutzer_icon" class="icon" /> Benutzer
         </router-link>
       </li>
     </ul>
