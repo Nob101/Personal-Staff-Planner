@@ -522,8 +522,6 @@ async function getAllBase({ onlyActive = false } = {}) {
   return r.rows;
 }
 
-      
-
 
 async function deactivate(mnr) {
   const r = await pool.query(

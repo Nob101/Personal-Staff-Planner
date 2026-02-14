@@ -71,7 +71,7 @@ router.post("/generate", async (req, res) => {
     return res.status(400).json({ error: "jahr und monat Pflicht." });
   }
 
-  try {  
+  try {
     const j = Number(jahr);
     const m = Number(monat);
 

@@ -35,7 +35,7 @@ router.get("/", async (_req, res) => {
     console.error("Fehler GET /mitarbeiter:", err);
     res.status(500).json({ error: "Fehler beim Laden der Mitarbeiter" });
   }
-});   
+});
 
 // ============================================================================
 // GET /mitarbeiter/archiv

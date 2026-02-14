@@ -1,3 +1,77 @@
+<!-- ModalShiftEdit.vue (zum Bearbeiten eines Dienstes)-->
+
+<script setup>
+import { computed, ref, watch } from "vue";
+
+/**
+ * Props kommen vom Parent.
+ * - open: steuert, ob Modal sichtbar ist
+ * - dienst: der Dienst, der bearbeitet wird
+ * - kandidaten: Liste möglicher Mitarbeiter für diesen Dienst
+ * - loading/saving/error: UI-Zustände, damit Parent den Flow kontrolliert
+ */
+const props = defineProps({
+  open: { type: Boolean, default: false },
+  dienst: { type: Object, default: null }, // { id, datum, fnr, mnr, schicht_typ, ... }
+  kandidaten: { type: Array, default: () => [] },
+  loading: { type: Boolean, default: false },
+  saving: { type: Boolean, default: false },
+  error: { type: String, default: "" },
+});
+
+/**
+ * Events die diese Komponente nach außen feuern darf:
+ * - close: Modal schließen
+ * - save: Speichern-Action mit Payload
+ */
+const emit = defineEmits(["close", "save"]);
+
+/**
+ * Lokale Form-States:
+ * kopieren die Werte aus props.dienst in lokale refs,
+ * damit man im Modal ändern kann ohne direkt props zu mutieren.
+ */
+const localTyp = ref("F");     // default: Frei
+const localMnr = ref(null);    // default: kein Mitarbeiter
+
+/**
+ * Sobald sich props.dienst ändert (z.B. anderes Modal geöffnet),
+ * wird das Formular neu gesetzt.
+ * immediate:true -> läuft auch beim ersten Rendern.
+ */
+watch(
+  () => props.dienst,
+  (d) => {
+    if (!d) return;
+    // existierende Daten übernehmen oder fallback
+    localTyp.value = d.schicht_typ || "F";
+    localMnr.value = d.mnr ?? null;
+  },
+  { immediate: true }
+);
+
+/**
+ * canSave = einfache Validierung:
+ * Status muss gesetzt sein UND Mitarbeiter gewählt.
+ * Wird genutzt für disable Button + Fehlermeldung.
+ */
+const canSave = computed(() => {
+  return !!localTyp.value && localMnr.value != null;
+});
+
+/**
+ * onSave feuert Event an Parent.
+ * Parent macht dann z.B. API Call
+ */
+function onSave() {
+  emit("save", {
+    dienstId: props.dienst.id,
+    schicht_typ: localTyp.value,
+    mnr: localMnr.value,
+  });
+}
+</script>
+
 <template>
   <!-- Modal wird nur gerendert, wenn open=true -->
   <div v-if="open" class="fixed inset-0 z-50">
@@ -117,75 +191,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { computed, ref, watch } from "vue";
-
-/**
- * Props kommen vom Parent.
- * - open: steuert, ob Modal sichtbar ist
- * - dienst: der Dienst, der bearbeitet wird
- * - kandidaten: Liste möglicher Mitarbeiter für diesen Dienst
- * - loading/saving/error: UI-Zustände, damit Parent den Flow kontrolliert
- */
-const props = defineProps({
-  open: { type: Boolean, default: false },
-  dienst: { type: Object, default: null }, // { id, datum, fnr, mnr, schicht_typ, ... }
-  kandidaten: { type: Array, default: () => [] },
-  loading: { type: Boolean, default: false },
-  saving: { type: Boolean, default: false },
-  error: { type: String, default: "" },
-});
-
-/**
- * Events die diese Komponente nach außen feuern darf:
- * - close: Modal schließen
- * - save: Speichern-Action mit Payload
- */
-const emit = defineEmits(["close", "save"]);
-
-/**
- * Lokale Form-States:
- * kopieren die Werte aus props.dienst in lokale refs,
- * damit man im Modal ändern kann ohne direkt props zu mutieren.
- */
-const localTyp = ref("F");     // default: Frei
-const localMnr = ref(null);    // default: kein Mitarbeiter
-
-/**
- * Sobald sich props.dienst ändert (z.B. anderes Modal geöffnet),
- * wird das Formular neu gesetzt.
- * immediate:true -> läuft auch beim ersten Rendern.
- */
-watch(
-  () => props.dienst,
-  (d) => {
-    if (!d) return;
-    // existierende Daten übernehmen oder fallback
-    localTyp.value = d.schicht_typ || "F";
-    localMnr.value = d.mnr ?? null;
-  },
-  { immediate: true }
-);
-
-/**
- * canSave = einfache Validierung:
- * Status muss gesetzt sein UND Mitarbeiter gewählt.
- * Wird genutzt für disable Button + Fehlermeldung.
- */
-const canSave = computed(() => {
-  return !!localTyp.value && localMnr.value != null;
-});
-
-/**
- * onSave feuert Event an Parent.
- * Parent macht dann z.B. API Call
- */
-function onSave() {
-  emit("save", {
-    dienstId: props.dienst.id,
-    schicht_typ: localTyp.value,
-    mnr: localMnr.value,
-  });
-}
-</script>
