@@ -16,7 +16,7 @@ const query = `
             f.filialname,           -- Der  Name aus Tabelle filiale
             m.nachname, 
             m.vorname, 
-            d.datum, 
+            to_char(d.datum::date, 'DD.MM.YYYY') AS datum,
             d.schicht_typ AS kürzel             --  Kürzel für das Excel-Layout
     
         FROM dienstplaene d

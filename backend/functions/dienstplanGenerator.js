@@ -195,9 +195,9 @@ async function generateDienstplan(year, month) {
         dienste.push({
           jahr,
           monat,
-          datum: date,        // so wie bisher (Date oder string)
+          datum: date,
           mnr: m.mnr,
-          fnr: filiale.fnr,   // wichtig: Dienst gehört zur Arbeitsfiliale
+          fnr: filiale.fnr,
           schicht_typ,
         });
 
@@ -222,135 +222,6 @@ async function generateDienstplan(year, month) {
 
       // Counter dauerhaft speichern -> nächster Monat startet versetzt
       await mitarbeiterRepo.updateCounter(m.mnr, counter);
-
-      // Sollstunden speichern wir später NACH Kürzung (Phase 4),
-      // weil IST sich noch ändert.
-    }
-
-    // ------------------------------------------------------------
-    // PHASE 2: A/E pro Tag garantieren (wie in der alten Version)
-    // ------------------------------------------------------------
-    // Idee: Wenn an einem Tag kein A oder kein E existiert,
-    // dann suchen wir den ersten Mitarbeiter der an dem Tag "F" hat
-    // und setzen ihn auf A/E.
-    function setFirstFTo(dk, typ) {
-      for (const m of mitarbeiterFiliale) {
-        const idx = idxByMnrDate.get(`${m.mnr}|${dk}`);
-        if (idx == null) continue;
-
-        if (dienste[idx].schicht_typ === "F") {
-          dienste[idx].schicht_typ = typ;
-
-          // Stunden hoch
-          const cur = stundenByMnr.get(m.mnr) || 0;
-          stundenByMnr.set(m.mnr, cur + STUNDEN_PRO_DIENST);
-
-          // Abdeckung updaten
-          if (!abdeckungByDate.has(dk)) abdeckungByDate.set(dk, { A: new Set(), E: new Set() });
-          abdeckungByDate.get(dk)[typ].add(m.mnr);
-
-          return true;
-        }
-      }
-      return false;
-    }
-
-    for (const date of dates) {
-      const dk = dateKey(date);
-      if (!abdeckungByDate.has(dk)) abdeckungByDate.set(dk, { A: new Set(), E: new Set() });
-
-      const cov = abdeckungByDate.get(dk);
-      const hasA = cov.A.size > 0;
-      const hasE = cov.E.size > 0;
-
-      if (!hasA) setFirstFTo(dk, "A");
-      if (!hasE) setFirstFTo(dk, "E");
-    }
-
-    // ------------------------------------------------------------
-    // PHASE 3: Stunden-KÜRZUNG auf Zielstunden
-    // ------------------------------------------------------------
-    // Ziel: Wenn Stunden > Zielstunden:
-    // -> suche zufällige A/E Kandidaten
-    // -> aber NIE letzte A/E pro Tag wegnehmen
-    for (const m of mitarbeiterFiliale) {
-      const faktor = getFaktorFuerMitarbeiter(m);
-      const zielStunden = Math.round(monatsstunden * faktor);
-
-      let hours = stundenByMnr.get(m.mnr) || 0;
-
-      while (hours > zielStunden+10) {
-        const kandidaten = [];
-
-        for (const date of dates) {
-          const dk = dateKey(date);
-          const idx = idxByMnrDate.get(`${m.mnr}|${dk}`);
-          if (idx == null) continue;
-
-          const typ = String(dienste[idx].schicht_typ || "F").toUpperCase();
-          if (typ !== "A" && typ !== "E") continue;
-
-          const cov = abdeckungByDate.get(dk);
-          if (!cov) continue;
-
-          // nicht die letzte A/E des Tages entfernen
-          if (cov[typ].size <= MIN_WORKERS_PRO_SCHICHT) continue;
-
-          kandidaten.push({ dk, idx, typ });
-        }
-
-        // keine Kandidaten -> keine Kürzung mehr möglich
-        if (kandidaten.length === 0) break;
-
-        // zufällig einen Kandidaten wählen
-        const pick = kandidaten[Math.floor(Math.random() * kandidaten.length)];
-
-        // Dienst auf F setzen
-        dienste[pick.idx].schicht_typ = "F";
-
-        // Abdeckung reduzieren
-        abdeckungByDate.get(pick.dk)[pick.typ].delete(m.mnr);
-
-        // Stunden runter
-        hours -= STUNDEN_PRO_DIENST;
-        if (hours < 0) hours = 0;
-        stundenByMnr.set(m.mnr, hours);
-      }
-    }
-
-    // ------------------------------------------------------------
-    // PHASE 4: Endkontrolle (A/E muss trotzdem da sein)
-    // ------------------------------------------------------------
-    // Nach Kürzung kann es theoretisch passieren, dass A/E fehlt,
-    // deshalb nochmal kontrollieren und notfalls F -> A/E setzen.
-    for (const date of dates) {
-      const dk = dateKey(date);
-      if (!abdeckungByDate.has(dk)) abdeckungByDate.set(dk, { A: new Set(), E: new Set() });
-
-      const cov = abdeckungByDate.get(dk);
-      const hasA = cov.A.size > 0;
-      const hasE = cov.E.size > 0;
-
-      if (!hasA) setFirstFTo(dk, "A");
-      if (!hasE) setFirstFTo(dk, "E");
-    }
-
-    // ------------------------------------------------------------
-    // PHASE 5: Stunden in DB speichern (NACH Kürzung!)
-    // ------------------------------------------------------------
-    for (const m of mitarbeiterFiliale) {
-      const faktor = getFaktorFuerMitarbeiter(m);
-      const zielStunden = Math.round(monatsstunden * faktor);
-      const ist = stundenByMnr.get(m.mnr) || 0;
-
-      await stundenRepo.saveStunden({
-        mnr: m.mnr,
-        jahr,
-        monat,
-        soll_stunden_monat: zielStunden,
-        ist_stunden_monat: ist,
-        differenz: ist - zielStunden,
-      });
     }
 
     // ------------------------------------------------------------

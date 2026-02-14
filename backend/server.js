@@ -32,7 +32,12 @@ const PORT = 3001;
 // - cors(): erlaubt Zugriffe vom Frontend auf diese API (Cross-Origin Requests)
 // ============================================================================
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true,
+  exposedHeaders: ["Content-Disposition"],
+}));
+
 
 // ============================================================================
 // Routen einbinden
@@ -47,11 +52,6 @@ app.use("/api/auth", authRouter);
 // Aktivieren, wenn Login/Token-Pflicht im Projekt gefordert ist.
 app.use(loginAllowness);
 
-
-// Middleware
-app.use(express.json()); // JSON-Body verarbeiten
-app.use(cors());         // Cross-Origin-Zugriff erlauben
-
 const mitarbeiterRouter = require("./routes/mitarbeiter.routes");
 app.use("/api/mitarbeiter", mitarbeiterRouter);
 
@@ -60,10 +60,10 @@ app.use("/api/filialen", filialenRouter);
 
 const dienstplanRouter = require("./routes/dienstplan.routes");
 app.use("/api/dienstplan", dienstplanRouter);
-/* 
+
 // Export/Download-Funktionen (z.B. CSV-Export für Dienstpläne)
 const exportRouter = require("./routes/export.routes.js");
-app.use("/api/download", exportRouter); */
+app.use("/api/download", exportRouter);
 
 // ============================================================================
 // Startlogik
@@ -76,7 +76,6 @@ app.use("/api/download", exportRouter); */
 // 5) Server starten
 // ============================================================================
 async function startApp() {
-
   try {
     console.log("Warte kurz auf Docker/DB-Startup...");
 
@@ -85,7 +84,6 @@ async function startApp() {
     await new Promise((res) => setTimeout(res, 5000));
 
     await db.initDatabase();
-    await deleteOldShifts();  //erster cleanup beim starten
 
     // Erster Cleanup direkt beim Start
     await deleteOldShifts();

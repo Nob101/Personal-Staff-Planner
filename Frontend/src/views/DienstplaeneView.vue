@@ -4,8 +4,9 @@ import { useDienstplan } from "@/composables/dienstplan/useDienstplan.js";
 import DienstplanHeader from "@/components/dienstplan/DienstplanHeader.vue";
 import DienstplanGrid from "@/components/dienstplan/DienstplanGrid.vue";
  
-const jahr = ref(2026);
-const monat = ref(1);
+const now = new Date()
+const jahr = ref(now.getFullYear())
+const monat = ref(now.getMonth() + 1)
  
 const {
   view, loading, error,
@@ -76,6 +77,8 @@ const filialenToShow = computed(() => {
         :onShift="doShift"
         :onGetErsatz="getErsatz"
         :onShiftMitErsatz="doShiftMitErsatz"
+        :jahr="jahr"
+        :monat="monat"
       />
     </div>    
   </div>

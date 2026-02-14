@@ -1,31 +1,46 @@
 @baseUrl = https://localhost/api
-@token = d8ef0267afad403137d13a6c6c221c12ed3cd32a43929e5e
+@token = de1c989c53ff40c92ea12239cb28f76e6e563d13c33fc0a6
 @jahr = 2026
 @monat = 1
 
 
+### ============================================================================
+### AUTH
+### ============================================================================
+
+### POST Login (Token holen)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "markus",
+  "password": "psp1234"
+}
 
 
 ### ============================================================================
-### MITARBEITER (Frontend DTO)
+### MITARBEITER
 ### ============================================================================
 
 ### GET alle Mitarbeiter
 GET {{baseUrl}}/mitarbeiter
+Authorization: {{token}}
 
 ### GET Mitarbeiter nach mnr
-@MNR = 6
+@MNR = 5
 GET {{baseUrl}}/mitarbeiter/{{MNR}}
+Authorization: {{token}}
 
-### POST Mitarbeiter anlegen (Frontend-Format)
+### POST Mitarbeiter anlegen
 POST {{baseUrl}}/mitarbeiter
+Authorization: {{token}}
 Content-Type: application/json
 
 {
-  "vorname": "Test4",
+  "vorname": "Test 14",
   "nachname": "Frontend",
   "arbeitsstunden": 40,
-  "springer": "Ja",
+  "springer": "Nein",
   "hauptfiliale": 1,
   "nebenfilialen": [2],
   "strasse": "Testweg 1",
@@ -49,7 +64,7 @@ Content-Type: application/json
 
 {
   "vorname": "Test-Updated",
-  "nachname": "Frontend-Updated 13",
+  "nachname": "Frontend-Updated",
   "arbeitsstunden": 40,
   "springer": "Ja",
   "hauptfiliale": 2,
