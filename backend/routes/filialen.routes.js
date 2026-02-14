@@ -2,14 +2,6 @@ const express = require("express");
 const router = express.Router();
 const filialeRepo = require("../repositories/filialen.repo.pg");
 
-function toFrontendFiliale(f) {
-  if (!f) return f;
-  return {
-    ...f,
-    anmerkungen: f.anmerkung ?? null,
-  };
-}
-
 /**
  * ============================================================================
  * FILIALEN ROUTES
@@ -48,7 +40,6 @@ router.post("/", async (req, res) => {
       land,
       telefon,
       email,
-      anmerkungen,
       farbe,
       ort,
       algorithmid,
@@ -68,12 +59,11 @@ router.post("/", async (req, res) => {
       land: land ?? "Österreich",
       telefon: telefon ?? null,
       email: email ?? null,
-      anmerkung: anmerkungen ?? null,
       farbe: farbe ?? "#3498db",
       algorithmid: algorithmid, // Algorithmus-ID steuert das Schichtmuster in der Generierung
     });
 
-    res.status(201).json(toFrontendFiliale(created));
+    res.status(201).json(created);
   } catch (err) {
     console.error("Fehler POST /filialen:", err);
     // err.message ist für Debug ok, aber in echten Systemen würde man hier eher generisch antworten
@@ -90,7 +80,7 @@ router.post("/", async (req, res) => {
 router.get("/", async (_req, res) => {
   try {
     const data = await filialeRepo.getAll();
-    res.json(data.map(toFrontendFiliale));
+    res.json(data);
   } catch (err) {
     console.error("Fehler GET /filialen:", err);
     res.status(500).json({ error: "Fehler beim Laden der Filialen" });
@@ -115,7 +105,7 @@ router.get("/:fnr", async (req, res) => {
       return res.status(404).json({ error: "Filiale nicht gefunden" });
     }
 
-    res.json(toFrontendFiliale(filiale));
+    res.json(filiale);
   } catch (err) {
     console.error("Fehler GET /filialen/:fnr:", err);
     res.status(500).json({ error: "Fehler beim Laden der Filiale" });
@@ -145,7 +135,6 @@ router.put("/:fnr", async (req, res) => {
       "land",
       "telefon",
       "email",
-      "anmerkungen",
       "farbe",
       "algorithmid",
     ];
@@ -160,7 +149,7 @@ router.put("/:fnr", async (req, res) => {
       return res.status(404).json({ error: "Filiale nicht gefunden" });
     }
 
-    res.json(toFrontendFiliale(updated));
+    res.json(updated);
   } catch (err) {
     console.error("Fehler PUT /filialen/:fnr:", err);
     res.status(500).json({ error: "Fehler beim Aktualisieren der Filiale" });

@@ -1,42 +1,27 @@
-@baseUrl = https://localhost/api
-@token = d8ef0267afad403137d13a6c6c221c12ed3cd32a43929e5e
+@baseUrl = http://localhost:3001/api
 @jahr = 2026
 @monat = 2
 
 
-### ============================================================================
-### AUTH
-### ============================================================================
-
-### POST Login (Token holen)
-POST {{baseUrl}}/auth/login
-Content-Type: application/json
-
-{
-  "username": "markus",
-  "password": "psp1234"
-}
 
 
 ### ============================================================================
-### MITARBEITER
+### MITARBEITER (Frontend DTO)
 ### ============================================================================
 
 ### GET alle Mitarbeiter
 GET {{baseUrl}}/mitarbeiter
-Authorization: {{token}}
 
 ### GET Mitarbeiter nach mnr
-@MNR = 5
+@MNR = 7
 GET {{baseUrl}}/mitarbeiter/{{MNR}}
-Authorization: {{token}}
 
-### POST Mitarbeiter anlegen
+### POST Mitarbeiter anlegen (Frontend-Format)
 POST {{baseUrl}}/mitarbeiter
-Authorization: {{token}}
 Content-Type: application/json
 
 {
+
   "vorname": "Test 14",
   "nachname": "Frontend",
   "arbeitsstunden": 40,
@@ -53,13 +38,12 @@ Content-Type: application/json
   "email1": "test@demo.at",
   "email2": "",
 
-  "anmerkungen": "Hallo"
+  "anmerkungen": "test_"
 }
 
-### PUT Mitarbeiter bearbeiten
-@MNR_UPDATE = 1
+### PUT Mitarbeiter bearbeiten (Frontend-Format)
+@MNR_UPDATE = 6
 PUT {{baseUrl}}/mitarbeiter/{{MNR_UPDATE}}
-Authorization: {{token}}
 Content-Type: application/json
 
 {
@@ -72,7 +56,7 @@ Content-Type: application/json
 
   "strasse": "Updateweg 9",
   "ort": "Wien",
-  "postleitzahl": "1011",
+  "postleitzahl": "1010",
   "land": "Österreich",
 
   "telefon1": "+43 660 999999",
@@ -84,25 +68,21 @@ Content-Type: application/json
 ### DELETE Mitarbeiter
 @MNR_DELETE = 6
 DELETE {{baseUrl}}/mitarbeiter/{{MNR_DELETE}}
-Authorization: {{token}}
 
 
 ### ============================================================================
-### FILIALEN
+### FILIALEN (Routes: /api/filialen)
 ### ============================================================================
 
 ### GET alle Filialen
 GET {{baseUrl}}/filialen
-Authorization: {{token}}
 
 ### GET Filiale nach fnr
 @FNR = 1
 GET {{baseUrl}}/filialen/{{FNR}}
-Authorization: {{token}}
 
 ### POST Filiale anlegen
 POST {{baseUrl}}/filialen
-Authorization: {{token}}
 Content-Type: application/json
 
 {
@@ -113,7 +93,6 @@ Content-Type: application/json
   "plz": "1000",
   "land": "Österreich",
   "email": "g@firma.at",
-  "anmerkungen": "Zentrale Filiale",
   "telefon": "+43 3332 12345",
   "algorithmid": 1
 }
@@ -121,28 +100,24 @@ Content-Type: application/json
 ### PUT Filiale bearbeiten
 @FNR_UPDATE = 3
 PUT {{baseUrl}}/filialen/{{FNR_UPDATE}}
-Authorization: {{token}}
 Content-Type: application/json
 
 {
   "filialname": "Zentrale Wien NEU",
-  "farbe": "#00ff00",
-  "anmerkungen": "Update Anmerkung"
+  "farbe": "#00ff00"
 }
 
 ### DELETE Filiale
 @FNR_DELETE = 3
 DELETE {{baseUrl}}/filialen/{{FNR_DELETE}}
-Authorization: {{token}}
 
 
 ### ============================================================================
-### DIENSTPLAN
+### DIENSTPLAN (Routes: /api/dienstplan)
 ### ============================================================================
 
-### POST Dienstplan generieren
+### POST Dienstplan generieren + speichern
 POST {{baseUrl}}/dienstplan/generate
-Authorization: {{token}}
 Content-Type: application/json
 
 {
@@ -150,27 +125,23 @@ Content-Type: application/json
   "monat": {{monat}}
 }
 
-### GET Dienstplan raw
+### GET Dienstplan (raw)
 GET {{baseUrl}}/dienstplan?jahr={{jahr}}&monat={{monat}}
-Authorization: {{token}}
 
-### GET Dienstplan View
+### GET Dienstplan Ansicht (View fürs Frontend)
 GET {{baseUrl}}/dienstplan/view?jahr={{jahr}}&monat={{monat}}
-Authorization: {{token}}
 
 ### DELETE Dienstplan Monat löschen
 DELETE {{baseUrl}}/dienstplan/{{jahr}}/{{monat}}
-Authorization: {{token}}
 
 
 ### ============================================================================
-### SHIFT
+### SHIFT (ein Dienst)
 ### ============================================================================
 
-### POST shift ändern
+### POST shift: Einen Dienst-Typ ändern (A/E/F/K/U)
 @DIENST_ID = 3641
 POST {{baseUrl}}/dienstplan/shift
-Authorization: {{token}}
 Content-Type: application/json
 
 {
@@ -180,13 +151,15 @@ Content-Type: application/json
 
 
 ### ============================================================================
-### SHIFT MIT ERSATZ
+### SHIFT MIT ERSATZ (zwei Dienste)
 ### ============================================================================
 
+### POST shiftMitErsatz:
+### altId -> wird z.B. auf K oder F gesetzt
+### neuId -> bekommt den ursprünglichen Typ vom altDienst + fnr vom altDienst
 @ALT_ID = 3641
 @NEU_ID = 3796
 POST {{baseUrl}}/dienstplan/shiftMitErsatz
-Authorization: {{token}}
 Content-Type: application/json
 
 {
@@ -196,22 +169,21 @@ Content-Type: application/json
 }
 
 
+
 ### ============================================================================
-### ERSATZ
+### ERSATZ-KANDIDATEN (für einen Dienst)
 ### ============================================================================
 
+### GET :id/ersatz
+### dienstId -> Dienst, für den Ersatz gesucht wird
+### Rückgabe: kandidaten[] (meist F-Dienste am selben Tag, die in der Filiale arbeiten dürfen)
 @DIENST_ID = 3641
 GET {{baseUrl}}/dienstplan/{{DIENST_ID}}/ersatz
-Authorization: {{token}}
 Accept: application/json
 
 
-### ============================================================================
-### STUNDEN
-### ============================================================================
-
+### PUT Stunden manuell ändern (Soll-Stunden setzen)
 PUT {{baseUrl}}/dienstplan/stunden
-Authorization: {{token}}
 Content-Type: application/json
 
 {

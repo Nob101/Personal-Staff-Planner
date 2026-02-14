@@ -213,7 +213,7 @@ router.put("/:mnr", async (req, res) => {
       mitarbeiterRepo.getByIdWithDetails(mnr),
       filialenRepo.getAll(),
     ]);
- 
+
     res.json(toFrontend(fresh, filialen));
   } catch (err) {
     console.error("Fehler PUT /mitarbeiter/:mnr:", err);

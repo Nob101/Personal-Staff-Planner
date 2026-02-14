@@ -1,26 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Immer im Ordner des Scripts ausführen (wichtig bei Doppelklick/Shortcuts)
-cd "$(dirname "$0")"
-
 echo "-------------------------------------"
 echo "PSP-Dienstplan: System check und start"
 echo "-------------------------------------"
 
-# 1) Docker Desktop prüfen / starten
+# 1) Docker prüfen
 echo "Pruefe Docker Desktop..."
 if ! docker info >/dev/null 2>&1; then
-  echo "Docker laeuft nicht... Starte Docker Desktop..."
-
-  # Docker Desktop starten
-  open -a Docker
-
-  echo "Warte auf Docker Daemon (Check alle 5s)..."
-  until docker info >/dev/null 2>&1; do
-    sleep 5
-  done
-  echo "Docker ist nun bereit!"
+  echo "Docker laeuft nicht. Bitte Docker Desktop starten."
+  echo "Tipp: Spotlight -> Docker öffnen, dann nochmal dieses Script starten."
+  exit 1
 else
   echo "Docker laeuft bereits."
 fi
@@ -46,11 +36,10 @@ else
   echo "Zertifikate erfolgreich erstellt!"
 fi
 
-# 3) Container starten (mit Build wie bei Windows)
+# 3) Container starten
 echo "Starte Docker-container..."
-docker compose up --build -d
+docker compose up -d
 
-# 4) Warten
 sleep 15
 
 echo "-------------------------------------"
@@ -58,8 +47,5 @@ echo "System ist online!"
 echo "Oeffne App unter https://localhost"
 echo "-------------------------------------"
 
-# 5) Browser öffnen (Standardbrowser)
+# 4) Browser öffnen
 open "https://localhost"
-
-# Optional: wie Edge-App-Modus auf Windows
-# open -a "Microsoft Edge" --args --app="https://localhost"

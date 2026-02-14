@@ -1,7 +1,5 @@
 const pool = require("../db/pool");
 
-
-
 /**
  * ============================================================================
  * Repository: filiale
@@ -26,8 +24,8 @@ const pool = require("../db/pool");
 async function add(f) {
   const result = await pool.query(
     `
-    INSERT INTO filiale (filialname, farbe, ort, strasse, plz, land, email, anmerkung, telefon, algorithmid)
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+    INSERT INTO filiale (filialname, farbe, ort, strasse, plz, land, email, telefon, algorithmid)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
     RETURNING *;
     `,
     [
@@ -38,7 +36,6 @@ async function add(f) {
       f.plz,
       f.land,
       f.email,
-      f.anmerkung ?? null,
       f.telefon,
       f.algorithmid,
     ],
@@ -55,7 +52,7 @@ async function add(f) {
  * damit das Frontend nicht "zufällig" sortierte Daten erhält.
  */
 async function getAll() {
-  const result = await pool.query(`SELECT * FROM filiale WHERE aktiv = true ORDER BY fnr;`);
+  const result = await pool.query(`SELECT * FROM filiale ORDER BY fnr;`);
   return result.rows;
 }
 
@@ -85,11 +82,6 @@ async function getById(fnr) {
  *   ohne für jede Kombination ein eigenes SQL-Statement zu schreiben.
  */
 async function update(fnr, updates) {
-  if ("anmerkungen" in updates && !("anmerkung" in updates)) {
-    updates.anmerkung = updates.anmerkungen;
-  }
-  delete updates.anmerkungen;
-
   const allowedFields = [
     "filialname",
     "farbe",
@@ -98,7 +90,6 @@ async function update(fnr, updates) {
     "plz",
     "land",
     "email",
-    "anmerkung",
     "telefon",
     "algorithmid",
   ];
@@ -143,10 +134,7 @@ async function update(fnr, updates) {
  * Die Route kann damit sauber 404 oder Erfolg liefern.
  */
 async function remove(fnr) {
-  const result = await pool.query(
-    `UPDATE filiale SET aktiv = FALSE WHERE fnr = $1;`,
-    [fnr],
-  );
+  const result = await pool.query(`DELETE FROM filiale WHERE fnr = $1;`, [fnr]);
   return result.rowCount > 0;
 }
 
