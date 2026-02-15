@@ -25,8 +25,8 @@ async function onSubmit() {
   }
 
   if (ok) {
-    // Login / Registrierung erfolgreich -> MitarbeiterView
-    router.push({ name: '/' })
+    // Login / Registrierung erfolgreich -> HomeView
+    router.push({ name: 'home' })
   }
 }
 </script>

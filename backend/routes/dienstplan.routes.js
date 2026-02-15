@@ -64,12 +64,20 @@ router.get("/", async (req, res) => {
  * Der Generator speichert intern die Ergebnisse in der Datenbank.
  * ============================================================================
  */
+
+let generating = false;
+ 
+
 router.post("/generate", async (req, res) => {
   const { jahr, monat } = req.body;
 
+  const rid = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  console.log("[GEN]", rid, "jahr", req.body.jahr, "monat", req.body.monat, "token", req.headers.authorization);
   if (!jahr || !monat) {
     return res.status(400).json({ error: "jahr und monat Pflicht." });
   }
+
+  generating = true;
 
   try {
     const j = Number(jahr);
@@ -77,9 +85,14 @@ router.post("/generate", async (req, res) => {
 
     const plan = await generateDienstplan(j, m);
     res.json(plan);
-  } catch (err) {
+  } 
+    catch (err) {
     console.error("POST /dienstplan/generate", err);
     res.status(500).json({ error: "Fehler beim Generieren." });
+  }
+    finally {
+    generating = false;
+    console.log("[GEN]", rid, "fertig");
   }
 });
 
