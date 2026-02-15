@@ -24,13 +24,11 @@ function onLoad(j, m) {
  * GLOBAL: alle Filialen generieren
  * (nutzt deine bestehende generate(jahr, monat, fnr) Logik)
  */
-function onGenerateAll() {
-  if (!view.value?.filialen?.length) return;
- 
-  for (const f of view.value.filialen) {
-    generate(jahr.value, monat.value, f.fnr);
-  }
+async function onGenerateAll() {
+  if (loading.value) return;
+  await generate(jahr.value, monat.value);
 }
+
  
 /**
  * GLOBAL: alles leeren

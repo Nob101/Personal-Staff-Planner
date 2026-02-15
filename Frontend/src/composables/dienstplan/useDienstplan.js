@@ -7,7 +7,6 @@ import {
   shiftDienst,
   ersatzKandidaten,
   shiftMitErsatz,
-  updateStunden
 } from "@/services/dienstplanService.js";
 
 export function useDienstplan() {
@@ -29,26 +28,11 @@ export function useDienstplan() {
     }
   }
 
-  async function saveStunden({ jahr, monat, mnr, ist_stunden_monat }) {
+  async function generate(jahr, monat) {
     loading.value = true;
     error.value = "";
     try {
-      await updateStunden({ jahr, monat, mnr, ist_stunden_monat });
-      await load(jahr, monat);
-    } catch (e) {
-      console.error(e);
-      error.value =
-        e?.response?.data?.error || e?.message || "Fehler beim Speichern der Stunden";
-    } finally {
-      loading.value = false;
-    }
-  }
-
-  async function generate(jahr, monat, fnr) {
-    loading.value = true;
-    error.value = "";
-    try {
-      await generateDienstplan(jahr, monat, fnr);
+      await generateDienstplan(jahr, monat);
       await load(jahr, monat);
     } catch (e) {
       console.error(e);
@@ -119,21 +103,6 @@ export function useDienstplan() {
     remove,
     doShift,
     getErsatz,
-    doShiftMitErsatz,
-    saveStunden
+    doShiftMitErsatz
   };
-}
-
-async function saveStunden({ jahr, monat, mr, ist_stunden_monat }) {
-  loading.value = true;
-  error.value = "";
-  try {
-    await updateStunden({ jahr, monat, mr, ist_stunden_monat });
-    await load(jahr, monat);
-  } catch (e) {
-    console.error(e);
-    error.value = e?.response?.data?.error || e?.message || "Fehler beim Speichern der Stunden";
-  } finally {
-    loading.value = false;
-  }
 }
