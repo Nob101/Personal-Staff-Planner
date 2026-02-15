@@ -13,8 +13,7 @@
 const fs = require('fs');
 const path = require('path');
 
-
-// *.sql asu den ordnern Laden
+// *.sql -Files aus den ordnern Laden
 
 async function loadSqlFiles(client, directories) {
   for (const dir of directories) {  //sucht in alle Verzeichnisse
@@ -34,7 +33,7 @@ async function loadSqlFiles(client, directories) {
         } catch (err) {
             console.error(` Fehler in Datei ${file}:`, err.message);
 
-          throw err; //  Transaktion bricht ab bei fehler -> RollBack
+          throw err; //  Transaktion bricht ab bei Fehler -> RollBack
         }
       }
     } else {
@@ -42,5 +41,4 @@ async function loadSqlFiles(client, directories) {
     }
   }
 }
-
 module.exports = { loadSqlFiles };

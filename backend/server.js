@@ -16,11 +16,16 @@ const { deleteOldShifts } = require('./functions/cleanUpService');
 const {loginAllowness} = require('./middleware/auth.middleware');
 const PORT = 3001;
 
+// ============================================================================
+// Globale Middleware
+// ----------------------------------------------------------------------------
+// - express.json(): verarbeitet JSON-Request-Bodies (POST/PUT/PATCH)
+// - cors(): erlaubt Zugriffe vom Frontend auf diese API (Cross-Origin Requests)
+// ============================================================================
+app.use(express.json());   // JSON-Body verarbeiten
+app.use(cors());          // Cross-Origin-Zugriff erlauben
 
 
-// Middleware
-app.use(express.json()); // JSON-Body verarbeiten
-app.use(cors());         // Cross-Origin-Zugriff erlauben
 
 // ---------------------
 //   ROUTES EINBINDEN

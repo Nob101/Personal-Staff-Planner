@@ -79,8 +79,6 @@ CREATE TABLE IF NOT EXISTS mitarbeiter_kontakt (
     land VARCHAR(55)
 );
 
-
-
 CREATE TABLE IF NOT EXISTS mitarbeiter_telefon (
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
     telefon_typ VARCHAR(50) NOT NULL,
@@ -126,9 +124,9 @@ CREATE TABLE IF NOT EXISTS stunden_konto (
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
     jahr INTEGER NOT NULL,
     monat INTEGER NOT NULL,
-    soll_stunden_monat DECIMAL(10,2),                   --< Dynamisch berechnet vom Backend
+    soll_stunden_monat DECIMAL(10,2),      --< Dynamisch berechnet vom Backend
     ist_stunden_monat DECIMAL(10,2),
-    differenz DECIMAL(10,2),                            --< Wird im Backend berechnet und hier gespeichert
+    differenz DECIMAL(10,2),               --< Wird im Backend berechnet und hier gespeichert
     UNIQUE(mnr, jahr, monat)
 );
 
@@ -146,9 +144,11 @@ CREATE TABLE IF NOT EXISTS dienstplaene (
     monat INTEGER NOT NULL,
     datum DATE NOT NULL,
 
-    mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
-    fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE CASCADE,
-    schicht_typ VARCHAR(6) REFERENCES arbeitstyp(akurzl),
+    --WICHTIG: RESTRICT verhindert das MA gelöscht werden können
+    -- erst muss der dienstplan Cleanup alte Einträge entfernen
+    mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE RESTRICT,
+    fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE RESTRICT,
+    schicht_typ VARCHAR(6) REFERENCES arbeitstyp(akurzl) ON DELETE RESTRICT,
     anmerkung VARCHAR(250),
 
     erstellt_am TIMESTAMP DEFAULT now(),

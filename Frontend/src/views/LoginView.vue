@@ -3,6 +3,7 @@
 import { ref } from 'vue'
 import router from '@/router/router.js'
 import { useLogin } from '@/composables/useLogin'
+import { setAuthHeader } from '@/services/http'  //NEU: Hilfsfunktion
 
 const {
   benutzername,
@@ -25,6 +26,10 @@ async function onSubmit() {
   }
 
   if (ok) {
+
+    // NEU: token aus dem Storage holen und Axios direkt mitteilen -> s#dann erst weiterleiten
+    const token = localStorage.getItem('userToken');
+    setAuthHeader(token);
     // Login / Registrierung erfolgreich -> MitarbeiterView
     router.push({ name: 'mitarbeiter' })
   }

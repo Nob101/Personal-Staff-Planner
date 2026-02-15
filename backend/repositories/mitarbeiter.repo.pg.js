@@ -13,6 +13,8 @@ function mapRowToDto(row) {
     springer: row.springer,
     counter: row.counter,
     springeralgorithmid: row.springeralgorithmid,
+    aktiv: row.aktiv,
+    anmerkung : row.anmerkung,
 
     kontakt: row.kontakt ?? null,
     telefone: row.telefone ?? [],
@@ -24,7 +26,8 @@ function mapRowToDto(row) {
 /* 
  * GET ALL (inkl. details)
  */
-async function getAllWithDetails() {
+async function getAllWithDetails({ onlyActive = false } = {}) {
+  const where = onlyActive ? `WHERE m.aktiv = true` : ``;
   const sql = `
     SELECT
       m.mnr, m.vorname, m.nachname,
@@ -33,6 +36,8 @@ async function getAllWithDetails() {
       m.springer,
       m.counter,
       m.springeralgorithmid,
+      m.aktiv,
+      m.anmerkung,
 
       -- kontakt (0..1)
       (
@@ -75,6 +80,7 @@ async function getAllWithDetails() {
       ), '[]'::jsonb) AS nebenfilialen
 
     FROM mitarbeiter m
+    ${where}
     ORDER BY m.mnr;
   `;
 
@@ -94,6 +100,8 @@ async function getByIdWithDetails(mnr) {
       m.springer,
       m.counter,
       m.springeralgorithmid,
+      m.aktiv,
+      m.anmerkung,
 
       (
         SELECT jsonb_build_object(
@@ -149,17 +157,18 @@ async function addWithDetails(payload) {
 
     // 1) mitarbeiter
     const insertMaSql = `
-  INSERT INTO mitarbeiter (
-    vorname, nachname,
-    hauptfiliale_fnr,
-    counter,
-    arbeitnehmertyp,
-    springeralgorithmid,
-    springer
-  )
-  VALUES ($1,$2,$3,$4,$5,$6,$7)
-  RETURNING mnr;
-`;
+      INSERT INTO mitarbeiter (
+        vorname, nachname,
+        hauptfiliale_fnr,
+        counter,
+        arbeitnehmertyp,
+        springeralgorithmid,
+        springer,
+        anmerkung
+      )
+      VALUES ($1,$2,$3,$4,$5,$6,$7, $8)
+      RETURNING mnr;
+    `;
 
     const insertMaValues = [
       payload.vorname ?? null,
@@ -169,6 +178,7 @@ async function addWithDetails(payload) {
       payload.arbeitnehmertyp ?? 40,
       payload.springeralgorithmid ?? null,
       payload.springer ?? false,
+      payload.anmerkung ?? ""
     ];
 
     const maRes = await client.query(insertMaSql, insertMaValues);
@@ -280,6 +290,8 @@ async function updateWithDetails(mnr, updates) {
       "springer",
       "counter",
       "springeralgorithmid",
+      "aktiv",
+      "anmerkung"
     ];
 
     const baseFields = Object.keys(updates).filter((f) => allowed.includes(f));

@@ -39,7 +39,7 @@
 
 services:
   # --- DATENBANK BEREICH Lukas ---
-  db:
+  psp_database:
     image: postgres:15
     container_name: psp_database
     restart: always
@@ -53,7 +53,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   # --- BACKEND Alexander ---
-  backend:
+  psp_backend:
     build: ./backend
     container_name: psp_backend
     restart: on-failure
@@ -64,7 +64,7 @@ services:
       - /app/node_modules   #schützt die container module
     environment:
       # WICHTIG: Host ist hier 'db' (der Name des Services oben), nicht localhost!
-      DB_HOST: db
+      DB_HOST: psp_database
       DB_PORT: 5432
       DB_NAME: ${DB_NAME}      # <--- fehlte im ersten durchlauf
       DB_USER: ${DB_USER}
@@ -72,7 +72,7 @@ services:
       DB_ROLE_ADMIN_PASSWORD: ${DB_ROLE_ADMIN_PASSWORD}
       INITIAL_MARKUS_PASSWORD: ${INITIAL_MARKUS_PASSWORD}
     depends_on:
-      - db
+      - psp_database
     deploy:                 # <- NEU: Leistungsbegränzer verhinder t den Ungewollten absturzt sollte eine Endlosschleife entstehen
       resources:
         limits:
@@ -82,13 +82,13 @@ services:
           memory: 512M      # Garantierter Speicher 
 
   # --- FRONTEND BEREICH für Oliver (VUE) und JD (TAILWIND)  ---
-  frontend:
+  psp_frontend:
     # HINWEIS für das Frontend:    Docker sucht hier nach dem Ordner 'Frontend' (Großschreibung beachten!)
     build: ./Frontend 
     container_name: psp_frontend
     restart: on-failure
     ports:
-      - "3000:3000" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen
+      - "5173:5173" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen
     
     volumes:
       - ./Frontend:/app         # <--- SPIEGELT VUE-CODE FÜR VITE HOT RELOAD
@@ -98,7 +98,7 @@ services:
       # Für den fall, dass Vue wissen muss, wo das Backend läuft: 3001  !!!
       VITE_API_URL: http://localhost:3001
     depends_on:
-      - backend
+      - psp_backend
 
 # Würde den Algo nicht schneller machen aber für Später als https -Standard wichtig!!  (nur wenn mehrere User den Algo gleichzeitig verwednen würden)
 # darum der DEPLOY oben hinzugefügt
@@ -114,8 +114,8 @@ services:
     - ./nginx.conf:/etc/nginx/nginx.conf:ro
     - ./certs:/etc/nginx/ssl:ro    # Zertifikste
     depends_on:
-    - frontend
-    - backend
+    - psp_frontend
+    - psp_backend
 
 volumes:
   postgres_data:
