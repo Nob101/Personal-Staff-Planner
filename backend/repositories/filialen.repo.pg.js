@@ -22,9 +22,9 @@ const pool = require("../db/pool");
 async function add(f){
   const result = await pool.query(
     `
-    insert into filiale (filialname, farbe, ort, strasse, plz, land, email, telefon, algorithmid)
-    values ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-    returning *;
+    INSERT INTO filiale (filialname, farbe, ort, strasse, plz, land, email, telefon, algorithmid, anmerkung, aktiv)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11)
+    RETURNING *;
     `,
     [
       f.filialname,
@@ -35,18 +35,26 @@ async function add(f){
       f.land,
       f.email,
       f.telefon,
-      f.algorithmid
-    ]
+      f.algorithmid,
+      f.anmerkung ?? "",  //Falls anmerkung leer bleibt
+      f.aktiv
+    ],
   );
 
   return result.rows[0];  
 }
 
+/**
+ * Liefert alle Filialen.
+ *
+ * ORDER BY fnr sorgt für eine stabile Reihenfolge,
+ * damit das Frontend nicht "zufällig" sortierte Daten erhält.
+ */
 
-async function getAll(){
-  const result = await pool.query(
-    `select * from filiale order by fnr;`
-  );
+// NEU: Damit nur aktive (true zurückgegeben werden)
+async function getAll({onlyActive = false} = {}) {
+  const where = onlyActive ? `WHERE aktiv = true`: ``;
+  const result = await pool.query(`SELECT * FROM filiale ${where} ORDER BY fnr;`);
   return result.rows;
 }
 
@@ -60,8 +68,17 @@ async function getById(fnr){
 
 async function update(fnr, updates){
   const allowedFields = [
-    "filialname", "farbe", "ort", "strasse", "plz",
-    "land", "email", "telefon", "algorithmid"
+    "filialname",
+    "farbe",
+    "ort",
+    "strasse",
+    "plz",
+    "land",
+    "email",
+    "telefon",
+    "algorithmid",
+    "aktiv",
+    "anmerkung"
   ];
   
   const fields = Object.keys(updates).filter(f => allowedFields.includes(f));
@@ -91,12 +108,27 @@ async function remove(fnr){
   return result.rowCount > 0;
 }
 
+
+// NEU: für den Softdelet
+
+async function deactivate(fnr){
+  const result = await pool.query(
+    `UPDATE filiale
+    SET aktiv = false
+    where fnr = $1
+    RETURNING fnr;`,
+    [fnr]
+  );
+  return result.rowCount >0;
+}
+
 module.exports = {
   getAll,
   add,
   getById,
   update,
-  remove
+  remove,
+  deactivate
 };
 
 
