@@ -1,0 +1,37 @@
+
+{
+  "short_name": "PSP",
+  "name": "Personal-Staff-Planner",
+  "screenshots": [
+  {
+    "src": "/screenshot.png",
+    "sizes": "1412x978",
+    "type": "image/png",
+    "form_factor": "wide"
+  }
+],
+  "icons": [
+    {
+      "src": "/PSP_Logo_Transparent.png",
+      "type": "image/png",
+      "sizes": "1080x1080",
+      "purpose": "any maskable"
+    },
+
+    {
+      "src": "/Logo.png",
+      "type": "image/png",
+      "sizes": "657x252",
+      "purpose": "any"
+    }
+  ],
+  "start_url": ".",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "orientation": "any"
+
+  
+}
+
