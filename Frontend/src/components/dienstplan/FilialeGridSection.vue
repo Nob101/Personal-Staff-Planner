@@ -170,8 +170,8 @@ const localTyp = computed({
             <span
               class="text-xs font-bold shrink-0"
               :class="{
-                'text-emerald-400': (stundenByMnr(m.mnr)?.differenz ?? 0) >= 0,
-                'text-red-400': (stundenByMnr(m.mnr)?.differenz ?? 0) < 0,
+                'text-emerald-500': (stundenByMnr(m.mnr)?.differenz ?? 0) >= 0,
+                'text-red-500': (stundenByMnr(m.mnr)?.differenz ?? 0) < 0,
               }"
             >
               {{ stundenByMnr(m.mnr)?.differenz ?? "" }}

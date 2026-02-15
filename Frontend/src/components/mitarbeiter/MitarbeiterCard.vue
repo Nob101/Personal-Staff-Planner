@@ -98,7 +98,7 @@ function handleSelect() {
           </div>
 
           <div class="flex justify-between gap-3 min-w-0">
-            <span class="shrink-0">{{ mitarbeiter.arbeitsstunden ?? mitarbeiter.wochenstunden ?? mitarbeiter.arbeitnehmertyp ?? '-' }} Arbeitsstunden</span>
+            <span class="shrink-0">{{ mitarbeiter.arbeitsstunden ?? '-' }} Arbeitsstunden</span>
           </div>
         </div>
       </div>

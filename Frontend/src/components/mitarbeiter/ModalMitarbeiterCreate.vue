@@ -123,11 +123,6 @@ function handleSubmit() {
 
 <template>
   <BaseModal :show="show" @close="emit('close')" width="960px">
-    <!-- Header Slot -->
-    <template #header>
-      <div class="font-sans"></div>
-    </template>
-
     <!-- Body Slot -->
     <template #body>
       <div
@@ -174,7 +169,7 @@ function handleSubmit() {
                 placeholder="Vorname"
                 class="w-104 rounded-xl border border-white/10 bg-black/25 px-4 py-4 text-white outline-none"
               />
-              <p v-if="vornameFehler" class="text-red-400 text-sm">
+              <p v-if="vornameFehler" class="text-red-500 text-sm">
                 Vorname ist erforderlich
               </p>
             </div>
@@ -187,7 +182,7 @@ function handleSubmit() {
                   placeholder="Nachname"
                   class="w-104 rounded-xl border border-white/10 bg-black/25 px-4 py-4 text-white outline-none"
                 />
-                <p v-if="nachnameFehler" class="text-red-400 text-sm">
+                <p v-if="nachnameFehler" class="text-red-500 text-sm">
                   Nachname ist erforderlich
                 </p>
               </div>

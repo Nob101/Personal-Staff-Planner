@@ -156,4 +156,3 @@ defineEmits(["close", "pick", "ignore"]);
     </div>
   </div>
 </template>
-
