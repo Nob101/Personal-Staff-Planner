@@ -17,9 +17,6 @@ const props = defineProps({
   }
 })
 
-
-// ❗️Design hatte andere Event-Namen ("search"), aber wir behalten "searchMitarbeiter",
-// weil MitarbeiterView/useMitarbeiter darauf bereits hängt.
 const emit = defineEmits(['update:modelValue', 'mitarbeiterCreate', 'searchMitarbeiter'])
 
 const search = ref('')
@@ -28,12 +25,6 @@ const search = ref('')
 const selectedOption = computed(() => {
   return props.sortOptions.find(o => o.value === props.modelValue)
 })
-
-
-// Kommentar, weil minimale Logik-Erweiterung:
-// WHY: Wenn die Actionbar remounted, kann die Liste sonst "alt" gefiltert sein.
-// -> Falls du das NICHT willst, kannst du das weglassen.
-// watch(search, (val) => emit('searchMitarbeiter', val))
 </script>
 
 <template>
