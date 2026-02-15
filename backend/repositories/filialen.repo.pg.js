@@ -55,7 +55,7 @@ async function add(f) {
  * damit das Frontend nicht "zufällig" sortierte Daten erhält.
  */
 async function getAll() {
-  const result = await pool.query(`SELECT * FROM filiale WHERE aktiv = true ORDER BY fnr;`);
+  const result = await pool.query(`SELECT * FROM filiale WHERE aktiv = true ORDER BY filialname;`);
   return result.rows;
 }
 
