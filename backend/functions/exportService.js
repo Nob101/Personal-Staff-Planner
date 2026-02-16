@@ -9,13 +9,12 @@
 
 
 const { Parser} = require('json2csv');    // Library mit der Klasse Parser
-
 const exportRepo = require('../repositories/export.repo.pg.js');
 
 
-const konvertDienstplan2CSV = async (jahr, monat) => {
+const konvertDienstplan2CSV = async (jahr, monat, fnr) => {
     try {
-        const data = await exportRepo.getExportData(jahr, monat);
+        const data = await exportRepo.getExportData(jahr, monat, fnr);
 
         if (!data || data.length === 0){
             return null;  // Abbruch wenn keine Daten gefunden werden
@@ -33,15 +32,20 @@ const konvertDienstplan2CSV = async (jahr, monat) => {
         // Neue Instanz
         const json2csvParser = new Parser({ 
             fields, 
-            delimiter: ';', 
+            delimiter: ';',             //Wichtig: EXCEL erkennt Spalten meistens automatisch und sortiert   (, und . wären Fehleranfälliger [US,EU])
             quote: '' 
         });
 
   // Wandelt in CSV Format um
         const csv = json2csvParser.parse(data);
         
+        // NEU: Data_Export
+        const rawFileName = data[0].filialname.replace(/[^a-z0-9]/gi, '_');
         // Wichtig: Damit Excel die Sonderzeichen erkennt (BOM) als ufeff zurückgeben
-        return '\ufeff' +csv;
+        return {
+            csvContent: '\ufeff' + csv,
+            fileNamePart: rawFileName
+        };
 
     }catch (err){
         console.error('Fehler beim konvertieren der  Daten!', err.message);

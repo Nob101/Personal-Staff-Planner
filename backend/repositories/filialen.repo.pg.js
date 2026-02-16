@@ -1,29 +1,33 @@
-/*
-Spalte	                               Typ	                            Beschreibung
-
-fnr	                                   SERIAL                          PRIMARY KEY	
-filialname	                           TEXT	                          Name oder Kürzel der Filiale
-farbe	                                 TEXT	                          HEX-Farbcode fürs Frontend
-ort	                                   TEXT	                          Standort
-strasse	                               TEXT	                          Adresse
-plz	                                   TEXT	                          Postleitzahl
-land	                                 TEXT	                          Land
-email	                                 TEXT	                          Kontaktadresse
-telefon	                               TEXT	                          Telefonnummer
-algorithmid	                           INTEGER	                      Referenz auf Algorithmus
-*/
-
-
 const pool = require("../db/pool");
-//const { get } = require("../routes/mitarbeiter.routes");
 
 
 
-async function add(f){
+/**
+ * ============================================================================
+ * Repository: filiale
+ * ----------------------------------------------------------------------------
+ * Verantwortlich für alle Datenbankzugriffe auf die Tabelle "filiale".
+ *
+ * Prinzip:
+ * - Das Repository kapselt SQL-Statements zentral an einer Stelle.
+ * - Routes/Controller müssen dadurch kein SQL enthalten.
+ * - Parameterisierte Queries ($1, $2, ...) verhindern SQL-Injection.
+ * ============================================================================
+ */
+
+/**
+ * Legt eine neue Filiale in der Datenbank an.
+ *
+ * Wichtig:
+ * - Es werden ausschließlich Werte aus dem übergebenen Objekt f übernommen.
+ * - "RETURNING *" liefert den neu angelegten Datensatz direkt zurück,
+ *   damit das Backend/Frontend die generierte fnr (Primary Key) sofort kennt.
+ */
+async function add(f) {
   const result = await pool.query(
     `
-    INSERT INTO filiale (filialname, farbe, ort, strasse, plz, land, email, telefon, algorithmid, anmerkung, aktiv)
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11)
+    INSERT INTO filiale (filialname, farbe, ort, strasse, plz, land, email, anmerkung, telefon, algorithmid)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
     RETURNING *;
     `,
     [
@@ -34,14 +38,14 @@ async function add(f){
       f.plz,
       f.land,
       f.email,
+      f.anmerkung ?? null,
       f.telefon,
       f.algorithmid,
-      f.anmerkung ?? "",  //Falls anmerkung leer bleibt
-      f.aktiv
     ],
   );
 
-  return result.rows[0];  
+  // Bei INSERT RETURNING * kommt genau 1 Zeile zurück.
+  return result.rows[0];
 }
 
 /**
@@ -50,23 +54,42 @@ async function add(f){
  * ORDER BY fnr sorgt für eine stabile Reihenfolge,
  * damit das Frontend nicht "zufällig" sortierte Daten erhält.
  */
-
-// NEU: Damit nur aktive (true zurückgegeben werden)
-async function getAll({onlyActive = false} = {}) {
-  const where = onlyActive ? `WHERE aktiv = true`: ``;
-  const result = await pool.query(`SELECT * FROM filiale ${where} ORDER BY fnr;`);
+async function getAll() {
+  const result = await pool.query(`SELECT * FROM filiale WHERE aktiv = true ORDER BY filialname;`);
   return result.rows;
 }
 
-async function getById(fnr){
-  const result = await pool.query(
-    `select * from filiale where fnr = $1;`,
-    [fnr]
-  );
+/**
+ * Liefert eine Filiale anhand ihrer Filialnummer (fnr).
+ *
+ * Rückgabe:
+ * - Objekt, wenn gefunden
+ * - null, wenn nicht vorhanden (sauberer als undefined)
+ */
+async function getById(fnr) {
+  const result = await pool.query(`SELECT * FROM filiale WHERE fnr = $1;`, [
+    fnr,
+  ]);
   return result.rows[0] || null;
-} 
+}
 
-async function update(fnr, updates){
+/**
+ * Aktualisiert eine Filiale (Teil-Update).
+ *
+ * Sicherheitsprinzip:
+ * - allowedFields ist eine Whitelist, damit nur definierte Felder updatebar sind.
+ * - Dadurch kann das Frontend keine beliebigen Spalten manipulieren.
+ *
+ * Technischer Zweck:
+ * - dynamisches SET (setClause) ermöglicht ein flexibles Update,
+ *   ohne für jede Kombination ein eigenes SQL-Statement zu schreiben.
+ */
+async function update(fnr, updates) {
+  if ("anmerkungen" in updates && !("anmerkung" in updates)) {
+    updates.anmerkung = updates.anmerkungen;
+  }
+  delete updates.anmerkungen;
+
   const allowedFields = [
     "filialname",
     "farbe",
@@ -75,51 +98,56 @@ async function update(fnr, updates){
     "plz",
     "land",
     "email",
+    "anmerkung",
     "telefon",
     "algorithmid",
-    "aktiv",
-    "anmerkung"
   ];
-  
-  const fields = Object.keys(updates).filter(f => allowedFields.includes(f));
-  if(fields.length === 0) return null;
-  const setClause = fields.map((f,i) => `${f} = $${i+1}`).join(", ");
-  const values = fields.map(f => updates[f]);
+
+  // Nur Felder übernehmen, die auf der Whitelist stehen
+  const fields = Object.keys(updates).filter((f) => allowedFields.includes(f));
+
+  // Wenn keine gültigen Felder enthalten sind -> keine DB-Operation
+  if (fields.length === 0) return null;
+
+  // Beispiel: "filialname = $1, farbe = $2"
+  const setClause = fields.map((f, i) => `${f} = $${i + 1}`).join(", ");
+
+  // Werte-Liste passend zur Placeholder-Reihenfolge ($1..$n)
+  const values = fields.map((f) => updates[f]);
+
+  // fnr wird als letztes Argument angehängt (WHERE fnr = $n)
   values.push(fnr);
 
   const result = await pool.query(
     `
-    update filiale
-    set ${setClause}
-    where fnr = $${fields.length + 1}
-    returning *;
+    UPDATE filiale
+    SET ${setClause}
+    WHERE fnr = $${fields.length + 1}
+    RETURNING *;
     `,
-    values
+    values,
   );
 
+  // RETURNING * liefert den aktualisierten Datensatz zurück
   return result.rows[0] || null;
 }
 
-async function remove(fnr){
+/**
+ * Löscht eine Filiale anhand fnr.
+ *
+ * Rückgabe:
+ * - true  -> wenn tatsächlich eine Zeile gelöscht wurde
+ * - false -> wenn keine Zeile existierte
+ *
+ * Vorteil:
+ * Die Route kann damit sauber 404 oder Erfolg liefern.
+ */
+async function remove(fnr) {
   const result = await pool.query(
-    `delete from filiale where fnr = $1;`,
-    [fnr]
+    `UPDATE filiale SET aktiv = FALSE WHERE fnr = $1;`,
+    [fnr],
   );
   return result.rowCount > 0;
-}
-
-
-// NEU: für den Softdelet
-
-async function deactivate(fnr){
-  const result = await pool.query(
-    `UPDATE filiale
-    SET aktiv = false
-    where fnr = $1
-    RETURNING fnr;`,
-    [fnr]
-  );
-  return result.rowCount >0;
 }
 
 module.exports = {
@@ -128,8 +156,4 @@ module.exports = {
   getById,
   update,
   remove,
-  deactivate
 };
-
-
-

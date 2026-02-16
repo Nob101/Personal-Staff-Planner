@@ -1,26 +1,35 @@
 
 /*
- Datenbankstruktur /Schema -> (Angepasst an Backend-Logik)
+ Datenbank Aufbau / Schema
 ------------------------------------------------------------------------
-ZENTRALE ÄNDERUNGEN:
+ZENTRALE Architektur:
 
-1. ENTKOPPLUNG: Algorithmen-Tabellen wurden entfernt. Die Logik für Schichtmuster
-   und Personalbedarfs-Berechnungen liegt nun direkt im Backend-Code.
+ENTKOPPLUNG & PERFORMANCE: 
+   Rechenintensive Logik (Schichtmuster-Algorithmen, Soll/Ist-Vergleiche) 
+   wurde in den Backend-Code ausgelagert. Die DB dient als persistenter
+   Datenspeicher.
 
-2. STUNDEN-MODELL: 'mitarbeiter' nutzt nun NUMERIC-Werte für Wochenstunden und 
-   Beschäftigungsgrad, um Teilzeitmodelle präzise abzubilden.
+SPRINGER- & DIENST-LOGIK: 
+   Abbildung von Beschäftigungsgraden durch NUMERIC-Werte und 
+   Unterstützung von Mehrfach-Einsätzen (Springer) pro Tag durch 
+   flexible 'dienstplaene'-Struktur.
 
-3. SPRINGER-SUPPORT: Die Tabelle 'dienstplaene' erlaubt nun Mehrfach-Einträge
-   pro Mitarbeiter pro Tag, um Springer-Einsätze in mehreren Filialen zu ermöglichen.
+CLEANUP-STRATEGIE (Automatisierung):
+   Ein Backend-Service bereinigt die 'dienstplaene'-Tabelle sequenziell 
+   (alle 13 Monate wenn tupel > 70000), um die Performance zu erhalten. Erst nach dieser 
+   Frist/Bedingung werden  alte Daten  entfernt.
 
-4. STUNDENKONTO: Monatliche Soll/Ist-Vergleichstabelle für die Gehaltsabrechnung.
+SOFT-DELETE & DATA RETENTION: 
+   Mitarbeiter (MA) und Filialen werden beim Ausscheiden auf 'aktiv = FALSE' gesetzt. 
+   Historische Daten bleiben für 13 Monate erhalten. Erst nach dieser Frist 
+   werden inaktive Stammdaten ohne Referenzen physisch durch den Cleanup-Service gelöscht.
 
 ------------------------------------------------------------------------
 */
 
 
 
-
+ 
 /*
 ###############################
 -- STAMMDATEN 
@@ -37,8 +46,12 @@ CREATE TABLE IF NOT EXISTS filiale (
     land VARCHAR(55) DEFAULT 'Österreich',
     telefon VARCHAR(50),
     email VARCHAR(50),
+    -- NEU: Anmerkung zu FA
+    anmerkung VARCHAR(250),
     farbe VARCHAR(20) DEFAULT '#3498db',
-    algorithmid INTEGER
+    algorithmid INTEGER,
+    -- NEU: Falls filiale schließt   im backend     UPDATE filiale SET aktiv = FALSE WHERE fnr = 5;
+    aktiv Boolean DEFAULT TRUE
 );
 
 
@@ -62,12 +75,14 @@ CREATE TABLE IF NOT EXISTS mitarbeiter (
     nachname VARCHAR(45) NOT NULL,
 
     hauptfiliale_fnr INTEGER REFERENCES filiale(fnr) ON DELETE SET NULL,        --Damit MA nicht gelöscht wird, wenn Filiale entfernt wird -> neuer wert NULL
-
-    -- Neu: Flexibles Stundenmodell statt fixen 160h
+    -- NEU: Anmerkung zu MA
+    anmerkung VARCHAR(250),
     counter INTEGER DEFAULT 0,
     arbeitnehmertyp INTEGER DEFAULT 40,
     springeralgorithmid INTEGER,
-    springer BOOLEAN DEFAULT FALSE
+    springer BOOLEAN DEFAULT FALSE,
+    -- NEU:Aktive MA logik      Im Backend     UPDATE mitarbeiter SET aktiv = FALSE WHERE mnr = 5;   zB über die Route const kuendigt_MA
+    aktiv Boolean DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS mitarbeiter_kontakt (
@@ -79,9 +94,11 @@ CREATE TABLE IF NOT EXISTS mitarbeiter_kontakt (
     land VARCHAR(55)
 );
 
+
+
 CREATE TABLE IF NOT EXISTS mitarbeiter_telefon (
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
-    telefon_typ VARCHAR(50) NOT NULL,
+    telefon_typ VARCHAR(50) NOT NULL DEFAULT 'MOBIL',
     nummer VARCHAR(55) NOT NULL,
     PRIMARY KEY (mnr, telefon_typ)
 );
@@ -89,7 +106,7 @@ CREATE TABLE IF NOT EXISTS mitarbeiter_telefon (
 
 CREATE TABLE IF NOT EXISTS mitarbeiter_email (
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
-    email_typ VARCHAR(50) NOT NULL,
+    email_typ VARCHAR(50)  NOT NULL DEFAULT 'PRIVAT',
     email_adresse VARCHAR(100) NOT NULL,
     PRIMARY KEY (mnr, email_typ)
 );
@@ -104,14 +121,6 @@ CREATE TABLE IF NOT EXISTS mitarbeiter_arbeitet_in_filiale (
 );
 
 
-CREATE TABLE IF NOT EXISTS mitarbeiter_arbeitet_in_filiale (
-  mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
-  fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE CASCADE,
-  PRIMARY KEY (mnr, fnr)
-);
-
-
-
 
 /*
 ###############################
@@ -124,9 +133,9 @@ CREATE TABLE IF NOT EXISTS stunden_konto (
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
     jahr INTEGER NOT NULL,
     monat INTEGER NOT NULL,
-    soll_stunden_monat DECIMAL(10,2),      --< Dynamisch berechnet vom Backend
+    soll_stunden_monat DECIMAL(10,2),                   --< Dynamisch berechnet vom Backend
     ist_stunden_monat DECIMAL(10,2),
-    differenz DECIMAL(10,2),               --< Wird im Backend berechnet und hier gespeichert
+    differenz DECIMAL(10,2),                            --< Wird im Backend berechnet und hier gespeichert
     UNIQUE(mnr, jahr, monat)
 );
 
@@ -144,8 +153,7 @@ CREATE TABLE IF NOT EXISTS dienstplaene (
     monat INTEGER NOT NULL,
     datum DATE NOT NULL,
 
-    --WICHTIG: RESTRICT verhindert das MA gelöscht werden können
-    -- erst muss der dienstplan Cleanup alte Einträge entfernen
+    --WICHTIG: RESTRICT verhindert, dass  Markus einen MA
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE RESTRICT,
     fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE RESTRICT,
     schicht_typ VARCHAR(6) REFERENCES arbeitstyp(akurzl) ON DELETE RESTRICT,

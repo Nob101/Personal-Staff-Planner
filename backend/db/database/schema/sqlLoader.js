@@ -3,7 +3,7 @@
 /*
 ###############################
 
--- ZUm Laden der Trigger usw. (sql-files)
+-- Zum Laden der Trigger usw. (sql-files)
 
 ################################
 */
@@ -13,13 +13,14 @@
 const fs = require('fs');
 const path = require('path');
 
+
 // *.sql -Files aus den ordnern Laden
 
 async function loadSqlFiles(client, directories) {
   for (const dir of directories) {  //sucht in alle Verzeichnisse
     
     if (fs.existsSync(dir)) {
-      const files = fs.readdirSync(dir).filter(f => f.endsWith('.sql')).sort(); //lädt gezielt .sql-FIles
+      const files = fs.readdirSync(dir).filter(file => file.endsWith('.sql')).sort(); //lädt gezielt .sql-FIles
 
 
       for (const file of files) {
@@ -33,7 +34,7 @@ async function loadSqlFiles(client, directories) {
         } catch (err) {
             console.error(` Fehler in Datei ${file}:`, err.message);
 
-          throw err; //  Transaktion bricht ab bei Fehler -> RollBack
+          throw err; //  Transaktion bricht ab bei fehler -> RollBack
         }
       }
     } else {
@@ -41,4 +42,5 @@ async function loadSqlFiles(client, directories) {
     }
   }
 }
+
 module.exports = { loadSqlFiles };

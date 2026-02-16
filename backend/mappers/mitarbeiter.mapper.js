@@ -1,13 +1,58 @@
+/**
+ * ============================================================================
+ * mitarbeiter.mapper.js
+ * ----------------------------------------------------------------------------
+ * Dieses Modul übernimmt die Umwandlung (Mapping) zwischen:
+ * - Frontend-Format (Formular / UI-Daten, teils Strings/Objekte)
+ * - Backend/DB-Format (saubere, typisierte Werte für Persistenz)
+ *
+ * Warum braucht man das?
+ * - Frontend liefert Werte oft in verschiedenen Formen (z.B. "Ja"/true, Objekt/ID)
+ * - Die Datenbank erwartet konsistente Typen (Zahlen, Booleans, Arrays)
+ * - Bei Updates (PATCH/PUT) muss klar unterschieden werden:
+ *   "Feld fehlt" vs. "Feld ist bewusst leer/false"
+ * ============================================================================
+ */
+
+/**
+ * Prüft, ob ein Schlüssel DIREKT auf einem Objekt existiert.
+ *
+ * Wichtig für Updates:
+ * - Wenn ein Feld NICHT gesendet wurde, darf es nicht überschrieben werden.
+ * - Wenn ein Feld gesendet wurde (auch leer/false), soll es übernommen werden.
+ */
 function has(obj, key) {
   return Object.prototype.hasOwnProperty.call(obj, key);
 }
 
+/**
+ * ============================================================================
+ * fromFrontendPatch
+ * ----------------------------------------------------------------------------
+ * Verarbeitet partielle Updates.
+ * Es werden nur Felder übernommen, die im Request tatsächlich vorhanden sind.
+ *
+ * Zweck:
+ * - verhindert, dass bei einem Patch aus Versehen Werte "gelöscht" werden
+ *   (weil das Feld einfach nicht mitgeschickt wurde)
+ * ============================================================================
+ */
 function fromFrontendPatch(b) {
   const out = {};
 
+  // Basisfelder (wenn vorhanden übernehmen)
   if (has(b, "vorname")) out.vorname = b.vorname;
   if (has(b, "nachname")) out.nachname = b.nachname;
+  if (has(b, "anmerkungen")) out.anmerkung = b.anmerkungen;
 
+  /**
+   * Hauptfiliale:
+   * Das Frontend kann sie in mehreren Varianten senden:
+   * - hauptfiliale_fnr: Zahl
+   * - hauptfiliale: Zahl
+   * - hauptfiliale: { id } oder { fnr }
+   * -> Wir normalisieren auf hauptfiliale_fnr (Number oder null)
+   */
   if (has(b, "hauptfiliale") || has(b, "hauptfiliale_fnr")) {
     const hf =
       Number.isFinite(Number(b.hauptfiliale_fnr)) ? Number(b.hauptfiliale_fnr) :
@@ -19,40 +64,88 @@ function fromFrontendPatch(b) {
     out.hauptfiliale_fnr = hf;
   }
 
- if (has(b, "springer")) {
-  const val = b.springer;
+  /**
+   * Springer:
+   * Das Frontend liefert teils boolean, teils "Ja"/"Nein".
+   * -> Normalisierung auf boolean für die DB.
+   */
+  if (has(b, "springer")) {
+    const val = b.springer;
 
-  if (val === true || val === "Ja") out.springer = true;
-  else if (val === false || val === "Nein") out.springer = false;
- 
-}
-
-  if (has(b, "arbeitnehmertyp") || has(b, "arbeitsstunden")) {
-    const at =
-      Number.isFinite(Number(b.arbeitnehmertyp)) ? Number(b.arbeitnehmertyp) :
-      Number.isFinite(Number(b.arbeitsstunden))  ? Number(b.arbeitsstunden) :
-      null;
-
-    out.arbeitnehmertyp = at;
+    if (val === true || val === "Ja") out.springer = true;
+    else if (val === false || val === "Nein") out.springer = false;
   }
 
+  /**
+   * Arbeitszeit:
+   * Kann unter arbeitnehmertyp oder arbeitsstunden kommen.
+   * -> Normalisierung auf arbeitnehmertyp (Number oder null)
+   */
+
+ // NEU: Patch-Logik für Arbeitsstunden ohne harten 40er-Zwang
+  if (has(b, "arbeitnehmertyp") || has(b, "arbeitsstunden")) {
+    const raw = b.arbeitsstunden ?? b.arbeitnehmertyp;
+    if (raw !== undefined && raw !== null) out.arbeitnehmertyp = Number(raw);
+  }
+
+  if (has(b, "strasse") || has(b, "postleitzahl") || has(b, "ort") || has(b, "land")) {
+    out.kontakt = {
+      strasse: has(b, "strasse") ? (b.strasse ?? null) : undefined,
+      plz: has(b, "postleitzahl") ? (b.postleitzahl ?? null) : undefined,
+      ort: has(b, "ort") ? (b.ort ?? null) : undefined,
+      land: has(b, "land") ? (b.land ?? null) : undefined,
+    };
+  }
+
+  // Telefone (0..n) aus telefon1/telefon2
+    if (has(b, "telefon1") || has(b, "telefon2")) {
+    const tel = [];
+    if (b.telefon1) tel.push({ telefon_typ: "mobil", nummer: String(b.telefon1) });
+    if (b.telefon2) tel.push({ telefon_typ: "fix", nummer: String(b.telefon2) });
+    out.telefone = tel;
+  }
+
+  // Emails (0..n) aus email1/email2
+    if (has(b, "email1") || has(b, "email2")) {
+    const em = [];
+    if (b.email1) em.push({ email_typ: "privat", email_adresse: String(b.email1) });
+    if (b.email2) em.push({ email_typ: "firma", email_adresse: String(b.email2) });
+    out.emails = em;
+  }
+
+  /**
+   * Nebenfilialen:
+   * Erwartet wird ein Array von Filialnummern.
+   * Frontend kann auch Objekte liefern (z.B. {id, name}).
+   * -> Wir speichern nur die IDs/FNRs als Zahlen.
+   */
   if (has(b, "nebenfilialen")) {
     out.nebenfilialen = Array.isArray(b.nebenfilialen)
-      ? b.nebenfilialen.map(x =>
-          typeof x === "object" ? Number(x.id ?? x.fnr) : Number(x)
-        ).filter(Number.isFinite)
+      ? b.nebenfilialen
+          .map((x) =>
+            typeof x === "object" ? Number(x.id ?? x.fnr) : Number(x)
+          )
+          .filter(Number.isFinite)
       : [];
   }
 
   return out;
 }
 
-
-
-
-
+/**
+ * ============================================================================
+ * fromFrontend
+ * ----------------------------------------------------------------------------
+ * Verarbeitet "vollständige" Objekte (POST / PUT).
+ * Ziel: ein DB-taugliches DTO erstellen, das konsistent gespeichert werden kann.
+ * ============================================================================
+ */
 function fromFrontend(b) {
-  // hauptfiliale kann Objekt sein oder direkt fnr
+  /**
+   * Hauptfiliale:
+   * kann Objekt sein oder direkt die Filialnummer.
+   * -> Wir normalisieren auf hauptfiliale_fnr (Number oder null)
+   */
   const hauptfiliale_fnr = Number.isFinite(Number(b.hauptfiliale_fnr))
     ? Number(b.hauptfiliale_fnr)
     : Number.isFinite(Number(b.hauptfiliale))
@@ -63,25 +156,34 @@ function fromFrontend(b) {
     ? Number(b.hauptfiliale.fnr)
     : null;
 
-  // nebenfilialen kann [{id,name}] sein oder [fnr]
+  /**
+   * Nebenfilialen:
+   * - undefined bedeutet: "nicht ändern" (wichtig für PUT/optional Felder)
+   * - null bedeutet: "bewusst leeren"
+   * - Array: übernehmen
+   */
   let nebenfilialen = undefined; // undefined = "nicht ändern"
 
-if ("nebenfilialen" in b) {
-  if (b.nebenfilialen === null) {
-    nebenfilialen = []; // null => bewusst leeren
-  } else if (Array.isArray(b.nebenfilialen)) {
-    nebenfilialen = b.nebenfilialen
-      .map(x => (typeof x === "object" ? (x.fnr ?? x.id) : x))
-      .map(Number)
-      .filter(Number.isFinite);
-    // [] bleibt [] => auch leeren
-  } else {
-    const one = Number(b.nebenfilialen);
-    nebenfilialen = Number.isFinite(one) ? [one] : [];
+  if ("nebenfilialen" in b) {
+    if (b.nebenfilialen === null) {
+      nebenfilialen = []; // null => bewusst leeren
+    } else if (Array.isArray(b.nebenfilialen)) {
+      nebenfilialen = b.nebenfilialen
+        .map((x) => (typeof x === "object" ? x.fnr ?? x.id : x))
+        .map(Number)
+        .filter(Number.isFinite);
+      // [] bleibt [] => auch leeren
+    } else {
+      const one = Number(b.nebenfilialen);
+      nebenfilialen = Number.isFinite(one) ? [one] : [];
+    }
   }
-}
 
-  // springer kann boolean oder "Ja/Nein/Nicht bekannt" sein
+  /**
+   * Springer:
+   * Frontend kann boolean oder "Ja/Nein/..." liefern.
+   * -> Normalisierung auf boolean.
+   */
   const springer =
     b.springer === true
       ? true
@@ -93,36 +195,70 @@ if ("nebenfilialen" in b) {
       ? false
       : false; // default
 
-  // arbeitsstunden -> arbeitnehmertyp (20/30/40)
-  const arbeitnehmertyp = Number.isFinite(Number(b.arbeitnehmertyp))
-    ? Number(b.arbeitnehmertyp)
-    : Number.isFinite(Number(b.arbeitsstunden))
-    ? Number(b.arbeitsstunden)
-    : 40;
+  /**
+   * Arbeitsstunden:
+   * Frontend: arbeitsstunden
+   * DB: arbeitnehmertyp
+   * -> Default 40, wenn kein gültiger Wert vorhanden ist.
+   */
 
-  // kontakt kommt im FE flach
+  // NEU: Erst Wert suchen, danach validieren
+  const rawValue = (b.arbeitsstunden !== undefined && b.arbeitsstunden !== null && b.arbeitsstunden !== '')
+                    ? b.arbeitsstunden 
+                    : b.arbeitnehmertyp;
+
+  const numericValue = Number(rawValue);
+  const arbeitnehmertyp = Number.isFinite(numericValue) ? numericValue : 40;
+
+
+
+  // const arbeitnehmertyp = Number.isFinite(Number(b.arbeitnehmertyp))
+  //   ? Number(b.arbeitnehmertyp)
+  //   : Number.isFinite(Number(b.arbeitsstunden))
+  //   ? Number(b.arbeitsstunden)
+  //   : 40;
+
+
+
+
+  /**
+   * Kontakt:
+   * Frontend sendet flach, DB speichert als Objekt (0..1).
+   * -> kontakt wird nur gesetzt, wenn mindestens ein Feld befüllt ist.
+   */
   const kontaktObj = {
     strasse: b.strasse ?? null,
     plz: b.postleitzahl ?? b.plz ?? null,
     ort: b.ort ?? null,
     land: b.land ?? null,
   };
-  const kontakt = Object.values(kontaktObj).some((v) => v) ? kontaktObj : null;
+  
+  const kontakt = Object.values(kontaktObj).some((v) => v) ? kontaktObj : null; // Object.values prüft alle Werte auf "truthy"
 
-  // FE: telefon1/telefon2
+  /**
+   * Telefone:
+   * Frontend hat telefon1/telefon2, DB speichert 0..n Einträge.
+   */
   const telefone = [];
   if (b.telefon1)
     telefone.push({ telefon_typ: "mobil", nummer: String(b.telefon1) });
   if (b.telefon2)
     telefone.push({ telefon_typ: "fix", nummer: String(b.telefon2) });
 
-  // FE: email1/email2
+  /**
+   * E-Mails:
+   * Frontend hat email1/email2, DB speichert 0..n Einträge.
+   */
   const emails = [];
   if (b.email1)
     emails.push({ email_typ: "privat", email_adresse: String(b.email1) });
   if (b.email2)
     emails.push({ email_typ: "firma", email_adresse: String(b.email2) });
 
+  /**
+   * Ergebnisobjekt (DB-DTO):
+   * Felder sind so benannt, wie sie in Repositories/DB erwartet werden.
+   */
   const out = {
     vorname: b.vorname,
     nachname: b.nachname,
@@ -130,17 +266,38 @@ if ("nebenfilialen" in b) {
     arbeitnehmertyp,
     springer,
     springeralgorithmid: b.springeralgorithmid ?? null,
+    anmerkung: b.anmerkungen ?? null,
     kontakt,
     telefone,
     emails,
   };
 
+  // Nebenfilialen nur setzen, wenn Feld überhaupt übergeben wurde
   if (nebenfilialen !== undefined) out.nebenfilialen = nebenfilialen;
 
   return out;
 }
 
+/**
+ * ============================================================================
+ * toFrontend
+ * ----------------------------------------------------------------------------
+ * Wandelt DB-Daten (inkl. Details) in ein Frontend-taugliches Format.
+ *
+ * Zweck:
+ * - Frontend bekommt menschenlesbare Filialnamen (nicht nur IDs)
+ * - Kontakt/Email/Telefon werden wieder in flache Felder gemappt
+ * ============================================================================
+ */
 function toFrontend(ma, filialen = []) {
+
+ 
+  /**
+   * Map (fnr -> Filiale):
+   * Warum Map?
+   * - O(1) Lookup statt jedes Mal Array-Durchlauf (O(n))
+   * - relevant, weil Mapping pro Mitarbeiter oft aufgerufen wird
+   */
   const byFnr = new Map(filialen.map((f) => [Number(f.fnr), f]));
 
   const haupt =
@@ -152,6 +309,10 @@ function toFrontend(ma, filialen = []) {
     ? { id: Number(ma.hauptfiliale_fnr), name: String(ma.hauptfiliale_fnr) }
     : null;
 
+  /**
+   * Nebenfilialen:
+   * DB liefert IDs, Frontend bekommt (id + name).
+   */
   const nebenfilialen = Array.isArray(ma.nebenfilialen)
     ? ma.nebenfilialen.map((fnr) => {
         const f = byFnr.get(Number(fnr));
@@ -161,6 +322,10 @@ function toFrontend(ma, filialen = []) {
       })
     : [];
 
+  /**
+   * Telefone/E-Mails:
+   * DB speichert Arrays, Frontend bekommt wieder telefon1/telefon2 und email1/email2.
+   */
   const mobil =
     (ma.telefone || []).find((t) => t.telefon_typ === "mobil")?.nummer ?? "";
   const fix =
@@ -172,6 +337,13 @@ function toFrontend(ma, filialen = []) {
   const firma =
     (ma.emails || []).find((e) => e.email_typ === "firma")?.email_adresse ?? "";
 
+  /**
+   * Ergebnisobjekt (Frontend-DTO):
+   * Felder entsprechen den UI-Formularfeldern (flach).
+   */
+// Debug
+// log -_-
+ console.log("DB-DATA für MA:", ma.mnr, "Stunden-Feld:", ma.arbeitnehmertyp);
   return {
     id: ma.mnr,
     mnr: ma.mnr,
@@ -189,13 +361,15 @@ function toFrontend(ma, filialen = []) {
     postleitzahl: ma.kontakt?.plz ?? "",
     land: ma.kontakt?.land ?? "",
 
-    arbeitsstunden: ma.arbeitnehmertyp ?? null,
+    arbeitsstunden: Number(ma.arbeitnehmertyp) || 40,
     springer: !!ma.springer,
+
+    aktiv: !!ma.aktiv,
 
     hauptfiliale,
     nebenfilialen,
 
-    anmerkungen: "",
+    anmerkungen: ma.anmerkung ?? "",
   };
 }
 

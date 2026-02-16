@@ -23,8 +23,3 @@ CREATE INDEX IF NOT EXISTS idx_stunden_konto_suche ON stunden_konto(mnr, jahr, m
 
 -- NEU: Index für den Soft-Delete (Damit die "Aktiven"-Views schnell bleiben)
 CREATE INDEX IF NOT EXISTS idx_mitarbeiter_aktiv ON mitarbeiter(aktiv) WHERE aktiv = TRUE;
-
--- NEU: Verhindert doppelte aktive Filialnamen, erlaubt aber Neuanlegen nach Löschung
-CREATE UNIQUE INDEX IF NOT EXISTS idx_filiale_name_aktiv_unique 
-ON filiale(filialname) 
-WHERE aktiv = TRUE;
