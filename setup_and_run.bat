@@ -40,19 +40,36 @@ if %errorlevel% neq 0 (
 "%OSSL%" req -x509 -newkey rsa:4096 -keyout certs\key.pem -out certs\cert.pem -sha256 -days 365 -nodes -subj "/CN=localhost" >nul 2>&1
 
 
-:: Docker Container starten
+:: NEU: Verbesserter Docker Startprozess
 :start_docker
-docker compose up -d
+echo [INFO] Pruefe Container-Status...
+
+:: Wir schauen, ob die Container ueberhaupt existieren (auch wenn sie gestoppt sind)
+docker compose ps -a | findstr "psp_backend" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [INFO] Erstmaliger Setup: Baue Images und starte Container...
+    docker compose up --build -d
+) else (
+    echo [INFO] Container vorhanden. Starte System...
+    :: 'up -d' erkennt automatisch, ob sich das Dockerfile oder die .yml 
+    :: geaendert hat und baut NUR DANN neu. Das ist am sichersten.
+    docker compose up -d
+)
 
 :: NEU: curl ist schneller als ps (standard bei 10/11) NEU : Wartet bis Nginx wirklich antwortet!!!!! -_-
+:: Reverse_Proxy oft schneller als node.js antworten kann -> 200 und 502 abwarten (Endlosschleife verhinderen)
+set /a retry_count=0
 :loop
-curl -k -s -o /dev/null -w "%%{http_code}" https://localhost | findstr "200" >nul 2>&1
+set /a retry_count+=1
+if %retry_count% gtr 30 goto :open_browser
+:: Prueft mit curl, ob der Server reagiert
+curl -k -s -o /dev/null -w "%%{http_code}" https://localhost | findstr /R "200 502" >nul 2>&1
 if %errorlevel% neq 0 (
-    :: Wenn nicht 200 (z.B. 502), dann warten und nochmal
     timeout /t 2 /nobreak >nul
     goto :loop
 )
 
+:open_browser
 ::  Ladefenster schließen und App öffnen
 powershell -Command "Stop-Process -Name 'powershell' -Force" >nul 2>&1
 :: NEU: Browser suche über Pfad (Nutzt nur vorhandenen)

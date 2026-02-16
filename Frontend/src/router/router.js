@@ -5,6 +5,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 //Importieren aller Views
 import LoginView from "@/views/LoginView.vue";
+import HomeView from "@/views/HomeView.vue";
 import MitarbeiterView from "@/views/MitarbeiterView.vue";
 import FilialenView from "@/views/FilialenView.vue";
 import DienstplaeneView from "@/views/DienstplaeneView.vue";
@@ -14,6 +15,7 @@ import EinstellungenView from "@/views/EinstellungenView.vue";
 //Definieren aller Routen-Objekte, in einem Array gespeichert
 const routes = [
   { path: "/", name: "login", component: LoginView },
+  { path: "/home", name: "home", component: HomeView },
   { path: "/mitarbeiter", name: "mitarbeiter", component: MitarbeiterView },
   { path: "/filialen", name: "filialen", component: FilialenView },
   { path: "/dienstplaene", name: "dienstplaene", component: DienstplaeneView },

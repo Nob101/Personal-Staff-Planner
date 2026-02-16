@@ -75,6 +75,7 @@ const {
   ersatzError,
   ersatzKandidaten,
   ersatzCtx,
+  ersatzCtxFilialname,
   onPickErsatz,
   onIgnoreErsatz,
 } = useInlineShiftEdit({
@@ -101,7 +102,7 @@ const {
     :altNewTyp="ersatzCtx.altNewTyp"
     :datum="ersatzCtx.datum"
     :fnr="ersatzCtx.fnr"
-    :filialname="ersatzCtx?.filialname || ''"
+    :filialname="ersatzCtxFilialname"
     @close="ersatzOpen = false"
     @pick="onPickErsatz"
     @ignore="onIgnoreErsatz"

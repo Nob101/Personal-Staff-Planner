@@ -1,29 +1,39 @@
-
-# NEU: Funktioniert wie gitignore
-# Hält den Container schlank
-
-# Node
-node_modules
-npm-debug.log
-
-# Docker/IDE
+# Git-Historie (WICHTIG für schlanke Images)
 .git
-.vscode
-.dockerignore
-Dockerfile
-docker-compose.yml
+.gitignore
+README.md
 
-#Dir
-certs/
+# Node & Build
+node_modules/
+dist/
+build/
+npm-debug.log*
 
-# Environment
+# Docker & Datenbank 
+postgres/
+db/data/
+/postgres
+*.tar
+
+# Security & Config
 .env
+certs/
+*.pem
 
-# Temporäre Test-Dateien
+# IDEs & System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporäres/Tests
 test.*
 *.http
 *.txt
 temp/
-.DS_Store
-Thumbs.db
 db.json
+
+# Zeichnungen
+*.drawio
+*.drawio.svg
+*.drawio.png

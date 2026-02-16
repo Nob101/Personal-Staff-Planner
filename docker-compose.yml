@@ -25,9 +25,16 @@
 # docker compose ps             Listet alle laufenden Container und deren Ports auf.                    Um zu checken: "Läuft der Container wirklich?"
 # docker exec -it [name] sh     Öffnet ein Terminal im laufenden Container.                             Wenn direkt im Container nach Dateien gesucht wird.
 
-# docker exec -it psp_database psql -U postgres -d dienstplan -c "\dt"                                  zeigt alle tabellen
+# docker exec -it psp_database psql -U postgres -d dienstplan                                           zeigt alle tabellen
 # docker compose top            Zeigt die CPU- und RAM-Last der einzelnen Container an.                 Wichtig: für Algorithmus, um zu sehen, wie viel 'Power' er verbraucht.
 # docker stats                  Zeigt Live-Tabelle über den Resourcen verbrauch                         Wichtig: Um Leistung an AG-Client anzupassen
+
+
+
+##################
+# den neuen Postgres Ordner direkt durchsuchen
+# docker exec -it psp_database psql -U postgres -d dienstplan -c "SELECT relname, relfilenode FROM pg_class WHERE relname = 'mitarbeiter';"
+# lokal zu finden unter C:\...\Diplomarbeit\postgres\data\base\[Ordner-ID]\16408
 
 
 
@@ -50,18 +57,20 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/data:/var/lib/postgresql/data      #NEU: von named volumes zu mount gewechselt (daten werden im db-Ordner gespeichert)
 
   # --- BACKEND Alexander ---
   psp_backend:
     build: ./backend
     container_name: psp_backend
-    restart: on-failure
+    restart: on-failure:3
+    working_dir: /app
     ports:
       - "3001:3001"
     volumes:
       - ./backend:/app
       - /app/node_modules   #schützt die container module
+    command: npm run devStart 
     environment:
       # WICHTIG: Host ist hier 'db' (der Name des Services oben), nicht localhost!
       DB_HOST: psp_database
@@ -86,17 +95,17 @@ services:
     # HINWEIS für das Frontend:    Docker sucht hier nach dem Ordner 'Frontend' (Großschreibung beachten!)
     build: ./Frontend 
     container_name: psp_frontend
-    restart: on-failure
+    restart: on-failure:3
     ports:
       - "5173:5173" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen
-    
+  
     volumes:
       - ./Frontend:/app         # <--- SPIEGELT VUE-CODE FÜR VITE HOT RELOAD
       - /app/node_modules       # <--- VERHINDERT ÜBERSCHREIBEN DER MODULE
     
     environment:
       # Für den fall, dass Vue wissen muss, wo das Backend läuft: 3001  !!!
-      VITE_API_URL: http://localhost:3001
+      - VITE_API_URL=/api
     depends_on:
       - psp_backend
 
@@ -112,10 +121,7 @@ services:
     - "443:443"   # HTTPS für später
     volumes:
     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    - ./certs:/etc/nginx/ssl:ro    # Zertifikste
+    - ./certs:/etc/nginx/ssl:ro    # Zertifikate
     depends_on:
     - psp_frontend
     - psp_backend
-
-volumes:
-  postgres_data:
