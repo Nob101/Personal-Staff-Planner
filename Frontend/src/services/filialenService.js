@@ -1,4 +1,9 @@
+// filialenService.js
+
+// DAS "RICHTIGE" SERVICE FILE FÜR SPÄTERE ECHTE BACKEND-API
+//  JSON-SERVER braucht id, Frontend arbeitet aber nur mit fnr, deshalb die obrige TEMP-Lösung. fnr wird dann im Backend generiert und verwaltet.
 //filialenService.js
+
 //Hier ist gesamte Backend-Kommunikation für Filialen
 
 //Dummy-Daten für Testzwecke sind im Json-Server db.json
@@ -12,21 +17,31 @@ export function getFilialen() {
 }
 
 // Einzelne Filiale abrufen (optional)
-export function getFilialeById(id) {
-  return http.get(`/filialen/${id}`)
+export function getFilialeByFNR(fnr) {
+  return http.get(`/filialen/${fnr}`)
 }
 
 // Neue Filiale erstellen
 export function createFiliale(filiale) {
+  console.log(
+    "AXIOS POST → /filialen",
+    JSON.stringify(filiale, null, 2)
+  )
+
   return http.post("/filialen", filiale)
 }
 
-// Filiale aktualisieren
 export function updateFiliale(filiale) {
-  return http.put(`/filialen/${filiale.id}`, filiale)
+  console.log(
+    "AXIOS PUT →",
+    `/filialen/${filiale.fnr}`,
+    JSON.stringify(filiale, null, 2)
+  )
+
+  return http.put(`/filialen/${filiale.fnr}`, filiale)
 }
 
 // Filiale löschen
-export function deleteFiliale(id) {
-  return http.delete(`/filialen/${id}`)
+export function deleteFiliale(fnr) {
+  return http.delete(`/filialen/${fnr}`)
 }

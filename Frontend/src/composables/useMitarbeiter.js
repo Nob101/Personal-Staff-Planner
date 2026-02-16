@@ -13,24 +13,73 @@ export function useMitarbeiter() {
   // --- State ---
   const mitarbeiter = ref([])
   const filialen = ref([])
-
+  const isLoading = ref(true)
   const searchTerm = ref('')
+  const sortOption = ref('nameAsc') // Default: alphabetisch aufsteigend
 
-    const filteredMitarbeiter = computed(() => {
-    const q = searchTerm.value.toLowerCase().trim()
-    if (!q) return mitarbeiter.value
+    // --- Sortiermöglichkeiten ---
+  const sortOptions = [
+    { label: 'Alphabetisch (A → Z)', value: 'nameAsc' },
+    { label: 'Alphabetisch (Z → A)', value: 'nameDesc' },
+    { label: 'Nach Filiale (A → Z)', value: 'filialeName' },
+    { label: 'Nach Filiale (Z → A)', value: 'filialeNameDesc' }
 
-    return mitarbeiter.value.filter(m =>
-      Object.values(m)
-        .filter(v =>
-          typeof v === 'string' ||
-          typeof v === 'number'
-        )
-        .some(v =>
-          v.toString().toLowerCase().includes(q)
-        )
+  ]
+
+  
+const filteredMitarbeiter = computed(() => {
+  const q = searchTerm.value.toLowerCase().trim()
+  if (!q) return mitarbeiter.value
+
+  return mitarbeiter.value.filter(m => {
+    // 1. Alle flachen Werte des Mitarbeiters prüfen (vorname, nachname, email1, email2, telefon1, telefon2, strasse, ort, plz, anmerkungen...)
+    const mainFieldsMatch = Object.values(m).some(val => 
+      (typeof val === 'string' || typeof val === 'number') && 
+      val.toString().toLowerCase().includes(q)
     )
+
+    // 2. Hauptfiliale (Name)
+    const hauptfilialeMatch = m.hauptfiliale?.name?.toLowerCase().includes(q)
+
+    // 3. Alle Nebenfilialen (Namen) im Array prüfen
+    const nebenfilialenMatch = m.nebenfilialen?.some(f => 
+      f.name?.toLowerCase().includes(q)
+    )
+
+    return mainFieldsMatch || hauptfilialeMatch || nebenfilialenMatch
   })
+})
+
+  const sortedMitarbeiter = computed(() => {
+  const list = [...filteredMitarbeiter.value]
+  switch (sortOption.value) {
+    case 'nameAsc':
+      return list.sort((a,b) => (a.vorname + ' ' + a.nachname).toLowerCase().localeCompare((b.vorname + ' ' + b.nachname).toLowerCase()))
+    case 'nameDesc':
+      return list.sort((a,b) => (b.vorname + ' ' + b.nachname).toLowerCase().localeCompare((a.vorname + ' ' + a.nachname).toLowerCase()))
+    case 'filialeName':
+      return list.sort((a,b) => {
+        const filialeA = a.hauptfiliale?.name?.toLowerCase() || ''
+        const filialeB = b.hauptfiliale?.name?.toLowerCase() || ''
+        if (filialeA === filialeB) {
+          return (a.vorname + ' ' + a.nachname).toLowerCase().localeCompare((b.vorname + ' ' + b.nachname).toLowerCase())
+        }
+        return filialeA.localeCompare(filialeB)
+      })
+    case 'filialeNameDesc':
+      return list.sort((a,b) => {
+        const filialeA = a.hauptfiliale?.name?.toLowerCase() || ''
+        const filialeB = b.hauptfiliale?.name?.toLowerCase() || ''
+        if (filialeA === filialeB) {
+          return (a.vorname + ' ' + a.nachname).toLowerCase().localeCompare((b.vorname + ' ' + b.nachname).toLowerCase())
+        }
+        return filialeB.localeCompare(filialeA)
+      })
+
+    default:
+      return list
+  }
+})
 
 
   const showModalMitarbeiterCreate = ref(false)
@@ -42,11 +91,15 @@ export function useMitarbeiter() {
   // --- Daten vom Backend mit Service laden ---
   async function loadData() {
     try {
-      mitarbeiter.value = (await mitarbeiterService.getMitarbeiter()).data
+      const resMitarbeiter = await mitarbeiterService.getMitarbeiter()
+      mitarbeiter.value = resMitarbeiter.data
+
       filialen.value = (await filialenService.getFilialen()).data
     } catch (err) {
       console.error(err)
-    }
+    } finally {
+    isLoading.value = false
+  }
   }
   // onMounted -> ladet die Daten wenn ein Vue-File/Komponent "geöffnet" wird
   onMounted(loadData)
@@ -55,7 +108,9 @@ export function useMitarbeiter() {
   async function handleMitarbeiterCreate(neu) {
     try {
       const res = await mitarbeiterService.createMitarbeiter(neu)
+      
       mitarbeiter.value.push(res.data)
+      showModalMitarbeiterCreate.value = false
     } catch (err) {
       console.error("Fehler beim Erstellen:", err)
     }
@@ -63,18 +118,42 @@ export function useMitarbeiter() {
 
   // Öffnet Ändern Modal wenn bei einem Mitarbeiter auf "Bearbeiten" geklickt wird
   function handleEdit(m) {
-    selectedMitarbeiter.value = m
+    //NEU: Stellt sicher, dass das Edit-Formular beim Öffnen valide Stunden (mind. 40) hat
+    selectedMitarbeiter.value = {
+      ...m,
+      arbeitsstunden: m.arbeitsstunden
+    }
     showModalMitarbeiterEdit.value = true
   }
 
   // Überschreibt bestehende Mitarbeiterdaten mit den geänderten Daten
   async function handleMitarbeiterEdit(editedData) {
     try {
-      const res = await mitarbeiterService.updateMitarbeiter(editedData)
+      //NEU: Mappt vor dem Absenden wieder auf den DB-Namen 'arbeitnehmertyp'
+      const payload = {
+        ...editedData,
+
+        arbeitsstunden: editedData.arbeitsstunden ?? editedData.arbeitnehmertyp,
+        arbeitnehmertyp: editedData.arbeitsstunden ?? editedData.arbeitnehmertyp
+      }
+      const res = await mitarbeiterService.updateMitarbeiter(payload)
+
       const index = mitarbeiter.value.findIndex(m => m.id === editedData.id)
       if (index !== -1) {
-        mitarbeiter.value[index] = res.data
+        //NEU: Aktualisiert Liste mit gemappten Daten vom Server
+        mitarbeiter.value[index] = {
+          ...res.data,
+          arbeitsstunden: res.data.arbeitnehmertyp 
+        }
       }
+
+      /* WHY: Design/Overlay zeigt selectedMitarbeiter separat.
+         Wenn du im Detail-Overlay bearbeitest, bleibt sonst der alte Stand angezeigt,
+         obwohl die Liste schon aktualisiert ist. */
+      if (selectedMitarbeiter.value?.id === editedData.id) {
+      selectedMitarbeiter.value = mitarbeiter.value[index];
+      }
+        showModalMitarbeiterEdit.value = false  //NEU: Schließt Modal nach Erfolg
     } catch (err) {
       console.error("Fehler beim Bearbeiten:", err)
     }
@@ -91,8 +170,19 @@ export function useMitarbeiter() {
     if (!selectedMitarbeiterToDelete.value) return
 
     try {
-      await mitarbeiterService.deleteMitarbeiter(selectedMitarbeiterToDelete.value.id)
-      mitarbeiter.value = mitarbeiter.value.filter(m => m.id !== selectedMitarbeiterToDelete.value.id)
+      const deletedId = selectedMitarbeiterToDelete.value.id
+
+      await mitarbeiterService.deleteMitarbeiter(deletedId)
+
+      mitarbeiter.value = mitarbeiter.value.filter(m => m.id !== deletedId)
+
+      /* WHY: Wenn der gelöschte Mitarbeiter gerade im Detail-Overlay offen ist,
+         muss das Overlay geschlossen werden, sonst zeigt es einen Datensatz,
+         den es in der Liste nicht mehr gibt. */
+      if (selectedMitarbeiter.value?.id === deletedId) {
+        selectedMitarbeiter.value = null
+      }
+
       selectedMitarbeiterToDelete.value = null
       showDeleteModal.value = false
     } catch (err) {
@@ -107,9 +197,9 @@ export function useMitarbeiter() {
   }
 
   // --- Zusätzliche Funktion: Verfügbare Mitarbeiter nach Filiale & Datum abrufen || unnötig?---
-  async function getVerfuegbareMitarbeiter(filialeId, datum) {
+  async function getVerfuegbareMitarbeiter(filialeFNR, datum) {
     try {
-      const res = await mitarbeiterService.getVerfuegbareMitarbeiter(filialeId, datum)
+      const res = await mitarbeiterService.getVerfuegbareMitarbeiter(filialeFNR, datum)
       return res.data
     } catch (err) {
       console.error("Fehler beim Abrufen verfügbarer Mitarbeiter:", err)
@@ -117,11 +207,26 @@ export function useMitarbeiter() {
     }
   }
 
+  /* WHY: Design hat eine List-Ansicht + Detail-Overlay.
+     Klick auf eine Card soll den Mitarbeiter "auswählen". */
+  function handleSelect(m) {
+    selectedMitarbeiter.value = m
+  }
+
+  /* WHY: Design braucht eine saubere Möglichkeit, das Detail-Overlay zu schließen. */
+  function closeDetails() {
+    selectedMitarbeiter.value = null
+  }
+
   return {
     mitarbeiter,
     filialen,
+    isLoading,
     searchTerm,
     filteredMitarbeiter,
+    sortedMitarbeiter,
+    sortOption,
+    sortOptions,
     showModalMitarbeiterCreate,
     showModalMitarbeiterEdit,
     selectedMitarbeiter,
@@ -133,6 +238,8 @@ export function useMitarbeiter() {
     handleDelete,
     confirmDelete,
     cancelDelete,
-    getVerfuegbareMitarbeiter
+    getVerfuegbareMitarbeiter,
+    handleSelect,
+    closeDetails
   }
 }

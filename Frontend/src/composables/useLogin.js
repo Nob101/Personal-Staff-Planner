@@ -27,7 +27,7 @@ export function useLogin() {
         localStorage.setItem('userToken', res.data.token)
       }
 
-      // console.log('Eingeloggt als:', res.data.user)
+      console.log('Eingeloggt als:', res.data.user)
       return true
 
     } catch (err) {
@@ -76,4 +76,3 @@ export function useLogin() {
     handleRegister
   }
 }
-
