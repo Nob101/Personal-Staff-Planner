@@ -58,6 +58,7 @@ function handleDelete() {
 function handleSelect() {
   emit('select', props.mitarbeiter)
 }
+
 </script>
 
 <template>
@@ -98,7 +99,7 @@ function handleSelect() {
           </div>
 
           <div class="flex justify-between gap-3 min-w-0">
-            <span class="shrink-0">{{ mitarbeiter?.arbeitsstunden || mitarbeiter?.arbeitnehmertyp || '--' }} Arbeitsstunden</span>
+            <span class="shrink-0">{{ mitarbeiter.arbeitsstunden ?? '-' }} Arbeitsstunden</span>
           </div>
         </div>
       </div>
@@ -106,25 +107,16 @@ function handleSelect() {
       <!-- Linie -->
       <div class="bg-black/10 dark:bg-white/15"></div>
 
-      <!-- RECHTS: Nebenfilialen (List) -->
+      <!-- RECHTS: Nebenfilialen (Text, gleiche Typo wie Kontakt) -->
       <div class="space-y-2 min-w-0">
         <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-800/80">
           Nebenfilialen
         </div>
 
-        <div class="line-clamp-3">
-          <div class="flex flex-wrap gap-1">
-            <span
-              v-for="f in mitarbeiter.nebenfilialen"
-              :key="f.id"
-              class="rounded-full border border-black/10 dark:border-white/10
-                    bg-black/5 dark:bg-white/10
-                    px-2 py-0.5 text-xs text-zinc-700 dark:text-white/90"
-            >
-              {{ f.name }}
-            </span>
-          </div>
-        </div>
+        <!-- gleiche "Zeilenhöhe" wie links (Zeile + space-y-2) -->
+        <p class="text-sm text-zinc-700 dark:text-white/85 leading-7 line-clamp-4 wrap-break-word">
+          {{ nebenfilialenNamen }}
+        </p>
       </div>
     </div>
 

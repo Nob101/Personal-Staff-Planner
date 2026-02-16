@@ -91,9 +91,7 @@ const filteredMitarbeiter = computed(() => {
   // --- Daten vom Backend mit Service laden ---
   async function loadData() {
     try {
-      const resMitarbeiter = await mitarbeiterService.getMitarbeiter()
-      mitarbeiter.value = resMitarbeiter.data
-
+      mitarbeiter.value = (await mitarbeiterService.getMitarbeiter()).data
       filialen.value = (await filialenService.getFilialen()).data
     } catch (err) {
       console.error(err)
@@ -108,9 +106,7 @@ const filteredMitarbeiter = computed(() => {
   async function handleMitarbeiterCreate(neu) {
     try {
       const res = await mitarbeiterService.createMitarbeiter(neu)
-      
       mitarbeiter.value.push(res.data)
-      showModalMitarbeiterCreate.value = false
     } catch (err) {
       console.error("Fehler beim Erstellen:", err)
     }
@@ -118,42 +114,26 @@ const filteredMitarbeiter = computed(() => {
 
   // Öffnet Ändern Modal wenn bei einem Mitarbeiter auf "Bearbeiten" geklickt wird
   function handleEdit(m) {
-    //NEU: Stellt sicher, dass das Edit-Formular beim Öffnen valide Stunden (mind. 40) hat
-    selectedMitarbeiter.value = {
-      ...m,
-      arbeitsstunden: m.arbeitsstunden
-    }
+    selectedMitarbeiter.value = m
     showModalMitarbeiterEdit.value = true
   }
 
   // Überschreibt bestehende Mitarbeiterdaten mit den geänderten Daten
   async function handleMitarbeiterEdit(editedData) {
     try {
-      //NEU: Mappt vor dem Absenden wieder auf den DB-Namen 'arbeitnehmertyp'
-      const payload = {
-        ...editedData,
-
-        arbeitsstunden: editedData.arbeitsstunden ?? editedData.arbeitnehmertyp,
-        arbeitnehmertyp: editedData.arbeitsstunden ?? editedData.arbeitnehmertyp
-      }
-      const res = await mitarbeiterService.updateMitarbeiter(payload)
-
+      const res = await mitarbeiterService.updateMitarbeiter(editedData)
       const index = mitarbeiter.value.findIndex(m => m.id === editedData.id)
       if (index !== -1) {
-        //NEU: Aktualisiert Liste mit gemappten Daten vom Server
-        mitarbeiter.value[index] = {
-          ...res.data,
-          arbeitsstunden: res.data.arbeitnehmertyp 
-        }
+        mitarbeiter.value[index] = res.data
       }
 
       /* WHY: Design/Overlay zeigt selectedMitarbeiter separat.
          Wenn du im Detail-Overlay bearbeitest, bleibt sonst der alte Stand angezeigt,
          obwohl die Liste schon aktualisiert ist. */
-      if (selectedMitarbeiter.value?.id === editedData.id) {
-      selectedMitarbeiter.value = mitarbeiter.value[index];
+      if (selectedMitarbeiter.value && selectedMitarbeiter.value.id === editedData.id) {
+        selectedMitarbeiter.value = res.data
       }
-        showModalMitarbeiterEdit.value = false  //NEU: Schließt Modal nach Erfolg
+
     } catch (err) {
       console.error("Fehler beim Bearbeiten:", err)
     }
