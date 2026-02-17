@@ -1,10 +1,8 @@
-//zentrale Axios Instant
-//Später muss nur die BaseURL getauscht werden, die services bleiben gleich!
-
+// http.js
+// zentrale Axios Instant
 import axios from "axios"
 
 export const http = axios.create({
-  //  baseURL: 'http://localhost:3001', // JSON Server für Entwicklung. Muss auf /api geändert werden, wenn Backend läuft
   baseURL:  '/api', // NEU: nginx fängt alles unter /api/ ab und reicht relativen pfad weiter
   headers: {
     "Content-Type": "application/json"
