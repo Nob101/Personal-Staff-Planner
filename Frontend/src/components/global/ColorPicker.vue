@@ -36,7 +36,7 @@ const isValidHex = computed(() =>
 
 <template>
   <fieldset class="color-picker-box">
-    
+    <legend>Filialenfarbe</legend>
 
     <!-- Presets -->
     <div class="presets">
@@ -70,7 +70,16 @@ const isValidHex = computed(() =>
 </template>
 
 <style scoped>
-
+.color-picker-box {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px 14px;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
 
 
 .presets {
@@ -82,6 +91,8 @@ const isValidHex = computed(() =>
 .preset {
   width: 24px;
   height: 24px;
+  border-radius: 4px;
+  border: 1px solid #999;
   cursor: pointer;
 }
 
@@ -97,9 +108,9 @@ const isValidHex = computed(() =>
 
 .custom input[type="text"] {
   width: 100px;
-  padding: 2px 5px;
-  margin-bottom: 10px;
-  
+  padding: 2px 6px;
+  border: 1px solid #999;
+  border-radius: 4px;
 }
 
 .custom input.invalid {

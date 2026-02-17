@@ -9,10 +9,6 @@
 import { ref, computed, watch } from 'vue'
 import Multiselect from 'vue-multiselect'
 
-// (Design) Icons wie bei MitarbeiterActionBar
-import filiale_anlegen_icon from '@/assets/icons/plus.svg' // falls du ein eigenes Filial-Icon hast: hier ersetzen
-import lupe_icon from '@/assets/icons/lupe_icon_solid.svg'
-
 const props = defineProps({
   modelValue: String,
   sortOptions: {
@@ -37,72 +33,84 @@ const selectedOption = computed(() => {
 </script>
 
 <template>
-  <div class="font-sans">
-    <div class="mx-auto grid w-full max-w-[1400px] grid-cols-3 items-center px-6 pt-6 pb-0">
-      <!-- LINKS: Button -->
-      <div class="justify-self-start">
-        <button
-          type="button"
-          @click="emit('filialeCreate')"
-          class="group inline-flex items-center gap-2 whitespace-nowrap
-                 rounded-xl border border-white/10 bg-green-500/50
-                 px-4 py-2 text-sm font-semibold text-black
-                 hover:bg-green-500/80 hover:scale-[1.02]
-                 active:scale-[0.98]"
-          title="Neu anlegen"
-        >
-          <img
-            :src="filiale_anlegen_icon"
-            class="h-6 w-6 opacity-70 group-hover:opacity-100"
-            alt=""
-          />
-          Neu anlegen
-        </button>
-      </div>
+  <div class="filialen-actionbar flex flex-wrap justify-between items-center p-2 mb-4 gap-2">
+    <div class="flex gap-2">
+      <input
+        v-model="search"
+        type="text"
+        placeholder="Suchen..."
+        class="search-input p-2 border rounded"
+      />
 
-      <!-- MITTE: Sortierung (wirklich Mitte) -->
-      <div class="justify-self-center">
-        <div class="min-w-[260px]">
-          <Multiselect
-          class="ms"
-            :options="sortOptions"
-            :model-value="selectedOption"
-            @update:model-value="val => emit('update:modelValue', val.value)"
-            label="label"
-            track-by="value"
-            placeholder="Sortieren"
-            :allow-empty="false"
-            :searchable="false"
-            select-label=""
-            selected-label=""
-            deselect-label=""
-          >
-            <template #singleLabel="{ option }">
-              <span class="multiselect-label-text">{{ option.label }}</span>
-            </template>
-          </Multiselect>
-        </div>
-      </div>
-
-      <!-- RECHTS: Suche -->
-      <div class="justify-self-end">
-        <div class="relative w-72">
-          <input
-            v-model="search"
-            type="text"
-            placeholder="Suchen"
-            class="h-10 w-full rounded-xl bg-black/10 dark:bg-zinc-500
-                   pl-11 pr-3 text-sm text-zinc-900 dark:text-white/90
-                   outline-none ring-1 ring-black/10 dark:ring-white/15
-                   focus:ring-black/20 dark:focus:ring-white/30"
-          />
-          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2">
-            <img :src="lupe_icon" class="h-5 w-5 opacity-60" alt="" />
-          </span>
-        </div>
-      </div>
+      <Multiselect
+        :options="sortOptions"
+        :model-value="selectedOption"
+        @update:model-value="val => emit('update:modelValue', val.value)"
+        label="label"
+        track-by="value"
+        placeholder="Sortieren"
+        :allow-empty="false"
+        :searchable="false"
+        select-label=""
+        selected-label=""
+        deselect-label=""
+      >
+        <template #singleLabel="{ option }">
+          <span class="multiselect-label-text">{{ option.label }}</span>
+        </template>
+      </Multiselect>
     </div>
+
+    <button
+      class="bg-green-200 px-3 py-2 rounded transition-colors hover:bg-green-300"
+      @click="emit('filialeCreate')"
+    >
+      Filiale hinzufügen
+    </button>
   </div>
 </template>
 
+<style scoped>
+.search-input {
+  min-width: 180px;
+}
 
+/* Verhindert, dass das Multiselect zu schmal wird */
+:deep(.multiselect) {
+  min-width: 250px;
+  width: auto;
+}
+
+/* Sorgt dafür, dass der Text im Feld nicht abgeschnitten wird */
+:deep(.multiselect__single) {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding-right: 20px;
+}
+
+:deep(.multiselect__select) {
+  height: 38px; /* Richtet den Pfeil mittig aus */
+}
+
+:deep(.multiselect__element) {
+  line-height: 1.5;
+}
+
+/* Entfernt den roten Hintergrund beim Hovern über selektierte Option */
+:deep(.multiselect__option--selected.multiselect__option--highlight) {
+  background: #41b883; 
+  color: white;
+}
+
+/* Verhindert das "Deselect"-Rot und Hilfstexte komplett */
+:deep(.multiselect__option--selected.multiselect__option--highlight:after) {
+  content: none;
+}
+
+/* Neutrales Styling für das bereits gewählte Element in der Liste */
+:deep(.multiselect__option--selected) {
+  background: #f3f3f3;
+  color: #333;
+}
+</style>
