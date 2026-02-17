@@ -15,7 +15,11 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,       //Verhindert dass Vite auf andere Ports ausweicht
-    host: true,           //Wichtig:verarbeitung Nginx Anfragen
+    host: true,           //Wichtig:verarbeitung Nginx Anfragen und erlaubt mainfest
+    allowedHosts: [
+      'psp_frontend',
+      'localhost'
+    ],
     hmr: {
       protocol: 'wss',        //NEU: forced Websocket
       clientPort: 443         // Wichtig: Der Browser "denkt", der WebSocket liegt auf 443
