@@ -6,6 +6,8 @@
  * Welcher Mitarbeiter hatte welche Schicht in welchem Jahr/monat
  * und in welcher Filiale
  * 
+ * NEU: Damit Stunden und Differenz auch mit gegeben werden beim export
+ * 
  */
 
 const pool = require('../db/pool.js');
@@ -17,14 +19,23 @@ const query = `
             m.nachname, 
             m.vorname, 
             to_char(d.datum::date, 'DD.MM.YYYY') AS datum,
-            d.schicht_typ AS kürzel             --  Kürzel für das Excel-Layout
+            d.schicht_typ AS kürzel,                         
+            m.arbeitnehmertyp AS wochenstunden,             
+            sk.differenz AS saldo                           
     
         FROM dienstplaene d
         JOIN mitarbeiter m ON d.mnr = m.mnr
         JOIN filiale f ON d.fnr = f.fnr
-            WHERE d.jahr = $1 AND d.monat = $2 AND d.fnr = $3
-            ORDER BY  d.datum ASC, m.nachname ASC;
+
+            LEFT JOIN stunden_konto sk ON sk.mnr = m.mnr 
+                AND sk.jahr = d.jahr 
+                AND sk.monat = d.monat
+            WHERE d.jahr = $1 
+            AND d.monat = $2 
+            AND d.fnr = $3
+            ORDER BY d.datum ASC, m.nachname ASC;
 `;
+
 
 try{
     const result = await pool.query(query, [jahr, monat, fnr]);

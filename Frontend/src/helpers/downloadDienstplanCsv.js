@@ -4,6 +4,8 @@ import http from "@/services/http";
  * CSV Export für Dienstplan (einzelne Filiale)
  */
 export async function downloadDienstplanCsv({ jahr, monat, fnr }) {
+  // NEU: Try Catch-Block Errorhandling
+  try {
   const res = await http.get("/download/csv", {
     params: { jahr, monat, fnr },
     responseType: "blob", // wichtig: Datei
@@ -22,4 +24,15 @@ export async function downloadDienstplanCsv({ jahr, monat, fnr }) {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+
+  // NEU: Angepasst an Stundenwert
+} catch (error){
+  console.error("Export fehlgeschlagen:", error);
+
+    if (error.response && error.response.status === 404) {
+      alert("Für diesen Monat/Filiale sind keine Dienstplandaten vorhanden.");
+    } else {
+      alert("Server-Fehler beim Export. Bitte Backend-Logs prüfen.");
+    }
+  }
 }
