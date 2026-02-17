@@ -6,9 +6,9 @@ import MonthPicker from "@/components/dienstplan/MonthPicker.vue";
 import Multiselect from "vue-multiselect";
 
 // Icons für Aktionen
-import magic from "@/assets/icons/magic-wand.svg";
-import removeIcon from "@/assets/icons/eraser.svg";
-import exportIcon from "@/assets/icons/export.svg";
+import generieren_icon from "@/assets/icons/generieren_icon.svg";
+import leeren_icon from "@/assets/icons/leeren_icon.svg";
+import export_icon from "@/assets/icons/export_icon.svg";
 
 import { downloadDienstplanCsv } from "@/helpers/downloadDienstplanCsv";
 
@@ -84,7 +84,7 @@ const emit = defineEmits([
       <!-- Lade-/Fehlerstatus -->
       <div class="text-sm">
         <span v-if="loading" class="text-white/70">⌛ Lädt...</span>
-        <span v-else-if="error" class="text-red-600">⌛ Lädt länger als üblich...</span>
+        <span v-else-if="error" class="text-red-600">{{ error }}</span>
       </div>
     </div>
 
@@ -122,22 +122,25 @@ const emit = defineEmits([
         title="Alle Dienstpläne generieren"
         @click="emit('generate')"
       >
-        <img :src="magic" class="h-4 w-4" alt="Generieren" />
+        <img :src="generieren_icon" class="h-4 w-4" alt="Generieren" />
       </button>
 
       <!-- Dienstpläne leeren -->
-      <button
-        class="group inline-flex items-center gap-2 whitespace-nowrap
-               rounded-xl border border-red-500/20 bg-red-500/50
-               px-4 py-2.5 text-sm font-semibold text-zinc-950
-               transition hover:bg-red-500 hover:scale-[1.02]
-               active:scale-[0.98] disabled:opacity-60"
-        :disabled="loading || !hasView"
-        title="Alle Dienstpläne leeren"
-        @click="emit('remove')"
-      >
-        <img :src="removeIcon" class="h-4 w-4" alt="Leeren" />
-      </button>
+<button
+  class="group inline-flex items-center gap-2 whitespace-nowrap
+         rounded-xl border border-red-500/20
+         bg-red-500 hover:bg-red-500/50
+         dark:bg-red-500/50 dark:hover:bg-red-500
+         px-4 py-2.5 text-sm font-semibold text-zinc-950
+         transition hover:scale-[1.02] active:scale-[0.98]
+         disabled:opacity-60"
+  :disabled="loading || !hasView"
+  title="Alle Dienstpläne leeren"
+  @click="emit('remove')"
+>
+  <img :src="leeren_icon" class="h-4 w-4" alt="Leeren" />
+</button>
+
             <!-- Alle Filialen exportieren -->
       <button
         class="group inline-flex items-center gap-2 whitespace-nowrap
@@ -150,7 +153,7 @@ const emit = defineEmits([
         @click="exportAlleFilialen"
         type="button"
       >
-        <img :src="exportIcon" class="h-4 w-4" alt="Exportieren" />
+        <img :src="export_icon" class="h-4 w-4" alt="Exportieren" />
       </button>
     </div>
   </div>

@@ -9,7 +9,7 @@ import HomeView from "@/views/HomeView.vue";
 import MitarbeiterView from "@/views/MitarbeiterView.vue";
 import FilialenView from "@/views/FilialenView.vue";
 import DienstplaeneView from "@/views/DienstplaeneView.vue";
-import EinstellungenView from "@/views/EinstellungenView.vue";
+import BenutzerView from "@/views/BenutzerView.vue";
 
 
 //Definieren aller Routen-Objekte, in einem Array gespeichert
@@ -19,7 +19,7 @@ const routes = [
   { path: "/mitarbeiter", name: "mitarbeiter", component: MitarbeiterView },
   { path: "/filialen", name: "filialen", component: FilialenView },
   { path: "/dienstplaene", name: "dienstplaene", component: DienstplaeneView },
-  { path: "/einstellungen", name: "einstellungen", component: EinstellungenView },
+  { path: "/benutzer", name: "benutzer", component: BenutzerView }
 ]
 
 const router = createRouter({

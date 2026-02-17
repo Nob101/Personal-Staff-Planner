@@ -4,8 +4,8 @@
 import BaseModal from '@/components/global/BaseModal.vue'
 import Multiselect from 'vue-multiselect'
 import { ref, watch, defineProps, computed } from 'vue'
-import speichern_icon from '@/assets/icons/speichern_icon_solid.png'
-import abbrechen_icon from '@/assets/icons/abbrechen_icon_solid.svg'
+import speichern_icon from '@/assets/icons/speichern_icon.png'
+import abbrechen_icon from '@/assets/icons/abbrechen_icon.svg'
 
 
 // Emits

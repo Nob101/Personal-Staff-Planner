@@ -1,21 +1,12 @@
-<!-- App.vue -->
-<!-- TODO:
-        - Routing definieren und umsetzen (Routing zu verschiedenen Views und Backend-Requests/Responses)
-        - CSS/Tailwind Formatierung definieren 
--->
-
 <script setup>
-// Import von Navbar. Die Views werden vom Router geregelt mit router-view
-import Navbar from '@/components/global/Navbar.vue'
-import ColorPicker from './components/global/ColorPicker.vue';
+import Navbar from "@/components/global/Navbar.vue";
+import { RouterView } from "vue-router";
+import { useDarkMode } from "@/composables/useDarkMode.js";
 
+useDarkMode(); // sorgt dafür, dass beim Start localStorage->dark sofort applied wird
 </script>
 
 <template>
-       
-        <Navbar />
-   <router-view />
+  <Navbar />
+  <RouterView />
 </template>
-
-<style scoped> 
-</style>

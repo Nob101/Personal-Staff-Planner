@@ -17,7 +17,3 @@ defineProps({
     <span class="loader-text">{{ text }}</span>
   </div>
 </template>
-
-<style scoped>
-
-</style>

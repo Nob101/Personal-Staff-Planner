@@ -68,7 +68,3 @@ onUnmounted(() => {
     </div>
   </teleport>
 </template>
-
-<style scoped>
-
-</style>
