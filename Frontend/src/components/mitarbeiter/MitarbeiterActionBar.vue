@@ -6,8 +6,8 @@ import { ref, computed } from 'vue'
 import Multiselect from 'vue-multiselect'
 
 
-import mitarbeiter_anlegen_icon from '@/assets/icons/plus.svg'
-import lupe_icon from '@/assets/icons/lupe_icon_solid.svg'
+import hinzufuegen_icon from '@/assets/icons/hinzufuegen_icon.png'
+import lupe_icon from '@/assets/icons/lupe_icon.svg'
 
 const props = defineProps({
   modelValue: String,
@@ -37,17 +37,16 @@ const selectedOption = computed(() => {
       @click="emit('mitarbeiterCreate')"
       class="group inline-flex items-center gap-2 whitespace-nowrap
              rounded-xl border border-white/10 bg-green-500/50
-             px-4 py-2 text-sm font-semibold text-black
+             px-4 py-2 text-sm font-semibold text-white
              hover:bg-green-500/80 hover:scale-[1.02]
              active:scale-[0.98]"
       title="Neu anlegen"
     >
       <img
-        :src="mitarbeiter_anlegen_icon"
+        :src="hinzufuegen_icon"
         class="h-6 w-6 opacity-70 group-hover:opacity-100"
         alt=""
       />
-      Neu anlegen
     </button>
   </div>
 

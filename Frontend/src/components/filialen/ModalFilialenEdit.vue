@@ -7,8 +7,8 @@ import Multiselect from 'vue-multiselect'
 import ColorPicker from '@/components/global/ColorPicker.vue'
 
 // (notwendig fürs Design): Icon-Buttons statt Textbuttons
-import speichern_icon from '@/assets/icons/speichern_icon_solid.png'
-import abbrechen_icon from '@/assets/icons/abbrechen_icon_solid.svg'
+import speichern_icon from '@/assets/icons/speichern_icon.png'
+import abbrechen_icon from '@/assets/icons/abbrechen_icon.svg'
 
 const emit = defineEmits(['close', 'filialeEdit'])
 

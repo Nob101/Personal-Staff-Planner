@@ -4,8 +4,8 @@
 import BaseModal from '@/components/global/BaseModal.vue'
 import Multiselect from 'vue-multiselect'
 import { ref, defineProps, watch, computed } from 'vue'
-import speichern_icon from '@/assets/icons/speichern_icon_solid.png'
-import abbrechen_icon from '@/assets/icons/abbrechen_icon_solid.svg'
+import speichern_icon from '@/assets/icons/speichern_icon.png'
+import abbrechen_icon from '@/assets/icons/abbrechen_icon.svg'
 
 
 // Emits, um das Modal zu schließen / bearbeiten

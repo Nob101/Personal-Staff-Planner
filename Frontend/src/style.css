@@ -7,36 +7,7 @@
 .ms .multiselect__tags {
   border-radius: 0.75rem;     /* rounded-xl */
   min-height: 2.5rem;         /* h-10 */
-  font-size: 1rem;        /* text-sm */
-  line-height: 1.25rem;
-  color: rgb(24 24 27);       /* zinc-900 */
-  background:white;/* bg-black/10 */
   border: 1px solid rgba(0,0,0,0.1);
   align-items: center;
-  text-align: ;
-}
 
-/* Placeholder */
-.ms .multiselect__placeholder {
-  color: rgba(24, 24, 27, 0.7);
-}
-
-/* Fokus */
-.ms.multiselect--active .multiselect__tags {
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
-  border-color: rgba(0,0,0,0.2);
-}
-
-/* Dark Mode passend */
-.dark .ms .multiselect__tags {
-  background: rgb(113 113 122);            /* zinc-500 */
-  color: rgba(255,255,255,0.9);
-  border-color: rgba(255,255,255,0.15);
-}
-.dark .ms .multiselect__placeholder {
-  color: rgba(255,255,255,0.7);
-}
-.dark .ms.multiselect--active .multiselect__tags {
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
-  border-color: rgba(255,255,255,0.3);
 }

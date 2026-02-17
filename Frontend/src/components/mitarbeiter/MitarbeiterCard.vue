@@ -3,8 +3,8 @@
 <script setup>
 // Funktionalitäten und Komponenten importieren
 import { defineProps, computed } from 'vue'
-import bearbeiten_icon from '@/assets/icons/bearbeiten_icon_solid.png'
-import loeschen_icon from '@/assets/icons/loeschen_icon_solid.png'
+import bearbeiten_icon from '@/assets/icons/bearbeiten_icon.png'
+import loeschen_icon from '@/assets/icons/loeschen_icon.png'
 
 const props = defineProps({
   mitarbeiter: {

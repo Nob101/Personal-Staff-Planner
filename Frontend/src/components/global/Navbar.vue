@@ -2,10 +2,12 @@
 import { useRoute } from "vue-router"
 import { useDarkMode } from '@/composables/useDarkMode.js'
 import logo from '@/assets/icons/PSP_Logo_Transparent.png';
-import dienstplaene_icon from '@/assets/icons/dienstplaene_icon_solid.png'
-import mitarbeiter_icon from '@/assets/icons/mitarbeiter_icon_solid.png'
-import filialen_icon from '@/assets/icons/store.png'
-import einstellungen_icon from '@/assets/icons/einstellungen_icon.png.png'
+import dienstplaene_icon from '@/assets/icons/dienstplaene_icon.png'
+import mitarbeiter_icon from '@/assets/icons/mitarbeiter_icon.png'
+import filialen_icon from '@/assets/icons/filialen_icon.png'
+import benutzer_icon from '@/assets/icons/benutzer_icon.png'
+import sonne_icon from '@/assets/icons/sonne_icon.svg'
+import mond_icon from '@/assets/icons/mond_icon.svg'
 import { ref } from 'vue';
 
 
@@ -93,7 +95,7 @@ console.log("Navbar mounted, isDark:", isDark.value)
 
         <!-- Einstellungen -->
         <RouterLink
-          to="/einstellungen"
+          to="/benutzer"
           class="flex items-center gap-2 px-4 py-2 text-xl
                 font-sans font-medium
                 text-zinc-700 dark:text-white/70
@@ -103,8 +105,8 @@ console.log("Navbar mounted, isDark:", isDark.value)
                 transition-colors"
           active-class="border-zinc-900 text-zinc-900 dark:border-white dark:text-white"
         >
-          <img :src="einstellungen_icon" alt="" class="h-7 w-7 -ml-0.5" />
-          <span>Einstellungen</span>
+          <img :src="benutzer_icon" alt="" class="h-7 w-7 -ml-1" />
+          <span>Benutzer</span>
         </RouterLink>
       </nav>
 
@@ -123,7 +125,12 @@ console.log("Navbar mounted, isDark:", isDark.value)
                 focus:outline-none focus:ring-black/20 dark:focus:ring-white/30"
           :title="isDark ? 'Light Mode' : 'Dark Mode'"
         >
-          <span class="text-xl">{{ isDark ? "☀️" : "🌙" }}</span>
+          <img
+          :src="isDark ? mond_icon : sonne_icon"
+          alt="Theme Toggle"
+          class="h-6 w-6 transition-opacity"
+          />
+
         </button>
 
       </div>

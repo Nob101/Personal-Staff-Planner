@@ -1,10 +1,10 @@
-<!-- FilialeGridSection.vue (rendert eine Filial-Sektion des Dienstplans)-->
+<!-- FilialeGridSection.vue (rendert Filial-Sektions des Dienstplans)-->
 
 <script setup>
 // Vue
 import { computed } from "vue";
 
-import exportIcon from "@/assets/icons/export.svg";
+import export_icon from "@/assets/icons/export_icon.svg";
 
 import { downloadDienstplanCsv } from "@/helpers/downloadDienstplanCsv.js";
 
@@ -117,7 +117,7 @@ const localTyp = computed({
         title="Dienstplan als CSV exportieren"
       >
         <img
-          :src="exportIcon"
+          :src="export_icon"
           alt=""
           class="h-4 w-4 opacity-90"
         />

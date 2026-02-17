@@ -10,8 +10,8 @@ import { ref, computed, watch } from 'vue'
 import Multiselect from 'vue-multiselect'
 
 // (Design) Icons wie bei MitarbeiterActionBar
-import filiale_anlegen_icon from '@/assets/icons/plus.svg' // falls du ein eigenes Filial-Icon hast: hier ersetzen
-import lupe_icon from '@/assets/icons/lupe_icon_solid.svg'
+import hinzufuegen_icon from '@/assets/icons/hinzufuegen_icon.png' // falls du ein eigenes Filial-Icon hast: hier ersetzen
+import lupe_icon from '@/assets/icons/lupe_icon.svg'
 
 const props = defineProps({
   modelValue: String,
@@ -52,11 +52,10 @@ const selectedOption = computed(() => {
           title="Neu anlegen"
         >
           <img
-            :src="filiale_anlegen_icon"
+            :src="hinzufuegen_icon"
             class="h-6 w-6 opacity-70 group-hover:opacity-100"
             alt=""
           />
-          Neu anlegen
         </button>
       </div>
 
