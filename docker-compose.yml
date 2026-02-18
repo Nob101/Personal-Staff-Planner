@@ -96,7 +96,7 @@ services:
     container_name: psp_frontend
     restart: on-failure:3
     ports:
-      - "3000:3000" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen
+      - "5173:5173" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen
     
     volumes:
       - ./Frontend:/app         # <--- SPIEGELT VUE-CODE FÜR VITE HOT RELOAD
