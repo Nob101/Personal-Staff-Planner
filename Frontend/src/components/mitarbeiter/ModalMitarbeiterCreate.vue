@@ -258,15 +258,19 @@ function handleSubmit() {
                       Hauptfiliale
                     </label>
                     <Multiselect
+                    class="w-64 rounded-lg border border-white/10 bg-black/25 px-3 py-1 text-white outline-none ring-1 ring-transparent focus:ring-white/20 cursor-pointer"
                       v-model="hauptfiliale"
                       :options="props.filialen.sort((a,b)=>a.filialname.localeCompare(b.filialname))"
                       label="filialname"
                       track-by="fnr"
                       placeholder="Hauptfiliale wählen"
+                      :searchable="false" 
                       :clearable="false"
                       selectLabel=""
                       deselectLabel=""
                       selectedLabel=""
+                      
+                      
                     />
                     <p v-if="hauptfilialeFehler" class="text-red-400 text-sm">
                       Hauptfiliale ist erforderlich
@@ -279,16 +283,19 @@ function handleSubmit() {
                       Nebenfilialen
                     </label>
                     <Multiselect
+                    class="w-64 rounded-lg border border-white/10 bg-black/25 px-3 py-1 text-white outline-none ring-1 ring-transparent focus:ring-white/20 cursor-pointer"
                       v-model="sortedNebenfilialen"
                       :options="nebenfilialenOptionen"
                       label="filialname"
                       track-by="fnr"
                       placeholder="Nebenfiliale(n) wählen"
+                      :searchable="false"
                       :multiple="true"
                       :close-on-select="false"
                       selectLabel=""
                       deselectLabel=""
                       selectedLabel=""
+                      
                     />
                   </div>
                 </div>
@@ -405,5 +412,3 @@ function handleSubmit() {
   </BaseModal>
 </template>
 
-<style>
-</style>

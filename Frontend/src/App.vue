@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import Navbar from "@/components/global/Navbar.vue";
 
+
 const route = useRoute();
 
 const hideNavbar = computed(() =>
@@ -13,8 +14,8 @@ const hideNavbar = computed(() =>
 </script>
 
 <template>
-  <div class="relative min-h-screen">
+  
     <Navbar v-if="!hideNavbar" />
     <RouterView />
-  </div>
+  
 </template>
