@@ -1,13 +1,125 @@
 /* Tailwind Installation nach https://tailwindcss.com/docs/installation/using-vite */
 /* VS Code Extension:  Tailwind CSS IntelliSense nach https://tailwindcss.com/docs/editor-setup */
 
+/* Tailwind */
 @import "tailwindcss";
 
-/* Einheitliches Multiselect-Look&Feel wie dein Input */
-.ms .multiselect__tags {
-  border-radius: 0.75rem;     /* rounded-xl */
-  min-height: 2.5rem;         /* h-10 */
-  border: 1px solid rgba(0,0,0,0.1);
-  align-items: center;
+/* =========================================
+   MULTISELECT GLOBAL STYLE
+========================================= */
 
+/* Root */
+.ms {
+  position: relative;
+  z-index: 50;
+  cursor: pointer;
 }
+
+/* =========================
+   BASIS INPUT STYLE
+========================= */
+.ms .multiselect__tags {
+  min-height: 2.5rem;              /* h-10 */
+  border-radius: 0.75rem;          /* rounded-xl */
+  border: 1px solid rgba(0,0,0,0.12);
+  background: white;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  transition: all 0.15s ease;
+}
+
+/* Fokusrahmen stabil auf Container */
+.ms .multiselect__input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.ms .multiselect__tags:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37,99,235,.35);
+}
+
+/* =========================
+   SINGLE SELECT
+========================= */
+.ms.multiselect--single .multiselect__tags {
+  justify-content: center;
+}
+
+.ms.multiselect--single .multiselect__single,
+.ms.multiselect--single .multiselect__placeholder {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #111827;
+}
+
+/* =========================
+   MULTI SELECT
+========================= */
+.ms.multiselect--multiple .multiselect__tags {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 0.4rem;
+}
+
+/* Input im Multi */
+.ms.multiselect--multiple .multiselect__input,
+
+
+/* Ausgewählte Tags */
+.ms .multiselect__tag {
+  background: #e5e7eb;
+  color: #111827;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* X Icon im Tag */
+.ms .multiselect__tag-icon {
+  color: #111827;
+}
+
+/* =========================
+   DROPDOWN
+========================= */
+.ms .multiselect__content-wrapper {
+  position: absolute !important;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 9999;
+
+  background: white;
+  border: 1px solid rgba(0,0,0,0.14);
+  border-radius: 0.75rem;
+  box-shadow: 0 18px 45px rgba(0,0,0,0.25);
+
+  max-height: 260px;
+  overflow: auto;
+}
+
+/* Dropdown Liste */
+.ms .multiselect__content {
+  padding: 6px 0;
+}
+
+/* Optionen */
+.ms .multiselect__option {
+  padding: 8px 12px;
+  white-space: nowrap;
+  color: #111827;
+}
+
+/* Hover */
+.ms .multiselect__option--highlight {
+  background: #f3f4f6;
+  color: #111827;
+}
+

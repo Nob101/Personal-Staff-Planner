@@ -97,7 +97,7 @@ const localTyp = computed({
 
     <!-- HEADER: Filialname + Farbe -->
     <div class="mb-2 flex items-center justify-between">
-      <div class="flex items-center gap-2 font-bold text-xl text-white">
+      <div class="flex items-center gap-2 font-bold text-xl text-black dark:text-white">
         <span>{{ filiale.filialname }}</span>
         <span
           class="inline-block h-3 w-3 rounded-full border border-white/20"
@@ -136,7 +136,7 @@ const localTyp = computed({
 
 
         <!-- Grid-Header: Mitarbeiter -->
-        <div class="h-10 flex items-center px-2 font-bold text-lg bg-white/5 rounded">
+        <div class="h-10 flex items-center px-1 font-bold text-lg bg-white/5 rounded">
           Mitarbeiter:
         </div>
 

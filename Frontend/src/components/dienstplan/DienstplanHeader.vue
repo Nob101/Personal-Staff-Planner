@@ -89,7 +89,7 @@ const emit = defineEmits([
     </div>
 
     <!-- MITTE: Filialen MultiSelect -->
-    <div class="min-w-[260px]">
+    <div class="min-w-[220px]">
       <Multiselect
         class="ms"
         :model-value="modelValue"
@@ -105,6 +105,7 @@ const emit = defineEmits([
         select-label=""
         selected-label=""
         deselect-label=""
+        :allow-empty="true"
       />
     </div>
 
