@@ -1,5 +1,5 @@
 @baseUrl = https://localhost/api
-@token = de1c989c53ff40c92ea12239cb28f76e6e563d13c33fc0a6
+@token = a903637449ca45f98550f7a4ee6970655505bb968deba743
 @jahr = 2026
 @monat = 1
 
@@ -219,4 +219,28 @@ Content-Type: application/json
   "jahr": 2026,
   "monat": 1,
   "ist_stunden_monat": 166
+}
+
+
+@FNR_TEST = 1
+
+### ============================================================================
+### ein Monat löschen mit FNR
+### ============================================================================
+DELETE {{baseUrl}}/dienstplan/{{jahr}}/{{monat}}?fnr={{FNR_TEST}}
+Authorization: {{token}}
+
+
+### ============================================================================
+### ein Monat generieren mit FNR
+### ============================================================================
+
+POST {{baseUrl}}/dienstplan/generate
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "jahr": {{jahr}},
+  "monat": {{monat}},
+  "fnr": {{FNR_TEST}}
 }
