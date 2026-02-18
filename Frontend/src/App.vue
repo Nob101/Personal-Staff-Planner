@@ -1,12 +1,20 @@
 <script setup>
+import { computed } from "vue";
+import { RouterView, useRoute } from "vue-router";
 import Navbar from "@/components/global/Navbar.vue";
-import { RouterView } from "vue-router";
-import { useDarkMode } from "@/composables/useDarkMode.js";
 
-useDarkMode(); // sorgt dafür, dass beim Start localStorage->dark sofort applied wird
+const route = useRoute();
+
+const hideNavbar = computed(() =>
+  route.matched.some(r => r.meta?.hideNavbar === true)
+  // optional zusätzlich per name:
+  // || route.name === "login"
+);
 </script>
 
 <template>
-  <Navbar />
-  <RouterView />
+  <div class="relative min-h-screen">
+    <Navbar v-if="!hideNavbar" />
+    <RouterView />
+  </div>
 </template>

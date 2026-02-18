@@ -118,6 +118,6 @@ const {
       @confirm="confirmDelete"
       @close="cancelDelete"
     />
-  </div>
+    </div>
   </div>
 </template>

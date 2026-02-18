@@ -14,7 +14,7 @@ import BenutzerView from "@/views/BenutzerView.vue";
 
 //Definieren aller Routen-Objekte, in einem Array gespeichert
 const routes = [
-  { path: "/", name: "login", component: LoginView },
+  { path: "/", name: "login", component: LoginView, meta: { hideNavbar: true } },
   { path: "/home", name: "home", component: HomeView },
   { path: "/mitarbeiter", name: "mitarbeiter", component: MitarbeiterView },
   { path: "/filialen", name: "filialen", component: FilialenView },
