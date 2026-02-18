@@ -43,7 +43,20 @@ async function save(jahr, monat, datum, mnr, fnr, schicht_typ) {
  * Rückgabe:
  * - rowCount: Anzahl der gelöschten Datensätze (für Logging/Feedback).
  */
-async function deleteByMonth(jahr, monat) {
+async function deleteByMonth(jahr, monat, fnr) {
+  if (fnr) {
+    const result = await pool.query(
+      `
+      DELETE FROM dienstplaene
+      WHERE jahr = $1
+        AND monat = $2
+        AND fnr = $3
+      `,
+      [jahr, monat, fnr]
+    );
+    return result.rowCount;
+  }
+
   const result = await pool.query(
     `
     DELETE FROM dienstplaene

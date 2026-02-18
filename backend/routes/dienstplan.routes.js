@@ -65,34 +65,36 @@ router.get("/", async (req, res) => {
  * ============================================================================
  */
 
-let generating = false;
- 
 
 router.post("/generate", async (req, res) => {
-  const { jahr, monat } = req.body;
+  const { jahr, monat, fnr } = req.body;
 
-  const rid = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  console.log("[GEN]", rid, "jahr", req.body.jahr, "monat", req.body.monat, "token", req.headers.authorization);
-  if (!jahr || !monat) {
+  if (jahr == null || monat == null) {
     return res.status(400).json({ error: "jahr und monat Pflicht." });
   }
-
-  generating = true;
 
   try {
     const j = Number(jahr);
     const m = Number(monat);
 
-    const plan = await generateDienstplan(j, m);
+    if (!Number.isInteger(j) || !Number.isInteger(m) || m < 1 || m > 12) {
+      return res.status(400).json({ error: "Ungültiges jahr/monat." });
+    }
+
+    // fnr optional
+    let f = null;
+    if (fnr !== undefined && fnr !== null && fnr !== "") {
+      f = Number(fnr);
+      if (!Number.isInteger(f) || f <= 0) {
+        return res.status(400).json({ error: "Ungültige fnr." });
+      }
+    }
+
+    const plan = await generateDienstplan(j, m, f); // f kann null sein
     res.json(plan);
-  } 
-    catch (err) {
+  } catch (err) {
     console.error("POST /dienstplan/generate", err);
     res.status(500).json({ error: "Fehler beim Generieren." });
-  }
-    finally {
-    generating = false;
-    console.log("[GEN]", rid, "fertig");
   }
 });
 
@@ -107,12 +109,23 @@ router.delete("/:jahr/:monat", async (req, res) => {
   try {
     const jahr = Number(req.params.jahr);
     const monat = Number(req.params.monat);
+    const fnr = req.query.fnr ? Number(req.query.fnr) : null;
 
     if (!Number.isInteger(jahr) || !Number.isInteger(monat)) {
       return res.status(400).json({ error: "jahr und monat ungültig" });
     }
 
-    const deleted = await dienstplanRepo.deleteByMonth(jahr, monat);
+    if (fnr !== null && (!Number.isInteger(fnr) || fnr <= 0)) {
+      return res.status(400).json({ error: "Ungültige fnr." });
+    }
+
+    let deleted;
+
+    if (fnr) {
+      deleted = await dienstplanRepo.deleteByMonth(jahr, monat, fnr);
+    } else {
+      deleted = await dienstplanRepo.deleteByMonth(jahr, monat);
+    }
 
     res.json({
       message: "Dienstplan gelöscht",
