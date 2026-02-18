@@ -6,6 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
@@ -13,15 +14,19 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
-    port: 3000,
+    port: 5173,
     strictPort: true,       //Verhindert dass Vite auf andere Ports ausweicht
-    host: true,           //Wichtig:verarbeitung Nginx Anfragen
+    host: true,           //Wichtig:verarbeitung Nginx Anfragen und erlaubt mainfest
+    allowedHosts: [
+      'psp_frontend',
+      'localhost'
+    ],
     hmr: {
       protocol: 'wss',        //NEU: forced Websocket
       clientPort: 443         // Wichtig: Der Browser "denkt", der WebSocket liegt auf 443
     },
     watch: {
-      usePolling: true,       //NEU: Hilft in Docker-Umgebung änderungen zu erkennen 
+      usePolling: true,       //NEU: Hilft in Docker-Umgebung änderungen zu erkennen
     }
   },
   resolve: {
