@@ -27,9 +27,9 @@ console.log("Navbar mounted, isDark:", isDark.value)
 
 <template>
 <header
-  class="sticky top-0 z-50
+  class="sticky top-0 z-10000
          border-b border-black/10 dark:border-white/10
-         bg-linear-to-b from-zinc-100 to-zinc-200
+         bg-linear-to-b from-zinc-400 to-white
          dark:from-zinc-700/70 dark:to-zinc-900/80
          backdrop-blur supports-backdrop-filter:bg-white/60"
 >
@@ -60,7 +60,7 @@ console.log("Navbar mounted, isDark:", isDark.value)
                transition-colors"
         active-class="border-zinc-900 text-zinc-900 dark:border-white dark:text-white"
       >
-        <img :src="dienstplaene_icon" class="h-5 w-5" />
+        <img :src="dienstplaene_icon" class="h-5 w-5 -ml-0.5" />
         <span>Dienstpläne</span>
       </RouterLink>
 
@@ -90,7 +90,7 @@ console.log("Navbar mounted, isDark:", isDark.value)
                transition-colors"
         active-class="border-zinc-900 text-zinc-900 dark:border-white dark:text-white"
       >
-        <img :src="filialen_icon" class="h-5 w-5" />
+        <img :src="filialen_icon" class="h-5 w-5 -ml-0.5" />
         <span>Filialen</span>
       </RouterLink>
 
