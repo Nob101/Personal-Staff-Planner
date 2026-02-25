@@ -107,15 +107,15 @@ watch(
     <!-- Modal-Container (verschiebbar) -->
     <div
       ref="modalEl"
-      class="absolute w-[780px] max-w-[95vw] rounded-2xl border border-white/10 bg-zinc-900 text-white shadow-2xl"
+      class="absolute w-[520px] max-w-[94vw] rounded-2xl border border-white/10 bg-linear-to-b from-zinc-600 to-zinc-900 text-white shadow-2xl"
       :style="{ left: pos.x + 'px', top: pos.y + 'px' }"
     >
       <!-- HEADER (drag handle) -->
       <div
-        class="px-4 py-3 border-b border-white/10 flex items-center justify-between cursor-move select-none"
+        class="px-3 py-2 border-b border-white/10 flex items-center justify-between cursor-move select-none"
         @mousedown="startDrag"
       >
-        <div class="font-semibold">
+        <div class="font-semibold text-sm">
           Ersatz auswählen
           <span class="text-white/60 font-normal ml-2">
             {{ datum }}
@@ -124,7 +124,8 @@ watch(
 
         <!-- Wichtig: stop, damit Drag nicht startet, wenn man Button klickt -->
         <button
-          class="px-2 py-1 rounded-xl bg-red-500/40 hover:bg-red-500/80"
+          class="px-2 py-1 text-xs rounded-lg
+          bg-linear-to-b from-red-300 to-red-900 hover:from-red-900 hover:to-red-300"
           @mousedown.stop
           @click.stop="emit('close')"
         >
@@ -133,33 +134,33 @@ watch(
       </div>
 
       <!-- CONTENT -->
-      <div class="p-4">
-        <div class="text-sm text-white/70 mb-2">
+      <div class="p-3">
+        <div class="text-xs text-white/70 mb-2">
           Alt-Dienst wird auf
           <span class="font-bold text-white">{{ altNewTyp }}</span>
           gesetzt. Ersatz übernimmt automatisch den alten Typ.
         </div>
 
-        <div v-if="loading" class="text-white/70">
+        <div v-if="loading" class="text-white/70 text-sm">
           Lade Kandidaten…
         </div>
 
-        <div v-else-if="error" class="text-red-500">
+        <div v-else-if="error" class="text-red-500 text-sm">
           {{ error }}
         </div>
 
         <div v-else>
-          <div v-if="!kandidaten.length" class="text-white/60">
+          <div v-if="!kandidaten.length" class="text-white/60 text-sm">
             Keine Kandidaten gefunden (muss F haben + Haupt-/Nebenfiliale passen).
           </div>
 
-          <div v-else class="max-h-[55vh] overflow-auto rounded border border-white/10">
-            <table class="w-full text-sm">
+          <div v-else class="max-h-[45vh] overflow-auto rounded-xl border border-white/10">
+            <table class="w-full text-xs">
               <thead class="sticky top-0 bg-zinc-500 border-b border-white/10">
                 <tr class="text-white">
-                  <th class="text-left p-2">Mitarbeiter</th>
-                  <th class="text-left p-2">Status</th>
-                  <th class="p-2"></th>
+                  <th class="text-left px-2 py-2">Mitarbeiter</th>
+                  <th class="text-left px-2 py-2">Status</th>
+                  <th class="px-2 py-2"></th>
                 </tr>
               </thead>
 
@@ -169,13 +170,14 @@ watch(
                   :key="k.dienstId"
                   class="border-b border-white/5 hover:bg-white/5"
                 >
-                  <td class="p-2">
+                  <td class="px-2 py-2">
                     {{ k.vorname }} {{ k.nachname }}
                   </td>
-                  <td class="p-2 text-white/70">Frei (F)</td>
-                  <td class="p-2 text-right">
+                  <td class="px-2 py-2 text-white/70">Frei (F)</td>
+                  <td class="px-2 py-2 text-right">
                     <button
-                      class="px-3 py-1 rounded-xl bg-blue-600 hover:bg-blue-400"
+                      class="px-2.5 py-1 text-xs rounded-lg bg-linear-to-b from-blue-300 to-blue-900
+                    hover:from-blue-900 hover:to-blue-300"
                       @click="emit('pick', k)"
                     >
                       wählen
@@ -188,17 +190,17 @@ watch(
         </div>
 
         <!-- FOOTER ACTIONS -->
-        <div class="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-4">
+        <div class="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
           <div class="flex items-center gap-2 ml-auto">
             <button
-              class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/30"
+              class="px-3 py-1.5 text-sm rounded-xl bg-linear-to-b from-zinc-500 to-zinc-700 hover:from-zinc-700 hover:to-zinc-500"
               @click="emit('close')"
             >
               Abbrechen
             </button>
 
             <button
-              class="px-3 py-2 rounded-xl bg-amber-500/25 hover:bg-amber-500/60 border border-amber-400/20 text-amber-100"
+              class="px-3 py-1.5 text-sm rounded-xl bg-linear-to-b from-amber-700 to-amber-900 hover:from-amber-900 hover:to-amber-700"
               @click="emit('ignore')"
             >
               Ignorieren &amp; speichern

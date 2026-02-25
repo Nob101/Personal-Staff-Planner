@@ -50,15 +50,24 @@ const filialenToShow = computed(() => {
   const chosen = new Set(selectedFilialen.value.map(f => f.fnr));
   return all.filter(f => chosen.has(f.fnr));
 });
+
+async function onGenerateFiliale({ fnr, jahr: j, monat: m }) {
+  if (loading.value) return;
+  await generate(j, m, fnr);
+}
+
+function onRemoveFiliale({ fnr, jahr: j, monat: m }) {
+  remove(j, m, fnr);
+}
+
 </script>
 
 <template>
   <!-- Background wird DIREKT von isDark gesteuert -->
   <div
     class="min-h-screen"
-    :class="isDark ? 'bg-[#18181b] text-white' : 'bg-zinc-400/80 text-white'"
   >
-    <div class="mx-auto w-full max-w-[1400px] px-6 py-6 font-sans">
+    <div class="mx-auto w-full max-w-[1400px] font-sans">
       <DienstplanHeader
         :jahr="jahr"
         :monat="monat"
@@ -80,6 +89,10 @@ const filialenToShow = computed(() => {
         :onShiftMitErsatz="doShiftMitErsatz"
         :jahr="jahr"
         :monat="monat"
+        :loading="loading"
+        :hasView="!!view"
+        @generateFiliale="onGenerateFiliale"
+        @removeFiliale="onRemoveFiliale"
       />
     </div>
   </div>
