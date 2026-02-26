@@ -186,8 +186,7 @@ async function findErsatzKandidatenByDienstId(dienstId) {
     JOIN dienstplaene d2 ON d2.datum = d1.datum
     JOIN mitarbeiter m ON m.mnr = d2.mnr
     WHERE d1.id = $1
-      AND m.aktiv = true 
-      AND d2.schicht_typ = 'F'
+      AND m.aktiv = true
       AND (
         m.hauptfiliale_fnr = d1.fnr
         OR EXISTS (
@@ -196,8 +195,34 @@ async function findErsatzKandidatenByDienstId(dienstId) {
           WHERE mn.mnr = m.mnr AND mn.fnr = d1.fnr
         )
       )
+      AND d2.schicht_typ IN ('F','A','E')
+      AND (
+        d2.schicht_typ = 'F'
+        OR (
+          d2.schicht_typ = 'A'
+          AND (
+            SELECT COUNT(*)
+            FROM dienstplaene x
+            WHERE x.datum = d2.datum
+              AND x.fnr = d2.fnr
+              AND x.schicht_typ = 'A'
+          ) >= 2
+        )
+        OR (
+          d2.schicht_typ = 'E'
+          AND (
+            SELECT COUNT(*)
+            FROM dienstplaene x
+            WHERE x.datum = d2.datum
+              AND x.fnr = d2.fnr
+              AND x.schicht_typ = 'E'
+          ) >= 2
+        )
+      )
+
     ORDER BY m.nachname, m.vorname;
   `;
+
   const r = await pool.query(q, [dienstId]);
   return r.rows;
 }
