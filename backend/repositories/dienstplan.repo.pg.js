@@ -181,10 +181,12 @@ async function findErsatzKandidatenByDienstId(dienstId) {
       m.vorname    AS "vorname",
       m.nachname   AS "nachname",
       d2.fnr       AS "dienstFNr",
+      f.filialname AS "dienstFilialname",
       d2.schicht_typ
     FROM dienstplaene d1
     JOIN dienstplaene d2 ON d2.datum = d1.datum
     JOIN mitarbeiter m ON m.mnr = d2.mnr
+    JOIN filiale f ON f.fnr = d2.fnr
     WHERE d1.id = $1
       AND m.aktiv = true
       AND (
@@ -219,7 +221,6 @@ async function findErsatzKandidatenByDienstId(dienstId) {
           ) >= 2
         )
       )
-
     ORDER BY m.nachname, m.vorname;
   `;
 
