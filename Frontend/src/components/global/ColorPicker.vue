@@ -74,6 +74,7 @@ const isValidHex = computed(() =>
 .color-picker-box {
   display: grid;
   gap: 12px;
+
 }
 
 /* Preset-Reihe */
