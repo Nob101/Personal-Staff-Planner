@@ -32,7 +32,7 @@ async function onSubmit() {
     <div class="relative z-10 min-h-[calc(100vh-64px)]
                 flex items-center justify-center px-4 py-10">
       <div
-        class="w-full max-w-md rounded-3xl
+        class="w-full max-w-sm rounded-3xl
                border border-zinc-200
                bg-white/80 backdrop-blur-xl
                shadow-xl p-7 sm:p-8"

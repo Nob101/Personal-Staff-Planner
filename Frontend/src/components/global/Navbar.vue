@@ -34,8 +34,7 @@ console.log("Navbar mounted, isDark:", isDark.value)
          backdrop-blur supports-backdrop-filter:bg-white/60"
 >
   <div
-    class="mx-auto flex h-12 w-full max-w-[1400px]
-           items-center justify-between px-3"
+    class="relative mx-auto flex h-12 w-full max-w-[1400px] items-center px-3"
   >
 
     <!-- Logo -->
@@ -48,7 +47,7 @@ console.log("Navbar mounted, isDark:", isDark.value)
     </div>
 
     <!-- Navigation -->
-    <nav class="flex items-center gap-3">
+    <nav class="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
       <RouterLink
         to="/dienstplaene"
         class="flex items-center gap-1.5 px-2.5 py-1.5
@@ -121,23 +120,6 @@ console.log("Navbar mounted, isDark:", isDark.value)
         <span>Benutzer</span>
       </RouterLink>
     </nav>
-
-    <!-- Darkmode -->
-    <div class="flex items-center">
-      <button
-        @click="toggle"
-        class="h-7 px-2.5 rounded-lg font-medium transition
-               bg-black/10 dark:bg-black/30
-               text-zinc-900 dark:text-white/90
-               ring-1 ring-black/10 dark:ring-white/15
-               hover:bg-black/20 dark:hover:bg-black/40"
-      >
-        <img
-          :src="isDark ? mond_icon : sonne_icon"
-          class="h-4 w-4"
-        />
-      </button>
-    </div>
 
   </div>
 </header>
