@@ -122,19 +122,19 @@ async function getByIdTx(client, id) {
  * - liefert den aktualisierten Datensatz direkt zurück
  * - vermeidet einen zusätzlichen SELECT nach dem UPDATE.
  */
-async function dienstShiftTx(client, id, schicht_typ) {
+async function dienstShiftTx(client, id, schicht_typ, fnr) {
   const r = await client.query(
     `
     UPDATE dienstplaene
-    SET schicht_typ = $2
+    SET schicht_typ = $2,
+        fnr = $3 -- Arbeitsfiliale des ursprünglichen Dienstes übernehmen (Test)
     WHERE id = $1
     RETURNING id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung;
     `,
-    [id, schicht_typ]
+    [id, schicht_typ, fnr]
   );
   return r.rows[0] ?? null;
 }
-
 /**
  * Spezial-Update für den Ersatzfall:
  * - Schichttyp wird gesetzt
@@ -148,7 +148,7 @@ async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
     `
     UPDATE dienstplaene
     SET schicht_typ = $2,
-        fnr = $3
+        fnr = $3 
     WHERE id = $1
     RETURNING id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung;
     `,

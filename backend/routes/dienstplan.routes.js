@@ -215,9 +215,11 @@ router.post("/shift", async (req, res) => {
     }
 
     const delta = deltaStunden(before.schicht_typ, neuTyp);
+    // Test
+    const m = await mitarbeiterRepo.getByMnr(before.mnr);
 
     // Diensttyp aktualisieren
-    const updated = await dienstplanRepo.dienstShiftTx(client, id, neuTyp);
+    const updated = await dienstplanRepo.dienstShiftTx(client, id, neuTyp, m.hauptfiliale_fnr);
     if (!updated) {
       await client.query("ROLLBACK");
       return res.status(404).json({ error: "Dienst nicht gefunden." });
