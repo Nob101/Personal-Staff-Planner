@@ -101,7 +101,8 @@ async function onSubmit() {
             :disabled="isLoading"
             class="w-full rounded-2xl px-4 py-3 text-sm font-semibold
                    text-white shadow-lg transition
-                   bg-blue-500 hover:bg-blue-600
+                   bg-linear-to-b from-blue-300 to-blue-900
+                   hover:from-blue-900 hover:to-blue-300
                    disabled:opacity-60 disabled:cursor-not-allowed
                    active:scale-[0.99]"
           >

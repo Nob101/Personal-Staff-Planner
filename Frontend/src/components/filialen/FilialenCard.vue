@@ -60,7 +60,7 @@ const springerMitarbeiter = computed(() =>
     class="relative cursor-pointer font-sans
            overflow-hidden
            rounded-3xl
-           bg-linear-to-b from-zinc-200 to-zinc-500
+           bg-linear-to-b from-zinc-300 to-zinc-600
            shadow-[0_16px_40px_rgba(0,0,0,0.4)]
            hover:-translate-y-0.5 transition"
     @click="handleSelect"
@@ -149,7 +149,7 @@ const springerMitarbeiter = computed(() =>
     />
 
     <!-- HEADER -->
-    <div class="bg-linear-to-b from-zinc-200 to-zinc-300">
+    <div class="bg-linear-to-b from-zinc-300 to-zinc-400">
       <div class="flex items-center justify-between gap-3 px-4 py-2">
         <div class="min-w-0">
           <div class="text-xl font-extrabold text-zinc-900 dark:text-white truncate">
@@ -196,7 +196,7 @@ const springerMitarbeiter = computed(() =>
       </div>
     </div>
 
-    <div class="px-4 pt-2 pb-3 rounded-b-3xl bg-linear-to-b from-zinc-300 to-zinc-500">
+    <div class="px-4 pt-2 pb-3 rounded-b-3xl bg-linear-to-b from-zinc-400 to-zinc-600">
       <div class="rounded-2xl bg-white/55 dark:bg-white/10 ring-1 ring-black/10 dark:ring-white/10">
         <div class="p-4">
           <!-- LINKS | LINIE | RECHTS -->
