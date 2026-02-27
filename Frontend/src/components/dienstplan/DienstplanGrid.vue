@@ -28,8 +28,12 @@ const props = defineProps({
   onGetErsatz: { type: Function, default: null },  // Ersatz-Kandidaten laden
   onShiftMitErsatz: { type: Function, default: null }, // Dienst + Ersatz speichern
   jahr: { type: Number, required: true },
-  monat: { type: Number, required: true }
+  monat: { type: Number, required: true },
+  loading: { type: Boolean, default: false },
+  hasView: { type: Boolean, default: false },
 });
+
+const emit = defineEmits(["generateFiliale", "removeFiliale"]);
 
 /**
  * WHY:
@@ -85,6 +89,14 @@ const {
   onGetErsatz: (id) => props.onGetErsatz?.(id),
   onShiftMitErsatz: (payload) => props.onShiftMitErsatz?.(payload),
 });
+
+function generateNurFiliale(payload) {
+  emit("generateFiliale", payload);
+}
+
+function removeNurFiliale(payload) {
+  emit("removeFiliale", payload);
+}
 </script>
 
 <template>
@@ -112,7 +124,7 @@ const {
     Grid wird nur gerendert, wenn eine View vorhanden ist,
     um Fehler beim initialen Laden zu vermeiden.
   -->
-  <div v-if="view" class="space-y-4">
+  <div v-if="view" class="space-y-4 mt-6">
 
     <!--
       Pro Filiale eine eigene Grid-Sektion.
@@ -141,6 +153,11 @@ const {
       :options="options"
       :openDropdown="openDropdown"
       :saveDropdown="saveDropdown"
+
+      :loading="loading"
+      :hasView="hasView"
+      @generateFiliale="generateNurFiliale"
+      @removeFiliale="removeNurFiliale"
     />
   </div>
 </template>

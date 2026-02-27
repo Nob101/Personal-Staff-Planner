@@ -121,8 +121,10 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
 
       <!-- Vormonat -->
       <button
-        class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15
-               text-white disabled:opacity-50"
+        class="px-3 py-2 rounded-xl
+            bg-linear-to-b from-zinc-200 to-zinc-300
+            text-black disabled:opacity-50
+            hover:from-zinc-300 hover:to-zinc-200"
         :disabled="loading"
         @click="shiftMonths(-1)"
         title="Vormonat"
@@ -132,9 +134,10 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
 
       <!-- Aktueller Monat/Jahr (öffnet Picker) -->
       <button
-        class="px-4 py-2 rounded-xl border border-white/15 bg-black/30
-               text-white font-semibold min-w-40 text-center
-               hover:bg-white/5 disabled:opacity-50"
+        class="h-10 px-4 py-2 rounded-xl border border-white/15
+              bg-linear-to-b from-zinc-200 to-zinc-300
+            text-black font-semibold min-w-40 text-center
+            hover:from-zinc-300 hover:to-zinc-200"
         :disabled="loading"
         @click="togglePicker"
         title="Monat/Jahr auswählen"
@@ -144,8 +147,10 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
 
       <!-- Nächster Monat -->
       <button
-        class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15
-               text-white disabled:opacity-50"
+        class="px-3 py-2 rounded-xl
+              bg-linear-to-b from-zinc-200 to-zinc-300
+              text-black disabled:opacity-50
+              hover:from-zinc-300 hover:to-zinc-200"
         :disabled="loading"
         @click="shiftMonths(1)"
         title="Nächster Monat"
@@ -158,19 +163,21 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
     <div
       v-if="pickerOpen"
       class="absolute left-0 top-full mt-2 z-50 p-4
-             rounded-xl border border-white/15
-             bg-black/80 backdrop-blur shadow-xl"
+         rounded-xl
+         bg-linear-to-b from-zinc-600 to-zinc-900
+         border border-white/20
+         shadow-2xl"
     >
       <div class="flex items-end gap-2">
 
         <!-- Monat -->
         <div>
-          <label class="block text-xs text-white/60 mb-1">
-            Monat
+          <label class="block text-xs text-white/60 mb-1 text-center">
+            Monat:
           </label>
           <select
             v-model.number="pickMonat"
-            class="px-3 py-2 rounded-xl bg-black/40
+            class="px-3 py-1 rounded-xl bg-black/40
                    border border-white/15 text-white outline-none"
           >
             <option v-for="m in 12" :key="m" :value="m">
@@ -181,12 +188,12 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
 
         <!-- Jahr -->
         <div>
-          <label class="block text-xs text-white/60 mb-1">
-            Jahr
+          <label class="block text-xs text-white/60 mb-1 text-center">
+            Jahr:
           </label>
           <select
             v-model.number="pickJahr"
-            class="px-3 py-2 rounded-xl bg-black/40
+            class="px-3 py-1 rounded-xl bg-black/40
                    border border-white/15 text-white outline-none"
           >
             <option v-for="y in jahre" :key="y" :value="y">
@@ -197,12 +204,12 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
 
         <!-- Bestätigen -->
         <button
-          class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500
+          class="px-2 py-1 rounded-xl bg-linear-to-b from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-500
                  text-white font-semibold disabled:opacity-50"
           :disabled="loading"
           @click="jumpTo"
         >
-          Wechseln
+          OK
         </button>
       </div>
     </div>

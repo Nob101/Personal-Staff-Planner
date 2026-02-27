@@ -1,16 +1,18 @@
 <!-- DienstplanHeader.vue (obere Steuerleiste für die Dienstplan-Ansicht)-->
 
 <script setup>
+import { ref, onMounted, onBeforeUnmount } from "vue";
+
 // Komponenten
 import MonthPicker from "@/components/dienstplan/MonthPicker.vue";
 import Multiselect from "vue-multiselect";
 
 // Icons für Aktionen
-import magic from "@/assets/icons/magic-wand.svg";
-import removeIcon from "@/assets/icons/eraser.svg";
-import exportIcon from "@/assets/icons/export.svg";
+import generieren_icon from "@/assets/icons/generieren_icon.svg";
+import leeren_icon from "@/assets/icons/leeren_icon.svg";
+import export_icon from "@/assets/icons/export_icon.svg";
 
-import { downloadDienstplanCsv } from "@/helpers/downloadDienstplanCsv";
+import { downloadDienstplanPdf } from "@/helpers/downloadDienstplanPdf";
 
 /**
  * Props kommen vom Parent (z.B. DienstplanView).
@@ -29,17 +31,36 @@ const props = defineProps({
   modelValue: { type: Array, default: () => [] }, // ausgewählte Filialen
 });
 
+// NEU: an PDF angepasst
 async function exportAlleFilialen() {
   if (props.loading || !props.hasView) return;
 
-  // alle Filialen exportieren -> mehrere Downloads
-  for (const f of props.filialen) {
-    await downloadDienstplanCsv({
-      jahr: props.jahr,
-      monat: props.monat,
-      fnr: f.fnr,
-    });
+  // NEU:Das stellt sicher, dass Änderungen anderer Nutzer oder letzte Korrekturen im PDF landen. (best practice)
+  // emit ist asynchron und falls Vue länger braucht
+    emit('load', props.jahr, props.monat);
+    await new Promise(r => setTimeout(r, 600));
+
+  // Bestimme, welche Filialen exportiert werden sollen
+  const exportListe = props.modelValue?.length ? props.modelValue : props.filialen;
+
+  for (let i = 0; i < exportListe.length; i++) {
+    const f = exportListe[i];
+    // WICHTIG: Die ID muss so aufgebaut sein, wie sie im DOM vergeben wurde
+    // Beispiel: "dienstplan-filiale-10"
+    const elementId = `export-area-filiale-${f.fnr}`; 
+    const dateiname = `Dienstplan_${f.filialname}_${props.monat}_${props.jahr}`;
+    try{
+
+       await downloadDienstplanPdf(elementId, dateiname);
+       if (i < exportListe.length - 1) {    //Damit das Settimeout nach dem letzten PDF nicht mehr ausgeführt wird da zB 4 < 4 = false
+        await new Promise(r => setTimeout(r, 800));
+       }
+
+    }catch (err) {
+    console.error('Zuviele PDFs auf einmal', err)
   }
+   
+  } 
 }
 
 const list = (props.modelValue?.length ? props.modelValue : props.filialen);
@@ -53,27 +74,66 @@ console.log("Export list length:", list.length, list.map(f => f.fnr));
  * - remove: Dienstpläne leeren
  * - update:modelValue: v-model für Filial-Auswahl
  */
-const emit = defineEmits([
-  "load",
-  "generate",
-  "remove",
-  "update:modelValue",
-]);
+const emit = defineEmits(["load", "generate", "remove", "update:modelValue"]);
+
+
+const headerHidden = ref(false);
+let lastY = 0;
+let ticking = false;
+
+function onScroll() {
+  const y = window.scrollY || 0;
+
+  if (!ticking) {
+    window.requestAnimationFrame(() => {
+      const delta = y - lastY;
+
+      // kleine Scroll-Zitterbewegungen ignorieren
+      if (Math.abs(delta) > 6) {
+        if (delta > 0 && y > 80) {
+          // nach unten scrollen (und nicht ganz oben)
+          headerHidden.value = true;
+        } else {
+          // nach oben scrollen
+          headerHidden.value = false;
+        }
+        lastY = y;
+      }
+
+      ticking = false;
+    });
+    ticking = true;
+  }
+}
+
+onMounted(() => {
+  lastY = window.scrollY || 0;
+  window.addEventListener("scroll", onScroll, { passive: true });
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", onScroll);
+});
 
 
 </script>
 
-<template>
-  <!--
-    Hauptleiste des Dienstplans:
-    - Links: Monat/Jahr + Status
-    - Mitte: Filial-Auswahl
-    - Rechts: globale Aktionen
-  -->
-  <div class="flex items-center justify-between mb-6 gap-4">
 
+<template>
+  <div
+    :class="[
+      'sticky top-12 z-50',
+      'mx-auto w-full max-w-[1400px]',
+      'flex items-center justify-between gap-4',
+      'px-8 pt-1 pb-1',
+      'bg-white/80 dark:bg-zinc-900/70',
+      'backdrop-blur',
+      'transition-transform duration-200 ease-out will-change-transform',
+      headerHidden ? '-translate-y-[120%]' : 'translate-y-0'
+    ]"
+  >
     <!-- LINKS: Datum / Monat -->
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 h-10">
       <MonthPicker
         :jahr="jahr"
         :monat="monat"
@@ -81,15 +141,14 @@ const emit = defineEmits([
         @load="(j, m) => emit('load', j, m)"
       />
 
-      <!-- Lade-/Fehlerstatus -->
       <div class="text-sm">
         <span v-if="loading" class="text-white/70">⌛ Lädt...</span>
-        <span v-else-if="error" class="text-red-600">⌛ Lädt länger als üblich...</span>
+        <span v-else-if="error" class="text-red-600">{{ error }}</span>
       </div>
     </div>
 
     <!-- MITTE: Filialen MultiSelect -->
-    <div class="min-w-[260px]">
+    <div class="w-75">
       <Multiselect
         class="ms"
         :model-value="modelValue"
@@ -101,57 +160,70 @@ const emit = defineEmits([
         :preserve-search="true"
         label="filialname"
         track-by="fnr"
-        placeholder="Filialen auswählen (leer = alle)"
+        :placeholder="(modelValue && modelValue.length > 0) ? '' : 'Filialen auswählen'"
         select-label=""
         selected-label=""
         deselect-label=""
+        :allow-empty="true"
       />
     </div>
 
     <!-- RECHTS: Globale Aktionen -->
-    <div class="flex items-center gap-2 shrink-0">
+    <div class="w-64 flex justify-end">
+      <div
+        class="flex items-center gap-1 rounded-xl
+               bg-linear-to-b from-zinc-200 to-zinc-300 dark:bg-white/5
+               ring-1 ring-black/10 dark:ring-white/10
+               p-1"
+      >
+        <!-- Generieren -->
+        <button
+          class="inline-flex h-8 w-8 items-center justify-center rounded-xl
+                 bg-linear-to-b from-blue-300 to-blue-900
+                 hover:from-blue-900 hover:to-blue-300
+                 ring-1 ring-blue-600/30
+                 shadow-sm
+                 transition active:scale-[0.97] disabled:opacity-50"
+          :disabled="loading"
+          title="Alle Dienstpläne generieren"
+          @click="emit('generate')"
+          type="button"
+        >
+          <img :src="generieren_icon" class="h-4 w-4 opacity-90" alt="Generieren" />
+        </button>
 
-      <!-- Dienstpläne generieren -->
-      <button
-        class="group inline-flex items-center gap-2 whitespace-nowrap
-               rounded-xl border border-white/10 bg-blue-600/70
-               px-4 py-2.5 text-sm font-semibold text-zinc-950
-               transition hover:bg-blue-500 hover:scale-[1.02]
-               active:scale-[0.98] disabled:opacity-60"
-        :disabled="loading"
-        title="Alle Dienstpläne generieren"
-        @click="emit('generate')"
-      >
-        <img :src="magic" class="h-4 w-4" alt="Generieren" />
-      </button>
+        <!-- Leeren -->
+        <button
+          class="inline-flex h-8 w-8 items-center justify-center rounded-xl
+                 bg-linear-to-b from-red-300 to-red-900
+                 hover:from-red-900 hover:to-red-300
+                 ring-1 ring-red-600/30
+                 shadow-sm
+                 transition active:scale-[0.97] disabled:opacity-50"
+          :disabled="loading || !hasView"
+          title="Alle Dienstpläne leeren"
+          @click="emit('remove')"
+          type="button"
+        >
+          <img :src="leeren_icon" class="h-3 w-3 opacity-90" alt="Leeren" />
+        </button>
 
-      <!-- Dienstpläne leeren -->
-      <button
-        class="group inline-flex items-center gap-2 whitespace-nowrap
-               rounded-xl border border-red-500/20 bg-red-500/50
-               px-4 py-2.5 text-sm font-semibold text-zinc-950
-               transition hover:bg-red-500 hover:scale-[1.02]
-               active:scale-[0.98] disabled:opacity-60"
-        :disabled="loading || !hasView"
-        title="Alle Dienstpläne leeren"
-        @click="emit('remove')"
-      >
-        <img :src="removeIcon" class="h-4 w-4" alt="Leeren" />
-      </button>
-            <!-- Alle Filialen exportieren -->
-      <button
-        class="group inline-flex items-center gap-2 whitespace-nowrap
-              rounded-xl border border-white/10 bg-emerald-500/40
-              px-4 py-2.5 text-sm font-semibold text-zinc-950
-              transition hover:bg-emerald-500/80 hover:scale-[1.02]
-              active:scale-[0.98] disabled:opacity-60"
-        :disabled="loading || !hasView"
-        title="Alle Filialen als CSV exportieren"
-        @click="exportAlleFilialen"
-        type="button"
-      >
-        <img :src="exportIcon" class="h-4 w-4" alt="Exportieren" />
-      </button>
+        <!-- Export -->
+        <button
+          class="inline-flex h-8 w-8 items-center justify-center rounded-xl
+                 bg-linear-to-b from-emerald-300 to-emerald-900
+                 hover:from-emerald-900 hover:to-emerald-300
+                 ring-1 ring-emerald-600/30
+                 shadow-sm
+                 transition active:scale-[0.97] disabled:opacity-50"
+          :disabled="loading || !hasView"
+          title="Alle Filialen als CSV exportieren"
+          @click="exportAlleFilialen"
+          type="button"
+        >
+          <img :src="export_icon" class="h-3 w-3 opacity-90" alt="Exportieren" />
+        </button>
+      </div>
     </div>
   </div>
 </template>

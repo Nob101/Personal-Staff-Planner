@@ -10,7 +10,8 @@ timeout /t 2 /nobreak >nul
 :: Docker Check & Start
 docker info >nul 2>&1
 if %errorlevel% neq 0 (
-    start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+    start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe"  
+
     :wait_docker
     timeout /t 5 /nobreak >nul
     docker info >nul 2>&1
@@ -43,31 +44,42 @@ if %errorlevel% neq 0 (
 :: NEU: Verbesserter Docker Startprozess
 :start_docker
 echo [INFO] Pruefe Container-Status...
-
-:: Wir schauen, ob die Container ueberhaupt existieren (auch wenn sie gestoppt sind)
+:: Existiert Container ueberhaupt? (auch wenn sie gestoppt sind)
 docker compose ps -a | findstr "psp_backend" >nul 2>&1
 if %errorlevel% neq 0 (
     echo [INFO] Erstmaliger Setup: Baue Images und starte Container...
     docker compose up --build -d
 ) else (
     echo [INFO] Container vorhanden. Starte System...
-    :: 'up -d' erkennt automatisch, ob sich das Dockerfile oder die .yml 
-    :: geaendert hat und baut NUR DANN neu. Das ist am sichersten.
-    docker compose up -d
+    :: NEU: Damit bei Änderungen im Image die Dockerfiles miteinbezogen werden
+    docker compose up  -d
 )
-
 :: NEU: curl ist schneller als ps (standard bei 10/11) NEU : Wartet bis Nginx wirklich antwortet!!!!! -_-
 :: Reverse_Proxy oft schneller als node.js antworten kann -> 200 und 502 abwarten (Endlosschleife verhinderen)
 set /a retry_count=0
+
 :loop
 set /a retry_count+=1
-if %retry_count% gtr 30 goto :open_browser
-:: Prueft mit curl, ob der Server reagiert
-curl -k -s -o /dev/null -w "%%{http_code}" https://localhost | findstr /R "200 502" >nul 2>&1
-if %errorlevel% neq 0 (
+if %retry_count% gtr 30 (
+    echo [WARN] Server startet langsam. Oeffne Browser trotzdem...
+    goto :open_browser
+)
+
+:: NEU: Statuscode speichern
+set "status=000"
+for /f "delims=" %%i in ('curl -k -s -o /dev/null -w "%%{http_code}" https://localhost') do set "status=%%i"
+
+echo [INFO] Warte auf Server... (Status: %status%, Versuch: %retry_count%/30)
+
+:: Wenn 200 (OK) oder 502 (Nginx da, aber Node noch nicht), wissen wir: Nginx lebt!
+if "%status%"=="200" goto :open_browser
+if "%status%"=="502" (
     timeout /t 2 /nobreak >nul
     goto :loop
 )
+:: Falls der Server noch gar nicht reagiert (Status 000), weiter warten
+timeout /t 2 /nobreak >nul
+goto :loop
 
 :open_browser
 ::  Ladefenster schließen und App öffnen

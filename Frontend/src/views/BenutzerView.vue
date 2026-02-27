@@ -1,9 +1,8 @@
 <script setup>
 import { ref } from 'vue'
-import Navbar from '@/components/global/Navbar.vue'
 import BenutzerList from '@/components/benutzer/BenutzerList.vue'
 import BestätigungsModal from '@/components/global/BestätigungsModal.vue' // Pfad prüfen!
-import { useBenutzer } from '@/composables/useBenutzer'
+import { useBenutzer } from '@/composables/useBenutzer.js'
 
 const {
   benutzer,
@@ -35,12 +34,7 @@ async function confirmDelete() {
 
 <template>
   <div class="benutzer-view">
-    <Navbar />
-
     <main class="container mx-auto p-6">
-      <div class="flex justify-between items-center mb-8">
-        <h1 class="text-4xl font-bold">Benutzerverwaltung</h1>
-      </div>
 
       <BenutzerList 
         :benutzer="benutzer" 
