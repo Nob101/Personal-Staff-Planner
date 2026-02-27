@@ -82,7 +82,7 @@ onBeforeUnmount(() => {
       'sticky top-12 z-50',
       'mx-auto w-full max-w-[1400px]',
       'grid grid-cols-3 items-center gap-4',
-      'px-8 pt-1 pb-1',
+      'px-8 pt-2 pb-1',
       'bg-white/80 dark:bg-zinc-900/70',
       'backdrop-blur',
       'transition-transform duration-200 ease-out will-change-transform',
@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
 
     <!-- MITTE: Sortierung (wirklich Mitte) -->
     <div class="justify-self-center h-10 flex items-center">
-      <div class="w-75">
+      <div class="w-60">
         <Multiselect
           class="ms"
           :options="sortOptions"

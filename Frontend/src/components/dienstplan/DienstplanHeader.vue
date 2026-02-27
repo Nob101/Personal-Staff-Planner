@@ -87,7 +87,7 @@ onBeforeUnmount(() => {
       'sticky top-12 z-50',
       'mx-auto w-full max-w-[1400px]',
       'flex items-center justify-between gap-4',
-      'px-8 pt-1 pb-1',
+      'px-8 pt-2 pb-1',
       'bg-white/80 dark:bg-zinc-900/70',
       'backdrop-blur',
       'transition-transform duration-200 ease-out will-change-transform',
@@ -109,27 +109,50 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <!-- MITTE: Filialen MultiSelect -->
-    <div class="w-75">
-      <Multiselect
-        class="ms"
-        :model-value="modelValue"
-        @update:model-value="val => emit('update:modelValue', val || [])"
-        :options="filialen"
-        :multiple="true"
-        :close-on-select="false"
-        :clear-on-select="false"
-        :preserve-search="true"
-        label="filialname"
-        track-by="fnr"
-        :placeholder="(modelValue && modelValue.length > 0) ? '' : 'Filialen auswählen'"
-        select-label=""
-        selected-label=""
-        deselect-label=""
-        :allow-empty="true"
+<!-- MITTE: Filialen MultiSelect -->
+<div class="min-w-60">
+  <Multiselect
+    class="ms"
+    :model-value="modelValue"
+    @update:model-value="val => emit('update:modelValue', val || [])"
+    :options="filialen"
+    :multiple="true"
+    :searchable="false"
+    :close-on-select="false"
+    :clear-on-select="false"
+    label="filialname"
+    track-by="fnr"
+    :placeholder="(modelValue && modelValue.length > 0) ? '' : 'Filialen auswählen'"
+    select-label=""
+    selected-label=""
+    deselect-label=""
+    :allow-empty="true"
+  >
+    <!-- AUSGEWÄHLTE TAGS im Feld: nur Farbpunkte -->
+    <template #tag="{ option, remove }">
+      <span
+        class="inline-flex items-center justify-center
+               h-5 w-5 rounded-full
+               ring-1 ring-black/20 dark:ring-white/20"
+        :style="{ backgroundColor: option.farbe || '#ccc' }"
+        :title="option.filialname"
+        @mousedown.prevent
+        @click.stop="remove(option)"
       />
-    </div>
+    </template>
 
+    <!-- OPTIONEN im Dropdown: Punkt + Name -->
+    <template #option="{ option }">
+      <div class="flex items-center gap-2">
+        <span
+          class="h-3.5 w-3.5 rounded-full ring-1 ring-black/20 dark:ring-white/20"
+          :style="{ backgroundColor: option.farbe || '#ccc' }"
+        />
+        <span class="truncate">{{ option.filialname }}</span>
+      </div>
+    </template>
+  </Multiselect>
+</div>
     <!-- RECHTS: Globale Aktionen -->
     <div class="w-64 flex justify-end">
       <div
