@@ -1,12 +1,9 @@
 
+
 /**
  * Lukas
- * Export-Logik für Dienstpläne
- * Die Schichtkürzel (A, E, F, K) bleiben  -> Excel darstellung Zentrale
- * Welcher Mitarbeiter hatte welche Schicht in welchem Jahr/monat
- * und in welcher Filiale
- * 
- * NEU: Damit Stunden und Differenz auch mit gegeben werden beim export
+ * Wichitg: Dead-Code aus dem ersten Export in ein csv.file. Es bleibt zu dokumentations
+ * Zwecken und für den Fall das der Bedarf an einen Export im CSV-Format entsteht.
  * 
  */
 

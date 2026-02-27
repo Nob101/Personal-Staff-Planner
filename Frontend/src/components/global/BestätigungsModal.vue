@@ -20,22 +20,37 @@ function handleCancel() {
 
 <template>
   <teleport to="body">
-    <div v-if="show" class="modal-overlay flex justify-center items-center" @click.self="handleCancel">
-      <div class="modal-container p-6 bg-white rounded shadow-md w-96 text-center">
-        <p class="mb-4">{{ message }}</p>
-        <div class="flex justify-center gap-4">
-          <button class="bg-red-400" @click="handleConfirm">Ja</button>
-          <button class="bg-gray-300" @click="handleCancel">Abbrechen</button>
+    <div
+      v-if="show"
+      class="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 px-4"
+      @click.self="handleCancel"
+    >
+      <div
+        class="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900 p-6 text-center shadow-2xl"
+      >
+        <p class="mb-5 text-base text-white/90">
+          {{ message }}
+        </p>
+
+        <div class="flex justify-center gap-3">
+          <button
+            class="min-w-[120px] rounded-xl bg-red-500/40 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 transition"
+            @click="handleConfirm"
+            type="button"
+          >
+            Ja
+          </button>
+
+          <button
+            class="min-w-[120px] rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/15 transition"
+            @click="handleCancel"
+            type="button"
+          >
+            Abbrechen
+          </button>
         </div>
       </div>
     </div>
   </teleport>
 </template>
 
-<style scoped>
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-}
-</style>

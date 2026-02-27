@@ -44,12 +44,36 @@
 
 # version: '3.8'
 
+
+
+# NEU: Gemeinsame Logging-Einstellung, um den Speicher von alten Laptops zu schonen (markus)
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "20m"       # Puffer für lange DEBUG-Sessions lol
+    max-file: "5"       # 5 files * 20MB = 100MB (historie für paar Tage)
+
+
+# WICHTIG: Um mit den neuen Log-Limits zu starten (Entfernt nur die Logs)
+
+    # 1. docker-compose down 
+    # 2. docker system prune -a --volumes   
+    # 3. wsl --shutdown
+    # 4. optimize-vhd -Path "C:\Users\[DEIN_BENUTZERNAME]\AppData\Local\Docker\wsl\main\ext4.vhdx" -Mode Full
+
+# Die Befehle in Schritt 1 und 2 sorgen dafür, dass der Inhalt der virtuellen Festplatte gelöscht wird. 
+# Schritt 3 und 4 sorgen erst dafür, dass die Datei unter Windows tatsächlich wieder kleiner wird. 
+# Ohne Schritt 4 bleibt die Datei auf Windows-Ebene riesig, selbst wenn sie innen "leer" ist.
+
+
 services:
   # --- DATENBANK BEREICH Lukas ---
   psp_database:
     image: postgres:15
     container_name: psp_database
     restart: always
+    logging: *default-logging
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -57,32 +81,39 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data      #NEU: von named volumes zu mount gewechselt (daten werden im db-Ordner gespeichert)
+      - ./postgres/data:/var/lib/postgresql/data      #NEU: von named volumes zu mount gewechselt (daten werden im root gespeichert)
+    healthcheck: # NEU: Prüft, ob Postgres wirklich Anfragen annimmt
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
 
   # --- BACKEND Alexander ---
   psp_backend:
     build: ./backend
     container_name: psp_backend
-    restart: on-failure:3
+    restart: always    #NEU: Nodemon Stabilität
+    logging: *default-logging
     working_dir: /app
     ports:
       - "3001:3001"
     volumes:
       - ./backend:/app
-      - /app/node_modules   #schützt die container module
+      - /app/node_modules
+      # WICHTIG: damit node.js die DB im Docker-Netzwerk findet
     command: npm run devStart 
     environment:
-      # WICHTIG: Host ist hier 'db' (der Name des Services oben), nicht localhost!
       DB_HOST: psp_database
       DB_PORT: 5432
-      DB_NAME: ${DB_NAME}      # <--- fehlte im ersten durchlauf
+      DB_NAME: ${DB_NAME}      
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_ROLE_ADMIN_PASSWORD: ${DB_ROLE_ADMIN_PASSWORD}
       INITIAL_MARKUS_PASSWORD: ${INITIAL_MARKUS_PASSWORD}
     depends_on:
-      - psp_database
-    deploy:                 # <- NEU: Leistungsbegränzer verhinder t den Ungewollten absturzt sollte eine Endlosschleife entstehen
+      psp_database:
+        condition: service_healthy
+    deploy:                 # <- NEU: Leistungsbegränzer verhindert einen Absturzt (Endlosschleife)
       resources:
         limits:
           cpus: '1'         # Ein Kern der CPU
@@ -96,12 +127,12 @@ services:
     build: ./Frontend 
     container_name: psp_frontend
     restart: on-failure:3
+    logging: *default-logging
     ports:
       - "5173:5173" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen
-  
     volumes:
       - ./Frontend:/app         # <--- SPIEGELT VUE-CODE FÜR VITE HOT RELOAD
-      - /app/node_modules       # <--- VERHINDERT ÜBERSCHREIBEN DER MODULE
+      - /app/node_modules
     
     environment:
       # Für den fall, dass Vue wissen muss, wo das Backend läuft: 3001  !!!
@@ -116,6 +147,7 @@ services:
     image: nginx:stable-alpine
     container_name: psp_proxy
     restart: always
+    logging: *default-logging
     ports:
     - "80:80"    # HTTP für Browser
     - "443:443"   # HTTPS für später

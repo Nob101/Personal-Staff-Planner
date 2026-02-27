@@ -43,7 +43,20 @@ async function save(jahr, monat, datum, mnr, fnr, schicht_typ) {
  * Rückgabe:
  * - rowCount: Anzahl der gelöschten Datensätze (für Logging/Feedback).
  */
-async function deleteByMonth(jahr, monat) {
+async function deleteByMonth(jahr, monat, fnr) {
+  if (fnr) {
+    const result = await pool.query(
+      `
+      DELETE FROM dienstplaene
+      WHERE jahr = $1
+        AND monat = $2
+        AND fnr = $3
+      `,
+      [jahr, monat, fnr]
+    );
+    return result.rowCount;
+  }
+
   const result = await pool.query(
     `
     DELETE FROM dienstplaene
@@ -161,26 +174,51 @@ async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
  *   als ein Join auf die Nebenfilialen-Tabelle mit potenziellen Duplikaten.
  */
 async function findErsatzKandidatenByDienstId(dienstId) {
-  const q = `
+   const q = `
     SELECT
       d2.id        AS "dienstId",
       d2.mnr       AS "mnr",
       m.vorname    AS "vorname",
       m.nachname   AS "nachname",
       d2.fnr       AS "dienstFNr",
+      f.filialname AS "dienstFilialname",
       d2.schicht_typ
     FROM dienstplaene d1
     JOIN dienstplaene d2 ON d2.datum = d1.datum
     JOIN mitarbeiter m ON m.mnr = d2.mnr
+    JOIN filiale f ON f.fnr = d2.fnr
     WHERE d1.id = $1
-      AND m.aktiv = true 
-      AND d2.schicht_typ = 'F'
+      AND m.aktiv = true
       AND (
         m.hauptfiliale_fnr = d1.fnr
         OR EXISTS (
           SELECT 1
           FROM mitarbeiter_arbeitet_in_filiale mn
           WHERE mn.mnr = m.mnr AND mn.fnr = d1.fnr
+        )
+      )
+      AND d2.schicht_typ IN ('F','A','E')
+      AND (
+        d2.schicht_typ = 'F'
+        OR (
+          d2.schicht_typ = 'A'
+          AND (
+            SELECT COUNT(*)
+            FROM dienstplaene x
+            WHERE x.datum = d2.datum
+              AND x.fnr = d2.fnr
+              AND x.schicht_typ = 'A'
+          ) >= 2
+        )
+        OR (
+          d2.schicht_typ = 'E'
+          AND (
+            SELECT COUNT(*)
+            FROM dienstplaene x
+            WHERE x.datum = d2.datum
+              AND x.fnr = d2.fnr
+              AND x.schicht_typ = 'E'
+          ) >= 2
         )
       )
     ORDER BY m.nachname, m.vorname;

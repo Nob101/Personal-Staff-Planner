@@ -1,5 +1,6 @@
 <!-- LoginView.vue-->
 <script setup>
+import { ref } from 'vue'
 import router from '@/router/router.js'
 import { useLogin } from '@/composables/useLogin'
 
@@ -8,43 +9,66 @@ const {
   passwort,
   error,
   isLoading,
-  handleLogin
+  handleLogin,
+  handleRegister
 } = useLogin()
 
-// --- Klick auf Anmelden Button ---
+const activeTab = ref('login')
+
+// --- Klick auf Anmelden/Registrieren Button ---
 async function onSubmit() {
-  // Login erfolgreich -> MitarbeiterView
-  const ok = await handleLogin()
+  let ok = false
+  if (activeTab.value === 'login') {
+    ok = await handleLogin()
+  } else {
+    ok = await handleRegister()
+  }
 
   if (ok) {
-    router.push({ name: 'mitarbeiter' })
+    // Login / Registrierung erfolgreich -> HomeView
+    router.push({ name: 'home' })
   }
 }
 </script>
 
 <template>
   <div class="auth-card">
-    <h2 class="auth-title">Anmelden</h2>
+    <!-- Tabs -->
+    <div class="tabs">
+      <button
+        class="tab"
+        :class="{ active: activeTab === 'login' }"
+        @click="activeTab = 'login'"
+      >
+        Anmelden
+      </button>
+      <button
+        class="tab"
+        :class="{ active: activeTab === 'registrieren' }"
+        @click="activeTab = 'registrieren'"
+      >
+        Registrieren
+      </button>
+    </div>
 
+    <!-- Formular -->
     <div class="form">
       <input
         v-model="benutzername"
         placeholder="Benutzername"
         class="input"
-        @keyup.enter="onSubmit"
       />
       <input
         v-model="passwort"
         type="password"
         placeholder="Passwort"
         class="input"
-        @keyup.enter="onSubmit"
       />
 
       <p v-if="error" class="error">{{ error }}</p>
 
       <button @click="onSubmit" :disabled="isLoading" class="submit">
-        {{ isLoading ? 'Lädt...' : 'Anmelden' }}
+        {{ activeTab === 'login' ? 'Anmelden' : 'Registrieren' }}
       </button>
     </div>
   </div>
@@ -53,7 +77,7 @@ async function onSubmit() {
 <style scoped>
 .auth-card {
   width: 300px;
-  margin: 100px auto;
+  margin: 40px auto;
   padding: 24px;
   border-radius: 12px;
   background: #ffffff;
@@ -63,11 +87,28 @@ async function onSubmit() {
   gap: 16px;
 }
 
-.auth-title {
+.tabs {
+  display: flex;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px;
   text-align: center;
-  font-weight: 600;
-  font-size: 1.2rem;
+  border: none;
+  background: #e6e6e6;
+  cursor: pointer;
+  font-weight: 500;
   color: #333;
+  transition: 0.2s;
+}
+
+.tab.active {
+  background: #3498db;
+  color: white;
 }
 
 .form {
@@ -98,13 +139,8 @@ async function onSubmit() {
   background: #2d80b8;
 }
 
-.submit:disabled {
-  background: #95a5a6;
-}
-
 .error {
   color: red;
   font-size: 0.9rem;
-  text-align: center;
 }
 </style>

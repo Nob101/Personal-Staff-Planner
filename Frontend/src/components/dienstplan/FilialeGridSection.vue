@@ -1,82 +1,53 @@
-<!-- FilialeGridSection.vue (rendert eine Filial-Sektion des Dienstplans)-->
-
 <script setup>
-// Vue
-import { computed } from "vue";
+import { computed, nextTick } from "vue";
 
-import exportIcon from "@/assets/icons/export.svg";
+// Icons
+import export_icon from "@/assets/icons/export_icon.svg";
+import generieren_icon from "@/assets/icons/generieren_icon.svg";
+import leeren_icon from "@/assets/icons/leeren_icon.svg";
 
-import { downloadDienstplanCsv } from "@/helpers/downloadDienstplanCsv.js";
+// Helper - Jetzt korrekt auf PDF umgestellt
+import { downloadDienstplanPdf } from "@/helpers/downloadDienstplanPdf.js";
 
-
-/**
- * Props:
- * Diese Komponente ist rein darstellend und rendert den Dienstplan
- * für genau eine Filiale als Grid.
- *
- * Alle Daten und Aktionen kommen von oben (Parent / Composables).
- */
 const props = defineProps({
-  // Grunddaten
-  view: { type: Object, required: true },     // gesamte Dienstplan-View (Tage, etc.)
-  filiale: { type: Object, required: true },  // aktuelle Filiale
+  view: { type: Object, required: true },
+  filiale: { type: Object, required: true },
   jahr: { type: Number, required: true },
   monat: { type: Number, required: true },
 
-  // Daten- & Helper-Funktionen (kommen aus Composables)
-  mitarbeiterByFiliale: { type: Function, required: true }, // MA-Liste je Filiale
-  fullName: { type: Function, required: true },             // Name-Formatter
-  stundenByMnr: { type: Function, required: true },         // Stundeninfo je MA
-  dow: { type: Function, required: true },                  // Wochentag
-  day: { type: Function, required: true },                  // Kalendertag
-  dienstOf: { type: Function, required: true },             // Dienst je MA/Tag
-  cellStyleByDienst: { type: Function, required: true },    // Zell-Styling
-  cellText: { type: Function, required: true },             // Zell-Text
+  // Composables / Functions
+  mitarbeiterByFiliale: { type: Function, required: true },
+  fullName: { type: Function, required: true },
+  stundenByMnr: { type: Function, required: true },
+  dow: { type: Function, required: true },
+  day: { type: Function, required: true },
+  dienstOf: { type: Function, required: true },
+  cellStyleByDienst: { type: Function, required: true },
+  cellText: { type: Function, required: true },
 
-  // Inline-Editing
-  editingKey: { type: [String, null], default: null },      // aktuell editierte Zelle
-  modelValue: { type: String, default: "F" },               // v-model (Dienst-Typ)
+  // Editing
+  editingKey: { type: [String, null], default: null },
+  modelValue: { type: String, default: "F" },
   options: { type: Array, default: () => ["A", "E", "F", "K", "U"] },
-  openDropdown: { type: Function, required: true },         // Edit starten
-  saveDropdown: { type: Function, required: true },         // Edit speichern
+  openDropdown: { type: Function, required: true },
+  saveDropdown: { type: Function, required: true },
+
+  loading: { type: Boolean, default: false },
+  hasView: { type: Boolean, default: false },
 });
 
-/**
- * v-model Weitergabe an Parent
- */
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "generateFiliale", "removeFiliale"]);
 
-/**
- * Anzahl der Mitarbeiter in dieser Filiale
- * (wird im Header angezeigt)
- */
-const maCount = computed(() =>
-  props.mitarbeiterByFiliale(props.filiale.fnr).length
-);
-
-// Layout-Parameter
-const dayCellW = 28;   // entspricht repeat(..., 28px)
-const nameColMax = 320; // entspricht minmax(220px, 320px)
-
-// Grid soll mindestens so breit sein wie: Name-Spalte + Tagesspalten
-const gridMinWidth = computed(() => {
-  const days = props.view?.tage?.length ?? 0;
-  return nameColMax + days * dayCellW;
-});
-
-
+// PDF Export Logik mit deiner ID-Anforderung
 async function onExportClick() {
-  await downloadDienstplanCsv({
-    jahr: props.jahr,
-    monat: props.monat,
-    fnr: props.filiale.fnr, // immer nur diese Filiale
-  });
+  await nextTick();
+  const elementId = `export-area-filiale-${props.filiale.fnr}`;
+  const dateiname = `Dienstplan_${props.filiale.filialname}_${props.monat}_${props.jahr}`;
+  await downloadDienstplanPdf(elementId, dateiname);
 }
 
-/**
- * Lokales v-model für das Select-Feld.
- * Änderungen werden direkt an den Parent weitergereicht.
- */
+const maCount = computed(() => props.mitarbeiterByFiliale(props.filiale.fnr).length);
+
 const localTyp = computed({
   get: () => props.modelValue,
   set: (v) => emit("update:modelValue", v),
@@ -84,134 +55,76 @@ const localTyp = computed({
 </script>
 
 <template>
-  <!--
-    Wrapper für eine Filial-Sektion.
-    Enthält Header + Grid.
-  -->
-  <div
-    class="rounded-2xl
-           border border-black/10 dark:border-white/10
-           bg-white dark:bg-linear-to-b dark:from-zinc-700/70 dark:to-zinc-900/80
-           p-4"
-  >
-
-    <!-- HEADER: Filialname + Farbe -->
-    <div class="mb-2 flex items-center justify-between">
-      <div class="flex items-center gap-2 font-bold text-xl text-white">
-        <span>{{ filiale.filialname }}</span>
-        <span
-          class="inline-block h-3 w-3 rounded-full border border-white/20"
-          :style="{ backgroundColor: filiale.farbe || '#999' }"
-        ></span>
-      </div>
-
-      <!-- Export Button rechts -->
-      <button
-        type="button"
-        class="flex items-center gap-2
-              px-3 py-2 rounded-xl
-              bg-zinc-400 hover:bg-zinc-200
-              border border-white/10
-              text-black text-sm font-semibold"
-        @click="onExportClick"
-        title="Dienstplan als CSV exportieren"
-      >
-        <img
-          :src="exportIcon"
-          alt=""
-          class="h-4 w-4 opacity-90"
-        />
-      </button>
-    </div>
-
-    <!-- GRID -->
-    <div class="overflow-x-auto rounded-2xl border border-white/10 bg-black/50">
-      <div
-        class="grid gap-1 p-2"
-        :style="{
-          minWidth: gridMinWidth + 'px',
-          gridTemplateColumns: `minmax(220px, 420px) repeat(${view.tage.length}, 28px)`,
-        }"
-      >
-
-
-        <!-- Grid-Header: Mitarbeiter -->
-        <div class="h-10 flex items-center px-2 font-bold text-lg bg-white/5 rounded">
-          Mitarbeiter:
+  <div :id="`export-area-filiale-${filiale.fnr}`" class="mx-auto w-full max-w-[1400px] px-4 mb-8">
+    <section class="rounded-3xl bg-white/70 shadow-[0_16px_40px_rgba(0,0,0,0.2)] backdrop-blur overflow-hidden">
+      
+      <div class="bg-linear-to-b from-zinc-200 to-zinc-300 px-4 py-2 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="h-3 w-3 rounded-full ring-2 ring-white" :style="{ backgroundColor: filiale.farbe || '#999' }" />
+          <div>
+            <div class="font-sans text-xl font-extrabold text-zinc-900">{{ filiale.filialname }}</div>
+            <div class="text-[11px] text-zinc-600">{{ maCount }} Mitarbeiter</div>
+          </div>
         </div>
 
-        <!-- Grid-Header: Tage -->
-        <div
-          v-for="datum in view.tage"
-          :key="datum"
-          class="h-10 text-[10px] leading-tight
-                 flex flex-col items-center justify-center
-                 bg-white/5 rounded"
-        >
-          <div class="text-white/60">{{ dow(datum) }}</div>
-          <div class="font-semibold text-white">{{ day(datum) }}</div>
+        <div class="flex items-center gap-1 rounded-xl bg-white/60 ring-1 ring-black/10 p-1 no-export">
+          <button @click="emit('generateFiliale', { fnr: filiale.fnr, jahr, monat })"
+            class="h-8 w-8 flex items-center justify-center rounded-xl bg-linear-to-b from-blue-400 to-blue-600 hover:from-blue-500 transition active:scale-95 shadow-sm" title="Generieren">
+            <img :src="generieren_icon" class="h-4 w-4 brightness-0 invert" />
+          </button>
+
+          <button @click="emit('removeFiliale', { fnr: filiale.fnr, jahr, monat })" :disabled="loading || !hasView"
+            class="h-8 w-8 flex items-center justify-center rounded-xl bg-linear-to-b from-red-400 to-red-600 hover:from-red-500 transition active:scale-95 shadow-sm">
+            <img :src="leeren_icon" class="h-3 w-3 brightness-0 invert" />
+          </button>
+
+          <button @click="onExportClick"
+            class="h-8 w-8 flex items-center justify-center rounded-xl bg-linear-to-b from-emerald-400 to-emerald-600 hover:from-emerald-500 transition active:scale-95 shadow-sm">
+            <img :src="export_icon" class="h-3 w-3 brightness-0 invert" />
+          </button>
         </div>
-
-        <!-- Grid-Rows -->
-        <template v-for="m in mitarbeiterByFiliale(filiale.fnr)" :key="m.mnr">
-
-          <!-- Mitarbeiter-Zelle -->
-          <div
-            class="h-7 flex items-center gap-2 px-2 bg-white/5 rounded text-sm
-                   whitespace-nowrap overflow-hidden max-w-[420px]"
-          >
-            <span class="font-semibold overflow-hidden text-ellipsis">
-              {{ fullName(m) }}
-            </span>
-
-            <span class="flex-1"></span>
-
-            <!-- Stunden-Differenz -->
-            <span
-              class="text-xs font-bold shrink-0"
-              :class="{
-                'text-emerald-500': (stundenByMnr(m.mnr)?.differenz ?? 0) >= 0,
-                'text-red-500': (stundenByMnr(m.mnr)?.differenz ?? 0) < 0,
-              }"
-            >
-              {{ stundenByMnr(m.mnr)?.differenz ?? "" }}
-            </span>
-          </div>
-
-          <!-- Dienst-Zellen -->
-          <div
-            v-for="datum in view.tage"
-            :key="`${m.mnr}|${datum}`"
-            class="h-7 rounded border border-white/10
-                   flex items-center justify-center
-                   text-xs font-bold select-none
-                   hover:brightness-110 cursor-pointer
-                   relative"
-            :style="cellStyleByDienst(dienstOf(m.mnr, datum))"
-            @click.stop="openDropdown(m.mnr, datum)"
-          >
-            <!-- Anzeige-Modus -->
-            <span v-if="editingKey !== `${m.mnr}|${datum}`">
-              {{ cellText(dienstOf(m.mnr, datum)?.schicht_typ) }}
-            </span>
-
-            <!-- Edit-Modus -->
-            <select
-              v-else
-              v-model="localTyp"
-              class="absolute inset-0 w-full h-full
-                     text-center bg-black/60 text-white
-                     outline-none rounded"
-              @change.stop="saveDropdown"
-            >
-              <option v-for="o in options" :key="o" :value="o">
-                {{ o }}
-              </option>
-            </select>
-          </div>
-
-        </template>
       </div>
-    </div>
+
+      <div class="px-4 pt-2 pb-3 bg-linear-to-b from-zinc-300 to-zinc-400">
+        <div class="overflow-x-auto rounded-2xl bg-white/80 ring-1 ring-black/5 shadow-inner">
+          <div class="grid gap-px p-2" :style="{ gridTemplateColumns: `minmax(200px, 1fr) repeat(${view.tage.length}, 32px)` }">
+            
+            <div class="h-10 flex items-center px-3 rounded-lg bg-zinc-100/50 text-sm font-bold text-zinc-800">
+              Mitarbeiter
+            </div>
+
+            <div v-for="datum in view.tage" :key="datum" 
+              class="h-10 rounded-lg flex flex-col items-center justify-center text-[10px] bg-zinc-100/30">
+              <div class="text-zinc-500">{{ dow(datum) }}</div>
+              <div class="font-bold text-zinc-900">{{ day(datum) }}</div>
+            </div>
+
+            <template v-for="m in mitarbeiterByFiliale(filiale.fnr)" :key="m.mnr">
+              <div class="h-9 flex items-center justify-between px-3 rounded-lg bg-white shadow-sm ring-1 ring-black/5 text-sm">
+                <span class="truncate font-semibold text-zinc-700">{{ fullName(m) }}</span>
+                <span class="text-[10px] font-bold" :class="stundenByMnr(m.mnr)?.differenz >= 0 ? 'text-emerald-600' : 'text-red-500'">
+                  {{ stundenByMnr(m.mnr)?.differenz ?? '' }}
+                </span>
+              </div>
+
+              <div v-for="datum in view.tage" :key="`${m.mnr}|${datum}`"
+                class="h-9 rounded-lg ring-1 ring-black/5 flex items-center justify-center text-xs font-bold cursor-pointer relative transition hover:scale-[1.02] hover:z-10"
+                :style="cellStyleByDienst(dienstOf(m.mnr, datum))"
+                @click.stop="openDropdown(m.mnr, datum)">
+                
+                <span v-if="editingKey !== `${m.mnr}|${datum}`">
+                  {{ cellText(dienstOf(m.mnr, datum)?.schicht_typ) }}
+                </span>
+
+                <select v-else v-model="localTyp" @change.stop="saveDropdown" @click.stop
+                  class="absolute inset-0 w-full h-full rounded-lg bg-zinc-800 text-white text-center outline-none z-20">
+                  <option v-for="o in options" :key="o" :value="o">{{ o }}</option>
+                </select>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>

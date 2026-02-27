@@ -35,3 +35,4 @@ CMD ["npm", "run", "dev", "--", "--host"]
     # Neue Pakete: Nach einem npm install einmal docker-compose up --build ausführen.
 
     # Stoppen: Strg + C im Terminal.
+

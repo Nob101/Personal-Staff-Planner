@@ -1,18 +1,212 @@
 /* Tailwind Installation nach https://tailwindcss.com/docs/installation/using-vite */
-/* VS Code Extension:  Tailwind CSS IntelliSense nach https://tailwindcss.com/docs/editor-setup */
+/* VS Code Extension: Tailwind CSS IntelliSense nach https://tailwindcss.com/docs/editor-setup */
 
+/* Tailwind */
 @import "tailwindcss";
+@import "vue-multiselect/dist/vue-multiselect.css";
 
-body {
-    font-family: 'Times New Roman', Times, serif;
-    line-height: 1.5;
+/* =========================================================
+   MULTISELECT (.ms)
+   Ziel:
+   - überall gleiche Höhe (40px)
+   - grauer Gradient (zinc-200 → zinc-300)
+   - Placeholder/Single vertikal sauber mittig
+   - Single vs. Multiple getrennt feinjustiert
+   - kein “Springen”, saubere Rundungen
+   ========================================================= */
+
+/* Root */
+.ms.multiselect {
+  height: 40px;
+  min-height: 40px;
+  border-radius: 0.75rem; /* rounded-xl */
+  z-index: 10;
+  background: transparent !important;
 }
 
-button {
-  @apply px-4 py-2 rounded-lg font-medium text-center 
-         border border-black
-         transition duration-200
-         shadow-sm
-         hover:shadow-md
-         cursor-pointer;
+/* Tags / Hauptfeld */
+.ms .multiselect__tags {
+  height: 40px;
+  min-height: 40px;
+
+  /* NUR links/rechts — vertikales Padding NICHT aufblasen */
+  padding: 0 44px 0 12px; /* Platz für Pfeil */
+  box-sizing: border-box;
+
+  border-radius: 0.75rem;
+  overflow: hidden;
+
+  /* Gradient wie gewünscht */
+  background: linear-gradient(
+    to bottom,
+    rgb(228 228 231), /* zinc-200 */
+    rgb(212 212 216)  /* zinc-300 */
+  ) !important;
+
+  display: flex;
+  align-items: center;      /* vertikal */
+  justify-content: center;  /* horizontal (wie bei dir) */
+  text-align: center;
+  flex-wrap: nowrap;
 }
+
+/* Wichtig: entfernt das "weiße Innenfeld" */
+.ms .multiselect__single,
+.ms .multiselect__placeholder,
+.ms .multiselect__input,
+.ms .multiselect__tags-wrap {
+  background: transparent !important;
+}
+
+/* Text + Placeholder: Reset gegen Default-Margins von vue-multiselect */
+.ms .multiselect__single,
+.ms .multiselect__placeholder {
+  font-size: 0.875rem;   /* text-sm */
+  color: rgb(24 24 27);  /* zinc-900 */
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap;
+
+  display: flex;
+  align-items: center;   /* vertikal mittig */
+}
+
+/* Input beim Tippen */
+.ms .multiselect__input {
+  font-size: 0.875rem;
+  color: rgb(24 24 27);
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex;
+  align-items: center;
+}
+
+/* ---------------------------------------------------------
+   FEINJUSTIERUNG: Single vs. Multiple
+   (damit beide optisch gleich mittig wirken)
+   --------------------------------------------------------- */
+
+/* Single-Select: Text wirkt oft 1px “zu hoch” → leicht runter */
+.ms.multiselect--single .multiselect__single,
+.ms.multiselect--single .multiselect__placeholder {
+  position: relative;
+  top: 1px;
+}
+
+/* Multi-Select: Placeholder meist schon gut → neutral */
+.ms.multiselect--multiple .multiselect__placeholder {
+  position: relative;
+  top: 0px;
+}
+
+/* Multi-Select Tags: verhindern zusätzliche “Höhe” durch Margins */
+.ms.multiselect--multiple .multiselect__tag {
+  margin: 0 6px 0 0 !important;
+}
+
+/* Pfeil */
+.ms .multiselect__select {
+  height: 40px;
+  width: 40px;
+  right: 6px;
+  top: 0;
+
+  background: transparent !important;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.ms .multiselect__select::before {
+  border-color: rgb(24 24 27) transparent transparent transparent;
+}
+
+/* Rotation beim Öffnen – nur das Icon */
+.ms.multiselect--active .multiselect__select::before {
+  transform: rotate(180deg);
+}
+
+/* Dropdown */
+.ms .multiselect__content-wrapper {
+  z-index: 20;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+}
+
+/* Aktiv / Fokus */
+.ms.multiselect--active {
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.25),
+    0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Oben gerade, unten rund wenn offen */
+.ms.multiselect--active .multiselect__tags {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+
+
+
+
+
+
+/* Lukas Export Bereich */
+/* FIX: Aggressiver Export */
+.pdf-export-mode {
+    width: 2500px !important;
+    min-width: 2500px !important;
+    max-width: none !important;
+    background: rgb(12, 12, 12) !important; 
+    padding: 40px !important;
+    overflow: visible !important;
+}
+
+/* NEU: Alle Elemente im Export-Modus */
+.pdf-export-mode * {
+    /* Killt die schwarzen Balken: Schatten & Ringe    -_-Aggro */
+    box-shadow: none !important;
+    --tw-shadow: 0 0 #0000 !important;
+    --tw-shadow-colored: 0 0 #0000 !important;
+    --tw-ring-offset-shadow: 0 0 #0000 !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+
+    /* FIX: Scrollbars in ALLEN Browsern verstecken */
+    scrollbar-width: none !important; 
+    -ms-overflow-style: none !important;
+    
+    /* Layout fixieren */
+    overflow: visible !important;
+}
+
+/*  Chrome/Safari Scrollbars separat */
+.pdf-export-mode *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Versteckt die Aktions-Buttons (Generieren/Löschen) im PDF */
+.pdf-export-mode .no-export {
+    display: none !important;
+}
+
+/*  Fix für die Namen (hebt truncate auf) */
+.pdf-export-mode .truncate {
+    overflow: visible !important;
+    white-space: normal !important;
+    text-overflow: clip !important;
+    max-width: none !important;
+}
+
+/*  Fix für die Gradients deines Kollegen (optional, falls PDF zu dunkel wird) */
+.pdf-export-mode .bg-linear-to-b {
+    background-image: none !important;
+    background-color: #79797b !important; /* Fallback auf festes Grau für PDF-Stabilität */
+}
+
+/* Lukas Export Bereich Ende */
+/* Wenn das klappt, zünde ich eine Kerze an -_-*/

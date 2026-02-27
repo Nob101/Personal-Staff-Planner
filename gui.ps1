@@ -40,7 +40,7 @@ Add-Type -TypeDefinition $code
     $form.ShowInTaskbar = $false
 
 # NEU: Logo-Bereich
-$logoPath = Join-Path $PSScriptRoot "Frontend\src\assets\Logo.png"
+$logoPath = Join-Path $PSScriptRoot "Frontend\public\Logo.png"
 if (Test-Path $logoPath) {
     $pictureBox = New-Object Windows.Forms.PictureBox
     $pictureBox.Image = [System.Drawing.Image]::FromFile($logoPath)

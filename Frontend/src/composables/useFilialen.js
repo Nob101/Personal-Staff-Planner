@@ -19,9 +19,7 @@ export function useFilialen() {
   const sortOption = ref('nameAsc')
   const sortOptions = [
     { label: 'Filialname (A → Z)', value: 'nameAsc' },
-    { label: 'Filialname (Z → A)', value: 'nameDesc' },
-    { label: 'Postleitzahl (aufsteigend)', value: 'plzAsc' },
-    { label: 'Postleitzahl (absteigend)', value: 'plzDesc' }
+    { label: 'Filialname (Z → A)', value: 'nameDesc' }
   ]
 
   // --- Filter-Logik für die Suche ---
@@ -36,7 +34,7 @@ export function useFilialen() {
     )
   })
 
-  // --- Sortier-Logik ---
+  // --- Sortier-Logik (alphabetisch nach filialname) ---
   const sortedFilialen = computed(() => {
     const list = [...filteredFilialen.value]
     switch (sortOption.value) {
@@ -44,11 +42,6 @@ export function useFilialen() {
         return list.sort((a, b) => (a.filialname || '').localeCompare(b.filialname || ''))
       case 'nameDesc':
         return list.sort((a, b) => (b.filialname || '').localeCompare(a.filialname || ''))
-      case 'plzAsc':
-        // Sortiert numerisch oder als String, falls PLZ führende Nullen hat
-        return list.sort((a, b) => (a.plz || '').toString().localeCompare((b.plz || '').toString(), undefined, { numeric: true }))
-      case 'plzDesc':
-        return list.sort((a, b) => (b.plz || '').toString().localeCompare((a.plz || '').toString(), undefined, { numeric: true }))
       default:
         return list
     }
@@ -62,6 +55,7 @@ export function useFilialen() {
   const selectedFilialeToDelete = ref(null)
 
   // --- Daten laden ---
+  // onMounted wird ausgeführt, wenn das entsprechende Vue-File geladen wird
   async function loadData() {
     isLoading.value = true
     try {
@@ -82,6 +76,7 @@ export function useFilialen() {
 
   // --- CRUD Funktionen ---
 
+  // Erstellt eine neue Filiale im Backend
   async function handleFilialeCreate(neu) {
     try {
       const res = await filialenService.createFiliale(neu)
@@ -91,11 +86,25 @@ export function useFilialen() {
     }
   }
 
+  // Öffnet das Bearbeiten-Modal
   function handleEdit(f) {
     selectedFiliale.value = f
     showModalFilialeEdit.value = true
   }
 
+  // (notwendig fürs Design/Overlay):
+  // List-Click soll Details öffnen (wie bei Mitarbeiter)
+  function handleSelect(f) {
+    selectedFiliale.value = f
+  }
+
+  // (notwendig fürs Design/Overlay):
+  // Schließt die Detailansicht und wechselt zurück in die Liste
+  function closeDetails() {
+    selectedFiliale.value = null
+  }
+
+  // Aktualisiert eine bestehende Filiale
   async function handleFilialeEdit(editedData) {
     try {
       const res = await filialenService.updateFiliale(editedData)
@@ -103,21 +112,38 @@ export function useFilialen() {
       if (index !== -1) {
         filialen.value[index] = res.data
       }
+
+      // (notwendig fürs Design/Overlay):
+      // Wenn diese Filiale gerade im Detail-Overlay offen ist, sofort aktualisieren
+      if (selectedFiliale.value?.fnr === editedData.fnr) {
+        selectedFiliale.value = res.data
+      }
     } catch (err) {
       console.error("Fehler beim Bearbeiten:", err)
     }
   }
 
+  // Öffnet das Bestätigungsmodal zum Löschen
   function handleDelete(f) {
     selectedFilialeToDelete.value = f
     showDeleteModal.value = true
   }
 
+  // Löscht die Filiale nach Bestätigung endgültig
   async function confirmDelete() {
     if (!selectedFilialeToDelete.value) return
     try {
-      await filialenService.deleteFiliale(selectedFilialeToDelete.value.fnr)
-      filialen.value = filialen.value.filter(f => f.fnr !== selectedFilialeToDelete.value.fnr)
+      const deletedFnr = selectedFilialeToDelete.value.fnr
+
+      await filialenService.deleteFiliale(deletedFnr)
+      filialen.value = filialen.value.filter(f => f.fnr !== deletedFnr)
+
+      // (notwendig fürs Design/Overlay):
+      // Detail-Overlay schließen, wenn genau diese Filiale offen ist
+      if (selectedFiliale.value?.fnr === deletedFnr) {
+        selectedFiliale.value = null
+      }
+
       selectedFilialeToDelete.value = null
       showDeleteModal.value = false
     } catch (err) {
@@ -125,6 +151,7 @@ export function useFilialen() {
     }
   }
 
+  // Schließt das Löschmodal ohne Aktion
   function cancelDelete() {
     selectedFilialeToDelete.value = null
     showDeleteModal.value = false
@@ -145,6 +172,8 @@ export function useFilialen() {
     selectedFiliale,
     handleFilialeCreate,
     handleEdit,
+    handleSelect,   
+    closeDetails,   
     handleFilialeEdit,
     handleDelete,
     confirmDelete,
