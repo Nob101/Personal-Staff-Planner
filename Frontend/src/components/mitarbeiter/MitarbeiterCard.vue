@@ -194,12 +194,12 @@ function handleSelect() {
       </div>
     </div>
 
-    <!-- BODY wie Filiale -->
+    <!-- BODY -->
     <div class="px-4 pt-2 pb-3 rounded-b-3xl bg-linear-to-b from-zinc-400 to-zinc-600">
-      <!-- Innere Box wie Filiale -->
+      <!-- Innere Box -->
       <div class="rounded-2xl bg-white/55 dark:bg-white/10 ring-1 ring-black/10 dark:ring-white/10">
         <div class="p-4">
-          <!-- LINKS | LINIE | RECHTS (kompakter) -->
+          <!-- LINKS | LINIE | RECHTS -->
           <div class="grid grid-cols-[1fr_1px_1fr] gap-5 text-sm text-zinc-900 dark:text-white/90">
             <!-- LINKS -->
             <section class="space-y-4 min-w-0">
