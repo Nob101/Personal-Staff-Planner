@@ -10,7 +10,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import Multiselect from 'vue-multiselect'
 
 // (Design) Icons wie bei MitarbeiterActionBar
-import hinzufuegen_icon from '@/assets/icons/hinzufuegen_icon.png' // falls du ein eigenes Filial-Icon hast: hier ersetzen
+import hinzufuegen_icon from '@/assets/icons/hinzufuegen_icon.png'
 import lupe_icon from '@/assets/icons/lupe_icon.svg'
 
 const props = defineProps({
@@ -25,7 +25,7 @@ const emit = defineEmits(['update:modelValue', 'filialeCreate', 'searchFiliale']
 
 const search = ref('')
 
-// Suche (direkt ohne Debounce, wie gewünscht)
+// Suche
 watch(search, (val) => {
   emit('searchFiliale', val)
 })
@@ -35,9 +35,9 @@ const selectedOption = computed(() => {
   return props.sortOptions.find(o => o.value === props.modelValue)
 })
 
-/* =========================================================
-   Hide-on-scroll (down = hide, up = show) - wie DienstplanHeader
-   ========================================================= */
+/* ========================================
+   Hide-on-scroll (down = hide, up = show)
+   ======================================== */
 const headerHidden = ref(false);
 let lastY = 0;
 let ticking = false;
@@ -48,8 +48,6 @@ function onScroll() {
   if (!ticking) {
     window.requestAnimationFrame(() => {
       const delta = y - lastY;
-
-      // kleine Scroll-Zitterbewegungen ignorieren
       if (Math.abs(delta) > 6) {
         if (delta > 0 && y > 80) {
           headerHidden.value = true; // runter scrollen
@@ -110,7 +108,7 @@ onBeforeUnmount(() => {
       </button>
     </div>
 
-    <!-- MITTE: Sortierung (wirklich Mitte) -->
+    <!-- MITTE: Sortierung -->
     <div class="justify-self-center h-10 flex items-center">
       <div class="w-60">
         <Multiselect
