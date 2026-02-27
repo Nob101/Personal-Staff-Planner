@@ -47,7 +47,7 @@ onUnmounted(() => {
       @mousedown="onMouseDown"
       @click="onOverlayClick"
     >
-      <div class="relative w-full h-full flex justify-center px-3 sm:px-6 pt-16 pb-6">
+      <div class="relative w-full h-full flex justify-center px-3 sm:px-6 pt-4 pb-6">
         <div
           class="relative mt-12 max-h-[calc(100vh-3rem-3rem)] overflow-y-auto rounded-2xl"
         >

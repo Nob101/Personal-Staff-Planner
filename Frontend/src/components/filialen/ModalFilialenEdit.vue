@@ -1,39 +1,65 @@
-<!-- ModalFilialenCreate.vue -->
+<!-- ModalFilialenEdit.vue -->
+
 <script setup>
+import { ref, defineProps, watch } from 'vue'
 import BaseModal from '@/components/global/BaseModal.vue'
 import Multiselect from 'vue-multiselect'
-import { ref, defineProps, watch } from 'vue'
 import ColorPicker from '@/components/global/ColorPicker.vue'
 
+// (notwendig fürs Design): Icon-Buttons statt Textbuttons
 import speichern_icon from '@/assets/icons/speichern_icon.png'
 import abbrechen_icon from '@/assets/icons/abbrechen_icon.svg'
 
-const emit = defineEmits(['close', 'filialeCreate'])
+const emit = defineEmits(['close', 'filialeEdit'])
 
 const props = defineProps({
-  mitarbeiter: { type: Object, required: false },
-  filialen: { type: Object, required: true },
+  filiale: { type: Object, required: true },
   show: { type: Boolean, required: true }
 })
 
+// Algorithmus Optionen
 const algorithmOptions = [
   { label: 'AA-EE-FF', value: 1 },
   { label: 'AAAA-FF-EEEE-FF', value: 2 }
 ]
 
+// Lokale Kopien der Felder
 const filialname = ref('')
-const email = ref('')
-const telefon = ref('')
 const strasse = ref('')
 const ort = ref('')
 const plz = ref('')
 const land = ref('')
-const farbe = ref('#ffffff')
+const telefon = ref('')
+const email = ref('')
+const farbe = ref('')
+const anmerkungen = ref('')
 const algorithmid = ref(null)
 
+// Validierungs-States
 const nameFehler = ref(false)
 const algorithmFehler = ref(false)
 
+// Props → lokale Refs kopieren
+watch(
+  () => props.filiale,
+  (edited) => {
+    if (!edited) return
+    filialname.value = edited.filialname || ''
+    strasse.value = edited.strasse || ''
+    ort.value = edited.ort || ''
+    plz.value = edited.plz || ''
+    land.value = edited.land || ''
+    telefon.value = edited.telefon || ''
+    email.value = edited.email || ''
+    farbe.value = edited.farbe || '#ffffff' // Fallback auf Weiß, wenn nicht gesetzt
+    anmerkungen.value = edited.anmerkungen || ''
+    algorithmid.value =
+      algorithmOptions.find(opt => opt.value === edited.algorithmid) || null
+  },
+  { immediate: true }
+)
+
+// entfernt Reset Fehler Meldung bei Schließen des Modals
 watch(() => props.show, (newVal) => {
   if (!newVal) {
     nameFehler.value = false
@@ -41,66 +67,54 @@ watch(() => props.show, (newVal) => {
   }
 })
 
+// Submit
 function handleSubmit() {
+  // Zurücksetzen der Fehler-States für neue Prüfung
   nameFehler.value = false
   algorithmFehler.value = false
 
   let hatFehler = false
 
+  // Filialname Pflichtfeld-Prüfung
   if (!filialname.value.trim()) {
     nameFehler.value = true
     hatFehler = true
   }
 
+  // Algorithmus Pflichtfeld-Prüfung
   if (!algorithmid.value) {
     algorithmFehler.value = true
     hatFehler = true
   }
 
+  // Wenn Fehler vorhanden sind, hier abbrechen (beide Meldungen bleiben stehen)
   if (hatFehler) return
 
-  emit('filialeCreate', {
+  emit('filialeEdit', {
+    fnr: props.filiale.fnr,
     filialname: filialname.value,
-    email: email.value || '',
-    telefon: telefon.value || '',
     strasse: strasse.value || '',
     ort: ort.value || '',
     plz: plz.value || '',
     land: land.value || '',
-    farbe: farbe.value,
+    telefon: telefon.value || '',
+    email: email.value || '',
+    farbe: farbe.value || '',
+    anmerkungen: anmerkungen.value || '',
     algorithmid: algorithmid.value ? algorithmid.value.value : null
   })
-
-  resetFormFields()
   emit('close')
-}
-
-function resetFormFields() {
-  filialname.value = ''
-  email.value = ''
-  telefon.value = ''
-  strasse.value = ''
-  ort.value = ''
-  plz.value = ''
-  land.value = ''
-  farbe.value = '#ffffff'
-  algorithmid.value = null
-  nameFehler.value = false
-  algorithmFehler.value = false
 }
 </script>
 
 <template>
-  <BaseModal :show="show" @close="emit('close')" width="760px">
-    <template #header></template>
-
+  <BaseModal v-if="filiale" :show="show" @close="emit('close')" width="760px">
     <template #body>
-      <!-- Card wie Mitarbeiter-Create -->
+      <!-- Card wie ModalMitarbeiterEdit + ModalFilialenCreate -->
       <article
         class="mx-auto w-full max-w-[760px]
-               font-sans relative mt-16 rounded-3xl
+               font-sans relative rounded-3xl
                bg-white/70 dark:bg-zinc-900/50
-               shadow-[0_16px_40px_rgba(0,0,0,0.4)]
                backdrop-blur overflow-hidden"
       >
         <!-- HEADER -->
@@ -108,14 +122,14 @@ function resetFormFields() {
           <div class="flex items-center justify-between gap-3 px-4 py-2">
             <div class="min-w-0">
               <div class="text-xl font-extrabold text-zinc-900 dark:text-white truncate">
-                Neue Filiale anlegen
+                Filiale bearbeiten: {{ filiale.filialname }}
               </div>
               <div class="text-[11px] text-zinc-600 dark:text-white/70">
                 Pflichtfelder: Filialname, Algorithmus
               </div>
             </div>
 
-            <!-- ACTIONS wie Card -->
+            <!-- ACTIONS -->
             <div
               class="flex items-center gap-1 rounded-xl
                      bg-white/60 dark:bg-white/10
@@ -130,9 +144,9 @@ function resetFormFields() {
                        hover:from-emerald-900 hover:to-emerald-300
                        ring-1 ring-emerald-600/30 shadow-sm
                        transition active:scale-[0.97]"
-                title="Erstellen"
+                title="Speichern"
               >
-                <img :src="speichern_icon" class="h-4 w-4 opacity-90" alt="Erstellen" />
+                <img :src="speichern_icon" class="h-4 w-4 opacity-90" alt="Speichern" />
               </button>
 
               <button
@@ -156,22 +170,26 @@ function resetFormFields() {
           <div class="rounded-2xl bg-zinc-300 dark:bg-white/10 ring-1 ring-black/10 dark:ring-white/10">
             <div class="p-4">
               <form @submit.prevent="handleSubmit" class="space-y-6">
-                <!-- Filialname (wie Inputs im Form-Style) -->
-                <fieldset class="form-fieldset">
-                  <legend class="form-legend">Name</legend>
-                  <div class="form-body">
-                    <div class="form-row">
-                      <span class="form-label">Filialname</span>
-                      <input v-model="filialname" type="text" class="form-input" />
-                    </div>
-                    <p v-if="nameFehler" class="form-error">Filialenname ist erforderlich</p>
-                  </div>
-                </fieldset>
-
                 <!-- LINKS | LINIE | RECHTS -->
                 <div class="grid grid-cols-[1fr_1px_1fr] gap-6 text-sm text-zinc-900 dark:text-white/90">
                   <!-- LINKS -->
                   <section class="space-y-4 min-w-0">
+                    <!-- Filiale -->
+                    <fieldset class="form-fieldset">
+                      <legend class="form-legend">Filiale</legend>
+
+                      <div class="form-body">
+                        <div class="form-row">
+                          <span class="form-label">Name</span>
+                          <input v-model="filialname" type="text" class="form-input" />
+                        </div>
+
+                        <p v-if="nameFehler" class="form-error">
+                          Filialenname ist erforderlich
+                        </p>
+                      </div>
+                    </fieldset>
+
                     <!-- Kontakt -->
                     <fieldset class="form-fieldset">
                       <legend class="form-legend">Kontakt</legend>
@@ -179,25 +197,21 @@ function resetFormFields() {
                       <div class="form-body">
                         <div class="form-row">
                           <span class="form-label">Email</span>
-                          <input v-model="email" type="email" class="form-input" />
+                          <input type="email" v-model="email" class="form-input" />
                         </div>
 
                         <div class="form-row">
                           <span class="form-label">Telefon</span>
-                          <input v-model="telefon" type="tel" class="form-input" />
+                          <input type="tel" v-model="telefon" class="form-input" />
                         </div>
                       </div>
                     </fieldset>
 
-                    <!-- Filialenfarbe -->
+                    <!-- Farbe -->
                     <fieldset class="form-fieldset">
                       <legend class="form-legend">Filialenfarbe</legend>
-
-                      <div class="form-body">
-                        <!-- Wrapper für Textfarbe im Hex-Feld -->
-                        <div class="colorpicker-darktext">
-                          <ColorPicker v-model="farbe" />
-                        </div>
+                      <div class="mt-2">
+                        <ColorPicker v-model="farbe" />
                       </div>
                     </fieldset>
                   </section>
@@ -214,22 +228,22 @@ function resetFormFields() {
                       <div class="form-body">
                         <div class="form-row">
                           <span class="form-label">Straße</span>
-                          <input v-model="strasse" type="text" class="form-input" />
+                          <input type="text" v-model="strasse" class="form-input" />
                         </div>
 
                         <div class="form-row">
                           <span class="form-label">Ort</span>
-                          <input v-model="ort" type="text" class="form-input" />
+                          <input type="text" v-model="ort" class="form-input" />
                         </div>
 
                         <div class="form-row">
-                          <span class="form-label">Postleitzahl</span>
-                          <input v-model="plz" type="text" class="form-input" />
+                          <span class="form-label">PLZ</span>
+                          <input type="text" v-model="plz" class="form-input" />
                         </div>
 
                         <div class="form-row">
                           <span class="form-label">Land</span>
-                          <input v-model="land" type="text" class="form-input" />
+                          <input type="text" v-model="land" class="form-input" />
                         </div>
                       </div>
                     </fieldset>
@@ -240,7 +254,7 @@ function resetFormFields() {
 
                       <div class="form-body">
                         <div class="form-row">
-                          <span class="form-label">Auswahl</span>
+                          <span class="form-label">Typ</span>
                           <div class="form-inputwrap">
                             <Multiselect
                               class="ms"
@@ -248,6 +262,7 @@ function resetFormFields() {
                               :options="algorithmOptions"
                               :multiple="false"
                               :searchable="false"
+                              :clearable="false"
                               placeholder="Algorithmus wählen"
                               selectLabel=""
                               deselectLabel=""
@@ -263,6 +278,21 @@ function resetFormFields() {
                         </p>
                       </div>
                     </fieldset>
+
+                    <!-- Anmerkungen -->
+                    <fieldset class="form-fieldset">
+                      <legend class="form-legend">Anmerkungen</legend>
+
+                      <textarea
+                        rows="4"
+                        v-model="anmerkungen"
+                        class="w-full resize-none rounded-xl
+                               ring-1 ring-white/80 dark:ring-white/20
+                               bg-white/70 dark:bg-black/30
+                               p-2 text-sm text-zinc-900 dark:text-white/90
+                               outline-none"
+                      />
+                    </fieldset>
                   </section>
                 </div>
               </form>
@@ -277,7 +307,7 @@ function resetFormFields() {
 </template>
 
 <style scoped>
-/* ====== gleiche Form-Klassen wie bei MitarbeiterCreate ====== */
+/* gleiche Utility-Klassen wie in ModalFilialenCreate / ModalMitarbeiterEdit */
 .form-fieldset{
   border-radius: 1rem;
   background: rgba(255,255,255,1);
@@ -333,11 +363,11 @@ function resetFormFields() {
   max-width: 220px;
   min-width: 0;
 
-  border-radius: .75rem;
+  border-radius: .75rem; /* rounded-xl */
   background: rgba(255,255,255,.70);
   padding: 0 .75rem;
   font-size: .875rem;
-  color: rgb(24 24 27);
+  color: rgb(24 24 27); /* zinc-900 */
   outline: none;
   box-shadow: 0 0 0 1px rgba(0,0,0,.10) inset;
   text-align: right;
@@ -356,13 +386,6 @@ function resetFormFields() {
 
 .form-error{
   font-size: .875rem;
-  color: rgb(248 113 113);
-}
-
-/* ====== WICHTIG: Farbcode-Text im grauen Feld schwarz ======
-   (ColorPicker hat idR ein Input – wir erzwingen schwarz) */
-.colorpicker-darktext :deep(input),
-.colorpicker-darktext :deep(textarea) {
-  color: #000 !important;
+  color: rgb(248 113 113); /* red-400 */
 }
 </style>

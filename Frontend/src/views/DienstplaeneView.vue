@@ -67,7 +67,7 @@ function onRemoveFiliale({ fnr, jahr: j, monat: m }) {
   <div
     class="min-h-screen"
   >
-    <div class="mx-auto w-full max-w-[1400px] font-sans">
+    <div class="mx-auto w-full max-w-[1400px] font-sans pb-6">
       <DienstplanHeader
         :jahr="jahr"
         :monat="monat"
