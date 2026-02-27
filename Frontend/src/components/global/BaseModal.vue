@@ -6,7 +6,7 @@ const emit = defineEmits(["close"]);
 
 const props = defineProps({
   show: { type: Boolean, required: true },
-  width: { type: String, default: "980px" }, 
+  width: { type: String, default: "760px" }, 
   closeOnEsc: { type: Boolean, default: true },
 });
 
@@ -42,13 +42,14 @@ onUnmounted(() => {
   <teleport to="body">
     <div
       v-if="show"
-      class="fixed inset-0 z-9999 flex items-start justify-center bg-black/50 backdrop-blur-sm p-3 sm:p-6 overflow-y-auto"
+      class="fixed inset-0 z-9999 flex justify-center
+         bg-black/50 backdrop-blur-sm"
       @mousedown="onMouseDown"
       @click="onOverlayClick"
     >
-      <div class="w-full max-w-[980px]">
+      <div class="relative w-full h-full flex justify-center px-3 sm:px-6 pt-16 pb-6">
         <div
-          class="max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)] overflow-y-auto rounded-2xl"
+          class="relative mt-12 max-h-[calc(100vh-3rem-3rem)] overflow-y-auto rounded-2xl"
         >
           <!-- Header Slot -->
           <div v-if="$slots.header" class="mb-4 flex items-center justify-center">
