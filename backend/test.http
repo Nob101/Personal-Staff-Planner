@@ -1,5 +1,9 @@
 @baseUrl = https://localhost/api
+<<<<<<< HEAD
 @token = 8e168f93a70ef89782ddaee3e050921cee3249a0ff90ad72
+=======
+@token = d4f5d4112cd7393474e5a20b08817ffdcae45b890b8e0b1c
+>>>>>>> efb402cb7f2851fca4bd4c88afb49ecd94555152
 @jahr = 2026
 @monat = 2
 
@@ -200,7 +204,11 @@ Content-Type: application/json
 ### ERSATZ
 ### ============================================================================
 
+<<<<<<< HEAD
 @DIENST_ID = 43801
+=======
+@DIENST_ID = 283429
+>>>>>>> efb402cb7f2851fca4bd4c88afb49ecd94555152
 GET {{baseUrl}}/dienstplan/{{DIENST_ID}}/ersatz
 Authorization: {{token}}
 Accept: application/json
