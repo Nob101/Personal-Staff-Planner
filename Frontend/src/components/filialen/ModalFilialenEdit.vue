@@ -1,65 +1,39 @@
-<!-- ModalFilialenEdit.vue -->
-
+<!-- ModalFilialenCreate.vue -->
 <script setup>
-import { ref, defineProps, watch } from 'vue'
 import BaseModal from '@/components/global/BaseModal.vue'
 import Multiselect from 'vue-multiselect'
+import { ref, defineProps, watch } from 'vue'
 import ColorPicker from '@/components/global/ColorPicker.vue'
 
-// (notwendig fürs Design): Icon-Buttons statt Textbuttons
 import speichern_icon from '@/assets/icons/speichern_icon.png'
 import abbrechen_icon from '@/assets/icons/abbrechen_icon.svg'
 
-const emit = defineEmits(['close', 'filialeEdit'])
+const emit = defineEmits(['close', 'filialeCreate'])
 
 const props = defineProps({
-  filiale: { type: Object, required: true },
+  mitarbeiter: { type: Object, required: false },
+  filialen: { type: Object, required: true },
   show: { type: Boolean, required: true }
 })
 
-// Algorithmus Optionen
 const algorithmOptions = [
-  { label: 'Algorithmus 1', value: 1 },
-  { label: 'Algorithmus 2', value: 2 }
+  { label: 'AA-EE-FF', value: 1 },
+  { label: 'AAAA-FF-EEEE-FF', value: 2 }
 ]
 
-// Lokale Kopien der Felder
 const filialname = ref('')
+const email = ref('')
+const telefon = ref('')
 const strasse = ref('')
 const ort = ref('')
 const plz = ref('')
 const land = ref('')
-const telefon = ref('')
-const email = ref('')
-const farbe = ref('')
-const anmerkungen = ref('')
+const farbe = ref('#ffffff')
 const algorithmid = ref(null)
 
-// Validierungs-States
 const nameFehler = ref(false)
 const algorithmFehler = ref(false)
 
-// Props → lokale Refs kopieren
-watch(
-  () => props.filiale,
-  (edited) => {
-    if (!edited) return
-    filialname.value = edited.filialname || ''
-    strasse.value = edited.strasse || ''
-    ort.value = edited.ort || ''
-    plz.value = edited.plz || ''
-    land.value = edited.land || ''
-    telefon.value = edited.telefon || ''
-    email.value = edited.email || ''
-    farbe.value = edited.farbe || '#ffffff' // Fallback auf Weiß, wenn nicht gesetzt
-    anmerkungen.value = edited.anmerkungen || ''
-    algorithmid.value =
-      algorithmOptions.find(opt => opt.value === edited.algorithmid) || null
-  },
-  { immediate: true }
-)
-
-// entfernt Reset Fehler Meldung bei Schließen des Modals
 watch(() => props.show, (newVal) => {
   if (!newVal) {
     nameFehler.value = false
@@ -67,249 +41,328 @@ watch(() => props.show, (newVal) => {
   }
 })
 
-// Submit
 function handleSubmit() {
-  // Zurücksetzen der Fehler-States für neue Prüfung
   nameFehler.value = false
   algorithmFehler.value = false
 
   let hatFehler = false
 
-  // Filialname Pflichtfeld-Prüfung
   if (!filialname.value.trim()) {
     nameFehler.value = true
     hatFehler = true
   }
 
-  // Algorithmus Pflichtfeld-Prüfung
   if (!algorithmid.value) {
     algorithmFehler.value = true
     hatFehler = true
   }
 
-  // Wenn Fehler vorhanden sind, hier abbrechen (beide Meldungen bleiben stehen)
   if (hatFehler) return
 
-  emit('filialeEdit', {
-    fnr: props.filiale.fnr,
+  emit('filialeCreate', {
     filialname: filialname.value,
+    email: email.value || '',
+    telefon: telefon.value || '',
     strasse: strasse.value || '',
     ort: ort.value || '',
     plz: plz.value || '',
     land: land.value || '',
-    telefon: telefon.value || '',
-    email: email.value || '',
-    farbe: farbe.value || '',
-    anmerkungen: anmerkungen.value || '',
+    farbe: farbe.value,
     algorithmid: algorithmid.value ? algorithmid.value.value : null
   })
+
+  resetFormFields()
   emit('close')
+}
+
+function resetFormFields() {
+  filialname.value = ''
+  email.value = ''
+  telefon.value = ''
+  strasse.value = ''
+  ort.value = ''
+  plz.value = ''
+  land.value = ''
+  farbe.value = '#ffffff'
+  algorithmid.value = null
+  nameFehler.value = false
+  algorithmFehler.value = false
 }
 </script>
 
 <template>
-  <BaseModal v-if="filiale" :show="show" @close="emit('close')" width="980px">
-    <!-- Header Slot -->
-    <template #header>
-      <div class="font-sans"></div>
-    </template>
+  <BaseModal :show="show" @close="emit('close')" width="760px">
+    <template #header></template>
 
-    <!-- Body Slot -->
     <template #body>
-      <!-- Card Look (EINE Box) -->
-      <div
-        class="relative font-sans rounded-3xl border border-white/10
-               bg-linear-to-b from-zinc-800/70 to-zinc-900/80
-               p-8 pt-11 shadow-[0_18px_45px_rgba(0,0,0,0.55)]"
+      <!-- Card wie Mitarbeiter-Create -->
+      <article
+        class="mx-auto w-full max-w-[760px]
+               font-sans relative mt-16 rounded-3xl
+               bg-white/70 dark:bg-zinc-900/50
+               shadow-[0_16px_40px_rgba(0,0,0,0.4)]
+               backdrop-blur overflow-hidden"
       >
-        <div class="mb-6">
-          <h2 class="text-2xl font-extrabold tracking-tight text-white">
-            Filiale bearbeiten: {{ filiale.filialname }}
-          </h2>
+        <!-- HEADER -->
+        <div class="bg-linear-to-b from-zinc-300 to-zinc-400">
+          <div class="flex items-center justify-between gap-3 px-4 py-2">
+            <div class="min-w-0">
+              <div class="text-xl font-extrabold text-zinc-900 dark:text-white truncate">
+                Neue Filiale anlegen
+              </div>
+              <div class="text-[11px] text-zinc-600 dark:text-white/70">
+                Pflichtfelder: Filialname, Algorithmus
+              </div>
+            </div>
+
+            <!-- ACTIONS wie Card -->
+            <div
+              class="flex items-center gap-1 rounded-xl
+                     bg-white/60 dark:bg-white/10
+                     ring-1 ring-black/10 dark:ring-white/10
+                     p-1"
+            >
+              <button
+                type="button"
+                @click="handleSubmit"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-xl
+                       bg-linear-to-b from-emerald-300 to-emerald-900
+                       hover:from-emerald-900 hover:to-emerald-300
+                       ring-1 ring-emerald-600/30 shadow-sm
+                       transition active:scale-[0.97]"
+                title="Erstellen"
+              >
+                <img :src="speichern_icon" class="h-4 w-4 opacity-90" alt="Erstellen" />
+              </button>
+
+              <button
+                type="button"
+                @click="emit('close')"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-xl
+                       bg-linear-to-b from-red-300 to-red-900
+                       hover:from-red-900 hover:to-red-300
+                       ring-1 ring-red-600/30 shadow-sm
+                       transition active:scale-[0.97]"
+                title="Abbrechen"
+              >
+                <img :src="abbrechen_icon" class="h-4 w-4 opacity-90" alt="Abbrechen" />
+              </button>
+            </div>
+          </div>
         </div>
 
-        <!-- ACTIONS oben rechts (Design wie Mitarbeiter) -->
-        <div class="absolute right-8 top-8 flex gap-3">
-          <button
-            type="button"
-            @click="handleSubmit"
-            class="flex items-center justify-center rounded-xl
-                   border border-green-400/30 bg-green-500/35
-                   px-3 py-3 hover:bg-green-500/80 transition"
-            title="Speichern"
-          >
-            <img :src="speichern_icon" class="h-5 w-5" alt="Speichern" />
-          </button>
+        <!-- BODY -->
+        <div class="px-4 pt-3 pb-4 rounded-b-3xl bg-linear-to-b from-zinc-400 to-zinc-600">
+          <div class="rounded-2xl bg-zinc-300 dark:bg-white/10 ring-1 ring-black/10 dark:ring-white/10">
+            <div class="p-4">
+              <form @submit.prevent="handleSubmit" class="space-y-6">
+                <!-- Filialname (wie Inputs im Form-Style) -->
+                <fieldset class="form-fieldset">
+                  <legend class="form-legend">Name</legend>
+                  <div class="form-body">
+                    <div class="form-row">
+                      <span class="form-label">Filialname</span>
+                      <input v-model="filialname" type="text" class="form-input" />
+                    </div>
+                    <p v-if="nameFehler" class="form-error">Filialenname ist erforderlich</p>
+                  </div>
+                </fieldset>
 
-          <button
-            type="button"
-            @click="emit('close')"
-            class="flex items-center justify-center rounded-xl
-                   border border-red-400/30 bg-red-500/35
-                   px-3 py-3 hover:bg-red-500/80 transition"
-            title="Abbrechen"
-          >
-            <img :src="abbrechen_icon" class="h-5 w-5" alt="Abbrechen" />
-          </button>
+                <!-- LINKS | LINIE | RECHTS -->
+                <div class="grid grid-cols-[1fr_1px_1fr] gap-6 text-sm text-zinc-900 dark:text-white/90">
+                  <!-- LINKS -->
+                  <section class="space-y-4 min-w-0">
+                    <!-- Kontakt -->
+                    <fieldset class="form-fieldset">
+                      <legend class="form-legend">Kontakt</legend>
+
+                      <div class="form-body">
+                        <div class="form-row">
+                          <span class="form-label">Email</span>
+                          <input v-model="email" type="email" class="form-input" />
+                        </div>
+
+                        <div class="form-row">
+                          <span class="form-label">Telefon</span>
+                          <input v-model="telefon" type="tel" class="form-input" />
+                        </div>
+                      </div>
+                    </fieldset>
+
+                    <!-- Filialenfarbe -->
+                    <fieldset class="form-fieldset">
+                      <legend class="form-legend">Filialenfarbe</legend>
+
+                      <div class="form-body">
+                        <!-- Wrapper für Textfarbe im Hex-Feld -->
+                        <div class="colorpicker-darktext">
+                          <ColorPicker v-model="farbe" />
+                        </div>
+                      </div>
+                    </fieldset>
+                  </section>
+
+                  <!-- Linie -->
+                  <div class="bg-black/10 dark:bg-white/15"></div>
+
+                  <!-- RECHTS -->
+                  <section class="space-y-4 min-w-0">
+                    <!-- Adresse -->
+                    <fieldset class="form-fieldset">
+                      <legend class="form-legend">Adresse</legend>
+
+                      <div class="form-body">
+                        <div class="form-row">
+                          <span class="form-label">Straße</span>
+                          <input v-model="strasse" type="text" class="form-input" />
+                        </div>
+
+                        <div class="form-row">
+                          <span class="form-label">Ort</span>
+                          <input v-model="ort" type="text" class="form-input" />
+                        </div>
+
+                        <div class="form-row">
+                          <span class="form-label">Postleitzahl</span>
+                          <input v-model="plz" type="text" class="form-input" />
+                        </div>
+
+                        <div class="form-row">
+                          <span class="form-label">Land</span>
+                          <input v-model="land" type="text" class="form-input" />
+                        </div>
+                      </div>
+                    </fieldset>
+
+                    <!-- Algorithmus -->
+                    <fieldset class="form-fieldset">
+                      <legend class="form-legend">Algorithmus</legend>
+
+                      <div class="form-body">
+                        <div class="form-row">
+                          <span class="form-label">Auswahl</span>
+                          <div class="form-inputwrap">
+                            <Multiselect
+                              class="ms"
+                              v-model="algorithmid"
+                              :options="algorithmOptions"
+                              :multiple="false"
+                              :searchable="false"
+                              placeholder="Algorithmus wählen"
+                              selectLabel=""
+                              deselectLabel=""
+                              selectedLabel=""
+                              label="label"
+                              track-by="value"
+                            />
+                          </div>
+                        </div>
+
+                        <p v-if="algorithmFehler" class="form-error">
+                          Algorithmus ist erforderlich
+                        </p>
+                      </div>
+                    </fieldset>
+                  </section>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-
-        <form @submit.prevent="handleSubmit" class="space-y-6">
-          <!-- Filialname -->
-          <div class="space-y-1">
-            <input
-              v-model="filialname"
-              type="text"
-              placeholder="Name der Filiale"
-              class="w-full rounded-xl border border-white/10 bg-black/25
-                     px-4 py-4 text-white outline-none"
-            />
-            <p v-if="nameFehler" class="text-red-400 text-sm">
-              Filialenname ist erforderlich
-            </p>
-          </div>
-
-          <!-- LINKS | LINIE | RECHTS -->
-          <div class="mt-2 grid grid-cols-[1fr_1px_1fr] gap-10 text-base text-white/90">
-            <!-- LINKS -->
-            <section class="space-y-6">
-              <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
-                <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">
-                  Kontakt
-                </legend>
-
-                <div class="space-y-3">
-                  <div class="flex justify-between gap-4 items-center">
-                    <label class="text-sm font-semibold text-white/80">Telefon</label>
-                    <input
-                      v-model="telefon"
-                      type="text"
-                      placeholder="Telefon"
-                      class="w-64 rounded-lg border border-white/10 bg-black/25
-                             px-3 py-1 text-white outline-none ring-1 ring-transparent focus:ring-white/20 text-right"
-                    />
-                  </div>
-
-                  <div class="flex justify-between gap-4 items-center">
-                    <label class="text-sm font-semibold text-white/80">Email</label>
-                    <input
-                      v-model="email"
-                      type="text"
-                      placeholder="Email"
-                      class="w-64 rounded-lg border border-white/10 bg-black/25
-                             px-3 py-1 text-white outline-none text-right"
-                    />
-                  </div>
-                </div>
-              </fieldset>
-
-              <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
-                <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">
-                  Algorithmus
-                </legend>
-
-                <Multiselect
-                  v-model="algorithmid"
-                  :options="algorithmOptions"
-                  :multiple="false"
-                  placeholder="Algorithmus wählen"
-                  selectLabel=""
-                  deselectLabel=""
-                  selectedLabel=""
-                  label="label"
-                  track-by="value"
-                />
-                <p v-if="algorithmFehler" class="text-red-400 mt-2 text-sm">
-                  Algorithmus ist erforderlich
-                </p>
-              </fieldset>
-
-              <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
-                <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">
-                  Filialenfarbe
-                </legend>
-                <div class="mt-2">
-                  <ColorPicker v-model="farbe" />
-                </div>
-              </fieldset>
-            </section>
-
-            <!-- Linie -->
-            <div class="bg-white/15"></div>
-
-            <!-- RECHTS -->
-            <section class="space-y-6">
-              <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
-                <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">
-                  Adresse
-                </legend>
-
-                <div class="space-y-3">
-                  <div class="flex justify-between gap-4 items-center">
-                    <label class="text-sm font-semibold text-white/80">Straße</label>
-                    <input
-                      v-model="strasse"
-                      type="text"
-                      placeholder="Straße"
-                      class="w-64 rounded-lg border border-white/10 bg-black/25
-                             px-3 py-1 text-white outline-none ring-1 ring-transparent focus:ring-white/20 text-right"
-                    />
-                  </div>
-
-                  <div class="flex justify-between gap-4 items-center">
-                    <label class="text-sm font-semibold text-white/80">Ort</label>
-                    <input
-                      v-model="ort"
-                      type="text"
-                      placeholder="Ort"
-                      class="w-64 rounded-lg border border-white/10 bg-black/25
-                             px-3 py-1 text-white outline-none ring-1 ring-transparent focus:ring-white/20 text-right"
-                    />
-                  </div>
-
-                  <div class="flex justify-between gap-4 items-center">
-                    <label class="text-sm font-semibold text-white/80">Postleitzahl</label>
-                    <input
-                      v-model="plz"
-                      type="text"
-                      placeholder="Postleitzahl"
-                      class="w-64 rounded-lg border border-white/10 bg-black/25
-                             px-3 py-1 text-white outline-none ring-1 ring-transparent focus:ring-white/20 text-right"
-                    />
-                  </div>
-
-                  <div class="flex justify-between gap-4 items-center">
-                    <label class="text-sm font-semibold text-white/80">Land</label>
-                    <input
-                      v-model="land"
-                      type="text"
-                      placeholder="Land"
-                      class="w-64 rounded-lg border border-white/10 bg-black/25
-                             px-3 py-1 text-white outline-none ring-1 ring-transparent focus:ring-white/20 text-right"
-                    />
-                  </div>
-                </div>
-              </fieldset>
-
-              <fieldset class="rounded-2xl border border-white/10 bg-black/25 p-5">
-                <legend class="mb-3 text-xl font-semibold uppercase tracking-wide text-white/70">
-                  Anmerkungen
-                </legend>
-
-                <textarea
-                  rows="4"
-                  v-model="anmerkungen"
-                  class="w-full resize-none rounded-xl border border-white/10 bg-black/30
-                         p-3 text-white/90 outline-none ring-1 ring-transparent focus:ring-white/20"
-                />
-              </fieldset>
-            </section>
-          </div>
-        </form>
-      </div>
+      </article>
     </template>
 
-    <!-- Footer Slot -->
-    <!-- WHY: absichtlich leer, damit NICHT doppelte Buttons entstehen (Design hat Actions oben rechts). -->
     <template #footer></template>
   </BaseModal>
 </template>
+
+<style scoped>
+/* ====== gleiche Form-Klassen wie bei MitarbeiterCreate ====== */
+.form-fieldset{
+  border-radius: 1rem;
+  background: rgba(255,255,255,1);
+  padding: .75rem;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.10) inset;
+}
+:global(.dark) .form-fieldset{
+  background: rgba(0,0,0,.25);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.10) inset;
+}
+
+.form-legend{
+  font-size: .875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: rgb(82 82 91); /* zinc-600 */
+  padding: 0 .25rem;
+  margin-bottom: -0.75rem;
+}
+:global(.dark) .form-legend{
+  color: rgba(255,255,255,.70);
+}
+
+.form-body{
+  margin-top: .5rem;
+  display: grid;
+  gap: .5rem;
+}
+
+.form-row{
+  display: flex;
+  justify-content: space-between;
+  gap: .75rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.form-label{
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.form-inputwrap{
+  flex: 1 1 auto;
+  max-width: 220px;
+  min-width: 0;
+}
+
+.form-input{
+  height: 2.25rem; /* h-9 */
+  flex: 1 1 auto;
+  max-width: 220px;
+  min-width: 0;
+
+  border-radius: .75rem;
+  background: rgba(255,255,255,.70);
+  padding: 0 .75rem;
+  font-size: .875rem;
+  color: rgb(24 24 27);
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.10) inset;
+  text-align: right;
+}
+:global(.dark) .form-input{
+  background: rgba(0,0,0,.30);
+  color: rgba(255,255,255,.90);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.15) inset;
+}
+.form-input:focus{
+  box-shadow: 0 0 0 1px rgba(0,0,0,.20) inset;
+}
+:global(.dark) .form-input:focus{
+  box-shadow: 0 0 0 1px rgba(255,255,255,.30) inset;
+}
+
+.form-error{
+  font-size: .875rem;
+  color: rgb(248 113 113);
+}
+
+/* ====== WICHTIG: Farbcode-Text im grauen Feld schwarz ======
+   (ColorPicker hat idR ein Input – wir erzwingen schwarz) */
+.colorpicker-darktext :deep(input),
+.colorpicker-darktext :deep(textarea) {
+  color: #000 !important;
+}
+</style>

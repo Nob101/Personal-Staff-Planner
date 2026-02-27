@@ -65,7 +65,7 @@ const {
              bg-black/50 backdrop-blur-sm overflow-auto"
       @click.self="closeDetails"
     >
-      <div class="w-full max-w-6xl" @click.stop>
+      <div class="w-full max-w-[760px]" @click.stop>
         <button
           type="button"
           class="mb-4 font-sans text-white/80 hover:text-white

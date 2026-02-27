@@ -164,7 +164,7 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
       v-if="pickerOpen"
       class="absolute left-0 top-full mt-2 z-50 p-4
          rounded-xl
-         bg-linear-to-b from-zinc-600 to-zinc-900
+         bg-linear-to-b from-zinc-500 to-zinc-700
          border border-white/20
          shadow-2xl"
     >

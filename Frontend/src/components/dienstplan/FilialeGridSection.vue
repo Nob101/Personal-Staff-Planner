@@ -63,7 +63,7 @@ const localTyp = computed({
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-[1400px] px-4">
+  <div class="mx-auto w-full max-w-[1400px] px-6">
     <section
       class="rounded-3xl
              bg-white/70 dark:bg-zinc-900/50
@@ -73,7 +73,7 @@ const localTyp = computed({
       <!-- HEADER -->
       <div
         class="rounded-t-3xl
-               bg-linear-to-b from-zinc-200 to-zinc-300"
+               bg-linear-to-b from-zinc-300 to-zinc-400"
       >
         <div class="flex items-center justify-between gap-3 px-4 py-2">
           <!-- left -->
@@ -106,6 +106,7 @@ const localTyp = computed({
                     ring-1 ring-blue-600/30
                     shadow-sm
                     transition active:scale-[0.97]"
+              @click="onGenerateClick"
             >
               <span class="flex h-4 w-4 items-center justify-center">
                 <img
@@ -143,7 +144,7 @@ const localTyp = computed({
       </div>
 
       <!-- GRID -->
-      <div class="px-4 pt-2 pb-3 rounded-b-3xl bg-linear-to-b from-zinc-300 to-zinc-500">
+      <div class="px-4 pt-2 pb-3 rounded-b-3xl bg-linear-to-b from-zinc-400 to-zinc-600">
         <div class="overflow-x-auto rounded-2xl bg-white/55 ring-1 ring-black/10">
           <div
             class="grid gap-px p-2"
@@ -159,8 +160,8 @@ const localTyp = computed({
               :key="datum"
               class="h-8 rounded-lg bg-linear-to-b from-zinc-100 to-zinc-400 flex flex-col items-center justify-center text-[9px]"
             >
-              <div class="text-zinc-600">{{ dow(datum) }}</div>
-              <div class="font-semibold text-zinc-900">{{ day(datum) }}</div>
+              <div class="font-semibold text-zinc-600">{{ dow(datum) }}</div>
+              <div class="font-bold text-zinc-900">{{ day(datum) }}</div>
             </div>
 
             <!-- Rows -->
