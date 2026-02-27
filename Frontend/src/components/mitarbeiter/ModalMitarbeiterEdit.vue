@@ -140,7 +140,7 @@ function handleSubmit() {
       <!-- Card wie Mitarbeiter-Detail (gleich wie Create) -->
       <article
         class="mx-auto w-full max-w-[760px]
-               font-sans relative mt-16 rounded-3xl
+               font-sans relative rounded-3xl
                bg-white/70 dark:bg-zinc-900/50
                shadow-[0_16px_40px_rgba(0,0,0,0.4)]
                backdrop-blur overflow-hidden"
