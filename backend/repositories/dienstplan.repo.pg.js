@@ -182,6 +182,7 @@ async function findErsatzKandidatenByDienstId(dienstId) {
       m.nachname   AS "nachname",
       d2.fnr       AS "dienstFNr",
       f.filialname AS "dienstFilialname",
+      m.springer   AS "springer",
       d2.schicht_typ
     FROM dienstplaene d1
     JOIN dienstplaene d2 ON d2.datum = d1.datum
