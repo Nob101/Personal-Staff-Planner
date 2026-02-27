@@ -253,6 +253,5 @@ module.exports = {
   getByDate,
   dienstShiftTx,
   getByIdTx,
-  dienstShiftMitErsatzTx,
   findErsatzKandidatenByDienstId,
 };
