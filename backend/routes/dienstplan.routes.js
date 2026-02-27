@@ -317,7 +317,7 @@ router.post("/shiftMitErsatz", async (req, res) => {
     const updatedAlt = await dienstplanRepo.dienstShiftTx(client, altId, neuTypAltDienst);
 
     // 2) Neu-Dienst übernimmt Typ + Arbeitsfiliale vom Alt-Dienst
-    const updatedNeu = await dienstplanRepo.dienstShiftMitErsatzTx(
+    const updatedNeu = await dienstplanRepo.dienstShiftTx(
       client,
       neuId,
       neuTypErsatzDienst,

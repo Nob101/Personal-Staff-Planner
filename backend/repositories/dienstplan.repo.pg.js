@@ -123,18 +123,36 @@ async function getByIdTx(client, id) {
  * - vermeidet einen zusätzlichen SELECT nach dem UPDATE.
  */
 async function dienstShiftTx(client, id, schicht_typ, fnr) {
+
+  // Wenn fnr NICHT übergeben wurde → Filiale NICHT ändern
+  if (typeof fnr === "undefined") {
+    const r = await client.query(
+      `
+      UPDATE dienstplaene
+      SET schicht_typ = $2
+      WHERE id = $1
+      RETURNING id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung;
+      `,
+      [id, schicht_typ]
+    );
+    return r.rows[0] ?? null;
+  }
+
+  // Wenn fnr mitgegeben wurde → beides ändern (test)
   const r = await client.query(
     `
     UPDATE dienstplaene
     SET schicht_typ = $2,
-        fnr = $3 -- Arbeitsfiliale des ursprünglichen Dienstes übernehmen (Test)
+        fnr = $3
     WHERE id = $1
     RETURNING id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung;
     `,
     [id, schicht_typ, fnr]
   );
+
   return r.rows[0] ?? null;
 }
+
 /**
  * Spezial-Update für den Ersatzfall:
  * - Schichttyp wird gesetzt
@@ -143,19 +161,19 @@ async function dienstShiftTx(client, id, schicht_typ, fnr) {
  *
  * Auch hier: RETURNING liefert den fertigen Datensatz zurück.
  */
-async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
+/* async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
   const r = await client.query(
     `
     UPDATE dienstplaene
     SET schicht_typ = $2,
-        fnr = $3 
+        fnr = $3
     WHERE id = $1
     RETURNING id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung;
     `,
     [id, schicht_typ, fnr]
   );
   return r.rows[0] ?? null;
-}
+} */
 
 /**
  * Liefert mögliche Ersatz-Kandidaten für einen konkreten Dienst.
