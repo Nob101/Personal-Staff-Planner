@@ -7,7 +7,7 @@ import export_icon from "@/assets/icons/export_icon.svg";
 import generieren_icon from "@/assets/icons/generieren_icon.svg";
 import leeren_icon from "@/assets/icons/leeren_icon.svg";
 
-import { downloadDienstplanCsv } from "@/helpers/downloadDienstplanCsv.js";
+import { downloadDienstplanPdf } from "@/helpers/downloadDienstplanPdf.js";
 
 const props = defineProps({
   view: { type: Object, required: true },
@@ -36,17 +36,17 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "generateFiliale", "removeFiliale"]);
 
+// PDF Export Logik mit deiner ID-Anforderung
+async function onExportClick() {
+  await nextTick();
+  const elementId = `export-area-filiale-${props.filiale.fnr}`;
+  const dateiname = `Dienstplan_${props.filiale.filialname}_${props.monat}_${props.jahr}`;
+  await downloadDienstplanPdf(elementId, dateiname);
+}
+
 const maCount = computed(() =>
   props.mitarbeiterByFiliale(props.filiale.fnr).length
 );
-
-async function onExportClick() {
-  await downloadDienstplanCsv({
-    jahr: props.jahr,
-    monat: props.monat,
-    fnr: props.filiale.fnr,
-  });
-}
 
 function onGenerateClick() {
   emit("generateFiliale", { fnr: props.filiale.fnr, jahr: props.jahr, monat: props.monat });
@@ -68,7 +68,8 @@ function isSunday(datum) {
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-[1400px] px-6">
+  <div :id="`export-area-filiale-${filiale.fnr}`"
+    class="mx-auto w-full max-w-[1400px] px-6">
     <section
       class="rounded-3xl
              bg-white/70 dark:bg-zinc-900/50
