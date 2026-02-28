@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS dienstplaene (
     monat INTEGER NOT NULL,
     datum DATE NOT NULL,
 
-    --WICHTIG: RESTRICT verhindert, dass  Markus einen MA
+    --WICHTIG: RESTRICT verhindert Hard-Delete => (Soft-Delete)
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE RESTRICT,
     fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE RESTRICT,
     schicht_typ VARCHAR(6) REFERENCES arbeitstyp(akurzl) ON DELETE RESTRICT,

@@ -1,6 +1,7 @@
 /**#####################################################
  * Das Modul verwaltet die Initialisierung der Datenbank
  * --------------------
+ * Wichtig:
  * 
  * ABLAUF:
  * 1. Rollen-Check: Stellt sicher, dass die 'admin'-Rolle existiert.

@@ -66,18 +66,21 @@ if %retry_count% gtr 30 (
 )
 
 :: NEU: Statuscode speichern
+:: FIX: curl gibt status des Webbrowsers wieder. -k für http 
 set "status=000"
 for /f "delims=" %%i in ('curl -k -s -o /dev/null -w "%%{http_code}" https://localhost') do set "status=%%i"
 
 echo [INFO] Warte auf Server... (Status: %status%, Versuch: %retry_count%/30)
 
-:: Wenn 200 (OK) oder 502 (Nginx da, aber Node noch nicht), wissen wir: Nginx lebt!
+:: FIX: 200 (OK) oder 502 (Nginx da, aber Node noch nicht) -> Nginx lebt!
 if "%status%"=="200" goto :open_browser
 if "%status%"=="502" (
-    timeout /t 2 /nobreak >nul
-    goto :loop
+    echo [INFO] Nginx ist bereit -> backend (express)startet noch...
 )
-:: Falls der Server noch gar nicht reagiert (Status 000), weiter warten
+timeout /t 2 /nobreak >nul
+    goto :loop
+
+:: Falls  Server  nicht reagiert (Status 000), weiter warten
 timeout /t 2 /nobreak >nul
 goto :loop
 

@@ -60,11 +60,11 @@ x-logging: &default-logging
     # 1. docker-compose down 
     # 2. docker system prune -a --volumes   
     # 3. wsl --shutdown
-    # 4. optimize-vhd -Path "C:\Users\[DEIN_BENUTZERNAME]\AppData\Local\Docker\wsl\main\ext4.vhdx" -Mode Full
+    # 4. optimize-vhd -Path "C:\Users\[BENUTZERNAME]\AppData\Local\Docker\wsl\main\ext4.vhdx" -Mode Full
 
 # Die Befehle in Schritt 1 und 2 sorgen dafür, dass der Inhalt der virtuellen Festplatte gelöscht wird. 
 # Schritt 3 und 4 sorgen erst dafür, dass die Datei unter Windows tatsächlich wieder kleiner wird. 
-# Ohne Schritt 4 bleibt die Datei auf Windows-Ebene riesig, selbst wenn sie innen "leer" ist.
+# Ohne Schritt 4 bleibt die Datei auf Windows-Ebene 
 
 
 services:
