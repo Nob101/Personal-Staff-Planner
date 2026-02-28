@@ -34,7 +34,7 @@ function handleCancel() {
 
         <div class="flex justify-center gap-3">
           <button
-            class="min-w-[120px] rounded-xl bg-red-500/40 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 transition"
+            class="min-w-[120px] rounded-xl bg-linear-to-b from-red-500 to-red-900 hover:from-red-900 hover:to-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 transition"
             @click="handleConfirm"
             type="button"
           >
@@ -42,7 +42,7 @@ function handleCancel() {
           </button>
 
           <button
-            class="min-w-[120px] rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/15 transition"
+            class="min-w-[120px] rounded-xl bg-linear-to-b from-zinc-500 to-zinc-700 hover:from-zinc-700 hover:to-zinc-500 px-4 py-2 text-sm font-semibold text-white hover:bg-white/15 transition"
             @click="handleCancel"
             type="button"
           >

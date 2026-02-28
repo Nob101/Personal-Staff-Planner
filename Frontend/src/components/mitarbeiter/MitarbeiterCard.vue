@@ -251,7 +251,7 @@ function handleSelect() {
                       v-for="f in mitarbeiter.nebenfilialen"
                       :key="f.id"
                       class="rounded-full ring-1 ring-black/10 dark:ring-white/10
-                             bg-white/70 dark:bg-white/5
+                             bg-zinc-300 dark:bg-white/5
                              px-2.5 py-0.5 text-[11px]"
                     >
                       {{ f.name }}

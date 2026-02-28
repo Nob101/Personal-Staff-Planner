@@ -80,7 +80,7 @@ onBeforeUnmount(() => {
       'sticky top-12 z-50',
       'mx-auto w-full max-w-[1400px]',
       'grid grid-cols-3 items-center gap-4',
-      'px-8 pt-2 pb-1',
+      'px-10 pt-2 pb-1',
       'bg-white/80 dark:bg-zinc-900/70',
       'backdrop-blur',
       'transition-transform duration-200 ease-out will-change-transform',
@@ -92,7 +92,7 @@ onBeforeUnmount(() => {
       <button
         type="button"
         @click="emit('filialeCreate')"
-        class="inline-flex h-8 w-8 items-center justify-center rounded-xl
+        class="inline-flex h-10 w-10 items-center justify-center rounded-xl
                bg-linear-to-b from-emerald-300 to-emerald-900
                hover:from-emerald-900 hover:to-emerald-300
                ring-1 ring-emerald-600/30

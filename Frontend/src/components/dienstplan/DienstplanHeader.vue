@@ -87,7 +87,7 @@ onBeforeUnmount(() => {
       'sticky top-12 z-50',
       'mx-auto w-full max-w-[1400px]',
       'flex items-center justify-between gap-4',
-      'px-8 pt-2 pb-1',
+      'px-10 pt-2 pb-1',
       'bg-white/80 dark:bg-zinc-900/70',
       'backdrop-blur',
       'transition-transform duration-200 ease-out will-change-transform',
@@ -95,7 +95,7 @@ onBeforeUnmount(() => {
     ]"
   >
     <!-- LINKS: Datum / Monat -->
-    <div class="flex items-center gap-3 h-10">
+    <div class="flex items-center gap-5 h-10">
       <MonthPicker
         :jahr="jahr"
         :monat="monat"
@@ -156,10 +156,7 @@ onBeforeUnmount(() => {
     <!-- RECHTS: Globale Aktionen -->
     <div class="w-64 flex justify-end">
       <div
-        class="flex items-center gap-1 rounded-xl
-               bg-linear-to-b from-zinc-200 to-zinc-300 dark:bg-white/5
-               ring-1 ring-black/10 dark:ring-white/10
-               p-1"
+        class="flex items-center gap-1 rounded-xl p-1"
       >
         <!-- Generieren -->
         <button

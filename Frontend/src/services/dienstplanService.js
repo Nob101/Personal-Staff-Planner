@@ -7,12 +7,18 @@ export async function getDienstplanView(jahr, monat) {
   return res.data;
 }
  
-export async function generateDienstplan(jahr, monat, fnr) {
+/* export async function generateDienstplan(jahr, monat, fnr) {
   const res = await http.post("dienstplan/generate", {
     jahr,
     monat,
     fnr,
   });
+  return res.data;
+} */
+
+export async function generateDienstplan(jahr, monat, fnr) {
+  console.log("[POST] generate", { jahr, monat, fnr });
+  const res = await http.post("dienstplan/generate", { jahr, monat, fnr });
   return res.data;
 }
 

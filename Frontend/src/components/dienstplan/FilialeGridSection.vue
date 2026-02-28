@@ -60,6 +60,11 @@ const localTyp = computed({
   get: () => props.modelValue,
   set: (v) => emit("update:modelValue", v),
 });
+
+function isSunday(datum) {
+  // Annahme: datum ist ein ISO-String oder Date-kompatibel
+  return new Date(datum).getDay() === 0
+}
 </script>
 
 <template>
@@ -106,6 +111,7 @@ const localTyp = computed({
                     ring-1 ring-blue-600/30
                     shadow-sm
                     transition active:scale-[0.97]"
+              :disabled="loading"
               @click="onGenerateClick"
             >
               <span class="flex h-4 w-4 items-center justify-center">
@@ -148,7 +154,7 @@ const localTyp = computed({
         <div class="overflow-x-auto rounded-2xl bg-white/55 ring-1 ring-black/10">
           <div
             class="grid gap-px p-2"
-            :style="{ gridTemplateColumns: `minmax(0, 1fr) repeat(${view.tage.length}, 28px)` }"
+            :style="{ gridTemplateColumns: `minmax(0, 1fr) repeat(${view.tage.length}, 30px)` }"
           >
             <!-- Header -->
             <div class="h-8 flex font-sans items-center px-2 rounded-lg bg-linear-to-b from-zinc-100 to-zinc-400 text-sm font-bold">
@@ -158,7 +164,10 @@ const localTyp = computed({
             <div
               v-for="datum in view.tage"
               :key="datum"
-              class="h-8 rounded-lg bg-linear-to-b from-zinc-100 to-zinc-400 flex flex-col items-center justify-center text-[9px]"
+              class="h-8 rounded-lg flex flex-col items-center justify-center text-[9px]"
+              :class="isSunday(datum)
+                ? 'bg-linear-to-b from-zinc-100 to-zinc-600'
+                : 'bg-linear-to-b from-zinc-100 to-zinc-400'"
             >
               <div class="font-semibold text-zinc-600">{{ dow(datum) }}</div>
               <div class="font-bold text-zinc-900">{{ day(datum) }}</div>
@@ -175,13 +184,17 @@ const localTyp = computed({
                 </span>
                 <span class="flex-1"></span>
                 <span
-                  class="text-[11px] font-bold"
+                  class="inline-flex items-center justify-center
+                        min-w-11 h-6 px-2
+                        rounded-full
+                        bg-zinc-200
+                        text-[11px] font-extrabold tabular-nums"
                   :class="{
-                    'text-emerald-600': (stundenByMnr(m.mnr)?.differenz ?? 0) >= 0,
-                    'text-red-500': (stundenByMnr(m.mnr)?.differenz ?? 0) < 0,
+                    'text-emerald-700': (stundenByMnr(m.mnr)?.differenz ?? 0) >= 0,
+                    'text-red-600': (stundenByMnr(m.mnr)?.differenz ?? 0) < 0,
                   }"
                 >
-                  {{ stundenByMnr(m.mnr)?.differenz ?? "" }}
+                  {{ stundenByMnr(m.mnr)?.differenz ?? '' }}
                 </span>
               </div>
 
