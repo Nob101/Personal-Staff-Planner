@@ -11,7 +11,7 @@ const ALGORITHMEN = {
   2: ["A", "A", "A", "A", "F", "F", "E", "E", "E", "E","F", "F"],
 };
 
- 
+
 /**
  * Liefert das Schichtmuster (Algorithmus) für eine gegebene ID.
  *

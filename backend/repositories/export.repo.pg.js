@@ -3,7 +3,7 @@
 /**
  * Lukas
  * Wichitg: Dead-Code aus dem ersten Export in ein csv.file. Es bleibt zu dokumentations
- * Zwecken und für den Fall das der Bedarf an einen Export im CSV-Format entsteht.
+ * Zwecken und für den Fall, dass der Bedarf an einen Export im CSV-Format entsteht.
  * 
  */
 

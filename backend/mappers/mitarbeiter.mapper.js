@@ -343,7 +343,7 @@ function toFrontend(ma, filialen = []) {
    */
 // Debug
 // log -_-
- console.log("DB-DATA für MA:", ma.mnr, "Stunden-Feld:", ma.arbeitnehmertyp);
+//  console.log("DB-DATA für MA:", ma.mnr, "Stunden-Feld:", ma.arbeitnehmertyp);
   return {
     id: ma.mnr,
     mnr: ma.mnr,

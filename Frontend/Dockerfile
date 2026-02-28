@@ -5,7 +5,7 @@ FROM node:20-alpine
 # Arbeitsverzeichnis im Container (app DIR wird automatisch erstellt und führt COPY RUN usw. aus)
 WORKDIR /app
 
-# Installiere Abhängigkeiten (erst werden die abhängigkeiten überprüft, wenn bereits vorhanden wird npm install übersprungen)
+# Installiert Abhängigkeiten (erst werden die abhängigkeiten überprüft, wenn bereits vorhanden wird npm install übersprungen)
 COPY package*.json ./
 RUN npm install
 
@@ -26,7 +26,7 @@ CMD ["npm", "run", "dev", "--", "--host"]
 # Code-Änderungen in src werden wie gewohnt live übernommen. 
 
 
-# Nur bei neuen npm-Paketen müssen wir einmal neu bauen.
+# Nur bei neuen npm-Paketen müssen wir einmal neu bauen!!!!
 
     # Starten: Im Hauptordner docker-compose up tippen.
 

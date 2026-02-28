@@ -81,7 +81,7 @@ async function startApp() {
 
     // In Docker-Setups kann es passieren, dass die DB noch nicht bereit ist.
     // Diese kurze Verzögerung reduziert Startfehler (z.B. connection refused).
-    await new Promise((res) => setTimeout(res, 5000));
+    await new Promise((res) => setTimeout(res, 2000));
 
     await db.initDatabase();
 

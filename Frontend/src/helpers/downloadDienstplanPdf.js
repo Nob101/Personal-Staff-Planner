@@ -34,7 +34,7 @@ export async function downloadDienstplanPdf(elementId, filename) {
     document.body.appendChild(clone);
 
     try {
-        // Das Foto vom Klon machen ohne scale 2
+        // Das Foto vom Klon machen -> scale 2
         const dataUrl = await domtoimage.toPng(clone, {
             bgcolor: '#080808',
             quality: 1,
@@ -59,12 +59,12 @@ export async function downloadDienstplanPdf(elementId, filename) {
 
         const imgProps = pdf.getImageProperties(dataUrl);
         
-        // Ratio berechnen, damit es auf EINE Seite passt
+        // FIX: Ratio berechnen, damit es auf EINE Seite passt
         const ratio = Math.min(maxWidth / imgProps.width, maxHeight / imgProps.height);
         const finalWidth = imgProps.width * ratio;
         const finalHeight = imgProps.height * ratio;
 
-        // Bild einfügen mit den berechneten Maßen
+        // Wichtig: Bild einfügen mit den berechneten Maßen
         pdf.addImage(dataUrl, 'PNG', margin, margin, finalWidth, finalHeight);
         pdf.save(`${filename}.pdf`);
 
