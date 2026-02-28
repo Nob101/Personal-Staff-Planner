@@ -29,7 +29,7 @@ const strasse = ref('')
 const ort = ref('')
 const plz = ref('')
 const land = ref('')
-const farbe = ref('#ffffff')
+const farbe = ref('#12f3ef')
 const algorithmid = ref(null)
 
 // Validierungs-States
@@ -263,6 +263,20 @@ function resetFormFields() {
                           Algorithmus ist erforderlich
                         </p>
                       </div>
+                    </fieldset>
+                    <!-- Anmerkungen -->
+                    <fieldset class="form-fieldset">
+                      <legend class="form-legend">Anmerkungen</legend>
+
+                      <textarea
+                        rows="4"
+                        v-model="anmerkungen"
+                        class="w-full resize-none rounded-xl
+                               ring-1 ring-white/80 dark:ring-white/20
+                               bg-white/70 dark:bg-black/30
+                               p-2 text-sm text-zinc-900 dark:text-white/90
+                               outline-none"
+                      />
                     </fieldset>
                   </section>
                 </div>

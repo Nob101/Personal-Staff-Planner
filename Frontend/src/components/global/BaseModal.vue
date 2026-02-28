@@ -1,42 +1,46 @@
 <!-- BaseModal.vue -->
+<!-- Eine Vorlage für Modale mit Funktionen und Styling die bei allen Modalen verwendet werden sollen -->
 <script setup>
-import { defineProps, onMounted, onUnmounted, ref } from "vue";
-
-const emit = defineEmits(["close"]);
-
+import { defineProps, onMounted, onUnmounted, ref } from 'vue'
+ 
+const emit = defineEmits(['close'])
+ 
 const props = defineProps({
   show: { type: Boolean, required: true },
-  width: { type: String, default: "760px" }, 
-  closeOnEsc: { type: Boolean, default: true },
-});
-
-const mouseDownOutside = ref(false);
-
+  width: { type: String, default: '400px' },
+  closeOnEsc: { type: Boolean, default: true }
+})
+ 
+// Merkt sich, ob der Mausklick außerhalb des Modals gestartet wurde
+const mouseDownOutside = ref(false)
+ 
 function close() {
-  emit("close");
+  emit('close')
 }
-
+ 
+// ESC-Taste nur registrieren, wenn closeOnEsc true (ESC-Taste zum Schließen vom Modal)
 function handleEsc(e) {
-  if (e.key === "Escape") close();
+  if (e.key === 'Escape') close()
 }
-
+ 
+// Prüft beim Drücken der Maustaste, ob der Klick außerhalb des Modals beginnt
 function onMouseDown(e) {
-  // wichtig: overlay hat jetzt die klasse "modal-overlay"
-  mouseDownOutside.value = e.target.classList.contains("modal-overlay");
+  mouseDownOutside.value = e.target.classList.contains('modal-overlay')
 }
-
+ 
+// Modal nur schließen, wenn Maus auch außerhalb losgelassen wurde
 function onOverlayClick() {
-  if (mouseDownOutside.value) close();
-  mouseDownOutside.value = false;
+  if (mouseDownOutside.value) close()
+  mouseDownOutside.value = false
 }
-
+ 
 onMounted(() => {
-  if (props.closeOnEsc) window.addEventListener("keydown", handleEsc);
-});
-
+  if (props.closeOnEsc) window.addEventListener('keydown', handleEsc)
+})
+ 
 onUnmounted(() => {
-  if (props.closeOnEsc) window.removeEventListener("keydown", handleEsc);
-});
+  if (props.closeOnEsc) window.removeEventListener('keydown', handleEsc)
+})
 </script>
 <template>
   <teleport to="body">

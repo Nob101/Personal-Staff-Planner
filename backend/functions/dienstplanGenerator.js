@@ -91,6 +91,7 @@ async function generateDienstplan(year, month, fnr) {
     alleFilialen = [filiale];
   }
 
+
   // Neu-Generierung -> alte Stunden für Monat/Jahr entfernen.
   // (Die Dienste selbst werden später via savePlan neu geschrieben.)
   if (fnr) {

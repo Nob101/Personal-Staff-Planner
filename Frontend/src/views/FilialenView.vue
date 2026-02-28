@@ -11,12 +11,10 @@ import { useFilialen } from '@/composables/useFilialen'
 // Komponenten-Importe für die Filialen-Ansicht
 import FilialenActionBar from '@/components/filialen/FilialenActionBar.vue'
 import FilialenList from '@/components/filialen/FilialenList.vue'
+import FilialenCard from '@/components/filialen/FilialenCard.vue'
 import ModalFilialeCreate from '@/components/filialen/ModalFilialenCreate.vue'
 import ModalFilialeEdit from '@/components/filialen/ModalFilialenEdit.vue'
 import BestätigungsModal from '@/components/global/BestätigungsModal.vue'
-
-// (Design/Overlay): Detail-Card für Overlay
-import FilialenCard from '@/components/filialen/FilialenCard.vue'
 
 // Holt alle Daten, Funktionen und States aus dem Composable
 const {
