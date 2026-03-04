@@ -9,7 +9,7 @@ export async function downloadDienstplanPdf(elementId, filename) {
     clone.querySelectorAll('*').forEach(el => {
         el.style.boxShadow = 'none';
         el.style.ringWidth = '0';
-        el.style.border = '1px solid #939496';      // Ganz dünne, graue Standardlinie
+        el.style.border = ' #f8f9fa';      // Ganz dünne, graue Standardlinie
             el.style.backgroundImage = 'none';        // Keine Gradients
             el.style.backgroundColor = el.style.backgroundColor; // || 'white';
             el.style.color = 'black';               // Text immer schwarz
@@ -41,10 +41,11 @@ export async function downloadDienstplanPdf(elementId, filename) {
             scale: 2,
             width: 1600,
             height: clone.offsetHeight,
+            // FIX: Interaktive Elemente entfernen
             filter: (node) => {
                 const isButton = node.tagName === 'BUTTON';
                 const isNoExport = node.classList && node.classList.contains('no-export');
-                return !isButton && !isNoExport;
+                return !isButton && !isNoExport; 
             }
         });
 

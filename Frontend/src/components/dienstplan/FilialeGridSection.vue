@@ -52,16 +52,24 @@ const localTyp = computed({
   get: () => props.modelValue,
   set: (v) => emit("update:modelValue", v),
 });
+
+function isSunday(datum) {
+  // Annahme: datum ist ein ISO-String oder Date-kompatibel
+  return new Date(datum).getDay() === 0
+}
+
 </script>
 
 <template>
-  <div :id="`export-area-filiale-${filiale.fnr}`" class="mx-auto w-full max-w-[1400px] px-4 mb-8">
-    <section class="rounded-3xl bg-white/70 shadow-[0_16px_40px_rgba(0,0,0,0.2)] backdrop-blur overflow-hidden">
+  <div :id="`export-area-filiale-${filiale.fnr}`" 
+        class="mx-auto w-full max-w-[1400px] px-6">
+    <section class="rounded-3xl bg-white/70 shadow-[0_16px_40px_rgba(0,0,0,0.2)] backdrop-blur">
       
       <div class="bg-linear-to-b from-zinc-200 to-zinc-300 px-4 py-2 flex items-center justify-between gap-3">
         <div class="flex items-center gap-2">
           <span class="h-3 w-3 rounded-full ring-2 ring-white" :style="{ backgroundColor: filiale.farbe || '#999' }" />
           <div>
+            
             <div class="font-sans text-xl font-extrabold text-zinc-900">{{ filiale.filialname }}</div>
             <div class="text-[11px] text-zinc-600">{{ maCount }} Mitarbeiter</div>
           </div>
