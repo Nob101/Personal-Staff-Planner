@@ -16,8 +16,8 @@ const loginAllowness = (req, res, next) => {
     const session = sessionTrue.get(token);  //WICHTIG: mit get die new Map direkt ansprechen
 
     // NEU: Token prüfen
-        console.log("TOKEN:", token);
-        console.log("SESSION-MAP-TREFFER:", session);     
+        // console.log("TOKEN:", token);
+        // console.log("SESSION-MAP-TREFFER:", session);     
 
     if (token && session){
       const alterInStunden = (Date.now() - session.createdAt) / (1000 * 60 * 60);

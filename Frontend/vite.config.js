@@ -13,7 +13,7 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
-    port: 3000,
+    port: 5173,
     strictPort: true,       //Verhindert dass Vite auf andere Ports ausweicht
     host: true,           //Wichtig:verarbeitung Nginx Anfragen
     hmr: {
@@ -24,9 +24,17 @@ export default defineConfig({
       usePolling: true,       //NEU: Hilft in Docker-Umgebung änderungen zu erkennen 
     }
   },
+  proxy: {
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+        secure: false,
+      }
+    },
+  
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
-    },
-  },
-})
+    }
+  }
+});

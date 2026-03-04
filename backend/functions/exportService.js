@@ -4,6 +4,9 @@
  * Export json2csv  -> Excel Format der Zentrale !!!!
  * nimmt rohdaten aus der export.repo.pg.js und konvertiert diese zu csv
  * 
+ * Wichitg: Dead-Code aus dem ersten Export in ein csv.file. Es bleibt zu dokumentations
+ * Zwecken und für den Fall das der Bedarf an einen Export im CSV-Format entsteht.
+ * 
  */
 
 

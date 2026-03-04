@@ -19,11 +19,13 @@ EXPOSE 3001
 CMD ["npm", "run",  "devStart"]
 
 
-# Ich hab Docker für unsere DB-Anbindung fertiggemacht. In deinem Ordner liegt jetzt ein Dockerfile, dass deinen Node-Server 
-# in einer isolierten Box startet. 
+# für Alex:
+
+# Ich hab Docker für unsere DB-Anbindung fertiggemacht. In den Hauptordnern liegt jetzt jewiels ein Dockerfile
+# Startet in einer isolierten Box. 
 # Du musst lokal kein Postgres mehr konfigurieren, Docker regelt das Netzwerk zur DB automatisch.
 
-        # Start: Im Hauptordner docker-compose up (startet DB + dein Backend).
+        # Start: Im Hauptordner docker-compose up (startet DB + Backend-Container).
 
         # Code-Änderung: Wenn du in deinen Routes/Files was änderst, musst du aktuell den Container neu starten (außer bei nodemon).
 

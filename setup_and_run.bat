@@ -1,45 +1,28 @@
 @echo off   
-title Personal Staff Planner
 echo -------------------------------------
 echo PSP-Dienstplan: System check und start
 echo -------------------------------------
 
-::   Docker Status testen
-echo Pruefe Docker Desktop...
-docker info >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Docker Desktop laeuft nicht... Starte Anwendung...
-    start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe"
-    
-    goto :wait_docker
-) else (
-    echo Docker laeuft bereits.
-    goto :check_certs
-)
+:: NEU: Ladefenster starten mit timeout
+start /b powershell  -ExecutionPolicy Bypass -File "%~dp0gui.ps1"
+timeout /t 2 /nobreak >nul
 
-:wait_docker
-echo Warte auf Docker Daemon (Check alle 5s)...
+:: Docker Check & Start
 docker info >nul 2>&1
 if %errorlevel% neq 0 (
+    start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe"  
+
+    :wait_docker
     timeout /t 5 /nobreak >nul
-    goto :wait_docker
-)
-echo Docker ist nun bereit!
-
-:check_certs
-::  Existiert der certs ordner schon?
-if not exist "certs" (
-    echo erstelle Ordner fuer Zertifikate...
-    mkdir certs
+    docker info >nul 2>&1
+    if %errorlevel% neq 0 goto :wait_docker
 )
 
-::  ..und ob Datei darin existiert
-if exist "certs\cert.pem" (
-    echo Zertifikate sind bereits vorhanden.
-    goto :start_docker
-)
+:: Zertifikate & Container Start
+if not exist "certs" mkdir certs
+if exist "certs\cert.pem" if exist "certs\key.pem" goto :start_docker
 
-::  OpenSSL an 3 Stellen suchen: System, Git-Standard, oder Git-x86
+:: OpenSSL Suche
 set "OSSL=openssl"
 where openssl >nul 2>&1
 if %errorlevel% neq 0 (
@@ -48,39 +31,97 @@ if %errorlevel% neq 0 (
     ) else if exist "C:\Program Files (x86)\Git\usr\bin\openssl.exe" (
         set "OSSL=C:\Program Files (x86)\Git\usr\bin\openssl.exe"
     ) else (
-        echo FEHLER: openssl wurde nicht gefunden!
-        echo Installiere bitte Git for Windows.
-        pause
+        :: Abbruchbedingung: Falls OpenSSL fehlt
+        powershell -Command "Stop-Process -Name 'powershell' -Force" >nul 2>&1
+        msg * "FEHLER: OpenSSL wurde nicht gefunden! Bitte Git for Windows installieren."
         exit /b
     )
 )
 
-echo Erstelle Zertifikate mit: %OSSL%
-"%OSSL%" req -x509 -newkey rsa:4096 -keyout certs\key.pem -out certs\cert.pem -sha256 -days 365 -nodes -subj "/CN=localhost"
+"%OSSL%" req -x509 -newkey rsa:4096 -keyout certs\key.pem -out certs\cert.pem -sha256 -days 365 -nodes -subj "/CN=localhost" >nul 2>&1
 
-if %errorlevel% neq 0 (
-    echo FEHLER: OpenSSL fehlgeschlagen!
-    pause
-    exit /b
-)
-echo Zertifikate erfolgreich erstellt!
 
+:: NEU: Verbesserter Docker Startprozess
 :start_docker
-::  Docker ausfuehren
-echo Starte Docker-container...
-docker-compose up --build -d 
+echo [INFO] Pruefe Container-Status...
+:: Existiert Container ueberhaupt? (auch wenn sie gestoppt sind)
+docker compose ps -a | findstr "psp_backend" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [INFO] Erstmaliger Setup: Baue Images und starte Container...
+    docker compose up --build -d
+) else (
+    echo [INFO] Container vorhanden. Starte System...
+    :: NEU: Damit bei Änderungen im Image die Dockerfiles miteinbezogen werden
+    docker compose up  -d
+)
+:: NEU: curl ist schneller als ps (standard bei 10/11) NEU : Wartet bis Nginx wirklich antwortet!!!!! -_-
+:: Reverse_Proxy oft schneller als node.js antworten kann -> 200 und 502 abwarten (Endlosschleife verhinderen)
+set /a retry_count=0
 
-:: ...setTimeOut damit der Dienst verbindet wenn ALLE kontainer bereit sind
-timeout /t 15 /nobreak >nul
+:loop
+set /a retry_count+=1
+if %retry_count% gtr 30 (
+    echo [WARN] Server startet langsam. Oeffne Browser trotzdem...
+    goto :open_browser
+)
 
-echo -------------------------------------
-echo System ist online!
-echo Oeffne App unter https://localhost
-echo -------------------------------------
+:: NEU: Statuscode speichern
+:: FIX: curl gibt status des Webbrowsers wieder. -k für http 
+set "status=000"
+for /f "delims=" %%i in ('curl -k -s -o /dev/null -w "%%{http_code}" https://localhost') do set "status=%%i"
 
-:: Im Standard Browser mit URL-Input Tabs etc.
-:: start https://localhost
-:: App Modus Edge
-start msedge --app=https://localhost
+echo [INFO] Warte auf Server... (Status: %status%, Versuch: %retry_count%/30)
 
+:: FIX: 200 (OK) oder 502 (Nginx da, aber Node noch nicht) -> Nginx lebt!
+if "%status%"=="200" goto :open_browser
+if "%status%"=="502" (
+    echo [INFO] Nginx ist bereit -> backend (express)startet noch...
+)
+timeout /t 2 /nobreak >nul
+    goto :loop
+
+:: Falls  Server  nicht reagiert (Status 000), weiter warten
+timeout /t 2 /nobreak >nul
+goto :loop
+
+:open_browser
+::  Ladefenster schließen und App öffnen
+powershell -Command "Stop-Process -Name 'powershell' -Force" >nul 2>&1
+:: NEU: Browser suche über Pfad (Nutzt nur vorhandenen)
+
+:: Edge
+set "EDGE_PATH="
+if exist "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" set "EDGE_PATH=C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+if exist "C:\Program Files\Microsoft\Edge\Application\msedge.exe" set "EDGE_PATH=C:\Program Files\Microsoft\Edge\Application\msedge.exe"
+
+if defined EDGE_PATH (
+    start "" "%EDGE_PATH%" --app=https://localhost
+    exit
+)
+
+:: Chrome
+set "CHROME_PATH="
+if exist "C:\Program Files\Google\Chrome\Application\chrome.exe" set "CHROME_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe"
+if exist "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" set "CHROME_PATH=C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+if exist "%LocalAppData%\Google\Chrome\Application\chrome.exe" set "CHROME_PATH=%LocalAppData%\Google\Chrome\Application\chrome.exe"
+
+if defined CHROME_PATH (
+    start "" "%CHROME_PATH%" --app=https://localhost
+    exit
+)
+
+:: Mozilla (hat keine app Ansicht -> Kiosk alt +f4 um es zu beenden)
+:: und Mozilla müssen die Pfade angegeben werden
+
+set "FF_PATH="
+if exist "C:\Program Files\Mozilla Firefox\firefox.exe" set "FF_PATH=C:\Program Files\Mozilla Firefox\firefox.exe"
+if exist "C:\Program Files (x86)\Mozilla Firefox\firefox.exe" set "FF_PATH=C:\Program Files (x86)\Mozilla Firefox\firefox.exe"
+
+if defined FF_PATH (
+    start "" "%FF_PATH%" --new-window https://localhost
+    exit
+)
+
+:: Fallback, wenn kein Browser gefunden wird. Standardbrowser (Setting)
+start https://localhost
 pause
