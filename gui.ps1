@@ -1,8 +1,9 @@
 # Wichtig: Aktiviert das Design für Ladebalken
-[Windows.Forms.Application]::EnableVisualStyles()
+# [Windows.Forms.Application]::EnableVisualStyles()
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
+
 
 # NEU: HELFER für den Farbmix (Ladebalken)
 $code = @"
@@ -78,7 +79,7 @@ $bar = New-Object Windows.Forms.ProgressBar
 $bar.Location = New-Object Drawing.Point(35,255)
 $bar.Size = New-Object Drawing.Size(365,25)
 
-$bar.Style = 'Continous'  # Status des Ladebalken in Prozent
+$bar.Style = 'Continuous'  # Status des Ladebalken in Prozent
 $bar.Minimum = 0
 $bar.Maximum = 100
 $form.Controls.Add($bar)

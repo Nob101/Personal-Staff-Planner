@@ -74,6 +74,14 @@ services:
     container_name: psp_database
     restart: always
     logging: *default-logging
+    command: # WICHTIG: Vermeidung von Speicher-Bloat -> WAL-Dateien beim cleanup
+      - "postgres"
+      - "-c"
+      - "max_wal_size=512MB"
+      - "-c"
+      - "min_wal_size=80MB"
+      - "-c"
+      - "checkpoint_timeout=5min"  # Fals cleanup zu lange dauert
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}

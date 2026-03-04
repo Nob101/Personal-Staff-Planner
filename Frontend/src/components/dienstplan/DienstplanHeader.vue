@@ -125,7 +125,7 @@ onBeforeUnmount(() => {
       'sticky top-12 z-50',
       'mx-auto w-full max-w-[1400px]',
       'flex items-center justify-between gap-4',
-      'px-8 pt-1 pb-1',
+      'px-10 pt-2 pb-1',
       'bg-white/80 dark:bg-zinc-900/70',
       'backdrop-blur',
       'transition-transform duration-200 ease-out will-change-transform',
@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
     ]"
   >
     <!-- LINKS: Datum / Monat -->
-    <div class="flex items-center gap-3 h-10">
+    <div class="flex items-center gap-5 h-10">
       <MonthPicker
         :jahr="jahr"
         :monat="monat"
@@ -148,34 +148,57 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- MITTE: Filialen MultiSelect -->
-    <div class="w-75">
-      <Multiselect
-        class="ms"
-        :model-value="modelValue"
-        @update:model-value="val => emit('update:modelValue', val || [])"
-        :options="filialen"
-        :multiple="true"
-        :close-on-select="false"
-        :clear-on-select="false"
-        :preserve-search="true"
-        label="filialname"
-        track-by="fnr"
-        :placeholder="(modelValue && modelValue.length > 0) ? '' : 'Filialen auswählen'"
-        select-label=""
-        selected-label=""
-        deselect-label=""
-        :allow-empty="true"
+<div class="min-w-60">
+  <Multiselect
+    class="ms"
+    :model-value="modelValue"
+    @update:model-value="val => emit('update:modelValue', val || [])"
+    :options="filialen"
+    :multiple="true"
+    :searchable="false"
+    :close-on-select="false"
+    :clear-on-select="false"
+    label="filialname"
+    track-by="fnr"
+    :placeholder="(modelValue && modelValue.length > 0) ? '' : 'Filialen auswählen'"
+    select-label=""
+    selected-label=""
+    deselect-label=""
+    :allow-empty="true"
+  >
+    <!-- AUSGEWÄHLTE TAGS im Feld: nur Farbpunkte -->
+    <template #tag="{ option, remove }">
+      <span
+        class="inline-flex items-center justify-center
+               h-5 w-5 rounded-full
+               ring-1 ring-black/20 dark:ring-white/20"
+        :style="{ backgroundColor: option.farbe || '#ccc' }"
+        :title="option.filialname"
+        @mousedown.prevent
+        @click.stop="remove(option)"
       />
-    </div>
+    </template>
 
+    <!-- OPTIONEN im Dropdown: Punkt + Name -->
+    <template #option="{ option }">
+      <div class="flex items-center gap-2">
+        <span
+          class="h-3.5 w-3.5 rounded-full ring-1 ring-black/20 dark:ring-white/20"
+          :style="{ backgroundColor: option.farbe || '#ccc' }"
+        />
+        <span class="truncate">{{ option.filialname }}</span>
+      </div>
+    </template>
+  </Multiselect>
+</div>
+
+    
     <!-- RECHTS: Globale Aktionen -->
     <div class="w-64 flex justify-end">
       <div
-        class="flex items-center gap-1 rounded-xl
-               bg-linear-to-b from-zinc-200 to-zinc-300 dark:bg-white/5
-               ring-1 ring-black/10 dark:ring-white/10
-               p-1"
+        class="flex items-center gap-1 rounded-xl p-1"
       >
+
         <!-- Generieren -->
         <button
           class="inline-flex h-8 w-8 items-center justify-center rounded-xl
@@ -217,7 +240,7 @@ onBeforeUnmount(() => {
                  shadow-sm
                  transition active:scale-[0.97] disabled:opacity-50"
           :disabled="loading || !hasView"
-          title="Alle Filialen als CSV exportieren"
+          title="Alle Filialen als PDF exportieren"
           @click="exportAlleFilialen"
           type="button"
         >

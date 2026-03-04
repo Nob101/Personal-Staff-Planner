@@ -27,29 +27,26 @@ const deleteOldShifts = async () => {
             DELETE FROM dienstplaene
             WHERE datum < CURRENT_DATE - INTERVAL '13 months';
         `) ;
-
-        // NEU: Inaktive MA löschen EXISTS macht es 'fehlerfrei'
+                console.log(`Bereinigung: ${shiftDelete.rowCount} alte Schichten entfernt.`);
+        // NEU: Inaktive MA löschen EXISTS macht es 'fehlerfrei' 
            const maDelete = await client.query(`
                 DELETE FROM mitarbeiter 
                 WHERE aktiv = FALSE 
                 AND NOT EXISTS (SELECT 1 FROM dienstplaene WHERE mnr = mitarbeiter.mnr);
-            `);     
+            `);
+
+            console.log(`Bereinigung: ${maDelete.rowCount} alte Schichten entfernt.`);
             // Inaktive Filailen löschen
             const filialeDelete = await client.query(`
                 DELETE FROM filiale 
                 WHERE aktiv = FALSE 
                 AND NOT EXISTS (SELECT 1 FROM dienstplaene WHERE fnr = filiale.fnr);
             `);
-
+            console.log(`Bereinigung: ${filialeDelete.rowCount} alte Schichten entfernt.`);
             await client.query('COMMIT');
-
-
-       
         } else {
             console.log(`Cleanup übersprungen: Aktuell nur ${totalRows} Zeilen.`);
         }
-
-       
     } catch (err) {
         await client.query('ROLLBACK');
         console.error('Fehler beim automatischen Cleanup (Rollback ausgeführt):', err.message);

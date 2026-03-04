@@ -112,7 +112,7 @@ if defined CHROME_PATH (
 
 :: Mozilla (hat keine app Ansicht -> Kiosk alt +f4 um es zu beenden)
 :: und Mozilla müssen die Pfade angegeben werden
-:: häufigste Standard-Pfade sind....
+
 set "FF_PATH="
 if exist "C:\Program Files\Mozilla Firefox\firefox.exe" set "FF_PATH=C:\Program Files\Mozilla Firefox\firefox.exe"
 if exist "C:\Program Files (x86)\Mozilla Firefox\firefox.exe" set "FF_PATH=C:\Program Files (x86)\Mozilla Firefox\firefox.exe"
@@ -124,4 +124,4 @@ if defined FF_PATH (
 
 :: Fallback, wenn kein Browser gefunden wird. Standardbrowser (Setting)
 start https://localhost
-exit
+pause
