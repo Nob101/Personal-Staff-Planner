@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS mitarbeiter (
     -- NEU: Anmerkung zu MA
     anmerkung VARCHAR(250),
     counter INTEGER DEFAULT 0,
-    arbeitnehmertyp INTEGER DEFAULT 40,
+    arbeitnehmertyp DECIMAL(10,2) DEFAULT 40,
     springeralgorithmid INTEGER,
     springer BOOLEAN DEFAULT FALSE,
     -- NEU:Aktive MA logik      Im Backend     UPDATE mitarbeiter SET aktiv = FALSE WHERE mnr = 5;   zB über die Route const kuendigt_MA
