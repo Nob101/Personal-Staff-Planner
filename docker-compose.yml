@@ -124,8 +124,8 @@ services:
     deploy:                 # <- NEU: Leistungsbegränzer verhindert einen Absturzt (Endlosschleife)
       resources:
         limits:
-          cpus: '1'         # Ein Kern der CPU
-          memory: 2G        # Maximum / Limit
+          cpus: '3'         # Ein Kern der CPU
+          memory: 1.5G        # Maximum / Limit
         reservations:
           memory: 512M      # Garantierter Speicher 
 
@@ -145,6 +145,7 @@ services:
     environment:
       # Für den fall, dass Vue wissen muss, wo das Backend läuft: 3001  !!!
       - VITE_API_URL=/api
+      - WATCHPACK_POLLING=true  # NEU: für Raspberry PI damit schickt vite nur geänderte Bewegungsdateien
     depends_on:
       - psp_backend
 
