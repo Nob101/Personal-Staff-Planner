@@ -1,18 +1,97 @@
-/* Tailwind Installation nach https://tailwindcss.com/docs/installation/using-vite */
-/* VS Code Extension:  Tailwind CSS IntelliSense nach https://tailwindcss.com/docs/editor-setup */
-
+/* Tailwind */
 @import "tailwindcss";
+@import "vue-multiselect/dist/vue-multiselect.css";
 
-body {
-    font-family: 'Times New Roman', Times, serif;
-    line-height: 1.5;
+
+/* =========================================================
+   MULTISELECT (.ms) – FINAL CLEAN VERSION
+   Ziele:
+   - Höhe: 40px
+   - grauer Gradient (zinc-200 → zinc-300)
+   - Text/Placeholder sauber vertikal mittig
+   - Multi-Select: Tags bleiben in EINER Zeile (horizontal scroll)
+   - Dropdown ist OVERLAY (macht das Modal NICHT höher)
+   - Dropdown unten wirklich RUND (keine eckigen Ecken)
+   ========================================================= */
+
+/* Pointer überall */
+.ms,
+.ms * {
+  cursor: pointer;
 }
 
-button {
-  @apply px-4 py-2 rounded-lg font-medium text-center 
-         border border-black
-         transition duration-200
-         shadow-sm
-         hover:shadow-md
-         cursor-pointer;
+/* Root: Anker für absolutes Dropdown */
+.ms.multiselect {
+  position: relative !important;
+  min-height: 40px !important;
+  border-radius: 0.75rem !important; /* rounded-xl */
+  background: transparent !important;
+  z-index: 10;
+}
+
+/* Tags/Field */
+.ms .multiselect__tags {
+  height: 40px !important;
+  min-height: 40px !important;
+
+  padding: 0 44px 0 12px !important; /* Platz für Pfeil */
+  box-sizing: border-box;
+
+  border-radius: 0.75rem !important;
+  overflow: hidden !important; /* wichtig: sauber rund */
+
+  background: linear-gradient(
+    to bottom,
+    rgb(228 228 231), /* zinc-200 */
+    rgb(212 212 216)  /* zinc-300 */
+  ) !important;
+
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Entfernt weiße Innenflächen */
+.ms .multiselect__single,
+.ms .multiselect__placeholder,
+.ms .multiselect__input,
+.ms .multiselect__tags-wrap {
+  background: transparent !important;
+}
+
+/* Placeholder + Single Text */
+.ms .multiselect__single,
+.ms .multiselect__placeholder {
+  margin: 0 !important;
+  padding: 0 !important;
+
+  font-size: 0.875rem !important;
+  color: rgb(60, 60, 60) !important;
+
+  display: flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+/* Input (wenn searchable=true) */
+.ms .multiselect__input {
+  margin: 0 !important;
+  padding: 0 !important;
+
+  font-size: 0.875rem !important;
+  color: rgb(60, 60, 60) !important;
+
+  line-height: 1 !important;
+}
+
+/* SINGLE: minimal tiefer, damit’s optisch perfekt mittig wirkt */
+.ms.multiselect--single .multiselect__single,
+.ms.multiselect--single .multiselect__placeholder {
+  position: relative;
+  top: 1px;
+}
+
+/* MULTI: Tags NICHT umbrechen -> EINZEILIG + horizontal scroll */
+.ms.multiselect--multiple .multiselect__tags {
+  flex-wrap: nowrap !important;
 }

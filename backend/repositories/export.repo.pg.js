@@ -20,11 +20,6 @@ const query = `
             m.nachname, 
             m.vorname, 
             to_char(d.datum::date, 'DD.MM.YYYY') AS datum,
-<<<<<<< HEAD
-            d.schicht_typ AS kürzel,                         
-            m.arbeitnehmertyp AS wochenstunden,             
-            sk.differenz AS saldo                           
-=======
             d.schicht_typ AS kürzel             --  Kürzel für das Excel-Layout
 >>>>>>> 0ab0c04 (backend_inkl.users)
     
