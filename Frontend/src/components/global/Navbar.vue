@@ -29,13 +29,12 @@ console.log("Navbar mounted, isDark:", isDark.value)
 <header
   class="sticky top-0 z-10000
          border-b border-black/10 dark:border-white/10
-         bg-linear-to-b from-zinc-400 to-white
+         bg-linear-to-b from-zinc-500 to-zinc-700
          dark:from-zinc-700/70 dark:to-zinc-900/80
          backdrop-blur supports-backdrop-filter:bg-white/60"
 >
   <div
-    class="mx-auto flex h-12 w-full max-w-[1400px]
-           items-center justify-between px-3"
+    class="relative mx-auto flex h-12 w-full max-w-[1400px] items-center px-3"
   >
 
     <!-- Logo -->
@@ -48,17 +47,20 @@ console.log("Navbar mounted, isDark:", isDark.value)
     </div>
 
     <!-- Navigation -->
-    <nav class="flex items-center gap-3">
+    <nav class="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
       <RouterLink
         to="/dienstplaene"
         class="flex items-center gap-1.5 px-2.5 py-1.5
-               text-base font-medium
-               text-zinc-700 dark:text-white/70
-               border-b-2 border-transparent
-               hover:border-zinc-400 dark:hover:border-white/60
-               hover:text-zinc-900 dark:hover:text-white
-               transition-colors"
-        active-class="border-zinc-900 text-zinc-900 dark:border-white dark:text-white"
+              text-base font-medium
+              border-b-2 border-transparent
+              transition-colors
+
+              text-zinc-100 dark:text-white/70
+              hover:text-white dark:hover:text-white
+              hover:border-white dark:hover:border-white/60
+
+              aria-[current=page]:text-white dark:aria-[current=page]:text-white
+              aria-[current=page]:border-white dark:aria-[current=page]:border-white/60"
       >
         <img :src="dienstplaene_icon" class="h-5 w-5 -ml-0.5" />
         <span>Dienstpläne</span>
@@ -67,28 +69,34 @@ console.log("Navbar mounted, isDark:", isDark.value)
       <RouterLink
         to="/mitarbeiter"
         class="flex items-center gap-1.5 px-2.5 py-1.5
-               text-base font-medium
-               text-zinc-700 dark:text-white/70
-               border-b-2 border-transparent
-               hover:border-zinc-400 dark:hover:border-white/60
-               hover:text-zinc-900 dark:hover:text-white
-               transition-colors"
-        active-class="border-zinc-900 text-zinc-900 dark:border-white dark:text-white"
+              text-base font-medium
+              border-b-2 border-transparent
+              transition-colors
+
+              text-zinc-100 dark:text-white/70
+              hover:text-white dark:hover:text-white
+              hover:border-white dark:hover:border-white/60
+
+              aria-[current=page]:text-white dark:aria-[current=page]:text-white
+              aria-[current=page]:border-white dark:aria-[current=page]:border-white/60"
       >
-        <img :src="mitarbeiter_icon" class="h-5 w-5 -ml-0.5" />
+        <img :src="mitarbeiter_icon" class="h-5 w-5" />
         <span>Mitarbeiter</span>
       </RouterLink>
 
       <RouterLink
         to="/filialen"
         class="flex items-center gap-1.5 px-2.5 py-1.5
-               text-base font-medium
-               text-zinc-700 dark:text-white/70
-               border-b-2 border-transparent
-               hover:border-zinc-400 dark:hover:border-white/60
-               hover:text-zinc-900 dark:hover:text-white
-               transition-colors"
-        active-class="border-zinc-900 text-zinc-900 dark:border-white dark:text-white"
+              text-base font-medium
+              border-b-2 border-transparent
+              transition-colors
+
+              text-zinc-100 dark:text-white/70
+              hover:text-white dark:hover:text-white
+              hover:border-white dark:hover:border-white/60
+
+              aria-[current=page]:text-white dark:aria-[current=page]:text-white
+              aria-[current=page]:border-white dark:aria-[current=page]:border-white/60"
       >
         <img :src="filialen_icon" class="h-5 w-5 -ml-0.5" />
         <span>Filialen</span>
@@ -97,37 +105,24 @@ console.log("Navbar mounted, isDark:", isDark.value)
       <RouterLink
         to="/benutzer"
         class="flex items-center gap-1.5 px-2.5 py-1.5
-               text-base font-medium
-               text-zinc-700 dark:text-white/70
-               border-b-2 border-transparent
-               hover:border-zinc-400 dark:hover:border-white/60
-               hover:text-zinc-900 dark:hover:text-white
-               transition-colors"
-        active-class="border-zinc-900 text-zinc-900 dark:border-white dark:text-white"
+              text-base font-medium
+              border-b-2 border-transparent
+              transition-colors
+
+              text-zinc-100 dark:text-white/70
+              hover:text-white dark:hover:text-white
+              hover:border-white dark:hover:border-white/60
+
+              aria-[current=page]:text-white dark:aria-[current=page]:text-white
+              aria-[current=page]:border-white dark:aria-[current=page]:border-white/60"
       >
         <img :src="benutzer_icon" class="h-5 w-5 -ml-0.5" />
         <span>Benutzer</span>
       </RouterLink>
     </nav>
 
-    <!-- Darkmode -->
-    <div class="flex items-center">
-      <button
-        @click="toggle"
-        class="h-7 px-2.5 rounded-lg font-medium transition
-               bg-black/10 dark:bg-black/30
-               text-zinc-900 dark:text-white/90
-               ring-1 ring-black/10 dark:ring-white/15
-               hover:bg-black/20 dark:hover:bg-black/40"
-      >
-        <img
-          :src="isDark ? mond_icon : sonne_icon"
-          class="h-4 w-4"
-        />
-      </button>
-    </div>
-
   </div>
 </header>
 </template>
+
 

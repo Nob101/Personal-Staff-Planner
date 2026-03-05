@@ -1,7 +1,6 @@
 /**#####################################################
  * Das Modul verwaltet die Initialisierung der Datenbank
  * --------------------
- * Wichtig:
  * 
  * ABLAUF:
  * 1. Rollen-Check: Stellt sicher, dass die 'admin'-Rolle existiert.
@@ -56,7 +55,7 @@ async function initDatabase() {
     
 
         console.log("--- DB-Initialisierung gestartet ---");
-        // im Do Block da Postgres kein Create Role if not Exists kennt (nicht in der userTabelle)
+        // im Do Block, da Postgres kein Create Role if not Exists kennt (nicht in der userTabelle)
         // admin hat Superuser Rechte (Create, Delete, usw. DB) '%L' verhindert das Sonderzeichen im Passwort das SQL-Kommando zerstört
         await client.query(`
             DO $$

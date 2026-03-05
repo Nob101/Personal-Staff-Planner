@@ -122,16 +122,34 @@ async function getByIdTx(client, id) {
  * - liefert den aktualisierten Datensatz direkt zurück
  * - vermeidet einen zusätzlichen SELECT nach dem UPDATE.
  */
-async function dienstShiftTx(client, id, schicht_typ) {
+async function dienstShiftTx(client, id, schicht_typ, fnr) {
+
+  // Wenn fnr NICHT übergeben wurde → Filiale NICHT ändern
+  if (typeof fnr === "undefined") {
+    const r = await client.query(
+      `
+      UPDATE dienstplaene
+      SET schicht_typ = $2
+      WHERE id = $1
+      RETURNING id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung;
+      `,
+      [id, schicht_typ]
+    );
+    return r.rows[0] ?? null;
+  }
+
+  // Wenn fnr mitgegeben wurde → beides ändern (test)
   const r = await client.query(
     `
     UPDATE dienstplaene
-    SET schicht_typ = $2
+    SET schicht_typ = $2,
+        fnr = $3
     WHERE id = $1
     RETURNING id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung;
     `,
-    [id, schicht_typ]
+    [id, schicht_typ, fnr]
   );
+
   return r.rows[0] ?? null;
 }
 
@@ -143,7 +161,7 @@ async function dienstShiftTx(client, id, schicht_typ) {
  *
  * Auch hier: RETURNING liefert den fertigen Datensatz zurück.
  */
-async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
+/* async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
   const r = await client.query(
     `
     UPDATE dienstplaene
@@ -155,7 +173,7 @@ async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
     [id, schicht_typ, fnr]
   );
   return r.rows[0] ?? null;
-}
+} */
 
 /**
  * Liefert mögliche Ersatz-Kandidaten für einen konkreten Dienst.
@@ -174,7 +192,7 @@ async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
  *   als ein Join auf die Nebenfilialen-Tabelle mit potenziellen Duplikaten.
  */
 async function findErsatzKandidatenByDienstId(dienstId) {
-   const q = `
+  const q = `
     SELECT
       d2.id        AS "dienstId",
       d2.mnr       AS "mnr",
@@ -182,6 +200,7 @@ async function findErsatzKandidatenByDienstId(dienstId) {
       m.nachname   AS "nachname",
       d2.fnr       AS "dienstFNr",
       f.filialname AS "dienstFilialname",
+      m.springer   AS "springer",
       d2.schicht_typ
     FROM dienstplaene d1
     JOIN dienstplaene d2 ON d2.datum = d1.datum
@@ -223,6 +242,7 @@ async function findErsatzKandidatenByDienstId(dienstId) {
       )
     ORDER BY m.nachname, m.vorname;
   `;
+
   const r = await pool.query(q, [dienstId]);
   return r.rows;
 }
@@ -233,6 +253,5 @@ module.exports = {
   getByDate,
   dienstShiftTx,
   getByIdTx,
-  dienstShiftMitErsatzTx,
   findErsatzKandidatenByDienstId,
 };

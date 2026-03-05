@@ -54,9 +54,10 @@ const emit = defineEmits(['select', 'edit', 'delete'])
       :mitarbeiter="m"
       :filialen="filialen"
       variant="list"
-      @select="(m2) => emit('select', m2)"
+      @select="() => emit('select', m)"
       @edit="() => emit('edit', m)"
       @delete="() => emit('delete', m)"
     />
   </div>
 </template>
+

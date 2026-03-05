@@ -4,5 +4,5 @@
 # Dieser Ordner muss für Git erhalten bleiben,
 # damit die Datenbank-Struktur (Bind-Mount) funktioniert.
 
-# Die echten Daten werden per .gitignore weiterhin ausgeschlossen/ignoriert.
+# Die echten Daten werden per .gitignore ausgeschlossen.
 

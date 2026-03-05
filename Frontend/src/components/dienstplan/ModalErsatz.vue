@@ -107,12 +107,12 @@ watch(
     <!-- Modal-Container (verschiebbar) -->
     <div
       ref="modalEl"
-      class="absolute w-[520px] max-w-[94vw] rounded-2xl border border-white/10 bg-linear-to-b from-zinc-600 to-zinc-900 text-white shadow-2xl"
+      class="absolute w-[520px] max-w-[94vw] rounded-2xl border border-white/10 bg-linear-to-b from-zinc-500 to-zinc-800 text-white shadow-2xl"
       :style="{ left: pos.x + 'px', top: pos.y + 'px' }"
     >
       <!-- HEADER (drag handle) -->
       <div
-        class="px-3 py-2 border-b border-white/10 flex items-center justify-between cursor-move select-none"
+        class="px-3 py-2 border-b border-white/10 flex items-center justify-between cursor-pointer select-none"
         @mousedown="startDrag"
       >
         <div class="font-semibold text-sm">
@@ -125,7 +125,7 @@ watch(
         <!-- Wichtig: stop, damit Drag nicht startet, wenn man Button klickt -->
         <button
           class="px-2 py-1 text-xs rounded-lg
-          bg-linear-to-b from-red-300 to-red-900 hover:from-red-900 hover:to-red-300"
+          bg-linear-to-b from-red-500 to-red-900 hover:from-red-900 hover:to-red-500"
           @mousedown.stop
           @click.stop="emit('close')"
         >
@@ -172,12 +172,13 @@ watch(
                 >
                   <td class="px-2 py-2">
                     {{ k.vorname }} {{ k.nachname }}
+                    <span v-if="k.springer" class="text-amber-400 font-bold ml-1">*</span>
                   </td>
-                  <td class="px-2 py-2 text-white/70">Frei (F)</td>
+                  <td class="px-2 py-2 text-white/70">{{ k.schicht_typ }} (Filiale {{ k.dienstFilialname }})</td>
                   <td class="px-2 py-2 text-right">
                     <button
-                      class="px-2.5 py-1 text-xs rounded-lg bg-linear-to-b from-blue-300 to-blue-900
-                    hover:from-blue-900 hover:to-blue-300"
+                      class="px-2.5 py-1 text-xs rounded-lg bg-linear-to-b from-blue-500 to-blue-900
+                    hover:from-blue-900 hover:to-blue-500"
                       @click="emit('pick', k)"
                     >
                       wählen

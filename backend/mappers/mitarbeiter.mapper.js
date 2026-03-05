@@ -81,11 +81,13 @@ function fromFrontendPatch(b) {
    * Kann unter arbeitnehmertyp oder arbeitsstunden kommen.
    * -> Normalisierung auf arbeitnehmertyp (Number oder null)
    */
-
- // NEU: Patch-Logik für Arbeitsstunden ohne harten 40er-Zwang
   if (has(b, "arbeitnehmertyp") || has(b, "arbeitsstunden")) {
-    const raw = b.arbeitsstunden ?? b.arbeitnehmertyp;
-    if (raw !== undefined && raw !== null) out.arbeitnehmertyp = Number(raw);
+    const at =
+      Number.isFinite(Number(b.arbeitnehmertyp)) ? Number(b.arbeitnehmertyp) :
+      Number.isFinite(Number(b.arbeitsstunden))  ? Number(b.arbeitsstunden) :
+      null;
+
+    out.arbeitnehmertyp = at;
   }
 
   if (has(b, "strasse") || has(b, "postleitzahl") || has(b, "ort") || has(b, "land")) {
@@ -201,25 +203,11 @@ function fromFrontend(b) {
    * DB: arbeitnehmertyp
    * -> Default 40, wenn kein gültiger Wert vorhanden ist.
    */
-
-  // NEU: Erst Wert suchen, danach validieren
-  const rawValue = (b.arbeitsstunden !== undefined && b.arbeitsstunden !== null && b.arbeitsstunden !== '')
-                    ? b.arbeitsstunden 
-                    : b.arbeitnehmertyp;
-
-  const numericValue = Number(rawValue);
-  const arbeitnehmertyp = Number.isFinite(numericValue) ? numericValue : 40;
-
-
-
-  // const arbeitnehmertyp = Number.isFinite(Number(b.arbeitnehmertyp))
-  //   ? Number(b.arbeitnehmertyp)
-  //   : Number.isFinite(Number(b.arbeitsstunden))
-  //   ? Number(b.arbeitsstunden)
-  //   : 40;
-
-
-
+  const arbeitnehmertyp = Number.isFinite(Number(b.arbeitnehmertyp))
+    ? Number(b.arbeitnehmertyp)
+    : Number.isFinite(Number(b.arbeitsstunden))
+    ? Number(b.arbeitsstunden)
+    : 40;
 
   /**
    * Kontakt:
@@ -290,8 +278,6 @@ function fromFrontend(b) {
  * ============================================================================
  */
 function toFrontend(ma, filialen = []) {
-
- 
   /**
    * Map (fnr -> Filiale):
    * Warum Map?
@@ -341,9 +327,6 @@ function toFrontend(ma, filialen = []) {
    * Ergebnisobjekt (Frontend-DTO):
    * Felder entsprechen den UI-Formularfeldern (flach).
    */
-// Debug
-// log -_-
-//  console.log("DB-DATA für MA:", ma.mnr, "Stunden-Feld:", ma.arbeitnehmertyp);
   return {
     id: ma.mnr,
     mnr: ma.mnr,
@@ -361,7 +344,7 @@ function toFrontend(ma, filialen = []) {
     postleitzahl: ma.kontakt?.plz ?? "",
     land: ma.kontakt?.land ?? "",
 
-    arbeitsstunden: Number(ma.arbeitnehmertyp) || 40,
+    arbeitsstunden: ma.arbeitnehmertyp ?? null,
     springer: !!ma.springer,
 
     aktiv: !!ma.aktiv,

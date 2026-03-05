@@ -6,6 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
@@ -25,21 +26,13 @@ export default defineConfig({
       clientPort: 443         // Wichtig: Der Browser "denkt", der WebSocket liegt auf 443
     },
     watch: {
-      usePolling: true,       //NEU: Hilft in Docker-Umgebung änderungen zu erkennen 
+      usePolling: true,       //NEU: Hilft in Docker-Umgebung änderungen zu erkennen
     }
   },
-  resolve: {
+ 
+     resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
-    proxy: {
-      "/api": {
-        target: "http://localhost:3001",
-        changeOrigin: true,
-        secure: false,
-      },
-    }
   }
 });
-
-
