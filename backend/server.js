@@ -65,6 +65,9 @@ app.use("/api/dienstplan", dienstplanRouter);
 const exportRouter = require("./routes/export.routes.js");
 app.use("/api/download", exportRouter);
 
+const usersRouter = require("./routes/users.routes");
+app.use("/api/users", usersRouter);
+
 // ============================================================================
 // Startlogik
 // ----------------------------------------------------------------------------
