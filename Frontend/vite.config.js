@@ -29,16 +29,10 @@ export default defineConfig({
       usePolling: true,       //NEU: Hilft in Docker-Umgebung änderungen zu erkennen
     }
   },
-  resolve: {
+ 
+     resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
-    proxy: {
-      "/api": {
-        target: "http://localhost:3001",
-        changeOrigin: true,
-        secure: false,
-      },
-    }
   }
 });
