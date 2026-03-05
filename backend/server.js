@@ -62,8 +62,8 @@ const dienstplanRouter = require("./routes/dienstplan.routes");
 app.use("/api/dienstplan", dienstplanRouter);
 
 // Export/Download-Funktionen (z.B. CSV-Export für Dienstpläne)
-const exportRouter = require("./routes/export.routes.js");
-app.use("/api/download", exportRouter);
+// const exportRouter = require("./routes/export.routes.js");
+// app.use("/api/download", exportRouter);
 
 const usersRouter = require("./routes/users.routes");
 app.use("/api/users", usersRouter);

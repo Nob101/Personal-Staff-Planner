@@ -11,3 +11,11 @@ export function login(benutzername, passwort) {
     password: passwort
   })
 }
+
+// --- Registrierung ---
+export function register(benutzername, passwort) {
+  return http.post('/auth/register', {
+    username: benutzername,
+    password: passwort
+  })
+}
