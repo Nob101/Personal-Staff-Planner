@@ -126,6 +126,14 @@ const filteredMitarbeiter = computed(() => {
       if (index !== -1) {
         mitarbeiter.value[index] = res.data
       }
+
+      /* WHY: Design/Overlay zeigt selectedMitarbeiter separat.
+         Wenn du im Detail-Overlay bearbeitest, bleibt sonst der alte Stand angezeigt,
+         obwohl die Liste schon aktualisiert ist. */
+      if (selectedMitarbeiter.value && selectedMitarbeiter.value.id === editedData.id) {
+        selectedMitarbeiter.value = res.data
+      }
+
     } catch (err) {
       console.error("Fehler beim Bearbeiten:", err)
     }
@@ -142,8 +150,19 @@ const filteredMitarbeiter = computed(() => {
     if (!selectedMitarbeiterToDelete.value) return
 
     try {
-      await mitarbeiterService.deleteMitarbeiter(selectedMitarbeiterToDelete.value.id)
-      mitarbeiter.value = mitarbeiter.value.filter(m => m.id !== selectedMitarbeiterToDelete.value.id)
+      const deletedId = selectedMitarbeiterToDelete.value.id
+
+      await mitarbeiterService.deleteMitarbeiter(deletedId)
+
+      mitarbeiter.value = mitarbeiter.value.filter(m => m.id !== deletedId)
+
+      /* WHY: Wenn der gelöschte Mitarbeiter gerade im Detail-Overlay offen ist,
+         muss das Overlay geschlossen werden, sonst zeigt es einen Datensatz,
+         den es in der Liste nicht mehr gibt. */
+      if (selectedMitarbeiter.value?.id === deletedId) {
+        selectedMitarbeiter.value = null
+      }
+
       selectedMitarbeiterToDelete.value = null
       showDeleteModal.value = false
     } catch (err) {
@@ -168,6 +187,17 @@ const filteredMitarbeiter = computed(() => {
     }
   }
 
+  /* WHY: Design hat eine List-Ansicht + Detail-Overlay.
+     Klick auf eine Card soll den Mitarbeiter "auswählen". */
+  function handleSelect(m) {
+    selectedMitarbeiter.value = m
+  }
+
+  /* WHY: Design braucht eine saubere Möglichkeit, das Detail-Overlay zu schließen. */
+  function closeDetails() {
+    selectedMitarbeiter.value = null
+  }
+
   return {
     mitarbeiter,
     filialen,
@@ -187,6 +217,9 @@ const filteredMitarbeiter = computed(() => {
     handleMitarbeiterEdit,
     handleDelete,
     confirmDelete,
-    cancelDelete
+    cancelDelete,
+    getVerfuegbareMitarbeiter,
+    handleSelect,
+    closeDetails
   }
 }

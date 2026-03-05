@@ -1,146 +1,122 @@
 <!-- LoginView.vue-->
 <script setup>
-import { ref } from 'vue'
 import router from '@/router/router.js'
 import { useLogin } from '@/composables/useLogin'
-
 const {
   benutzername,
   passwort,
   error,
   isLoading,
-  handleLogin,
-  handleRegister
+  handleLogin
 } = useLogin()
 
-const activeTab = ref('login')
-
-// --- Klick auf Anmelden/Registrieren Button ---
+// --- Klick auf Anmelden Button ---
 async function onSubmit() {
-  let ok = false
-  if (activeTab.value === 'login') {
-    ok = await handleLogin()
-  } else {
-    ok = await handleRegister()
-  }
+  // Login erfolgreich -> MitarbeiterView
+  const ok = await handleLogin()
 
   if (ok) {
-    // Login / Registrierung erfolgreich -> MitarbeiterView
-    router.push({ name: 'mitarbeiter' })
+    router.push({ name: 'home' })
   }
 }
 </script>
 
 <template>
-  <div class="auth-card">
-    <!-- Tabs -->
-    <div class="tabs">
-      <button
-        class="tab"
-        :class="{ active: activeTab === 'login' }"
-        @click="activeTab = 'login'"
+  <div
+    class="relative min-h-screen
+           bg-linear-to-b from-zinc-300/70 to-zinc-900 overflow-hidden"
+  >
+
+
+    <!-- Centered Login Card -->
+    <div class="relative z-10 min-h-[calc(100vh-64px)]
+                flex items-center justify-center px-4 py-10">
+      <div
+        class="w-full max-w-sm rounded-3xl
+               border border-zinc-200
+               bg-white/80 backdrop-blur-xl
+               shadow-xl p-7 sm:p-8"
       >
-        Anmelden
-      </button>
-      <button
-        class="tab"
-        :class="{ active: activeTab === 'registrieren' }"
-        @click="activeTab = 'registrieren'"
-      >
-        Registrieren
-      </button>
-    </div>
+        <div class="mb-6 text-center">
+          <h2 class="text-2xl font-bold tracking-tight text-zinc-900">
+            Anmelden
+          </h2>
+          <p class="mt-1 text-sm text-zinc-500">
+            Bitte melde dich mit deinen Zugangsdaten an
+          </p>
+        </div>
 
-    <!-- Formular -->
-    <div class="form">
-      <input
-        v-model="benutzername"
-        placeholder="Benutzername"
-        class="input"
-      />
-      <input
-        v-model="passwort"
-        type="password"
-        placeholder="Passwort"
-        class="input"
-      />
+        <div class="space-y-4">
+          <!-- Benutzername -->
+          <label class="block">
+            <span class="mb-1 block text-sm font-medium text-zinc-700">
+              Benutzername
+            </span>
+            <input
+              v-model="benutzername"
+              placeholder="Benutzername eingeben"
+              class="w-full rounded-2xl
+                     border border-zinc-300
+                     bg-white
+                     px-4 py-3 text-zinc-900
+                     placeholder:text-zinc-400
+                     outline-none transition
+                     focus:ring-4 focus:ring-zinc-900/10
+                     focus:border-zinc-400"
+              @keyup.enter="onSubmit"
+            />
+          </label>
 
-      <p v-if="error" class="error">{{ error }}</p>
+          <!-- Passwort -->
+          <label class="block">
+            <span class="mb-1 block text-sm font-medium text-zinc-700">
+              Passwort
+            </span>
+            <input
+              v-model="passwort"
+              type="password"
+              placeholder="••••••••"
+              class="w-full rounded-2xl
+                     border border-zinc-300
+                     bg-white
+                     px-4 py-3 text-zinc-900
+                     placeholder:text-zinc-400
+                     outline-none transition
+                     focus:ring-4 focus:ring-zinc-900/10
+                     focus:border-zinc-400"
+              @keyup.enter="onSubmit"
+            />
+          </label>
 
-      <button @click="onSubmit" :disabled="isLoading" class="submit">
-        {{ activeTab === 'login' ? 'Anmelden' : 'Registrieren' }}
-      </button>
+          <!-- Error -->
+          <div v-if="error" class="rounded-2xl border border-red-300 bg-red-50 p-3">
+            <p class="text-sm font-medium text-red-700">
+              {{ error }}
+            </p>
+          </div>
+
+          <!-- Submit -->
+          <button
+            @click="onSubmit"
+            :disabled="isLoading"
+            class="w-full rounded-2xl px-4 py-3 text-sm font-semibold
+                   text-white shadow-lg transition
+                   bg-linear-to-b from-blue-300 to-blue-900
+                   hover:from-blue-900 hover:to-blue-300
+                   disabled:opacity-60 disabled:cursor-not-allowed
+                   active:scale-[0.99]"
+          >
+            <span v-if="isLoading" class="inline-flex items-center gap-2">
+              <span
+                class="h-4 w-4 animate-spin rounded-full
+                       border-2 border-white/40 border-t-white"
+              ></span>
+              Lädt...
+            </span>
+            <span v-else>Anmelden</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.auth-card {
-  width: 300px;
-  margin: 40px auto;
-  padding: 24px;
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.tabs {
-  display: flex;
-  width: 100%;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.tab {
-  flex: 1;
-  padding: 10px;
-  text-align: center;
-  border: none;
-  background: #e6e6e6;
-  cursor: pointer;
-  font-weight: 500;
-  color: #333;
-  transition: 0.2s;
-}
-
-.tab.active {
-  background: #3498db;
-  color: white;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.input {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-.submit {
-  padding: 10px;
-  background: #3498db;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-.submit:hover {
-  background: #2d80b8;
-}
-
-.error {
-  color: red;
-  font-size: 0.9rem;
-}
-</style>

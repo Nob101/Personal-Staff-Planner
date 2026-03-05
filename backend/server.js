@@ -62,8 +62,8 @@ const dienstplanRouter = require("./routes/dienstplan.routes");
 app.use("/api/dienstplan", dienstplanRouter);
 
 // Export/Download-Funktionen (z.B. CSV-Export für Dienstpläne)
-const exportRouter = require("./routes/export.routes.js");
-app.use("/api/download", exportRouter);
+// const exportRouter = require("./routes/export.routes.js");
+// app.use("/api/download", exportRouter);
 
 const usersRouter = require("./routes/users.routes");
 app.use("/api/users", usersRouter);
@@ -84,7 +84,7 @@ async function startApp() {
 
     // In Docker-Setups kann es passieren, dass die DB noch nicht bereit ist.
     // Diese kurze Verzögerung reduziert Startfehler (z.B. connection refused).
-    await new Promise((res) => setTimeout(res, 5000));
+    await new Promise((res) => setTimeout(res, 2000));
 
     await db.initDatabase();
 

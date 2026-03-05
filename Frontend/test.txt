@@ -1,3 +1,0 @@
-musste file ertstellen damit der frontend ordner gepusht wird
-sorry ist eine eigenheit von Github
-lol

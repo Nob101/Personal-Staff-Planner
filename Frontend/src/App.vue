@@ -1,19 +1,21 @@
-<!-- App.vue -->
-<!-- TODO:
-        - Routing definieren und umsetzen (Routing zu verschiedenen Views und Backend-Requests/Responses)
-        - CSS/Tailwind Formatierung definieren 
--->
-
 <script setup>
-// Import von Navbar. Die Views werden vom Router geregelt mit router-view
-import Navbar from '@/components/global/Navbar.vue';
-import ColorPicker from './components/global/ColorPicker.vue';
+import { computed } from "vue";
+import { RouterView, useRoute } from "vue-router";
+import Navbar from "@/components/global/Navbar.vue";
 
+
+const route = useRoute();
+
+const hideNavbar = computed(() =>
+  route.matched.some(r => r.meta?.hideNavbar === true)
+  // optional zusätzlich per name:
+  // || route.name === "login"
+);
 </script>
 
 <template>
-   <router-view />
+  
+    <Navbar v-if="!hideNavbar" />
+    <RouterView />
+  
 </template>
-
-<style scoped> 
-</style>

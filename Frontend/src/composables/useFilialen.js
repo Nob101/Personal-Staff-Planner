@@ -92,6 +92,18 @@ export function useFilialen() {
     showModalFilialeEdit.value = true
   }
 
+  // (notwendig fürs Design/Overlay):
+  // List-Click soll Details öffnen (wie bei Mitarbeiter)
+  function handleSelect(f) {
+    selectedFiliale.value = f
+  }
+
+  // (notwendig fürs Design/Overlay):
+  // Schließt die Detailansicht und wechselt zurück in die Liste
+  function closeDetails() {
+    selectedFiliale.value = null
+  }
+
   // Aktualisiert eine bestehende Filiale
   async function handleFilialeEdit(editedData) {
     try {
@@ -99,6 +111,12 @@ export function useFilialen() {
       const index = filialen.value.findIndex(f => f.fnr === editedData.fnr)
       if (index !== -1) {
         filialen.value[index] = res.data
+      }
+
+      // (notwendig fürs Design/Overlay):
+      // Wenn diese Filiale gerade im Detail-Overlay offen ist, sofort aktualisieren
+      if (selectedFiliale.value?.fnr === editedData.fnr) {
+        selectedFiliale.value = res.data
       }
     } catch (err) {
       console.error("Fehler beim Bearbeiten:", err)
@@ -115,8 +133,17 @@ export function useFilialen() {
   async function confirmDelete() {
     if (!selectedFilialeToDelete.value) return
     try {
-      await filialenService.deleteFiliale(selectedFilialeToDelete.value.fnr)
-      filialen.value = filialen.value.filter(f => f.fnr !== selectedFilialeToDelete.value.fnr)
+      const deletedFnr = selectedFilialeToDelete.value.fnr
+
+      await filialenService.deleteFiliale(deletedFnr)
+      filialen.value = filialen.value.filter(f => f.fnr !== deletedFnr)
+
+      // (notwendig fürs Design/Overlay):
+      // Detail-Overlay schließen, wenn genau diese Filiale offen ist
+      if (selectedFiliale.value?.fnr === deletedFnr) {
+        selectedFiliale.value = null
+      }
+
       selectedFilialeToDelete.value = null
       showDeleteModal.value = false
     } catch (err) {
@@ -145,6 +172,8 @@ export function useFilialen() {
     selectedFiliale,
     handleFilialeCreate,
     handleEdit,
+    handleSelect,   
+    closeDetails,   
     handleFilialeEdit,
     handleDelete,
     confirmDelete,
