@@ -1,7 +1,7 @@
 <!-- FilialeGridSection.vue -->
 
 <script setup>
-import { computed } from "vue";
+import { computed, nextTick} from "vue";
 
 import export_icon from "@/assets/icons/export_icon.svg";
 import generieren_icon from "@/assets/icons/generieren_icon.svg";

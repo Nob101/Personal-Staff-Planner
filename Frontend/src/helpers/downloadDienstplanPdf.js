@@ -10,9 +10,9 @@ export async function downloadDienstplanPdf(elementId, filename) {
     clone.querySelectorAll('*').forEach(el => {
         el.style.boxShadow = 'none';
         el.style.ringWidth = '0';
-        el.style.border = '1px solid #939496';      // Ganz dünne, graue Standardlinie
+        el.style.border = 'none';      // Ganz dünne, graue Standardlinie
             el.style.backgroundImage = 'none';        // Keine Gradients
-            el.style.backgroundColor = el.style.backgroundColor; // || 'white';
+          
             el.style.color = 'black';               // Text immer schwarz
        
         if (el.classList.contains('truncate')) {
@@ -26,7 +26,8 @@ export async function downloadDienstplanPdf(elementId, filename) {
         position: 'absolute',
         top: '-9999px',
         left: '-9999px',
-        width: '1600px',      
+        width: 'auto',      // FIX: Passt sich dem Inahalt an
+        display: 'inline-block', //NEU: verhindert breite Streckung
         background: 'white',
         boxShadow: 'none',
         display: 'block'
@@ -35,22 +36,26 @@ export async function downloadDienstplanPdf(elementId, filename) {
     document.body.appendChild(clone);
  
     try {
-        // Das Foto vom Klon machen -> scale 2
+        //NEU: Das Foto vom Klon machen -> scale von 2 auf 3
         const dataUrl = await domtoimage.toPng(clone, {
-            bgcolor: '#080808',
+            bgcolor: '#f3ebeb',
             quality: 1,
-            scale: 2,
-            width: 1600,
-            height: clone.offsetHeight,
-            filter: (node) => {
-                const isButton = node.tagName === 'BUTTON';
-                const isNoExport = node.classList && node.classList.contains('no-export');
-                return !isButton && !isNoExport;
-            }
-        });
+            scale: 3,
+           
+              // FIX: Interaktive Elemente entfernen
+            // filter: (node) => {
+            //     const isButton = node.tagName === 'BUTTON';
+            //     const isNoExport = node.classList && node.classList.contains('no-export');
+            //     return !isButton && !isNoExport;
+            // }
+        } );
  
         // PDF generieren -_-
-       const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+       const pdf = new jsPDF({ orientation: 'landscape',
+         unit: 'mm', 
+         format: 'a4' 
+        });
+
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
        
@@ -60,14 +65,21 @@ export async function downloadDienstplanPdf(elementId, filename) {
  
         const imgProps = pdf.getImageProperties(dataUrl);
        
-        // FIX: Ratio berechnen, damit es auf EINE Seite passt
-        const ratio = Math.min(maxWidth / imgProps.width, maxHeight / imgProps.height);
-        const finalWidth = imgProps.width * ratio;
-        const finalHeight = imgProps.height * ratio;
- 
+        // FIX: Größe anpassen -> Adjust
+        let adjustedWidth = maxWidth;
+        let adjustedHeight = (imgProps.height * adjustedWidth) / imgProps.width;
+        // NEU: Höhe skalieren -> Bild war zu Hoch
+        if (adjustedHeight > maxHeight) {
+            adjustedHeight = maxHeight;
+            adjustedWidth = (imgProps.width * adjustedHeight) / imgProps.height;
+        }
+
+        const xOffset = margin + (maxWidth - adjustedWidth) / 2;
+        const yOffset = margin;
+
         // Wichtig: Bild einfügen mit den berechneten Maßen
-        pdf.addImage(dataUrl, 'PNG', margin, margin, finalWidth, finalHeight);
-        pdf.save(`${filename}.pdf`);
+            pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, adjustedWidth, adjustedHeight);
+            pdf.save(`${filename}.pdf`);
  
     } catch (error) {
         console.error("Export fehlgeschlagen:", error);
@@ -78,12 +90,12 @@ export async function downloadDienstplanPdf(elementId, filename) {
 }
  
  
-// PDF Export Logik mit deiner ID-Anforderung
-async function onExportClick() {
-  await nextTick();
-  const elementId = `export-area-filiale-${props.filiale.fnr}`;
-  const dateiname = `Dienstplan_${props.filiale.filialname}_${props.monat}_${props.jahr}`;
-  await downloadDienstplanPdf(elementId, dateiname);
-}
- 
+// Gehört in die FilialeGridSection.vue
+
+// async function onExportClick() {
+//   await nextTick();
+//   const elementId = `export-area-filiale-${props.filiale.fnr}`;
+//   const dateiname = `Dienstplan_${props.filiale.filialname}_${props.monat}_${props.jahr}`;
+//   await downloadDienstplanPdf(elementId, dateiname);
+// }
  
