@@ -9,13 +9,14 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "api": "json-server --watch db.json --port 3001"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
     "axios": "^1.13.2",
     "dom-to-image-more": "^3.7.2",
-    "jspdf": "^4.1.0",
+    "jspdf": "^4.2.0",
     "nodemon": "^3.1.11",
     "tailwindcss": "^4.1.17",
     "vue": "^3.5.22",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
+    "json-server": "^1.0.0-beta.3",
     "vite": "^7.1.11",
     "vite-plugin-vue-devtools": "^8.0.3"
   }

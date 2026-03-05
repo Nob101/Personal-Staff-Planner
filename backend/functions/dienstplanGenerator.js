@@ -24,9 +24,7 @@ const STUNDEN_PRO_DIENST = 9;
 // Puffer über Sollstunden in Phase 1.
 // Idee: Phase 1 soll schnell einen "brauchbaren" Plan erzeugen,
 // auch wenn er danach noch korrigiert (gekürzt) wird.
-
-//NEU: Puffer reduziert auf 18h (max 2 Schichten), um Phase 3 zu entlasten
-const LIMIT_PUFFER_STUNDEN = 18;
+const LIMIT_PUFFER_STUNDEN = 100;
 
 // Kürzung: nie die letzte A oder E Schicht eines Tages entfernen.
 // MIN_WORKERS_PRO_SCHICHT = 1 heißt: mind. 1x A und mind. 1x E muss bleiben.
@@ -39,19 +37,10 @@ const MIN_WORKERS_PRO_SCHICHT = 1;
  * - 20h -> Faktor 0.5
  * -> Zielstunden = Monatsstunden * Faktor
  */
-
-      /**
-       * // NEU: Robusterer Faktor-Check.
-       * Verhindert, dass 0 oder null in der DB zu 0h Soll führen.
-       */
-      function getFaktorFuerMitarbeiter(m) {
-        const wert = Number(m.arbeitnehmertyp );
-        if (!wert || wert <= 0) return 1.0;
-        // NEU: Rechenmodel anpassen
-       if (wert > 60) return 0;
-       return wert / 40;
-
-      }
+function getFaktorFuerMitarbeiter(m) {
+  const typNum = Number(m.arbeitnehmertyp ?? 40) || 40;
+  return typNum / 40;
+}
 
 /**
  * Hilfsfunktion: Datum normalisieren (YYYY-MM-DD).
@@ -79,7 +68,7 @@ function resolveMonatsstunden(year, month) {
   return Number(r) || 0;
 }
 
-async function generateDienstplan(year, month) {
+async function generateDienstplan(year, month, fnr) {
   const jahr = Number(year);
   const monat = Number(month);
 
@@ -91,11 +80,25 @@ async function generateDienstplan(year, month) {
   const alleMitarbeiter = await mitarbeiterRepo.getAllBase({
     onlyActive: true,
   }); //soft delete beachten
-  const alleFilialen = await filialenRepo.getAll();
+
+  let alleFilialen;
+
+  if (!fnr) {
+    alleFilialen = await filialenRepo.getAll();
+  } else {
+    const filiale = await filialenRepo.getById(fnr);
+    if (!filiale) throw new Error(`Filiale mit fnr=${fnr} nicht gefunden.`);
+    alleFilialen = [filiale];
+  }
+
 
   // Neu-Generierung -> alte Stunden für Monat/Jahr entfernen.
   // (Die Dienste selbst werden später via savePlan neu geschrieben.)
-  await stundenRepo.deleteStunden(monat, jahr);
+  if (fnr) {
+    await stundenRepo.deleteStunden(monat, jahr, fnr); // nur diese Filiale
+  } else {
+    await stundenRepo.deleteStunden(monat, jahr); // alles vom Monat
+  }
 
   // Globale Liste: enthält am Ende alle Dienste aller Filialen.
   // Vorteil: wir speichern später in einem Schritt (savePlan).
@@ -173,16 +176,7 @@ async function generateDienstplan(year, month) {
 
       // Zielstunden für diesen Mitarbeiter
       const faktor = getFaktorFuerMitarbeiter(m);
-      let zielStunden;
-
-
-      if (faktor === 0) {
-        // Absoluter Wert aus DB (z.B. 120)
-        zielStunden = Number(m.arbeitnehmertyp);
-      } else {
-        // Berechnet (z.B. 160 Monatsstunden * 0.5 bei 20h Kraft)
-        zielStunden = Math.round(monatsstunden * faktor);
-      }
+      const zielStunden = Math.round(monatsstunden * faktor);
 
       // Puffer: erlaubt kurzfristig etwas drüber zu liegen,
       // bevor Phase 3 (Kürzung) auf Zielstunden reduziert.
@@ -190,8 +184,9 @@ async function generateDienstplan(year, month) {
 
       // Counter aus der Mitarbeiter DB: bestimmt Startposition im Pattern.
       // Dadurch rotiert der Plan über Monate hinweg.
-      let counter = Number(m.counter) || 0;
-      
+      let counter = Number(m.counter);
+      if (!Number.isFinite(counter) || counter < 0) counter = 0;
+
       // init IST-Stunden
       if (!stundenByMnr.has(m.mnr)) stundenByMnr.set(m.mnr, 0);
 
@@ -318,7 +313,7 @@ async function generateDienstplan(year, month) {
 
       let hours = stundenByMnr.get(m.mnr) || 0;
 
-      const puffer = 9;
+      const puffer = monat % 2 === 0 ? 9 : 0;
 
       while (hours > zielStunden + puffer) {
         const kandidaten = [];
@@ -377,9 +372,8 @@ async function generateDienstplan(year, month) {
     // PHASE 5: Stunden in DB speichern (nach Kürzung!)
     // ------------------------------------------------------------
     for (const m of mitarbeiterFiliale) {
-      
       const faktor = getFaktorFuerMitarbeiter(m);
-      const zielStunden = (faktor === 0) ? Number(m.arbeitnehmertyp) : Math.round(monatsstunden * faktor);
+      const zielStunden = Math.round(monatsstunden * faktor);
       const ist = stundenByMnr.get(m.mnr) || 0;
 
       await stundenRepo.saveStunden({
@@ -388,7 +382,7 @@ async function generateDienstplan(year, month) {
         monat,
         soll_stunden_monat: zielStunden,
         ist_stunden_monat: ist,
-        differenz: ist - zielStunden,  // WICHTIG: Wenn ist 180 std und soll 160 kommt +20 Stunden heraus
+        differenz: ist - zielStunden,
       });
     }
   }

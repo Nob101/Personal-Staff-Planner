@@ -14,11 +14,6 @@ import export_icon from "@/assets/icons/export_icon.svg";
 
 import { downloadDienstplanPdf } from "@/helpers/downloadDienstplanPdf";
 
-/**
- * Props kommen vom Parent (z.B. DienstplanView).
- * Diese Komponente ist rein steuernd / darstellend
- * und gibt alle Aktionen per Events nach oben weiter.
- */
 const props = defineProps({
   jahr: { type: Number, required: true },
   monat: { type: Number, required: true },
@@ -26,57 +21,49 @@ const props = defineProps({
   error: { type: String, default: "" },
   hasView: { type: Boolean, default: false },
 
-  // Filialen-Optionen + v-model
-  filialen: { type: Array, default: () => [] },   // Optionen (z.B. view.filialen)
-  modelValue: { type: Array, default: () => [] }, // ausgewählte Filialen
+  filialen: { type: Array, default: () => [] },
+  modelValue: { type: Array, default: () => [] },
 });
 
 // NEU: an PDF angepasst
 async function exportAlleFilialen() {
   if (props.loading || !props.hasView) return;
-
+ 
   // NEU:Das stellt sicher, dass Änderungen anderer Nutzer oder letzte Korrekturen im PDF landen. (best practice)
   // emit ist asynchron und falls Vue länger braucht
     emit('load', props.jahr, props.monat);
     await new Promise(r => setTimeout(r, 600));
-
+ 
   // Bestimme, welche Filialen exportiert werden sollen
   const exportListe = props.modelValue?.length ? props.modelValue : props.filialen;
-
+ 
   for (let i = 0; i < exportListe.length; i++) {
     const f = exportListe[i];
     // WICHTIG: Die ID muss so aufgebaut sein, wie sie im DOM vergeben wurde
     // Beispiel: "dienstplan-filiale-10"
-    const elementId = `export-area-filiale-${f.fnr}`; 
+    const elementId = `export-area-filiale-${f.fnr}`;
     const dateiname = `Dienstplan_${f.filialname}_${props.monat}_${props.jahr}`;
     try{
-
+ 
        await downloadDienstplanPdf(elementId, dateiname);
        if (i < exportListe.length - 1) {    //Damit das Settimeout nach dem letzten PDF nicht mehr ausgeführt wird da zB 4 < 4 = false
         await new Promise(r => setTimeout(r, 800));
        }
-
+ 
     }catch (err) {
     console.error('Zuviele PDFs auf einmal', err)
   }
    
-  } 
+  }
 }
-
+ 
 const list = (props.modelValue?.length ? props.modelValue : props.filialen);
 console.log("Export list length:", list.length, list.map(f => f.fnr));
-
-
-/**
- * Events:
- * - load: Monat/Jahr wechseln
- * - generate: Dienstpläne generieren
- * - remove: Dienstpläne leeren
- * - update:modelValue: v-model für Filial-Auswahl
- */
 const emit = defineEmits(["load", "generate", "remove", "update:modelValue"]);
 
-
+/* =========================================================
+   Hide-on-scroll (down = hide, up = show)
+   ========================================================= */
 const headerHidden = ref(false);
 let lastY = 0;
 let ticking = false;
@@ -114,10 +101,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener("scroll", onScroll);
 });
-
-
 </script>
-
 
 <template>
   <div
@@ -147,7 +131,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <!-- MITTE: Filialen MultiSelect -->
+<!-- MITTE: Filialen MultiSelect -->
 <div class="min-w-60">
   <Multiselect
     class="ms"
@@ -191,14 +175,11 @@ onBeforeUnmount(() => {
     </template>
   </Multiselect>
 </div>
-
-    
     <!-- RECHTS: Globale Aktionen -->
     <div class="w-64 flex justify-end">
       <div
         class="flex items-center gap-1 rounded-xl p-1"
       >
-
         <!-- Generieren -->
         <button
           class="inline-flex h-8 w-8 items-center justify-center rounded-xl

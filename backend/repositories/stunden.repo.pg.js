@@ -36,7 +36,7 @@ async function saveStunden(stunden) {
     RETURNING *;
   `;
 
-   const values = [
+  const values = [
     stunden.mnr,
     stunden.jahr,
     stunden.monat,
@@ -48,8 +48,6 @@ async function saveStunden(stunden) {
   const res = await pool.query(query, values);
   return res.rows[0];
 }
-
-
 
 
 async function deleteStunden(monat, jahr, fnr = null) {
@@ -96,6 +94,7 @@ async function getStundenForMitarbeiter(mnr) {
   const res = await pool.query(query, [mnr]);
   return res.rows;
 }
+
 
 
 

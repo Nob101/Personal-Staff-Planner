@@ -7,7 +7,7 @@ import { computed } from 'vue'
 const props = defineProps({
   modelValue: {
     type: String,
-    default: '#ffffff'
+    default: '#12f3ef'
   }
 })
 
@@ -22,7 +22,6 @@ const presetColors = [
   '#3b82f6', // Blau
   '#a855f7', // Lila
   '#64748b', // Grau-Blau
-  '#1f2937'  // Dunkelgrau
 ]
 
 function updateColor(color) {
@@ -74,6 +73,7 @@ const isValidHex = computed(() =>
 .color-picker-box {
   display: grid;
   gap: 12px;
+
 }
 
 /* Preset-Reihe */

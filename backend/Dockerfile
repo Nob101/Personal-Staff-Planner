@@ -18,6 +18,7 @@ EXPOSE 3001
 #  Startbefehl für den Server [auf nodemon angepasst]
 CMD ["npm", "run",  "devStart"]
 
+
 # für Alex:
 
 # Ich hab Docker für unsere DB-Anbindung fertiggemacht. In den Hauptordnern liegt jetzt jewiels ein Dockerfile
@@ -31,4 +32,3 @@ CMD ["npm", "run",  "devStart"]
         # Neue Pakete: Nach einem npm install immer docker-compose up --build nutzen.
 
         # DB-Anbindung: Nutze in deiner Config host: 'db' (statt localhost), damit der Server die Datenbank im Docker-Netz findet.
-

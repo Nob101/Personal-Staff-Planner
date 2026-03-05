@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS mitarbeiter (
     -- NEU: Anmerkung zu MA
     anmerkung VARCHAR(250),
     counter INTEGER DEFAULT 0,
-    arbeitnehmertyp DECIMAL(10,2) DEFAULT 40,
+    arbeitnehmertyp INTEGER DEFAULT 40,
     springeralgorithmid INTEGER,
     springer BOOLEAN DEFAULT FALSE,
     -- NEU:Aktive MA logik      Im Backend     UPDATE mitarbeiter SET aktiv = FALSE WHERE mnr = 5;   zB über die Route const kuendigt_MA
@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS dienstplaene (
     monat INTEGER NOT NULL,
     datum DATE NOT NULL,
 
-    --WICHTIG: RESTRICT verhindert Hard-Delete => (Soft-Delete)
+    --WICHTIG: RESTRICT verhindert, dass  Markus einen MA
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE RESTRICT,
     fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE RESTRICT,
     schicht_typ VARCHAR(6) REFERENCES arbeitstyp(akurzl) ON DELETE RESTRICT,

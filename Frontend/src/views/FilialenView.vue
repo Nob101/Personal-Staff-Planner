@@ -11,12 +11,10 @@ import { useFilialen } from '@/composables/useFilialen'
 // Komponenten-Importe für die Filialen-Ansicht
 import FilialenActionBar from '@/components/filialen/FilialenActionBar.vue'
 import FilialenList from '@/components/filialen/FilialenList.vue'
+import FilialenCard from '@/components/filialen/FilialenCard.vue'
 import ModalFilialeCreate from '@/components/filialen/ModalFilialenCreate.vue'
 import ModalFilialeEdit from '@/components/filialen/ModalFilialenEdit.vue'
 import BestätigungsModal from '@/components/global/BestätigungsModal.vue'
-
-// (Design/Overlay): Detail-Card für Overlay
-import FilialenCard from '@/components/filialen/FilialenCard.vue'
 
 // Holt alle Daten, Funktionen und States aus dem Composable
 const {
@@ -65,7 +63,7 @@ const {
              bg-black/50 backdrop-blur-sm overflow-auto"
       @click.self="closeDetails"
     >
-      <div class="w-full max-w-6xl" @click.stop>
+      <div class="w-full max-w-[760px]" @click.stop>
         <button
           type="button"
           class="mb-4 font-sans text-white/80 hover:text-white
@@ -118,6 +116,6 @@ const {
       @confirm="confirmDelete"
       @close="cancelDelete"
     />
-  </div>
+    </div>
   </div>
 </template>

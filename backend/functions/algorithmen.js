@@ -11,7 +11,7 @@ const ALGORITHMEN = {
   2: ["A", "A", "A", "A", "F", "F", "E", "E", "E", "E","F", "F"],
 };
 
-
+ 
 /**
  * Liefert das Schichtmuster (Algorithmus) für eine gegebene ID.
  *
@@ -28,7 +28,6 @@ async function getAlgorithmus(id) {
   const algo = ALGORITHMEN[Number(id)];
   if (!algo) {
     throw new Error(`Unbekannter Algorithmus: ${id}`);
-    return ALGORITHMEN[1];
   }
   return algo;
 }

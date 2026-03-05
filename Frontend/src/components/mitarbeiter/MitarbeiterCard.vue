@@ -67,7 +67,7 @@ function handleSelect() {
     v-if="variant === 'list'"
     class="relative cursor-pointer font-sans
            rounded-3xl
-           bg-linear-to-b from-zinc-200 to-zinc-500
+           bg-linear-to-b from-zinc-300 to-zinc-600
            shadow-[0_16px_40px_rgba(0,0,0,0.4)]
            hover:-translate-y-0.5 transition"
     @click="handleSelect"
@@ -95,7 +95,7 @@ function handleSelect() {
             <!-- LINKS: Kontakt -->
             <div class="space-y-3 min-w-0">
               <div class="text-l font-bold uppercase tracking-wide text-black">
-                Daten
+                Stammdaten
               </div>
 
               <div class="space-y-2">
@@ -146,7 +146,7 @@ function handleSelect() {
            backdrop-blur overflow-hidden"
   >
     <!-- HEADER -->
-    <div class="bg-linear-to-b from-zinc-200 to-zinc-300">
+    <div class="bg-linear-to-b from-zinc-300 to-zinc-400">
       <div class="flex items-center justify-between gap-3 px-4 py-2">
         <!-- left -->
         <div class="min-w-0">
@@ -194,12 +194,12 @@ function handleSelect() {
       </div>
     </div>
 
-    <!-- BODY wie Filiale -->
-    <div class="px-4 pt-2 pb-3 rounded-b-3xl bg-linear-to-b from-zinc-300 to-zinc-500">
-      <!-- Innere Box wie Filiale -->
+    <!-- BODY -->
+    <div class="px-4 pt-2 pb-3 rounded-b-3xl bg-linear-to-b from-zinc-400 to-zinc-600">
+      <!-- Innere Box -->
       <div class="rounded-2xl bg-white/55 dark:bg-white/10 ring-1 ring-black/10 dark:ring-white/10">
         <div class="p-4">
-          <!-- LINKS | LINIE | RECHTS (kompakter) -->
+          <!-- LINKS | LINIE | RECHTS -->
           <div class="grid grid-cols-[1fr_1px_1fr] gap-5 text-sm text-zinc-900 dark:text-white/90">
             <!-- LINKS -->
             <section class="space-y-4 min-w-0">
@@ -251,7 +251,7 @@ function handleSelect() {
                       v-for="f in mitarbeiter.nebenfilialen"
                       :key="f.id"
                       class="rounded-full ring-1 ring-black/10 dark:ring-white/10
-                             bg-white/70 dark:bg-white/5
+                             bg-zinc-300 dark:bg-white/5
                              px-2.5 py-0.5 text-[11px]"
                     >
                       {{ f.name }}

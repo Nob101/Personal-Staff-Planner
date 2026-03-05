@@ -1,5 +1,5 @@
 <template>
-  <div class="relative min-h-[calc(100vh-64px)] bg-zinc-900 overflow-hidden">
+  <div class="relative min-h-screen pt-16 overflow-hidden bg-linear-to-b from-zinc-300/70 to-zinc-600">
 
     <!-- Hintergrundlogo -->
 <div

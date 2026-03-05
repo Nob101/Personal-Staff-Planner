@@ -1,3 +1,4 @@
+-- Wurde an database.js ausgelagert und dient nur noch zur Einsicht
 
 -- Wichtig: Wurde an database.js ausgelagert und dient nur noch zur Einsicht
 

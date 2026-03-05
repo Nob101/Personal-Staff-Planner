@@ -7,13 +7,25 @@ export async function getDienstplanView(jahr, monat) {
   return res.data;
 }
  
-export async function generateDienstplan(jahr, monat) {
-  const res = await http.post("dienstplan/generate", { jahr, monat});
+/* export async function generateDienstplan(jahr, monat, fnr) {
+  const res = await http.post("dienstplan/generate", {
+    jahr,
+    monat,
+    fnr,
+  });
+  return res.data;
+} */
+
+export async function generateDienstplan(jahr, monat, fnr) {
+  console.log("[POST] generate", { jahr, monat, fnr });
+  const res = await http.post("dienstplan/generate", { jahr, monat, fnr });
   return res.data;
 }
- 
-export async function deleteDienstplan(jahr, monat) {
-  const res = await http.delete(`dienstplan/${jahr}/${monat}`);
+
+export async function deleteDienstplan(jahr, monat, fnr) {
+  const res = await http.delete(`dienstplan/${jahr}/${monat}`, {
+    params: { fnr }, // <-- GENAU wie in test.http
+  });
   return res.data;
 }
  

@@ -52,6 +52,13 @@ export function useDienstplanGridData(view) {
     if (!typ || typ === "F") {
       return { backgroundColor: "#fff", borderColor: "#fff", color: "#111" };
     }
+    if (typ === "U") {
+      return { backgroundColor: "#39ff14", borderColor: "#39ff14", color: "#111" };
+    }
+
+    if (typ === "K"){
+      return { backgroundColor: "#ff0048", borderColor: "#ff0048", color: "#111" };
+    }
 
     const f = filialeByFnr(dienst.fnr);
     const base = f?.farbe || "#888888";
