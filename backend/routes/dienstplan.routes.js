@@ -64,10 +64,12 @@ router.get("/", async (req, res) => {
  * Der Generator speichert intern die Ergebnisse in der Datenbank.
  * ============================================================================
  */
-router.post("/generate", async (req, res) => {
-  const { jahr, monat } = req.body;
 
-  if (!jahr || !monat) {
+
+router.post("/generate", async (req, res) => {
+  const { jahr, monat, fnr } = req.body;
+
+  if (jahr == null || monat == null) {
     return res.status(400).json({ error: "jahr und monat Pflicht." });
   }
 
@@ -75,7 +77,20 @@ router.post("/generate", async (req, res) => {
     const j = Number(jahr);
     const m = Number(monat);
 
-    const plan = await generateDienstplan(j, m);
+    if (!Number.isInteger(j) || !Number.isInteger(m) || m < 1 || m > 12) {
+      return res.status(400).json({ error: "Ungültiges jahr/monat." });
+    }
+
+    // fnr optional
+    let f = null;
+    if (fnr !== undefined && fnr !== null && fnr !== "") {
+      f = Number(fnr);
+      if (!Number.isInteger(f) || f <= 0) {
+        return res.status(400).json({ error: "Ungültige fnr." });
+      }
+    }
+
+    const plan = await generateDienstplan(j, m, f); // f kann null sein
     res.json(plan);
   } catch (err) {
     console.error("POST /dienstplan/generate", err);
@@ -94,12 +109,23 @@ router.delete("/:jahr/:monat", async (req, res) => {
   try {
     const jahr = Number(req.params.jahr);
     const monat = Number(req.params.monat);
+    const fnr = req.query.fnr ? Number(req.query.fnr) : null;
 
     if (!Number.isInteger(jahr) || !Number.isInteger(monat)) {
       return res.status(400).json({ error: "jahr und monat ungültig" });
     }
 
-    const deleted = await dienstplanRepo.deleteByMonth(jahr, monat);
+    if (fnr !== null && (!Number.isInteger(fnr) || fnr <= 0)) {
+      return res.status(400).json({ error: "Ungültige fnr." });
+    }
+
+    let deleted;
+
+    if (fnr) {
+      deleted = await dienstplanRepo.deleteByMonth(jahr, monat, fnr);
+    } else {
+      deleted = await dienstplanRepo.deleteByMonth(jahr, monat);
+    }
 
     res.json({
       message: "Dienstplan gelöscht",
@@ -189,9 +215,11 @@ router.post("/shift", async (req, res) => {
     }
 
     const delta = deltaStunden(before.schicht_typ, neuTyp);
+    // Test
+    const m = await mitarbeiterRepo.getByMnr(before.mnr);
 
     // Diensttyp aktualisieren
-    const updated = await dienstplanRepo.dienstShiftTx(client, id, neuTyp);
+    const updated = await dienstplanRepo.dienstShiftTx(client, id, neuTyp, m.hauptfiliale_fnr);
     if (!updated) {
       await client.query("ROLLBACK");
       return res.status(404).json({ error: "Dienst nicht gefunden." });
@@ -289,7 +317,7 @@ router.post("/shiftMitErsatz", async (req, res) => {
     const updatedAlt = await dienstplanRepo.dienstShiftTx(client, altId, neuTypAltDienst);
 
     // 2) Neu-Dienst übernimmt Typ + Arbeitsfiliale vom Alt-Dienst
-    const updatedNeu = await dienstplanRepo.dienstShiftMitErsatzTx(
+    const updatedNeu = await dienstplanRepo.dienstShiftTx(
       client,
       neuId,
       neuTypErsatzDienst,

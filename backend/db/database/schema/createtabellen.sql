@@ -29,7 +29,7 @@ SOFT-DELETE & DATA RETENTION:
 
 
 
-
+ 
 /*
 ###############################
 -- STAMMDATEN 

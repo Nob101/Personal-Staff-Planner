@@ -10,14 +10,19 @@ const crypto = require('crypto');
 const sessionTrue = new Map();
 
 const loginAllowness = (req, res, next) => {
-    console.log(`Autho-test: ${req.path} | token da: ${req.headers['authorization']}` );
+    //console.log(`Autho-test: ${req.path} | token da: ${req.headers['authorization']}` );
 
     const token = req.headers['authorization'];   // Über metadaten !!!
     const session = sessionTrue.get(token);  //WICHTIG: mit get die new Map direkt ansprechen
 
     // NEU: Token prüfen
+<<<<<<< HEAD
         // console.log("TOKEN:", token);
         // console.log("SESSION-MAP-TREFFER:", session);     
+=======
+       // console.log("TOKEN:", token);
+      //  console.log("SESSION-MAP-TREFFER:", session);     
+>>>>>>> 0ab0c04 (backend_inkl.users)
 
     if (token && session){
       const alterInStunden = (Date.now() - session.createdAt) / (1000 * 60 * 60);

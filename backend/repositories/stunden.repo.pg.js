@@ -26,11 +26,13 @@ const pool = require("../db/pool");
 
 async function saveStunden(stunden) {
   const query = `
-    INSERT INTO stunden_konto (mnr,jahr,monat,soll_stunden_monat,ist_stunden_monat,differenz)
+    INSERT INTO stunden_konto (mnr, jahr, monat, soll_stunden_monat, ist_stunden_monat, differenz)
     VALUES ($1, $2, $3, $4, $5, $6)
     ON CONFLICT (mnr, jahr, monat)
-    DO UPDATE SET soll_stunden_monat = EXCLUDED.soll_stunden_monat,
-                  ist_stunden_monat = EXCLUDED.ist_stunden_monat
+    DO UPDATE SET
+      soll_stunden_monat = EXCLUDED.soll_stunden_monat,
+      ist_stunden_monat  = EXCLUDED.ist_stunden_monat,
+      differenz          = EXCLUDED.differenz
     RETURNING *;
   `;
 
@@ -45,6 +47,36 @@ async function saveStunden(stunden) {
 
   const res = await pool.query(query, values);
   return res.rows[0];
+}
+
+
+async function deleteStunden(monat, jahr, fnr = null) {
+  if (fnr) {
+    const r = await pool.query(
+      `
+      DELETE FROM stunden_konto
+      WHERE jahr = $1
+        AND monat = $2
+        AND mnr IN (
+          SELECT mnr
+          FROM mitarbeiter
+          WHERE hauptfiliale_fnr = $3
+        );
+      `,
+      [jahr, monat, fnr]
+    );
+    return r.rowCount;
+  }
+
+  const r = await pool.query(
+    `
+    DELETE FROM stunden_konto
+    WHERE jahr = $1
+      AND monat = $2;
+    `,
+    [jahr, monat]
+  );
+  return r.rowCount;
 }
 
 
@@ -64,21 +96,6 @@ async function getStundenForMitarbeiter(mnr) {
 }
 
 
-/**
- * Löscht alle Stundenkonten eines Monats/Jahres.
- *
- * Verwendungszweck:
- * - Beim Neu-Generieren eines Dienstplans werden die Stundenkonten
- *   für diesen Monat zuvor entfernt, damit keine alten Werte bleiben.
- */
-async function deleteStunden(monat, jahr) {
-  const query = `
-    DELETE FROM stunden_konto
-    WHERE monat = $1
-    AND jahr = $2;
-  `;
-  await pool.query(query, [monat, jahr]);
-}
 
 
 /**

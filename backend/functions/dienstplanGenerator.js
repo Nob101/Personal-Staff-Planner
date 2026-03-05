@@ -68,7 +68,7 @@ function resolveMonatsstunden(year, month) {
   return Number(r) || 0;
 }
 
-async function generateDienstplan(year, month) {
+async function generateDienstplan(year, month, fnr) {
   const jahr = Number(year);
   const monat = Number(month);
 
@@ -80,11 +80,25 @@ async function generateDienstplan(year, month) {
   const alleMitarbeiter = await mitarbeiterRepo.getAllBase({
     onlyActive: true,
   }); //soft delete beachten
-  const alleFilialen = await filialenRepo.getAll();
+
+  let alleFilialen;
+
+  if (!fnr) {
+    alleFilialen = await filialenRepo.getAll();
+  } else {
+    const filiale = await filialenRepo.getById(fnr);
+    if (!filiale) throw new Error(`Filiale mit fnr=${fnr} nicht gefunden.`);
+    alleFilialen = [filiale];
+  }
+
 
   // Neu-Generierung -> alte Stunden für Monat/Jahr entfernen.
   // (Die Dienste selbst werden später via savePlan neu geschrieben.)
-  await stundenRepo.deleteStunden(monat, jahr);
+  if (fnr) {
+    await stundenRepo.deleteStunden(monat, jahr, fnr); // nur diese Filiale
+  } else {
+    await stundenRepo.deleteStunden(monat, jahr); // alles vom Monat
+  }
 
   // Globale Liste: enthält am Ende alle Dienste aller Filialen.
   // Vorteil: wir speichern später in einem Schritt (savePlan).
