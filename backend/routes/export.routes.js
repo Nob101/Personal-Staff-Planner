@@ -19,7 +19,7 @@ router.get('/csv', async (req, res) => {
         const { jahr, monat, fnr } = req.query;
 
      // NEU: überprüfung damit server nicht crasht
-        if (!jahr || !monat || !fnr) {
+        if (!jahr || !monat) {
             return res.status(400).send("Jahr, Monat und Filial Nummer sind Pflichtfelder.");
     }
 

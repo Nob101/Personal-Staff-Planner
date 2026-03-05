@@ -554,6 +554,20 @@ async function getForDienstplanMonat(jahr, monat) {
   return r.rows;
 }
 
+async function getByMnr(mnr) {
+  const r = await pool.query(
+    `
+    SELECT mnr, vorname, nachname, hauptfiliale_fnr,
+           counter, springer, springeralgorithmid, arbeitnehmertyp, aktiv
+    FROM mitarbeiter
+    WHERE mnr = $1
+    LIMIT 1
+    `,
+    [mnr]
+  );
+  return r.rows[0] ?? null;
+}
+
 
 
 module.exports = {
@@ -566,4 +580,5 @@ module.exports = {
   getAllBase,
   deactivate,
   getForDienstplanMonat,
+  getByMnr,
 };

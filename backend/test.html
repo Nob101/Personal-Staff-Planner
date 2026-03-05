@@ -152,7 +152,17 @@
   <section id="result"></section>
 
   <script>
+
+
     const API_BASE = "http://localhost:3001/api";
+const TOKEN = "de1c989c53ff40c92ea12239cb28f76e6e563d13c33fc0a6";
+
+function authHeaders(extra = {}) {
+  return {
+    Authorization: TOKEN,
+    ...extra,
+  };
+}
 
     const jahrInput = document.getElementById("jahrInput");
     const monatInput = document.getElementById("monatInput");
@@ -174,10 +184,10 @@
       statusEl.textContent = "Generiere…";
       try {
         const res = await fetch(`${API_BASE}/dienstplan/generate`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jahr, monat }),
-        });
+  method: "POST",
+  headers: authHeaders({ "Content-Type": "application/json" }),
+  body: JSON.stringify({ jahr, monat }),
+});
 
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
@@ -207,7 +217,9 @@
       statusEl.textContent = "";
 
       try {
-        const res = await fetch(`${API_BASE}/dienstplan/view?jahr=${jahr}&monat=${monat}`);
+        const res = await fetch(`${API_BASE}/dienstplan/view?jahr=${jahr}&monat=${monat}`, {
+  headers: authHeaders(),
+});
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
           throw new Error(err.error || `HTTP ${res.status}`);

@@ -1,5 +1,9 @@
 @baseUrl = https://localhost/api
-@token = b6ff0a70421278345a94c4f728ca86bf1afcada6e0ed8baa
+<<<<<<< HEAD
+@token = 8e168f93a70ef89782ddaee3e050921cee3249a0ff90ad72
+=======
+@token = d4f5d4112cd7393474e5a20b08817ffdcae45b890b8e0b1c
+>>>>>>> efb402cb7f2851fca4bd4c88afb49ecd94555152
 @jahr = 2026
 @monat = 2
 
@@ -57,7 +61,7 @@ Content-Type: application/json
 }
 
 ### PUT Mitarbeiter bearbeiten
-@MNR_UPDATE = 6
+@MNR_UPDATE = 1
 PUT {{baseUrl}}/mitarbeiter/{{MNR_UPDATE}}
 Authorization: {{token}}
 Content-Type: application/json
@@ -72,7 +76,7 @@ Content-Type: application/json
 
   "strasse": "Updateweg 9",
   "ort": "Wien",
-  "postleitzahl": "1010",
+  "postleitzahl": "1011",
   "land": "Österreich",
 
   "telefon1": "+43 660 999999",
@@ -113,6 +117,7 @@ Content-Type: application/json
   "plz": "1000",
   "land": "Österreich",
   "email": "g@firma.at",
+  "anmerkungen": "Zentrale Filiale",
   "telefon": "+43 3332 12345",
   "algorithmid": 1
 }
@@ -125,7 +130,8 @@ Content-Type: application/json
 
 {
   "filialname": "Zentrale Wien NEU",
-  "farbe": "#00ff00"
+  "farbe": "#00ff00",
+  "anmerkungen": "Update Anmerkung"
 }
 
 ### DELETE Filiale
@@ -198,7 +204,11 @@ Content-Type: application/json
 ### ERSATZ
 ### ============================================================================
 
-@DIENST_ID = 3641
+<<<<<<< HEAD
+@DIENST_ID = 43801
+=======
+@DIENST_ID = 283429
+>>>>>>> efb402cb7f2851fca4bd4c88afb49ecd94555152
 GET {{baseUrl}}/dienstplan/{{DIENST_ID}}/ersatz
 Authorization: {{token}}
 Accept: application/json
@@ -217,4 +227,28 @@ Content-Type: application/json
   "jahr": 2026,
   "monat": 1,
   "ist_stunden_monat": 166
+}
+
+
+@FNR_TEST = 1
+
+### ============================================================================
+### ein Monat löschen mit FNR
+### ============================================================================
+DELETE {{baseUrl}}/dienstplan/{{jahr}}/{{monat}}?fnr={{FNR_TEST}}
+Authorization: {{token}}
+
+
+### ============================================================================
+### ein Monat generieren mit FNR
+### ============================================================================
+
+POST {{baseUrl}}/dienstplan/generate
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "jahr": {{jahr}},
+  "monat": {{monat}},
+  "fnr": {{FNR_TEST}}
 }

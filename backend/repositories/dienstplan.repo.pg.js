@@ -43,7 +43,20 @@ async function save(jahr, monat, datum, mnr, fnr, schicht_typ) {
  * Rückgabe:
  * - rowCount: Anzahl der gelöschten Datensätze (für Logging/Feedback).
  */
-async function deleteByMonth(jahr, monat) {
+async function deleteByMonth(jahr, monat, fnr) {
+  if (fnr) {
+    const result = await pool.query(
+      `
+      DELETE FROM dienstplaene
+      WHERE jahr = $1
+        AND monat = $2
+        AND fnr = $3
+      `,
+      [jahr, monat, fnr]
+    );
+    return result.rowCount;
+  }
+
   const result = await pool.query(
     `
     DELETE FROM dienstplaene
@@ -109,16 +122,34 @@ async function getByIdTx(client, id) {
  * - liefert den aktualisierten Datensatz direkt zurück
  * - vermeidet einen zusätzlichen SELECT nach dem UPDATE.
  */
-async function dienstShiftTx(client, id, schicht_typ) {
+async function dienstShiftTx(client, id, schicht_typ, fnr) {
+
+  // Wenn fnr NICHT übergeben wurde → Filiale NICHT ändern
+  if (typeof fnr === "undefined") {
+    const r = await client.query(
+      `
+      UPDATE dienstplaene
+      SET schicht_typ = $2
+      WHERE id = $1
+      RETURNING id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung;
+      `,
+      [id, schicht_typ]
+    );
+    return r.rows[0] ?? null;
+  }
+
+  // Wenn fnr mitgegeben wurde → beides ändern (test)
   const r = await client.query(
     `
     UPDATE dienstplaene
-    SET schicht_typ = $2
+    SET schicht_typ = $2,
+        fnr = $3
     WHERE id = $1
     RETURNING id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung;
     `,
-    [id, schicht_typ]
+    [id, schicht_typ, fnr]
   );
+
   return r.rows[0] ?? null;
 }
 
@@ -130,7 +161,7 @@ async function dienstShiftTx(client, id, schicht_typ) {
  *
  * Auch hier: RETURNING liefert den fertigen Datensatz zurück.
  */
-async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
+/* async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
   const r = await client.query(
     `
     UPDATE dienstplaene
@@ -142,7 +173,7 @@ async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
     [id, schicht_typ, fnr]
   );
   return r.rows[0] ?? null;
-}
+} */
 
 /**
  * Liefert mögliche Ersatz-Kandidaten für einen konkreten Dienst.
@@ -168,13 +199,15 @@ async function findErsatzKandidatenByDienstId(dienstId) {
       m.vorname    AS "vorname",
       m.nachname   AS "nachname",
       d2.fnr       AS "dienstFNr",
+      f.filialname AS "dienstFilialname",
+      m.springer   AS "springer",
       d2.schicht_typ
     FROM dienstplaene d1
     JOIN dienstplaene d2 ON d2.datum = d1.datum
     JOIN mitarbeiter m ON m.mnr = d2.mnr
+    JOIN filiale f ON f.fnr = d2.fnr
     WHERE d1.id = $1
-      AND m.aktiv = true 
-      AND d2.schicht_typ = 'F'
+      AND m.aktiv = true
       AND (
         m.hauptfiliale_fnr = d1.fnr
         OR EXISTS (
@@ -183,8 +216,33 @@ async function findErsatzKandidatenByDienstId(dienstId) {
           WHERE mn.mnr = m.mnr AND mn.fnr = d1.fnr
         )
       )
+      AND d2.schicht_typ IN ('F','A','E')
+      AND (
+        d2.schicht_typ = 'F'
+        OR (
+          d2.schicht_typ = 'A'
+          AND (
+            SELECT COUNT(*)
+            FROM dienstplaene x
+            WHERE x.datum = d2.datum
+              AND x.fnr = d2.fnr
+              AND x.schicht_typ = 'A'
+          ) >= 2
+        )
+        OR (
+          d2.schicht_typ = 'E'
+          AND (
+            SELECT COUNT(*)
+            FROM dienstplaene x
+            WHERE x.datum = d2.datum
+              AND x.fnr = d2.fnr
+              AND x.schicht_typ = 'E'
+          ) >= 2
+        )
+      )
     ORDER BY m.nachname, m.vorname;
   `;
+
   const r = await pool.query(q, [dienstId]);
   return r.rows;
 }
@@ -195,6 +253,5 @@ module.exports = {
   getByDate,
   dienstShiftTx,
   getByIdTx,
-  dienstShiftMitErsatzTx,
   findErsatzKandidatenByDienstId,
 };
