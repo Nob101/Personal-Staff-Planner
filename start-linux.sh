@@ -36,6 +36,7 @@ fi
 
 # ==========================================================================================
 # Wichtig: Selbst-Registrierung als Systemd-Service (Autostart)
+# cat für Voll-automatisches Durchreichen des SERVICE_FILE    WICHTIG: Nicht nano!!!
 # ==========================================================================================
 SERVICE_FILE="/etc/systemd/system/psp-dienstplan.service"
 
