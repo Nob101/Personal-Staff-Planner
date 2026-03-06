@@ -73,16 +73,39 @@ if [ ! -d "$CERTS_DIR" ]; then
     mkdir -p "$CERTS_DIR"
 fi
 
+# FIX: Ist IP = IP? Damit des nach dem Setup alte IP verwirft (flexibler Einsatzort)
+if [ -f "$CERTS_DIR/cert.pem" ]; then
+    # Extrahiert die IP (CN) aus dem vorhandenen Zertifikat
+    OLD_IP=$(openssl x509 -noout -subject -in "$CERTS_DIR/cert.pem" | sed -n '/CN=/s/^.*CN=\(.*\)$/\1/p')
+    
+    if [ "$OLD_IP" != "$RP_IP" ]; then
+        echo "[WARN] IP-Änderung erkannt! (Alt: $OLD_IP -> Neu: $RP_IP)"
+        echo "[INFO] Lösche veraltete Zertifikate..."
+        rm -f "$CERTS_DIR/cert.pem" "$CERTS_DIR/key.pem"
+    fi
+fi
+
+
+# Zertifikate Erstellen
 if [ ! -f "$CERTS_DIR/cert.pem" ]; then
     echo "[INFO] Generiere selbstsignierte Zertifikate für IP: $RP_IP"
+
     openssl req -x509 -newkey rsa:4096 -keyout "$CERTS_DIR/key.pem" -out "$CERTS_DIR/cert.pem" \
     -sha256 -days 365 -nodes -subj "/CN=$RP_IP"
     echo "[OK] Zertifikate erstellt."
+   # Damit der Neustart nach löschen passiert
+    RESTART_REQUIRED=true
 fi
 
-#  Docker Compose starten
-echo "[INFO] Starte Container im Hintergrund (Detached)..."
-docker compose up -d
+ # WICHTIG: Damit Docker neu startet (NGINX muss 'neue' certs einlesen!)
+if [ "$RESTART_REQUIRED" = true ]; then
+    echo "[INFO] Starte Container neu, um neue Zertifikate anzuwenden..."
+    docker compose down && docker compose up -d
+else  # NEU: Docker Compose starten wenn certs vorhanden und IP = IP -_-
+    echo "[INFO] Starte Container..."
+    docker compose up -d
+fi
+
 
 #  Healthcheck (Warten bis Nginx und Backend antworten !!)
 echo "[INFO] Warte auf Server-Response..."
@@ -113,4 +136,3 @@ done
 if [ $retry_count -eq $max_retries ]; then
     echo "[FEHLER] System konnte nicht rechtzeitig starten. Prüfe 'docker compose logs'!"
 fi
-
