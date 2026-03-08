@@ -29,8 +29,8 @@ const props = defineProps({
 async function exportAlleFilialen() {
   if (props.loading || !props.hasView) return;
  
-  // NEU:Das stellt sicher, dass Änderungen anderer Nutzer oder letzte Korrekturen im PDF landen. (best practice)
-  // emit ist asynchron und falls Vue länger braucht
+  // NEU:Das stellt sicher, dass Änderungen anderer Nutzer oder 
+  // letzte Korrekturen im PDF landen. (best practice) emit ist asynchron und falls Vue länger braucht
     emit('load', props.jahr, props.monat);
     await new Promise(r => setTimeout(r, 600));
  
@@ -46,15 +46,15 @@ async function exportAlleFilialen() {
     try{
  
        await downloadDienstplanPdf(elementId, dateiname);
-       if (i < exportListe.length - 1) {    //Damit das Settimeout nach dem letzten PDF nicht mehr ausgeführt wird da zB 4 < 4 = false
+       if (i < exportListe.length - 1) {    //Damit das seTimeout nach dem letzten PDF 
+                                            // nicht mehr ausgeführt wird da zB 4 < 4 = false
         await new Promise(r => setTimeout(r, 800));
        }
  
     }catch (err) {
     console.error('Zuviele PDFs auf einmal', err)
   }
-   
-  }
+ }
 }
  
 const list = (props.modelValue?.length ? props.modelValue : props.filialen);

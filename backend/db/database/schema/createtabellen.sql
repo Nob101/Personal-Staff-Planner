@@ -133,9 +133,9 @@ CREATE TABLE IF NOT EXISTS stunden_konto (
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
     jahr INTEGER NOT NULL,
     monat INTEGER NOT NULL,
-    soll_stunden_monat DECIMAL(10,2),                   --< Dynamisch berechnet vom Backend
+    soll_stunden_monat DECIMAL(10,2), --< Dynamisch berechnet vom Backend
     ist_stunden_monat DECIMAL(10,2),
-    differenz DECIMAL(10,2),                            --< Wird im Backend berechnet und hier gespeichert
+    differenz DECIMAL(10,2),          --< Wird im Backend berechnet und hier gespeichert
     UNIQUE(mnr, jahr, monat)
 );
 
@@ -153,7 +153,8 @@ CREATE TABLE IF NOT EXISTS dienstplaene (
     monat INTEGER NOT NULL,
     datum DATE NOT NULL,
 
-    --WICHTIG: RESTRICT verhindert, dass  Markus einen MA
+    --WICHTIG: RESTRICT verhindert, dass  Markus einen MA 'löscht'
+    -- erst nach einem Cleanup!
     mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE RESTRICT,
     fnr INTEGER NOT NULL REFERENCES filiale(fnr) ON DELETE RESTRICT,
     schicht_typ VARCHAR(6) REFERENCES arbeitstyp(akurzl) ON DELETE RESTRICT,

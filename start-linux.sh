@@ -12,6 +12,32 @@ cd "$SCRIPT_DIR"
 RP_IP=$(hostname -I | awk '{print $1}')
 [ -z "$RP_IP" ] && RP_IP="localhost"
 
+
+
+
+# ============================================================================
+# NEU: Netzwerk-Namensauflösung (mDNS / Avahi)
+# ============================================================================
+FIX_HOSTNAME="psp"
+
+if [ "$(hostname)" != "$FIX_HOSTNAME" ]; then
+    echo "[INFO] Setze Hostnamen auf $FIX_HOSTNAME für Erreichbarkeit via $FIX_HOSTNAME.local..."
+    sudo hostnamectl set-hostname $FIX_HOSTNAME
+    # Aktualisiert die interne hosts-Datei des Pi, damit sudo nicht meckert
+    sudo sed -i "s/127.0.1.1.*/127.0.1.1\t$FIX_HOSTNAME/g" /etc/hosts
+fi
+
+# Sicherstellen, dass Avahi installiert ist
+if ! dpkg -l | grep -q avahi-daemon; then
+    echo "[INFO] Installiere Avahi-Daemon für Namensauflösung..."
+    sudo apt-get update && sudo apt-get install avahi-daemon -y
+fi
+
+
+# ============================================================================
+
+
+
 CERTS_DIR="./certs"
 
 echo "-------------------------------------------------------"
