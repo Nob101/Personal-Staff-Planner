@@ -31,6 +31,7 @@ const plz = ref('')
 const land = ref('')
 const farbe = ref('#12f3ef')
 const algorithmid = ref(null)
+const anmerkungen = ref('')
 
 // Validierungs-States
 const nameFehler = ref(false)
@@ -71,7 +72,8 @@ function handleSubmit() {
     plz: plz.value || '',
     land: land.value || '',
     farbe: farbe.value,
-    algorithmid: algorithmid.value ? algorithmid.value.value : null
+    algorithmid: algorithmid.value ? algorithmid.value.value : null,
+    anmerkungen: anmerkungen.value || ''
   })
 
   resetFormFields()
@@ -90,6 +92,7 @@ function resetFormFields() {
   algorithmid.value = null
   nameFehler.value = false
   algorithmFehler.value = false
+  anmerkungen.value = ''
 }
 </script>
 
