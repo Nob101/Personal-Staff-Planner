@@ -18,7 +18,7 @@ RP_IP=$(hostname -I | awk '{print $1}')
 # ============================================================================
 # NEU: Netzwerk-Namensauflösung (mDNS / Avahi)   -> sudo systemctl status avahi-daemon
 # ============================================================================
-FIX_HOSTNAME="psp"
+FIX_HOSTNAME="psp-portal"
 
 if [ "$(hostname)" != "$FIX_HOSTNAME" ]; then
     # echo "[INFO] Setze Hostnamen auf $FIX_HOSTNAME für Erreichbarkeit via $FIX_HOSTNAME.local..."
@@ -35,7 +35,6 @@ if ! dpkg -l | grep -q avahi-daemon; then
     sudo systemctl enable avahi-daemon
     sudo systemctl start avahi-daemon
 fi
-
 
 # ============================================================================
 
@@ -151,6 +150,7 @@ while [ $retry_count -lt $max_retries ]; do
         echo ""
         echo "======================================================="
         echo "[OK] System ist ONLINE und über HTTPS erreichbar!"
+        echo "URL:    https://$FIX_HOSTNAME.local/"
         echo "URL: https://$RP_IP"
         echo "======================================================="
         break
