@@ -16,26 +16,28 @@ RP_IP=$(hostname -I | awk '{print $1}')
 
 
 # ============================================================================
-# NEU: Netzwerk-Namensauflösung (mDNS / Avahi)
+# NEU: Netzwerk-Namensauflösung (mDNS / Avahi)   -> sudo systemctl status avahi-daemon
 # ============================================================================
 FIX_HOSTNAME="psp"
 
 if [ "$(hostname)" != "$FIX_HOSTNAME" ]; then
-    echo "[INFO] Setze Hostnamen auf $FIX_HOSTNAME für Erreichbarkeit via $FIX_HOSTNAME.local..."
+    # echo "[INFO] Setze Hostnamen auf $FIX_HOSTNAME für Erreichbarkeit via $FIX_HOSTNAME.local..."
     sudo hostnamectl set-hostname $FIX_HOSTNAME
     # Aktualisiert die interne hosts-Datei des Pi, damit sudo nicht meckert
     sudo sed -i "s/127.0.1.1.*/127.0.1.1\t$FIX_HOSTNAME/g" /etc/hosts
 fi
 
-# Sicherstellen, dass Avahi installiert ist
+# Wichtig: Sicherstellen, dass Avahi installiert ist
 if ! dpkg -l | grep -q avahi-daemon; then
     echo "[INFO] Installiere Avahi-Daemon für Namensauflösung..."
     sudo apt-get update && sudo apt-get install avahi-daemon -y
+    # FIX: Stellt start sicher
+    sudo systemctl enable avahi-daemon
+    sudo systemctl start avahi-daemon
 fi
 
 
 # ============================================================================
-
 
 
 CERTS_DIR="./certs"
@@ -43,6 +45,7 @@ CERTS_DIR="./certs"
 echo "-------------------------------------------------------"
 echo "PSP-Dienstplan: System-Check & Startup"
 echo "Erkannte Pi-IP: $RP_IP"
+echo "Hostname: $FIX_HOSTNAME.local"
 echo "-------------------------------------------------------"
 
 # NEU: Installieren von curl und openSSL -> Reihenfolge
@@ -104,8 +107,8 @@ fi
 if [ -f "$CERTS_DIR/cert.pem" ]; then
     # Extrahiert die IP (CN) aus dem vorhandenen Zertifikat
     OLD_IP=$(openssl x509 -noout -subject -in "$CERTS_DIR/cert.pem" | sed -n '/CN=/s/^.*CN=\(.*\)$/\1/p')
-    
-    if [ "$OLD_IP" != "$RP_IP" ]; then
+    # NEU: hotname für URL
+    if [ "$OLD_IP" != "$RP_IP" ] && [ "$OLD_IP" != "$FIX_HOSTNAME.local" ]; then
         echo "[WARN] IP-Änderung erkannt! (Alt: $OLD_IP -> Neu: $RP_IP)"
         echo "[INFO] Lösche veraltete Zertifikate..."
         rm -f "$CERTS_DIR/cert.pem" "$CERTS_DIR/key.pem"
@@ -116,10 +119,11 @@ fi
 # Zertifikate Erstellen
 if [ ! -f "$CERTS_DIR/cert.pem" ]; then
     echo "[INFO] Generiere selbstsignierte Zertifikate für IP: $RP_IP"
-
+# NEU: Damit nicht nach der IP gesucht werden muss fixe URL-Domain
     openssl req -x509 -newkey rsa:4096 -keyout "$CERTS_DIR/key.pem" -out "$CERTS_DIR/cert.pem" \
-    -sha256 -days 365 -nodes -subj "/CN=$RP_IP"
-    echo "[OK] Zertifikate erstellt."
+    -sha256 -days 365 -nodes -subj "/CN=$FIX_HOSTNAME.local" \
+    -addext "subjectAltName = DNS:$FIX_HOSTNAME.local, DNS:$FIX_HOSTNAME, IP:$RP_IP"
+
    # Damit der Neustart nach löschen passiert
     RESTART_REQUIRED=true
 fi

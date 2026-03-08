@@ -18,14 +18,12 @@ Die Anwendung ermöglicht die Verwaltung von Mitarbeitern und Filialen (Bezirke 
 ```
 
 Personal-Staff-Planner/
-├── .idea/                  # IntelliJ/WebStorm Projekt-Einstellungen (wird via .gitignore ignoriert)
 ├── Backend/                # Node.js & Express REST-API / Datenbank-Aufbau
-├── Frontend/               # Vue 3 (Composition API) & Tailwind CSS
 ├── certs/                  # Selbstsignierte SSL-Zertifikate (HTTPS) (wird via .gitignore ignoriert)
+├── Frontend/               # Vue 3 (Composition API) & Tailwind CSS
 ├── postgres/               # Lokale Datenbank-Daten (wird via .gitignore ignoriert)
 ├── .dockerignore           # Schließt Dateien vom Docker-Build aus
 ├── .env                    # Umgebungsvariablen (wird via .gitignore ignoriert)
-├── .env.example            # Vorlage für Umgebungsvariablen
 ├── .gitignore              # Schließt Dateien von Git aus
 ├── docker-compose.yml      # Container-Orchestrierung
 ├── nginx.conf              # Reverse-Proxy Konfiguration
