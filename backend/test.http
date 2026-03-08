@@ -1,7 +1,7 @@
 @baseUrl = https://localhost/api
-@token = adc1c52d8c8e2fc734abaf5ca5fc36527f6832eee8b791a7
+@token = 1b1cd5de0dee9f281124041f0c2ff873d6c916dcc897734e
 @jahr = 2026
-@monat = 2
+@monat = 3
 
 
 ### ============================================================================
