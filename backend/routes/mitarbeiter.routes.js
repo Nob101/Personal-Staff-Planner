@@ -21,7 +21,7 @@ const {
 // ============================================================================
 // GET /mitarbeiter
 // ----------------------------------------------------------------------------
-// Liefert alle Mitarbeiter inkl. Detaildaten:
+// // Liefert alle AKTIVEN Mitarbeiter inkl. Detaildaten
 // - kontakt, telefone, emails, nebenfilialen
 //
 // Zusätzlich werden Filial-Daten geladen, um im Response nicht nur fnr,
@@ -36,9 +36,10 @@ router.get("/", async (_req, res) => {
     ]);
  
     // Mapping in ein Frontend-freundliches Format (IDs + Namen, flache Felder)
+    // nur aktive MA zurückgeben
     res.json(
       data.filter((m) => m.aktiv === true).map((m) => toFrontend(m, filialen)),
-    ); // nur aktive MA zurückgeben
+    ); 
   } catch (err) {
     console.error("Fehler GET /mitarbeiter:", err);
     res.status(500).json({ error: "Fehler beim Laden der Mitarbeiter" });
@@ -114,11 +115,9 @@ router.post("/", async (req, res) => {
     const b = req.body;
  
     // Minimalvalidierung (weitere Checks können im Mapper/Repo folgen)
-    if (!b.vorname || !b.nachname) {
-      return res
-        .status(400)
-        .json({ error: "vorname und nachname sind Pflicht" });
-    }
+    if (!b.vorname || !b.nachname || !b.hauptfiliale) {
+  return res.status(400).json({ error: "vorname, nachname und hauptfiliale sind Pflicht" });
+}
  
     // Frontend -> DB DTO (Formatvereinheitlichung + Typkonvertierung)
     const payload = fromFrontend(b);
@@ -191,8 +190,8 @@ router.put("/:mnr", async (req, res) => {
       if (hfAfter) {
         const filiale = await filialenRepo.getById(hfAfter);
         updates.springeralgorithmid = getGegenwertAlgoId(filiale.algorithmid);
-        resetCountersForFiliale(hfAfter); // Counter neu verteilen, da sich die Abdeckung ändert
-        setCounterForMitarbeiter(hfAfter);
+        await resetCountersForFiliale(hfAfter); // Counter neu verteilen, da sich die Abdeckung ändert
+        await setCounterForMitarbeiter(hfAfter);
       } else {
         updates.springeralgorithmid = null;
       }
@@ -200,8 +199,8 @@ router.put("/:mnr", async (req, res) => {
  
     // Wenn Springer deaktiviert: springeralgorithmid entfernen
     if (springerAfter === false) {
-      resetCountersForFiliale(hfAfter); // Counter neu verteilen, da sich die Abdeckung ändert
-      setCounterForMitarbeiter(hfAfter);
+      await resetCountersForFiliale(hfAfter); // Counter neu verteilen, da sich die Abdeckung ändert
+      await setCounterForMitarbeiter(hfAfter);
       updates.springeralgorithmid = null;
     }
  
@@ -242,7 +241,7 @@ router.put("/:mnr", async (req, res) => {
 // ============================================================================
 // DELETE /mitarbeiter/:mnr
 // ----------------------------------------------------------------------------
-// Löscht einen Mitarbeiter.
+// Deaktiviert einen Mitarbeiter (Soft Delete).
 // Danach wird der Counter der betroffenen Hauptfiliale neu verteilt,
 // da sich die Mitarbeiteranzahl geändert hat.
 // ============================================================================

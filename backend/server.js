@@ -4,7 +4,7 @@
 //
 // Aufgaben dieser Datei:
 // - Initialisierung von Express und globaler Middleware (JSON, CORS)
-// - Einbinden der REST-Routen (Auth, Mitarbeiter, Filialen, Dienstplan, Export)
+// - Einbinden der REST-Routen (Auth, Mitarbeiter, Filialen, Dienstplan, Users)
 // - Startlogik inkl. DB-Initialisierung und regelmäßiger Cleanup-Job
 // ============================================================================
 
@@ -92,9 +92,13 @@ async function startApp() {
     await deleteOldShifts();
 
     // Regelmäßiger Cleanup: alle 24 Stunden
-    setInterval(async () => {
-      await deleteOldShifts();
-    }, 24 * 60 * 60 * 1000);
+setInterval(async () => {
+  try {
+    await deleteOldShifts();
+  } catch (err) {
+    console.error("Fehler beim regelmäßigen Cleanup:", err);
+  }
+}, 24 * 60 * 60 * 1000);
 
     app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
   } catch (err) {

@@ -1,6 +1,9 @@
 // Enthält vordefinierte Schicht-Algorithmen.
 // Jeder Algorithmus ist ein zyklisches Muster aus Schichttypen,
 // das vom Dienstplan-Generator mithilfe eines Counters durchlaufen wird.
+// Hinweis:
+// K (Krank) und U (Urlaub) sind keine Bestandteile der Basis-Algorithmen,
+// sondern werden später durch manuelle Änderungen oder Sonderlogik gesetzt.
 //
 // A = Frühdienst
 // E = Spätdienst
@@ -8,7 +11,7 @@
 
 const ALGORITHMEN = {
   1: ["A", "A", "E", "E", "F", "F"],
-  2: ["A", "A", "A", "A", "F", "F", "E", "E", "E", "E","F", "F"],
+  2: ["A", "A", "A", "A", "F", "F", "E", "E", "E", "E", "F", "F"],
 };
 
  
@@ -24,7 +27,7 @@ const ALGORITHMEN = {
  */
 
  
-async function getAlgorithmus(id) {
+function getAlgorithmus(id) {
   const algo = ALGORITHMEN[Number(id)];
   if (!algo) {
     throw new Error(`Unbekannter Algorithmus: ${id}`);

@@ -1,4 +1,4 @@
-// dienstplanGenerator.js (NEU, DB-Version)
+// dienstplanGenerator.js 
 // ------------------------------------------------------------
 // Ziel dieses Moduls:
 // - Erzeugt einen Monats-Dienstplan pro Filiale
@@ -71,6 +71,15 @@ function resolveMonatsstunden(year, month) {
 async function generateDienstplan(year, month, fnr) {
   const jahr = Number(year);
   const monat = Number(month);
+  const hasFnr = fnr !== undefined && fnr !== null && fnr !== "";
+  const filialeFnr = hasFnr ? Number(fnr) : null;
+
+  if (!Number.isInteger(jahr) || !Number.isInteger(monat) || monat < 1 || monat > 12) {
+    throw new Error(`Ungültiges Jahr/Monat für die Generierung: jahr=${year}, monat=${month}`);
+  }
+  if (hasFnr && (!Number.isInteger(filialeFnr) || filialeFnr <= 0)) {
+    throw new Error(`Ungültige Filialnummer für die Generierung: fnr=${fnr}`);
+  }
 
   const monatsstunden = resolveMonatsstunden(jahr, monat);
   const dates = getAllDatesOfMonth(jahr, monat);
@@ -83,19 +92,19 @@ async function generateDienstplan(year, month, fnr) {
 
   let alleFilialen;
 
-  if (!fnr) {
+  if (!hasFnr) {
     alleFilialen = await filialenRepo.getAll();
   } else {
-    const filiale = await filialenRepo.getById(fnr);
-    if (!filiale) throw new Error(`Filiale mit fnr=${fnr} nicht gefunden.`);
+    const filiale = await filialenRepo.getById(filialeFnr);
+    if (!filiale) throw new Error(`Filiale mit fnr=${filialeFnr} nicht gefunden.`);
     alleFilialen = [filiale];
   }
 
 
   // Neu-Generierung -> alte Stunden für Monat/Jahr entfernen.
   // (Die Dienste selbst werden später via savePlan neu geschrieben.)
-  if (fnr) {
-    await stundenRepo.deleteStunden(monat, jahr, fnr); // nur diese Filiale
+  if (hasFnr) {
+    await stundenRepo.deleteStunden(monat, jahr, filialeFnr); // nur diese Filiale
   } else {
     await stundenRepo.deleteStunden(monat, jahr); // alles vom Monat
   }
@@ -166,7 +175,7 @@ async function generateDienstplan(year, month, fnr) {
         ? (m.springeralgorithmid ?? filiale.algorithmid)
         : filiale.algorithmid;
 
-      const algorithm = await getAlgorithmus(algoId);
+      const algorithm = getAlgorithmus(algoId);
 
       if (!Array.isArray(algorithm) || algorithm.length === 0) {
         throw new Error(
@@ -248,7 +257,7 @@ async function generateDienstplan(year, month, fnr) {
      * Wichtig:
      * - wir ändern gezielt NUR einen Dienst, über idxByMnrDate
      * - dadurch keine teuren Suchen im ganzen Array
-     * - Diese Funktion wurde bewusst als Function deklariert, weil sie öfters aufgerufen wird und leichter lesbara als eine Arrow-Funktion ist.
+     * - Diese Funktion wurde bewusst als Function deklariert, weil sie öfters aufgerufen wird und leichter lesbar als eine Arrow-Funktion ist.
      */
     function setFirstFTo(dk, typ) {
       for (const m of mitarbeiterFiliale) {

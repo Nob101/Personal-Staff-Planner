@@ -28,10 +28,10 @@ function mapRowToDto(row) {
     anmerkung: row.anmerkung ?? "",
 
     // Detaildaten sind in der DB ausgelagert (Normalisierung)
-    kontakt: row.kontakt ?? null,          // 0..1
-    telefone: row.telefone ?? [],          // 0..n
-    emails: row.emails ?? [],              // 0..n
-    nebenfilialen: row.nebenfilialen ?? [],// 0..n (mapping table)
+    kontakt: row.kontakt ?? null,           // 0..1
+    telefone: row.telefone ?? [],           // 0..n
+    emails: row.emails ?? [],               // 0..n
+    nebenfilialen: row.nebenfilialen ?? [], // 0..n (mapping table)
   };
 }
 
@@ -191,14 +191,17 @@ async function getByIdWithDetails(mnr) {
  *
  * Warum Transaktion?
  * - Entweder ALLE Datensätze werden angelegt oder KEINER.
- * - Verhindert inkonsistente Zustände (z.B. Mitarbeiter ohne Kontakt, aber mit Telefon)
+ * - Verhindert inkonsistente Zustände
+ *   (z.B. Mitarbeiter ohne Kontakt, aber mit Telefon).
  *
- * Besonderheit: counter wird beim Anlegen bewusst auf NULL gesetzt.
+ * Besonderheit:
+ * - counter wird beim Anlegen bewusst auf NULL gesetzt.
  * - Danach wird er über die Counter-Logik gleichmäßig verteilt.
  * ============================================================================
  */
 async function addWithDetails(payload) {
   const client = await pool.connect();
+
   try {
     await client.query("BEGIN");
 
@@ -234,6 +237,7 @@ async function addWithDetails(payload) {
     // 2) Kontakt (0..1)
     if (payload.kontakt && typeof payload.kontakt === "object") {
       const k = payload.kontakt;
+
       await client.query(
         `
         INSERT INTO mitarbeiter_kontakt (mnr, strasse, plz, ort, land)
@@ -244,12 +248,15 @@ async function addWithDetails(payload) {
     }
 
     // 3) Telefone (0..n)
-    // ON CONFLICT: erlaubt idempotentes Speichern (Typ "mobil/fix" pro Mitarbeiter eindeutig)
+    // ON CONFLICT: erlaubt idempotentes Speichern
+    // (Typ "mobil/fix" pro Mitarbeiter eindeutig)
     if (Array.isArray(payload.telefone)) {
       for (const t of payload.telefone) {
         if (!t) continue;
+
         const typ = t.telefon_typ ?? t.typ;
         const nummer = t.nummer;
+
         if (!typ || !nummer) continue;
 
         await client.query(
@@ -268,8 +275,10 @@ async function addWithDetails(payload) {
     if (Array.isArray(payload.emails)) {
       for (const e of payload.emails) {
         if (!e) continue;
+
         const typ = e.email_typ ?? e.typ;
         const adr = e.email_adresse ?? e.adresse;
+
         if (!typ || !adr) continue;
 
         await client.query(
@@ -305,10 +314,12 @@ async function addWithDetails(payload) {
     await client.query("COMMIT");
 
     // Einheitliche Rückgabe: frisch aus DB inkl. Details laden
-    const created = await getByIdWithDetails(mnr);
-    return created;
+    return await getByIdWithDetails(mnr);
   } catch (err) {
-    await client.query("ROLLBACK");
+    try {
+      await client.query("ROLLBACK");
+    } catch {}
+
     throw err;
   } finally {
     client.release();
@@ -333,12 +344,14 @@ async function addWithDetails(payload) {
  * - Weniger Fehlerquellen, klarer Ablauf, gut nachvollziehbar.
  * - Bei kleinen Datenmengen (max. wenige Telefone/Mails) performance-unproblematisch.
  *
- * Ehrlich: Replace ist nicht die effizienteste Variante,
- * aber für ein Diplomprojekt sauber und robust.
+ * Ehrlich:
+ * - Replace ist nicht die effizienteste Variante,
+ *   aber für ein Diplomprojekt sauber und robust.
  * ============================================================================
  */
 async function updateWithDetails(mnr, updates) {
   const client = await pool.connect();
+
   try {
     await client.query("BEGIN");
 
@@ -352,7 +365,7 @@ async function updateWithDetails(mnr, updates) {
       delete updates.hauptfiliale_fnr;
     }
 
-    // 1) Base-Update in "mitarbeiter" (nur whitelist Felder)
+    // 1) Base-Update in "mitarbeiter" (nur Whitelist-Felder)
     const allowed = [
       "vorname",
       "nachname",
@@ -366,13 +379,17 @@ async function updateWithDetails(mnr, updates) {
     ];
 
     const baseFields = Object.keys(updates).filter((f) => allowed.includes(f));
+
     if (baseFields.length > 0) {
       const setClause = baseFields.map((f, i) => `${f} = $${i + 1}`).join(", ");
       const values = baseFields.map((f) => updates[f]);
       values.push(mnr);
 
       const r = await client.query(
-        `UPDATE mitarbeiter SET ${setClause} WHERE mnr = $${baseFields.length + 1} RETURNING mnr;`,
+        `UPDATE mitarbeiter
+         SET ${setClause}
+         WHERE mnr = $${baseFields.length + 1}
+         RETURNING mnr;`,
         values
       );
 
@@ -382,8 +399,12 @@ async function updateWithDetails(mnr, updates) {
       }
     } else {
       // Wenn keine Base-Felder gesendet wurden: trotzdem Existenz prüfen,
-      // sonst würden wir "Details" updaten, obwohl es den MA nicht gibt.
-      const exists = await client.query(`SELECT 1 FROM mitarbeiter WHERE mnr=$1`, [mnr]);
+      // sonst würden wir "Details" updaten, obwohl es den Mitarbeiter nicht gibt.
+      const exists = await client.query(
+        `SELECT 1 FROM mitarbeiter WHERE mnr = $1`,
+        [mnr]
+      );
+
       if (exists.rowCount === 0) {
         await client.query("ROLLBACK");
         return null;
@@ -393,27 +414,35 @@ async function updateWithDetails(mnr, updates) {
     // 2) Kontakt (0..1) - replace
     if (updates.kontakt && typeof updates.kontakt === "object") {
       const k = updates.kontakt;
-      await client.query(`DELETE FROM mitarbeiter_kontakt WHERE mnr=$1`, [mnr]);
+
+      await client.query(`DELETE FROM mitarbeiter_kontakt WHERE mnr = $1`, [mnr]);
+
       await client.query(
-        `INSERT INTO mitarbeiter_kontakt (mnr, strasse, plz, ort, land)
-         VALUES ($1,$2,$3,$4,$5)`,
+        `
+        INSERT INTO mitarbeiter_kontakt (mnr, strasse, plz, ort, land)
+        VALUES ($1,$2,$3,$4,$5)
+        `,
         [mnr, k.strasse ?? null, k.plz ?? null, k.ort ?? null, k.land ?? null]
       );
     }
 
     // 3) Telefone (0..n) - replace
     if (Array.isArray(updates.telefone)) {
-      await client.query(`DELETE FROM mitarbeiter_telefon WHERE mnr=$1`, [mnr]);
+      await client.query(`DELETE FROM mitarbeiter_telefon WHERE mnr = $1`, [mnr]);
 
       for (const t of updates.telefone) {
         if (!t) continue;
+
         const typ = t.telefon_typ ?? t.typ;
         const nummer = t.nummer;
+
         if (!typ || !nummer) continue;
 
         await client.query(
-          `INSERT INTO mitarbeiter_telefon (mnr, telefon_typ, nummer)
-           VALUES ($1,$2,$3)`,
+          `
+          INSERT INTO mitarbeiter_telefon (mnr, telefon_typ, nummer)
+          VALUES ($1,$2,$3)
+          `,
           [mnr, String(typ), String(nummer)]
         );
       }
@@ -421,17 +450,21 @@ async function updateWithDetails(mnr, updates) {
 
     // 4) Emails (0..n) - replace
     if (Array.isArray(updates.emails)) {
-      await client.query(`DELETE FROM mitarbeiter_email WHERE mnr=$1`, [mnr]);
+      await client.query(`DELETE FROM mitarbeiter_email WHERE mnr = $1`, [mnr]);
 
       for (const e of updates.emails) {
         if (!e) continue;
+
         const typ = e.email_typ ?? e.typ;
         const adr = e.email_adresse ?? e.adresse;
+
         if (!typ || !adr) continue;
 
         await client.query(
-          `INSERT INTO mitarbeiter_email (mnr, email_typ, email_adresse)
-           VALUES ($1,$2,$3)`,
+          `
+          INSERT INTO mitarbeiter_email (mnr, email_typ, email_adresse)
+          VALUES ($1,$2,$3)
+          `,
           [mnr, String(typ), String(adr)]
         );
       }
@@ -439,20 +472,26 @@ async function updateWithDetails(mnr, updates) {
 
     // 5) Nebenfilialen (0..n) - mapping replace
     if (Array.isArray(updates.nebenfilialen)) {
-      await client.query(`DELETE FROM mitarbeiter_arbeitet_in_filiale WHERE mnr=$1`, [mnr]);
+      await client.query(
+        `DELETE FROM mitarbeiter_arbeitet_in_filiale WHERE mnr = $1`,
+        [mnr]
+      );
 
       // Filter:
       // - nur Integer
-      // - nicht gleich Hauptfiliale (reduziert Doppeleinträge / semantische Fehler)
+      // - nicht gleich Hauptfiliale
+      //   (reduziert Doppeleinträge / semantische Fehler)
       const neben = updates.nebenfilialen
         .map(Number)
         .filter((x) => Number.isInteger(x) && x !== (updates.hauptfiliale_fnr ?? null));
 
       for (const fnr of neben) {
         await client.query(
-          `INSERT INTO mitarbeiter_arbeitet_in_filiale (mnr, fnr)
-           VALUES ($1,$2)
-           ON CONFLICT DO NOTHING;`,
+          `
+          INSERT INTO mitarbeiter_arbeitet_in_filiale (mnr, fnr)
+          VALUES ($1,$2)
+          ON CONFLICT DO NOTHING;
+          `,
           [mnr, fnr]
         );
       }
@@ -463,7 +502,10 @@ async function updateWithDetails(mnr, updates) {
     // Einheitliche Rückgabe: kompletter Datensatz inkl. Details
     return await getByIdWithDetails(mnr);
   } catch (err) {
-    await client.query("ROLLBACK");
+    try {
+      await client.query("ROLLBACK");
+    } catch {}
+
     throw err;
   } finally {
     client.release();
@@ -472,28 +514,20 @@ async function updateWithDetails(mnr, updates) {
 
 /**
  * ============================================================================
- * REMOVE
- * ----------------------------------------------------------------------------
- * Löscht einen Mitarbeiter.
- * Detailtabellen sollten über Foreign Keys (ON DELETE CASCADE) mit gelöscht werden.
- * ============================================================================
- */
-async function remove(mnr) {
-  const result = await pool.query(`DELETE FROM mitarbeiter WHERE mnr = $1;`, [mnr]);
-  return result.rowCount > 0;
-}
-
-/**
- * ============================================================================
  * UPDATE COUNTER
  * ----------------------------------------------------------------------------
  * Speichert den aktuellen Startpunkt des Mitarbeiters im Algorithmus.
- * Diese Information wird vom Dienstplan-Generator verwendet,
- * damit die Rotation über Monate hinweg fortgesetzt wird.
+ *
+ * Zweck:
+ * - Der Dienstplan-Generator verwendet diesen Wert,
+ *   damit die Rotation über Monate hinweg fortgesetzt wird.
  * ============================================================================
  */
 async function updateCounter(mnr, counter) {
-  await pool.query(`UPDATE mitarbeiter SET counter = $1 WHERE mnr = $2;`, [counter, mnr]);
+  await pool.query(
+    `UPDATE mitarbeiter SET counter = $1 WHERE mnr = $2;`,
+    [counter, mnr]
+  );
   return true;
 }
 
@@ -504,8 +538,11 @@ async function updateCounter(mnr, counter) {
  * Minimale Mitarbeiterversion für den Dienstplan-Generator.
  *
  * Zweck:
- * - Generator benötigt keine Kontakt/Telefon/E-Mail Daten
+ * - Generator benötigt keine Kontakt/Telefon/E-Mail-Daten
  * - Weniger Daten = schnellere Queries
+ *
+ * Optional:
+ * - onlyActive = true -> nur aktive Mitarbeiter laden
  * ============================================================================
  */
 async function getAllBase({ onlyActive = false } = {}) {
@@ -522,7 +559,16 @@ async function getAllBase({ onlyActive = false } = {}) {
   return r.rows;
 }
 
-
+/**
+ * ============================================================================
+ * DEACTIVATE
+ * ----------------------------------------------------------------------------
+ * Soft Delete für Mitarbeiter.
+ *
+ * Statt eines echten Löschens wird aktiv = false gesetzt,
+ * damit historische Dienstpläne und Referenzen erhalten bleiben.
+ * ============================================================================
+ */
 async function deactivate(mnr) {
   const r = await pool.query(
     `UPDATE mitarbeiter
@@ -531,16 +577,28 @@ async function deactivate(mnr) {
      RETURNING mnr;`,
     [mnr]
   );
+
   return r.rowCount > 0;
 }
 
-
-// für Anzeige im Frontend: aktive MA + MA mit Diensten im Monat
+/**
+ * ============================================================================
+ * GET FOR DIENSTPLAN MONAT
+ * ----------------------------------------------------------------------------
+ * Liefert alle aktiven Mitarbeiter sowie zusätzlich jene inaktiven Mitarbeiter,
+ * die im angegebenen Monat noch Dienste besitzen.
+ *
+ * Zweck:
+ * - Im Frontend sollen historische Dienste weiterhin sichtbar bleiben,
+ *   auch wenn ein Mitarbeiter inzwischen deaktiviert wurde.
+ * ============================================================================
+ */
 async function getForDienstplanMonat(jahr, monat) {
   const sql = `
-    SELECT DISTINCT m.mnr, m.vorname, m.nachname, m.hauptfiliale_fnr,
-           m.counter, m.springer, m.springeralgorithmid, m.arbeitnehmertyp,
-           m.aktiv
+    SELECT DISTINCT
+      m.mnr, m.vorname, m.nachname, m.hauptfiliale_fnr,
+      m.counter, m.springer, m.springeralgorithmid, m.arbeitnehmertyp,
+      m.aktiv
     FROM mitarbeiter m
     LEFT JOIN dienstplaene d
       ON d.mnr = m.mnr
@@ -550,10 +608,22 @@ async function getForDienstplanMonat(jahr, monat) {
        OR d.mnr IS NOT NULL
     ORDER BY m.mnr;
   `;
+
   const r = await pool.query(sql, [jahr, monat]);
   return r.rows;
 }
 
+/**
+ * ============================================================================
+ * GET BY MNR
+ * ----------------------------------------------------------------------------
+ * Liefert die Basisdaten eines einzelnen Mitarbeiters anhand der mnr.
+ *
+ * Zweck:
+ * - Wird z.B. in der Dienstplan-Logik benötigt,
+ *   wenn nur Hauptfiliale / Springer / Counter relevant sind.
+ * ============================================================================
+ */
 async function getByMnr(mnr) {
   const r = await pool.query(
     `
@@ -565,17 +635,15 @@ async function getByMnr(mnr) {
     `,
     [mnr]
   );
+
   return r.rows[0] ?? null;
 }
-
-
 
 module.exports = {
   getAllWithDetails,
   getByIdWithDetails,
   addWithDetails,
   updateWithDetails,
-  remove,
   updateCounter,
   getAllBase,
   deactivate,
