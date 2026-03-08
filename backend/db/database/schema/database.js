@@ -69,7 +69,6 @@ async function initDatabase() {
         await client.query('BEGIN');
  
         // Externe Skripte => laden
-        // HINWEIS: prevent_double_booking Trigger gelöscht
         const schemaDir = __dirname;
         
         const procedureDir = path.resolve(__dirname, '../procedures');
@@ -78,8 +77,8 @@ async function initDatabase() {
         const indexesDir = path.resolve(__dirname, '../indexes');
         const seedsDir = path.resolve(__dirname, '../seeds');
 
-        // Erst das Schema laden!
-        // Reihenfolge ist wichtig!
+        // Wichtig: Erst das Schema laden!  -> Reihenfolge 
+        
 
         // erstens
         await loadSqlFiles(client, [schemaDir]);
@@ -109,7 +108,7 @@ async function initDatabase() {
         `, [hashPassword]);
  
         await client.query('COMMIT');
-        console.log("Datenbank erfolgreich an Backend-Wünsche angepasst.");
+        // console.log("Datenbank erfolgreich an Backend-Wünsche angepasst.");
  
  
     } catch (err) {

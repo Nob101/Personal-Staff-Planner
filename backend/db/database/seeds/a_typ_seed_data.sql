@@ -9,3 +9,16 @@ INSERT INTO arbeitstyp (akurzl, text) VALUES
        ('K', 'Krankenstand'),
         ('U', 'Urlaub')
     on CONFLICT (akurzl) DO NOTHING;
+
+
+
+
+
+
+
+
+
+
+
+
+    --Hola

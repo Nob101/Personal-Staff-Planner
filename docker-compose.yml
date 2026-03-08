@@ -66,7 +66,7 @@ x-logging: &default-logging
 # Schritt 3 und 4 sorgen erst dafür, dass die Datei unter Windows tatsächlich wieder kleiner wird. 
 # Ohne Schritt 4 bleibt die Datei auf Windows-Ebene 
 
-
+# ...
 services:
   # --- DATENBANK BEREICH Lukas ---
   psp_database:
@@ -88,14 +88,14 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
-    volumes:
-      - ./postgres/data:/var/lib/postgresql/data      #NEU: von named volumes zu mount gewechselt (daten werden im root gespeichert)
+    volumes:  #NEU: von named volumes zu mount gewechselt (daten werden im root gespeichert)
+      - ./postgres/data:/var/lib/postgresql/data  
     healthcheck: # NEU: Prüft, ob Postgres wirklich Anfragen annimmt
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 3s
       timeout: 3s
       retries: 10
-
+# ...
   # --- BACKEND Alexander ---
   psp_backend:
     build: ./backend
