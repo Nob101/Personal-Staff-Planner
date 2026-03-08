@@ -72,9 +72,10 @@ function fromFrontendPatch(b) {
   if (has(b, "springer")) {
     const val = b.springer;
 
-    if (val === true || val === "Ja") out.springer = true;
-    else if (val === false || val === "Nein") out.springer = false;
-  }
+  if (val === true || val === "Ja" || val === "true") out.springer = true;
+  else if (val === false || val === "Nein" || val === "false") out.springer = false;
+}
+
 
   /**
    * Arbeitszeit:
@@ -160,7 +161,7 @@ function fromFrontend(b) {
 
   /**
    * Nebenfilialen:
-   * - undefined bedeutet: "nicht ändern" (wichtig für PUT/optional Felder)
+  * - Falls nebenfilialen nicht vorhanden ist, wird das Feld im DTO nicht gesetzt.
    * - null bedeutet: "bewusst leeren"
    * - Array: übernehmen
    */
