@@ -9,24 +9,27 @@ const pool = require('../db/pool');
  *
  * Diese Funktion wird von der Mitarbeiter-Route aufgerufen,
  * wenn sich die Mitarbeiterstruktur einer Filiale ändert
- * (z. B. beim Hinzufügen oder Löschen eines Mitarbeiters).
+ * (z. B. beim Hinzufügen oder Deaktivieren eines Mitarbeiters).
  *
  * Durch das Zurücksetzen auf NULL kann der Counter anschließend
  * durch setCounterForMitarbeiter neu und gleichmäßig verteilt werden.
  * Dadurch werden Überschneidungen und unfaire Startpositionen vermieden.
  */
 
-
-// NEU: Tippfehler bei query $1AND -> $1 AND und [filialeId] hat gefehlt
-
 async function resetCountersForFiliale(filialeId) {
-  // Sicherheitsprüfung: ohne Filial-ID keine Aktion
-  if (!filialeId) return;
 
-  // Alle Mitarbeiter dieser Filiale verlieren ihren aktuellen Startpunkt
-  // im Schicht-Pattern (Rotation beginnt neu)
+  // Sicherheitsprüfung: nur gültige Filial-ID zulassen
+  if (!Number.isInteger(Number(filialeId)) || Number(filialeId) <= 0) {
+    return;
+  }
+
+  // Alle aktiven Mitarbeiter dieser Filiale verlieren ihren aktuellen
+  // Startpunkt im Schicht-Algorithmus
   await pool.query(
-    'UPDATE mitarbeiter SET counter = NULL WHERE hauptfiliale_fnr = $1 AND aktiv = true',
+    `UPDATE mitarbeiter
+     SET counter = NULL
+     WHERE hauptfiliale_fnr = $1
+       AND aktiv = true`,
     [filialeId]
   );
 }

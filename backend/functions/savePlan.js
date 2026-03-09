@@ -31,6 +31,11 @@ const dienstplanRepo = require("../repositories/dienstplan.repo.pg");
  * ============================================================================
  */
 async function savePlan(jahr, monat, dienste) {
+  
+  if (!Array.isArray(dienste) || dienste.length === 0) {
+    return;
+  }
+
   for (const d of dienste) {
     await dienstplanRepo.save(
       jahr,
@@ -38,7 +43,7 @@ async function savePlan(jahr, monat, dienste) {
       d.datum,
       d.mnr,
       d.fnr,
-      d.schicht_typ
+      d.schicht_typ,
     );
   }
 }

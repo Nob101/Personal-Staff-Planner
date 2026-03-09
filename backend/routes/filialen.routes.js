@@ -76,15 +76,14 @@ router.post("/", async (req, res) => {
     res.status(201).json(toFrontendFiliale(created));
   } catch (err) {
     console.error("Fehler POST /filialen:", err);
-    // err.message ist für Debug ok, aber in echten Systemen würde man hier eher generisch antworten
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Fehler beim Anlegen der Filiale" });
   }
 });
 
 /**
  * ----------------------------------------------------------------------------
  * GET /filialen
- * Liefert alle Filialen.
+ *   Liefert alle aktiven Filialen.
  * ----------------------------------------------------------------------------
  */
 router.get("/", async (_req, res) => {
@@ -109,6 +108,9 @@ router.get("/", async (_req, res) => {
 router.get("/:fnr", async (req, res) => {
   try {
     const fnr = Number(req.params.fnr);
+    if (!Number.isFinite(fnr)) {
+      return res.status(400).json({ error: "Ungültige fnr" });
+    }
 
     const filiale = await filialeRepo.getById(fnr);
     if (!filiale) {
@@ -135,6 +137,9 @@ router.get("/:fnr", async (req, res) => {
 router.put("/:fnr", async (req, res) => {
   try {
     const fnr = Number(req.params.fnr);
+    if (!Number.isFinite(fnr)) {
+      return res.status(400).json({ error: "Ungültige fnr" });
+    }
 
     // Whitelist: nur diese Felder dürfen aktualisiert werden
     const allowed = [
@@ -154,6 +159,9 @@ router.put("/:fnr", async (req, res) => {
     for (const k of allowed) {
       if (k in req.body) updates[k] = req.body[k];
     }
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ error: "Keine gültigen Felder zum Aktualisieren übergeben" });
+    }
 
     const updated = await filialeRepo.update(fnr, updates);
     if (!updated) {
@@ -170,7 +178,7 @@ router.put("/:fnr", async (req, res) => {
 /**
  * ----------------------------------------------------------------------------
  * DELETE /filialen/:fnr
- * Löscht eine Filiale.
+ * Deaktiviert eine Filiale (Soft Delete).
  *
  * Hinweis:
  * - In der Praxis muss man auf Referenzen achten (FKs),
@@ -180,16 +188,19 @@ router.put("/:fnr", async (req, res) => {
 router.delete("/:fnr", async (req, res) => {
   try {
     const fnr = Number(req.params.fnr);
+    if (!Number.isFinite(fnr)) {
+      return res.status(400).json({ error: "Ungültige fnr" });
+    }
 
     const deleted = await filialeRepo.remove(fnr);
     if (!deleted) {
       return res.status(404).json({ error: "Filiale nicht gefunden" });
     }
 
-    res.json({ message: "Filiale gelöscht" });
+    res.json({ message: "Filiale deaktiviert" });
   } catch (err) {
     console.error("Fehler DELETE /filialen/:fnr:", err);
-    res.status(500).json({ error: "Fehler beim Löschen der Filiale" });
+    res.status(500).json({ error: "Fehler beim deaktivieren der Filiale" });
   }
 });
 

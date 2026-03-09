@@ -4,7 +4,6 @@ const router = express.Router();
 const dienstplanRepo = require("../repositories/dienstplan.repo.pg");
 const { generateDienstplan } = require("../functions/dienstplanGenerator");
 const mitarbeiterRepo = require("../repositories/mitarbeiter.repo.pg");
-const { savePlan } = require("../functions/savePlan");
 
 const filialenRepo = require("../repositories/filialen.repo.pg");
 const stundenRepo = require("../repositories/stunden.repo.pg");
@@ -39,7 +38,7 @@ router.get("/", async (req, res) => {
   const jahr = Number(req.query.jahr);
   const monat = Number(req.query.monat);
 
-  if (!jahr || !monat) {
+  if (!Number.isInteger(jahr) || !Number.isInteger(monat)) {
     return res.status(400).json({ error: "jahr und monat Pflicht." });
   }
 
@@ -64,7 +63,6 @@ router.get("/", async (req, res) => {
  * Der Generator speichert intern die Ergebnisse in der Datenbank.
  * ============================================================================
  */
-
 
 router.post("/generate", async (req, res) => {
   const { jahr, monat, fnr } = req.body;
@@ -168,7 +166,9 @@ const STUNDEN_BY_TYP = {
  * Unbekannte Werte fallen kontrolliert auf 0 zurück.
  */
 function stundenVonTyp(typ) {
-  const t = String(typ ?? "F").trim().toUpperCase();
+  const t = String(typ ?? "F")
+    .trim()
+    .toUpperCase();
   return STUNDEN_BY_TYP[t] ?? 0;
 }
 
@@ -196,10 +196,14 @@ router.post("/shift", async (req, res) => {
 
   try {
     const id = Number(req.body.id);
-    const neuTyp = String(req.body.schicht_typ ?? "").trim().toUpperCase();
+    const neuTyp = String(req.body.schicht_typ ?? "")
+      .trim()
+      .toUpperCase();
 
     if (!Number.isFinite(id) || !neuTyp) {
-      return res.status(400).json({ error: "id und schicht_typ sind Pflicht." });
+      return res
+        .status(400)
+        .json({ error: "id und schicht_typ sind Pflicht." });
     }
     if (!ALLOWED.has(neuTyp)) {
       return res.status(400).json({ error: "Ungültiger schicht_typ." });
@@ -215,11 +219,20 @@ router.post("/shift", async (req, res) => {
     }
 
     const delta = deltaStunden(before.schicht_typ, neuTyp);
-    // Test
+
     const m = await mitarbeiterRepo.getByMnr(before.mnr);
+    if (!m) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Mitarbeiter nicht gefunden." });
+    }
 
     // Diensttyp aktualisieren
-    const updated = await dienstplanRepo.dienstShiftTx(client, id, neuTyp, m.hauptfiliale_fnr);
+    const updated = await dienstplanRepo.dienstShiftTx(
+      client,
+      id,
+      neuTyp,
+      m.hauptfiliale_fnr,
+    );
     if (!updated) {
       await client.query("ROLLBACK");
       return res.status(404).json({ error: "Dienst nicht gefunden." });
@@ -233,7 +246,7 @@ router.post("/shift", async (req, res) => {
         before.mnr,
         before.jahr,
         before.monat,
-        delta
+        delta,
       );
     }
 
@@ -272,13 +285,19 @@ router.post("/shift", async (req, res) => {
 router.post("/shiftMitErsatz", async (req, res) => {
   const altId = Number(req.body.altId);
   const neuId = Number(req.body.neuId);
-  const neuTypAltDienst = String(req.body.schicht_typ ?? "").trim().toUpperCase();
+  const neuTypAltDienst = String(req.body.schicht_typ ?? "")
+    .trim()
+    .toUpperCase();
 
   if (!Number.isFinite(altId) || !Number.isFinite(neuId)) {
-    return res.status(400).json({ error: "altId und neuId müssen Zahlen sein." });
+    return res
+      .status(400)
+      .json({ error: "altId und neuId müssen Zahlen sein." });
   }
   if (altId === neuId) {
-    return res.status(400).json({ error: "altId und neuId dürfen nicht gleich sein." });
+    return res
+      .status(400)
+      .json({ error: "altId und neuId dürfen nicht gleich sein." });
   }
   if (!ALLOWED.has(neuTypAltDienst)) {
     return res.status(400).json({ error: "Ungültiger schicht_typ." });
@@ -294,7 +313,9 @@ router.post("/shiftMitErsatz", async (req, res) => {
 
     if (!dienstAlt || !dienstNeu) {
       await client.query("ROLLBACK");
-      return res.status(404).json({ error: "Dienst (alt oder neu) nicht gefunden." });
+      return res
+        .status(404)
+        .json({ error: "Dienst (alt oder neu) nicht gefunden." });
     }
 
     // Ersatz ist nur sinnvoll, wenn beide Dienste am selben Datum stattfinden
@@ -303,25 +324,35 @@ router.post("/shiftMitErsatz", async (req, res) => {
     const dNeu = String(dienstNeu.datum).slice(0, 10);
     if (dAlt !== dNeu) {
       await client.query("ROLLBACK");
-      return res.status(400).json({ error: "Ersatz muss am selben Datum sein." });
+      return res
+        .status(400)
+        .json({ error: "Ersatz muss am selben Datum sein." });
     }
 
     // Der Ersatz übernimmt den ursprünglichen Typ des Alt-Dienstes
-    const neuTypErsatzDienst = String(dienstAlt.schicht_typ ?? "F").trim().toUpperCase();
+    const neuTypErsatzDienst = String(dienstAlt.schicht_typ ?? "F")
+      .trim()
+      .toUpperCase();
     if (!ALLOWED.has(neuTypErsatzDienst)) {
       await client.query("ROLLBACK");
-      return res.status(409).json({ error: "Alt-Dienst hat ungültigen schicht_typ." });
+      return res
+        .status(409)
+        .json({ error: "Alt-Dienst hat ungültigen schicht_typ." });
     }
 
     // 1) Alt-Dienst wird auf K/U/F/... gesetzt
-    const updatedAlt = await dienstplanRepo.dienstShiftTx(client, altId, neuTypAltDienst);
+    const updatedAlt = await dienstplanRepo.dienstShiftTx(
+      client,
+      altId,
+      neuTypAltDienst,
+    );
 
     // 2) Neu-Dienst übernimmt Typ + Arbeitsfiliale vom Alt-Dienst
     const updatedNeu = await dienstplanRepo.dienstShiftTx(
       client,
       neuId,
       neuTypErsatzDienst,
-      dienstAlt.fnr
+      dienstAlt.fnr,
     );
 
     if (!updatedAlt || !updatedNeu) {
@@ -344,7 +375,7 @@ router.post("/shiftMitErsatz", async (req, res) => {
         dienstAlt.mnr,
         dienstAlt.jahr,
         dienstAlt.monat,
-        deltaAlt
+        deltaAlt,
       );
     }
 
@@ -354,7 +385,7 @@ router.post("/shiftMitErsatz", async (req, res) => {
         dienstNeu.mnr,
         dienstNeu.jahr,
         dienstNeu.monat,
-        deltaNeu
+        deltaNeu,
       );
     }
 
@@ -379,10 +410,12 @@ router.post("/shiftMitErsatz", async (req, res) => {
     } catch {}
 
     console.error("Fehler POST /dienstplan/shiftMitErsatz", err);
-    res.status(500).json({ error: "Fehler beim Aktualisieren der Schicht mit Ersatz" });
+    res
+      .status(500)
+      .json({ error: "Fehler beim Aktualisieren der Schicht mit Ersatz" });
   } finally {
     client.release();
-  } 
+  }
 });
 
 /* ============================================================================
@@ -403,7 +436,12 @@ router.get("/view", async (req, res) => {
   const jahr = Number(req.query.jahr);
   const monat = Number(req.query.monat);
 
-  if (!Number.isInteger(jahr) || !Number.isInteger(monat)) {
+  if (
+    !Number.isInteger(jahr) ||
+    !Number.isInteger(monat) ||
+    monat < 1 ||
+    monat > 12
+  ) {
     return res.status(400).json({ error: "jahr und monat Pflicht." });
   }
 
@@ -411,7 +449,7 @@ router.get("/view", async (req, res) => {
     const [dienste, filialen, mitarbeiter, stunden] = await Promise.all([
       dienstplanRepo.getByDate(jahr, monat),
       filialenRepo.getAll(),
-      mitarbeiterRepo.getForDienstplanMonat(jahr, monat),//soft delete beachten
+      mitarbeiterRepo.getForDienstplanMonat(jahr, monat), //soft delete beachten
       stundenRepo.getStundenForMonthYear(monat, jahr),
     ]);
 
@@ -443,7 +481,8 @@ router.get("/:id/ersatz", async (req, res) => {
       return res.status(400).json({ error: "Ungültige dienstId." });
     }
 
-    const kandidaten = await dienstplanRepo.findErsatzKandidatenByDienstId(dienstId);
+    const kandidaten =
+      await dienstplanRepo.findErsatzKandidatenByDienstId(dienstId);
     res.json({ dienstId, kandidaten });
   } catch (err) {
     console.error("Fehler GET /dienstplan/:id/ersatz", err);
@@ -473,7 +512,11 @@ router.put("/stunden", async (req, res) => {
     const monat = Number(req.body.monat);
     const ist = Number(req.body.ist_stunden_monat);
 
-    if (!Number.isFinite(mnr) || !Number.isInteger(jahr) || !Number.isInteger(monat)) {
+    if (
+      !Number.isFinite(mnr) ||
+      !Number.isInteger(jahr) ||
+      !Number.isInteger(monat)
+    ) {
       return res.status(400).json({ error: "mnr, jahr, monat sind Pflicht." });
     }
 
@@ -492,7 +535,9 @@ router.put("/stunden", async (req, res) => {
 
     if (!updated) {
       await client.query("ROLLBACK");
-      return res.status(404).json({ error: "Stunden-Datensatz nicht gefunden." });
+      return res
+        .status(404)
+        .json({ error: "Stunden-Datensatz nicht gefunden." });
     }
 
     await client.query("COMMIT");

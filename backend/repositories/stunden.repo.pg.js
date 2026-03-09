@@ -1,32 +1,44 @@
 const pool = require("../db/pool");
 
 /**
- * stunden.repo.pg.js
- * ---------------------------------------------------------------------------
- * Datenzugriffsschicht (Repository) für die Tabelle stunden_konto.
+ * ============================================================================
+ * Repository: stunden_konto
+ * ----------------------------------------------------------------------------
+ * Diese Datei kapselt alle Datenbankzugriffe auf die Tabelle "stunden_konto".
  *
- * Aufgabe des Repositories:
- * - Kapselt SQL-Statements an einer Stelle (Separation of Concerns)
- * - Liefert/aktualisiert Stundenkonten für Mitarbeiter pro Monat/Jahr
- * - Wird vom Dienstplan-Generator und von Routen (z.B. Shift / Stunden-Edit) verwendet
+ * Aufgabe:
+ * - Soll-/Ist-Stunden eines Mitarbeiters pro Monat/Jahr speichern
+ * - Stundenkonten laden
+ * - Stundenwerte bei Dienständerungen oder manuellen Korrekturen aktualisieren
  *
  * Wichtig:
- * - Funktionen mit Suffix "Tx" erwarten einen DB-Client innerhalb einer Transaktion.
- * - Funktionen ohne "Tx" verwenden den Pool direkt (eigene Einzel-Queries).
+ * - Funktionen mit Suffix "Tx" erwarten einen bestehenden DB-Client
+ *   innerhalb einer Transaktion.
+ * - Funktionen ohne "Tx" verwenden direkt den Pool.
+ * ============================================================================
  */
 
 
 /**
- * Speichert ein Stundenkonto (Soll/Ist/Differenz) für einen Mitarbeiter und Monat.
+ * ============================================================================
+ * saveStunden
+ * ----------------------------------------------------------------------------
+ * Speichert ein Stundenkonto (Soll/Ist/Differenz) für einen Mitarbeiter
+ * und einen bestimmten Monat.
  *
- * ON CONFLICT (mnr, jahr, monat):
- * - stellt sicher, dass es pro Mitarbeiter/Monat genau einen Datensatz gibt
- * - wenn es den Datensatz schon gibt, wird er aktualisiert (Upsert)
+ * ON CONFLICT:
+ * - Pro Mitarbeiter und Monat darf es nur einen Datensatz geben
+ * - Existiert bereits ein Datensatz, wird er aktualisiert (Upsert)
+ *
+ * Rückgabe:
+ * - der neu eingefügte oder aktualisierte Datensatz
+ * ============================================================================
  */
-
 async function saveStunden(stunden) {
   const query = `
-    INSERT INTO stunden_konto (mnr, jahr, monat, soll_stunden_monat, ist_stunden_monat, differenz)
+    INSERT INTO stunden_konto (
+      mnr, jahr, monat, soll_stunden_monat, ist_stunden_monat, differenz
+    )
     VALUES ($1, $2, $3, $4, $5, $6)
     ON CONFLICT (mnr, jahr, monat)
     DO UPDATE SET
@@ -50,8 +62,23 @@ async function saveStunden(stunden) {
 }
 
 
+/**
+ * ============================================================================
+ * deleteStunden
+ * ----------------------------------------------------------------------------
+ * Löscht Stundenkonten eines Monats/Jahres.
+ *
+ * Varianten:
+ * - ohne fnr: löscht alle Stundenkonten des Monats
+ * - mit fnr:  löscht nur Stundenkonten jener Mitarbeiter,
+ *             deren Hauptfiliale dieser fnr entspricht
+ *
+ * Rückgabe:
+ * - Anzahl der gelöschten Datensätze
+ * ============================================================================
+ */
 async function deleteStunden(monat, jahr, fnr = null) {
-  if (fnr) {
+  if (Number.isInteger(fnr) && fnr > 0) {
     const r = await pool.query(
       `
       DELETE FROM stunden_konto
@@ -76,17 +103,25 @@ async function deleteStunden(monat, jahr, fnr = null) {
     `,
     [jahr, monat]
   );
+
   return r.rowCount;
 }
 
 
 /**
- * Liefert alle Stundenkonten eines Mitarbeiters (Historie).
- * Sortierung absteigend, damit neueste Monate zuerst kommen.
+ * ============================================================================
+ * getStundenForMitarbeiter
+ * ----------------------------------------------------------------------------
+ * Liefert alle Stundenkonten eines Mitarbeiters als Historie.
+ *
+ * Sortierung:
+ * - neueste Monate zuerst (jahr DESC, monat DESC)
+ * ============================================================================
  */
 async function getStundenForMitarbeiter(mnr) {
   const query = `
-    SELECT * FROM stunden_konto
+    SELECT *
+    FROM stunden_konto
     WHERE mnr = $1
     ORDER BY jahr DESC, monat DESC;
   `;
@@ -96,16 +131,25 @@ async function getStundenForMitarbeiter(mnr) {
 }
 
 
-
-
 /**
- * Liefert alle Stundenkonten eines Monats/Jahres (für die Dienstplan-Ansicht).
- * Sortierung nach mnr, damit das Frontend eine stabile Reihenfolge hat.
+ * ============================================================================
+ * getStundenForMonthYear
+ * ----------------------------------------------------------------------------
+ * Liefert alle Stundenkonten eines bestimmten Monats/Jahres.
+ *
+ * Verwendungszweck:
+ * - Anzeige im Dienstplan-Frontend
+ *
+ * Sortierung:
+ * - nach mnr ASC, damit das Frontend eine stabile Reihenfolge bekommt
+ * ============================================================================
  */
 async function getStundenForMonthYear(monat, jahr) {
   const query = `
-    SELECT * FROM stunden_konto
-    WHERE monat = $1 AND jahr = $2
+    SELECT *
+    FROM stunden_konto
+    WHERE monat = $1
+      AND jahr = $2
     ORDER BY mnr ASC;
   `;
 
@@ -115,41 +159,53 @@ async function getStundenForMonthYear(monat, jahr) {
 
 
 /**
- * Transaktionsfunktion:
- * Passt die IST-Stunden um ein Delta an (z.B. wenn ein Dienst manuell geändert wird).
+ * ============================================================================
+ * updateIstStundenTx
+ * ----------------------------------------------------------------------------
+ * Passt die IST-Stunden eines Mitarbeiters um ein Delta an.
  *
  * Beispiel:
- * - Shift von F -> A  => delta = +9
- * - Shift von A -> F  => delta = -9
+ * - F -> A  => +9
+ * - A -> F  => -9
+ * - E -> K  => -1
  *
- * Die differenz wird dabei sofort konsistent neu berechnet:
+ * Gleichzeitig wird die Differenz neu berechnet:
  * differenz = ist_stunden_monat - soll_stunden_monat
  *
  * Warum Tx?
- * - Wird zusammen mit dem Update eines Dienstes ausgeführt
- * - Beides muss gemeinsam committen oder gemeinsam rollbacken (atomar)
+ * - Diese Funktion wird zusammen mit einer Dienständerung ausgeführt
+ * - Beides muss atomar gespeichert werden
+ * ============================================================================
  */
 async function updateIstStundenTx(client, mnr, jahr, monat, delta) {
   const q = `
     UPDATE stunden_konto
     SET ist_stunden_monat = ist_stunden_monat + $4,
         differenz = (ist_stunden_monat + $4) - soll_stunden_monat
-    WHERE mnr = $1 AND jahr = $2 AND monat = $3
+    WHERE mnr = $1
+      AND jahr = $2
+      AND monat = $3
     RETURNING *;
   `;
+
   const r = await client.query(q, [mnr, jahr, monat, delta]);
   return r.rows[0] ?? null;
 }
 
 
 /**
- * Transaktionsfunktion:
- * Manuelles Überschreiben der IST-Stunden (z.B. wenn der Auftraggeber korrigiert).
+ * ============================================================================
+ * updateIstStundenManuellTx
+ * ----------------------------------------------------------------------------
+ * Überschreibt die IST-Stunden manuell.
  *
  * Use-Case:
- * - Ist-Stunden sollen per UI gesetzt werden, wegen komischer Regelungen
+ * - Der Auftraggeber möchte das Stundenkonto bewusst manuell korrigieren
+ * - Die Differenz wird dabei direkt neu berechnet
  *
- * Dabei wird differenz ebenfalls neu berechnet.
+ * Warum Tx?
+ * - Die Änderung soll konsistent und transaktional gespeichert werden
+ * ============================================================================
  */
 async function updateIstStundenManuellTx(client, { mnr, jahr, monat, ist }) {
   const sql = `
@@ -157,7 +213,9 @@ async function updateIstStundenManuellTx(client, { mnr, jahr, monat, ist }) {
     SET
       ist_stunden_monat = $4::numeric,
       differenz = $4::numeric - soll_stunden_monat
-    WHERE mnr = $1 AND jahr = $2 AND monat = $3
+    WHERE mnr = $1
+      AND jahr = $2
+      AND monat = $3
     RETURNING id, mnr, jahr, monat, soll_stunden_monat, ist_stunden_monat, differenz;
   `;
 
