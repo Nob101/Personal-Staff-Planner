@@ -25,32 +25,34 @@ const roles = ref(['user', 'admin'])
 // Fehler-States
 const usernameFehler = ref(false)
 const passwordFehler = ref(false)
+const adminNameFehler = ref(false)
 
 function startEdit() {
   usernameFehler.value = false
   passwordFehler.value = false
   editData.value = { ...props.benutzer }
+  adminNameFehler.value = false
   isEditing.value = true
 }
 
 function handleSave() {
-  // Reset Fehlermeldung
   usernameFehler.value = false
   passwordFehler.value = false
+  adminNameFehler.value = false
 
-  // Validierung
-  const currentUsername = editData.value.username || ''
-  const currentPassword = editData.value.password || ''
+  const currentUsername = (editData.value.username || '').trim()
+  const currentPassword = (editData.value.password || '').trim()
 
-  if (!currentUsername.trim()) {
-    usernameFehler.value = true
+  // Validierung: Pflichtfelder
+  if (!currentUsername) usernameFehler.value = true
+  if (!currentPassword) passwordFehler.value = true
+
+  // Validierung: Reservierter Name "admin"
+  if (currentUsername.toLowerCase() === 'admin') {
+    adminNameFehler.value = true
   }
-  
-  if (!currentPassword.trim()) {
-    passwordFehler.value = true
-  }
 
-  if (usernameFehler.value || passwordFehler.value) return
+  if (usernameFehler.value || passwordFehler.value || adminNameFehler.value) return
 
   emit('update', { ...editData.value })
   isEditing.value = false
@@ -82,9 +84,10 @@ function handleSave() {
           <input 
             v-model="editData.username" 
             class="input-field" 
-            :class="{ 'input-error': usernameFehler }" 
+            :class="{ 'input-error': usernameFehler || adminNameFehler }" 
           />
           <p v-if="usernameFehler" class="error-text">Name ist erforderlich</p>
+          <p v-if="adminNameFehler" class="error-text">Dieser Benutzername darf nicht genommen werden</p>
         </div>
 
         <div class="input-group">
