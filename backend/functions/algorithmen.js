@@ -26,7 +26,7 @@ const ALGORITHMEN = {
  * Dienstplan erzeugt werden kann.
  */
 
- 
+
 function getAlgorithmus(id) {
   const algo = ALGORITHMEN[Number(id)];
   if (!algo) {

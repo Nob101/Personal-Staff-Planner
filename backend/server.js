@@ -10,6 +10,8 @@
 
 const express = require("express");
 const app = express();
+// NEU: Vertraue Nginx
+app.set('trust proxy', 1);
 
 const cors = require("cors");
 

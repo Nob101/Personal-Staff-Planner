@@ -23,7 +23,7 @@ FIX_HOSTNAME="psp-portal"
 if [ "$(hostname)" != "$FIX_HOSTNAME" ]; then
     # echo "[INFO] Setze Hostnamen auf $FIX_HOSTNAME für Erreichbarkeit via $FIX_HOSTNAME.local..."
     sudo hostnamectl set-hostname $FIX_HOSTNAME
-    # Aktualisiert die interne hosts-Datei des Pi, damit sudo nicht meckert
+    # Aktualisiert die interne hosts-Datei des Pi, damit "sudo" nicht meckert
     sudo sed -i "s/127.0.1.1.*/127.0.1.1\t$FIX_HOSTNAME/g" /etc/hosts
 fi
 
@@ -61,10 +61,10 @@ if ! command -v docker &> /dev/null; then
     curl -sSL https://get.docker.com | sh
     sudo usermod -aG docker $USER
 fi
-
+#...
 # ==========================================================================================
 # Wichtig: Selbst-Registrierung als Systemd-Service (Autostart)
-# cat für Voll-automatisches Durchreichen des SERVICE_FILE    WICHTIG: Nicht nano!!!
+# cat für Voll-automatisches Durchreichen des SERVICE_FILE  WICHTIG: Nicht nano!!!
 # ==========================================================================================
 SERVICE_FILE="/etc/systemd/system/psp-dienstplan.service"
 
@@ -92,19 +92,15 @@ EOF
     sudo systemctl enable psp-dienstplan.service
     echo "[OK] Autostart wurde erfolgreich eingerichtet!"
 fi
-
-
-
-
-
-# Wichtig: Zertifikate erstellen (falls nicht vorhanden)
+#...
+# Wichtig: Prüfung| Zertifikate-Ordner vorhanden oder nicht?
 if [ ! -d "$CERTS_DIR" ]; then
     mkdir -p "$CERTS_DIR"
 fi
 
 # FIX: Ist IP = IP? Damit des nach dem Setup alte IP verwirft (flexibler Einsatzort)
 if [ -f "$CERTS_DIR/cert.pem" ]; then
-    # Extrahiert die IP (CN) aus dem vorhandenen Zertifikat
+    # Extrahiert die IP (CN) aus dem vorhandenen Zertifikat| Metadaten
     OLD_IP=$(openssl x509 -noout -subject -in "$CERTS_DIR/cert.pem" | sed -n '/CN=/s/^.*CN=\(.*\)$/\1/p')
     # NEU: hotname für URL
     if [ "$OLD_IP" != "$RP_IP" ] && [ "$OLD_IP" != "$FIX_HOSTNAME.local" ]; then
@@ -118,7 +114,7 @@ fi
 # Zertifikate Erstellen
 if [ ! -f "$CERTS_DIR/cert.pem" ]; then
     echo "[INFO] Generiere selbstsignierte Zertifikate für IP: $RP_IP"
-# NEU: Damit nicht nach der IP gesucht werden muss fixe URL-Domain
+# NEU: Damit nicht nach der IP gesucht werden muss| fixe URL-Domain
     openssl req -x509 -newkey rsa:4096 -keyout "$CERTS_DIR/key.pem" -out "$CERTS_DIR/cert.pem" \
     -sha256 -days 365 -nodes -subj "/CN=$FIX_HOSTNAME.local" \
     -addext "subjectAltName = DNS:$FIX_HOSTNAME.local, DNS:$FIX_HOSTNAME, IP:$RP_IP"
@@ -131,6 +127,7 @@ fi
 if [ "$RESTART_REQUIRED" = true ]; then
     echo "[INFO] Starte Container neu, um neue Zertifikate anzuwenden..."
     docker compose down && docker compose up -d
+#...
 else  # NEU: Docker Compose starten wenn certs vorhanden und IP = IP -_-
     echo "[INFO] Starte Container..."
     docker compose up -d

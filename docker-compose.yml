@@ -106,10 +106,10 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./backend:/app
+      # - ./backend:/app   nutzt Code direkt aus image
       - /app/node_modules
       # WICHTIG: damit node.js die DB im Docker-Netzwerk findet
-    command: npm run devStart 
+    command: node server.js
     environment:
       DB_HOST: psp_database
       DB_PORT: 5432
@@ -139,7 +139,7 @@ services:
     ports:
       - "5173:5173" # Standard Vite-Port. Falls er geändert wird, hier bitte anpassen
     volumes:
-      - ./Frontend:/app         # <--- SPIEGELT VUE-CODE FÜR VITE HOT RELOAD
+      # - ./Frontend:/app         Verhindert unnötige Last der SD Karte -> best practice
       - /app/node_modules
     
     environment:
