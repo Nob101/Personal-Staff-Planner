@@ -1,35 +1,19 @@
 <script setup>
-import { ref } from 'vue'
 import BenutzerList from '@/components/benutzer/BenutzerList.vue'
-import BestätigungsModal from '@/components/global/BestätigungsModal.vue' // Pfad prüfen!
+import BestätigungsModal from '@/components/global/BestätigungsModal.vue'
 import { useBenutzer } from '@/composables/useBenutzer.js'
 
 const {
   benutzer,
   isLoading,
+  showDeleteModal,
+  benutzerToDelete,
   handleCreate,
   handleUpdate,
-  handleDelete
+  openDeleteModal,
+  confirmDelete,
+  cancelDelete
 } = useBenutzer()
-
-// State für das Lösch-Modal
-const showDeleteModal = ref(false)
-const benutzerToDelete = ref(null)
-
-// Öffnet das Modal und merkt sich, welcher Benutzer gelöscht werden soll
-function openDeleteModal(b) {
-  benutzerToDelete.value = b
-  showDeleteModal.value = true
-}
-
-// Wird aufgerufen, wenn im Modal auf "Ja" geklickt wird
-async function confirmDelete() {
-  if (benutzerToDelete.value) {
-    await handleDelete(benutzerToDelete.value)
-    showDeleteModal.value = false
-    benutzerToDelete.value = null
-  }
-}
 </script>
 
 <template>
@@ -49,7 +33,7 @@ async function confirmDelete() {
       :show="showDeleteModal"
       :message="`Möchten Sie den Benutzer '${benutzerToDelete?.username}' wirklich löschen?`"
       @confirm="confirmDelete"
-      @close="showDeleteModal = false"
+      @close="cancelDelete"
     />
   </div>
 </template>

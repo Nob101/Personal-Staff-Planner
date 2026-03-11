@@ -1,8 +1,16 @@
-
 <!-- BenutzerCard.vue -->
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Darstellung einzelner Benutzer in Kartenform
+// - Buttons zum Editieren und Löschen eines Benutzers
+// - Editiermodus mit Datenvalidierung für Benutzername und Passwort
+// ============================================================================
+-->
 
 <script setup>
-import { ref, reactive, defineProps, defineEmits } from 'vue'
+import { ref, defineProps, defineEmits } from 'vue'
+import Multiselect from 'vue-multiselect'
 
 const props = defineProps({
   benutzer: { type: Object, required: true }
@@ -11,157 +19,176 @@ const props = defineProps({
 const emit = defineEmits(['update', 'delete'])
 
 const isEditing = ref(false)
-const editData = reactive({ username: '', password: '' })
+const editData = ref({ id: null, username: '', password: '', role: '' })
+const roles = ref(['user', 'admin'])
+
+// Fehler-States
+const usernameFehler = ref(false)
+const passwordFehler = ref(false)
 
 function startEdit() {
-  editData.username = props.benutzer.username
-  editData.password = props.benutzer.password
+  usernameFehler.value = false
+  passwordFehler.value = false
+  editData.value = { ...props.benutzer }
   isEditing.value = true
 }
 
 function handleSave() {
-  // Verhindert, dass leere Daten gespeichert werden
-  if (!editData.username || !editData.password) {
-    alert("Name und Passwort dürfen nicht leer sein.");
-    return;
+  // Reset Fehlermeldung
+  usernameFehler.value = false
+  passwordFehler.value = false
+
+  // Validierung
+  const currentUsername = editData.value.username || ''
+  const currentPassword = editData.value.password || ''
+
+  if (!currentUsername.trim()) {
+    usernameFehler.value = true
   }
   
-  emit('update', { ...props.benutzer, ...editData })
+  if (!currentPassword.trim()) {
+    passwordFehler.value = true
+  }
+
+  if (usernameFehler.value || passwordFehler.value) return
+
+  emit('update', { ...editData.value })
   isEditing.value = false
 }
 </script>
 
 <template>
-  <div class="benutzer-card" :class="{ 'editing-active': isEditing }">
-    
-    <template v-if="isEditing">
+  <div class="benutzer-card" :class="{ 'is-editing': isEditing }">
+    <div class="card-header">
+      <h3 class="username-display">
+        {{ isEditing ? 'Bearbeiten' : benutzer.username }}
+      </h3>
       <div class="card-actions">
-        <button @click="handleSave" class="bg-green-400">Speichern</button>
-        <button @click="isEditing = false" class="bg-gray-300">Abbrechen</button>
+        <template v-if="!isEditing">
+          <button @click="startEdit" class="btn-icon edit">✎</button>
+          <button @click="$emit('delete', benutzer)" class="btn-icon delete">✕</button>
+        </template>
+        <template v-else>
+          <button @click="handleSave" class="btn-save">✔</button>
+          <button @click="isEditing = false" class="btn-cancel-small">✕</button>
+        </template>
       </div>
-      <h1 class="text-3xl font-semibold">Bearbeiten</h1>
-      <div class="benutzer-card-columns">
-        <div class="column">
-          <fieldset class="box">
-            <div class="edit-row">
-              <label>Name:</label>
-              <input v-model="editData.username" class="input-field" />
-            </div>
-            <div class="edit-row">
-              <label>Passwort:</label>
-              <input v-model="editData.password" class="input-field" />
-            </div>
-          </fieldset>
+    </div>
+
+    <div class="card-body">
+      <div v-if="isEditing" class="edit-fields">
+        <div class="input-group">
+          <label>Name</label>
+          <input 
+            v-model="editData.username" 
+            class="input-field" 
+            :class="{ 'input-error': usernameFehler }" 
+          />
+          <p v-if="usernameFehler" class="error-text">Name ist erforderlich</p>
+        </div>
+
+        <div class="input-group">
+          <label>Passwort</label>
+          <input 
+            v-model="editData.password" 
+            type="password" 
+            class="input-field" 
+            :class="{ 'input-error': passwordFehler }" 
+          />
+          <p v-if="passwordFehler" class="error-text">Passwort ist erforderlich</p>
+        </div>
+
+        <div class="input-group">
+          <label>Rolle</label>
+          <multiselect v-model="editData.role" :options="roles" :searchable="false" :show-labels="false" />
         </div>
       </div>
-    </template>
-
-    <template v-else>
-      <div class="card-actions">
-        <button @click="startEdit" class="bg-blue-300">Bearbeiten</button>
-        <button @click="$emit('delete', benutzer)" class="bg-red-300">Löschen</button>
-      </div>
-      <h1 class="text-3xl font-semibold">{{ benutzer.username }}</h1>
-      <div class="benutzer-card-columns">
-        <div class="column">
-          <fieldset class="box">
-            <p data-label="Benutzername:">{{ benutzer.username }}</p>
-            <p data-label="Passwort:">{{ benutzer.password }}</p>
-          </fieldset>
+      
+      <div v-else class="info-grid">
+        <div class="info-item">
+          <span class="label">Rolle</span>
+          <span class="value role-badge" :class="benutzer.role">{{ benutzer.role }}</span>
         </div>
       </div>
-    </template>
-
+    </div>
   </div>
 </template>
 
+<!-- Temporöres Styling -> von Dumitru noch zu ersetzen! -->
 <style scoped>
-.editing-active {
-  border-left-color: #3182ce !important;
-}
-
-.edit-row {
-  display: grid;
-  grid-template-columns: 100px 1fr;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.input-field {
-  border: 1px solid #ccc;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.bg-green-400 { background-color: #68d391; }
-
-.bg-gray-300 { background-color: #e2e8f0; }
-
 .benutzer-card {
-  position: relative;
-  text-align: center;
-  border: 1px solid #ccc;
-  border-left: 6px solid #4a5568;
-  padding: 48px 24px 24px 24px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  background-color: #fff;
-}
-
-.card-actions {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  display: flex;
-  gap: 8px;
-}
-
-.card-actions button {
-  padding: 6px 14px;
-  border-radius: 4px;
-  cursor: pointer;
-  border: none;
-  font-weight: 500;
-}
-
-.benutzer-card-columns {
-  display: flex;
-  justify-content: center;
-  text-align: left;
-  margin-top: 16px;
-}
-
-.column {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
+  margin: 0 auto;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-.box {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #f9f9f9;
-  padding: 12px 18px;
+.benutzer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
 }
 
-.box legend {
-  padding: 0 6px;
-  font-weight: 600;
-}
+.is-editing { border-color: #3b82f6; background: #f8fafc; }
 
-.box p {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 10px;
-  margin: 8px 0;
+.card-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
 }
 
-.box p::before {
-  content: attr(data-label);
-  font-weight: 600;
+.username-display { font-size: 1.25rem; font-weight: 700; color: #1e293b; }
+
+.card-actions { display: flex; gap: 10px; }
+
+.btn-icon {
+  width: 36px; height: 36px; border-radius: 10px; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1rem; transition: background 0.2s;
 }
 
-.bg-blue-300 { background-color: #93c5fd; }
+.edit { background: #eff6ff; color: #3b82f6; }
+.delete { background: #fef2f2; color: #ef4444; }
 
-.bg-red-300 { background-color: #fca5a5; }
+.btn-save { background: #22c55e; color: white; border: none; border-radius: 10px; width: 36px; height: 36px; cursor: pointer; font-size: 1.1rem; }
+.btn-cancel-small { background: #94a3b8; color: white; border: none; border-radius: 10px; width: 36px; height: 36px; cursor: pointer; }
+
+.info-item { display: flex; justify-content: space-between; align-items: center; }
+.label { font-size: 0.75rem; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.05em; }
+
+.role-badge {
+  padding: 4px 12px; border-radius: 999px; font-size: 0.85rem; font-weight: 600;
+}
+.role-badge.admin { background: #fee2e2; color: #991b1b; }
+.role-badge.user { background: #f1f5f9; color: #475569; }
+
+.edit-fields { display: flex; flex-direction: column; gap: 16px; }
+
+.input-group { display: flex; flex-direction: column; gap: 4px; }
+.input-group label { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-left: 4px; }
+
+.input-field { 
+  padding: 10px 14px; 
+  border: 1px solid #cbd5e0; 
+  border-radius: 10px; 
+  color: #1e293b !important; 
+  background-color: #ffffff !important;
+}
+
+/* Fix für Multiselect Lesbarkeit */
+:deep(.multiselect__input),
+:deep(.multiselect__single) {
+  color: #1e293b !important;
+  background: transparent !important;
+
+  
+}
+
+.input-error { border-color: #ef4444 !important; }
+.error-text { color: #ef4444; font-size: 0.75rem; margin-top: 2px; font-weight: 600; }
 </style>
