@@ -30,16 +30,28 @@ const newBenutzer = ref({ username: '', password: '', role: 'user' })
 // Fehler-States
 const usernameFehler = ref(false)
 const passwordFehler = ref(false)
+const adminNameFehler = ref(false)
 
 // Erstellt neuen Benutzer nach Validierung der Eingaben, ansonsten werden Fehlermeldungen angezeigt
 function confirmCreate() {
+  // Reset aller Fehlermeldungen
   usernameFehler.value = false
   passwordFehler.value = false
+  adminNameFehler.value = false
 
-  if (!newBenutzer.value.username.trim()) usernameFehler.value = true
+  const inputName = newBenutzer.value.username.trim()
+
+  // 1. Pflichtfeld-Check
+  if (!inputName) usernameFehler.value = true
   if (!newBenutzer.value.password.trim()) passwordFehler.value = true
 
-  if (usernameFehler.value || passwordFehler.value) return
+  // 2. Admin-Check (Case Insensitive, damit auch 'Admin' oder 'ADMIN' abgefangen wird)
+  if (inputName.toLowerCase() === 'admin') {
+    adminNameFehler.value = true
+  }
+
+  // Wenn irgendein Fehler vorliegt, abbrechen
+  if (usernameFehler.value || passwordFehler.value || adminNameFehler.value) return
 
   emit('create', { ...newBenutzer.value })
   cancelCreate()
@@ -49,6 +61,7 @@ function cancelCreate() {
   newBenutzer.value = { username: '', password: '', role: 'user' }
   usernameFehler.value = false
   passwordFehler.value = false
+  adminNameFehler.value = false
   showAddForm.value = false
 }
 </script>
@@ -77,8 +90,13 @@ function cancelCreate() {
           <div class="edit-row">
             <label>Name:</label>
             <div class="flex-1">
-              <input v-model="newBenutzer.username" class="input-field" :class="{ 'input-error': usernameFehler }" />
+              <input 
+                v-model="newBenutzer.username" 
+                class="input-field" 
+                :class="{ 'input-error': usernameFehler || adminNameFehler }" 
+              />
               <p v-if="usernameFehler" class="error-text">Name erforderlich</p>
+              <p v-if="adminNameFehler" class="error-text">Dieser Benutzername darf nicht genommen werden</p>
             </div>
           </div>
 
