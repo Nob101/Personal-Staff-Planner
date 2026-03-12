@@ -1,70 +1,29 @@
-// benutzerService.js
-/* RICHTIGE VERSION, FÜR SOBALD EIN BACKEND MIT BENUTZERFUNKTIONEN VORLIEGT. 
 import { http } from "./http"
 
-//Liste aller Benutzer abrufen Array mit benutzer-Objekten (username, password) zurückgeben
+// GET: Liste aller Benutzer abrufen (/api/users)
 export function getBenutzer() {
-  return http.get("/benutzer")
+  return http.get("/users")
 }
 
-//POST: Benutzer anlegen (schickt { username, password } im Body)
+// GET: Einzelnen Benutzer nach ID abrufen
+export function getBenutzerById(id) {
+  return http.get(`/users/${id}`)
+}
+
+// POST: Benutzer anlegen (/api/users)
 export function createBenutzer(userData) {
-  // Erwartet { username, password }
-  return http.post("/benutzer/register", userData)
+  // Erwartet laut Backend: { username, password, role }
+  return http.post("/users", userData)
 }
 
-//PUT: Benutzer aktualisieren (schickt { username, password } im Body)
+// PUT: Benutzer aktualisieren (/api/users/:id)
 export function updateBenutzer(userData) {
-  return http.put(`/benutzer/${userData.username}`, userData)
-}
-//DELETE: Benutzer löschen (schickt username als URL-Parameter)
-export function deleteBenutzer(username) {
-  return http.delete(`/benutzer/${username}`)
-}
-  
-*/
-
-
-
-// benutzerService.js (Mock-Version für Tests)
-
-const mockData = [
-  { username: 'admin', password: '1234' },
-  { username: 'markus', password: 'psp1234' }
-];
-
-export async function getBenutzer() {
-  return new Promise(res => setTimeout(() => res({ data: [...mockData] }), 500));
+  // Wir extrahieren die ID für die URL und schicken den Rest als Body
+  const { id, ...payload } = userData
+  return http.put(`/users/${id}`, payload)
 }
 
-export async function createBenutzer(userData) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (mockData.find(b => b.username === userData.username)) {
-        return resolve({ data: { success: false, error: 'Benutzername existiert bereits' }});
-      }
-      mockData.push(userData);
-      resolve({ data: { success: true, user: userData } });
-    }, 400);
-  });
-}
-
-export async function updateBenutzer(userData) {
-  return new Promise(res => {
-    setTimeout(() => {
-      const idx = mockData.findIndex(b => b.username === userData.username);
-      if (idx !== -1) mockData[idx] = userData;
-      res({ data: { success: true, user: userData } });
-    }, 300);
-  });
-}
-
-export async function deleteBenutzer(username) {
-  return new Promise(res => {
-    setTimeout(() => {
-      const idx = mockData.findIndex(b => b.username === username);
-      if (idx !== -1) mockData.splice(idx, 1);
-      res({ data: { success: true } });
-    }, 300);
-  });
+// DELETE: Benutzer löschen (/api/users/:id)
+export function deleteBenutzer(id) {
+  return http.delete(`/users/${id}`)
 }

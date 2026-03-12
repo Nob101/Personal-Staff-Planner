@@ -37,13 +37,22 @@ export function useBenutzer() {
   async function handleCreate(userData) {
     try {
       const res = await benutzerService.createBenutzer(userData)
-      benutzer.value.push(res.data)
+      
+      // Server schickt Antwort(id, username, role)
+      // Passwort aus userData hinzu hinzufügen
+      const neuerBenutzer = {
+        ...res.data,
+        password: userData.password
+      }
+
+      benutzer.value = [...benutzer.value, neuerBenutzer]
       return true
     } catch (err) {
       console.error('Erstellen fehlgeschlagen:', err)
       return false
     }
   }
+
   // CRUD - Aktualisieren eines bestehenden Benutzers
   async function handleUpdate(editData) {
     try {
@@ -64,11 +73,13 @@ export function useBenutzer() {
     benutzerToDelete.value = b
     showDeleteModal.value = true
   }
+
   // Lösch-Modal schließen und den zu löschenden Benutzer zurücksetzen
   function cancelDelete() {
     showDeleteModal.value = false
     benutzerToDelete.value = null
   }
+
   //Löschen eines Benutzers nach Bestätigung im Modal
   async function confirmDelete() {
     if (benutzerToDelete.value) {
@@ -82,6 +93,7 @@ export function useBenutzer() {
       }
     }
   }
+
   return { 
     benutzer, 
     isLoading, 
