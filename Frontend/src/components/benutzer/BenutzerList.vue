@@ -33,6 +33,7 @@ const adminNameFehler = ref(false)
 const usernameExistsFehler = ref(false)
 
 function confirmCreate() {
+  // Reset aller Fehlermeldungen
   usernameFehler.value = false
   passwordFehler.value = false
   adminNameFehler.value = false
@@ -40,8 +41,11 @@ function confirmCreate() {
 
   const inputName = newBenutzer.value.username.trim()
 
+  // 1. Pflichtfeld-Check
   if (!inputName) usernameFehler.value = true
   if (!newBenutzer.value.password.trim()) passwordFehler.value = true
+
+  // 2. Admin-Check (Case Insensitive, damit auch 'Admin' oder 'ADMIN' abgefangen wird)
   if (inputName.toLowerCase() === 'admin') adminNameFehler.value = true
 
   // Check auf bereits existierenden Benutzernamen
@@ -52,13 +56,13 @@ function confirmCreate() {
   if (existiertBereits) {
     usernameExistsFehler.value = true
   }
-
+  // Wenn irgendein Fehler vorliegt, abbrechen
   if (usernameFehler.value || passwordFehler.value || adminNameFehler.value || usernameExistsFehler.value) return
 
   emit('create', { ...newBenutzer.value })
   cancelCreate()
 }
-
+// Erstell-Cancel und leert das Formular zurück auf die Default-Werte (leer), und entfernt Fehlermeldungen
 function cancelCreate() {
   newBenutzer.value = { username: '', password: '', role: 'user' }
   usernameFehler.value = false
@@ -71,6 +75,7 @@ function cancelCreate() {
 
 <template>
   <BaseLoader v-if="isLoading" text="Benutzer werden geladen..." />
+  <!-- Zeigt alle Benutzer an. Wenn auf "Neuen Benutzer hinzufügen" geklickt wird, wird das Erstell-Formular angezeigt -->
   <div v-else class="benutzer-list-container">
     <div class="benutzer-list">
       <BenutzerCard
