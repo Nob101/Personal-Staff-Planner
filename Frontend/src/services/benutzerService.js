@@ -1,3 +1,11 @@
+// benutzerService.js
+// ============================================================================
+// Service für die Benutzer-API
+// Aufgaben dieser Datei:
+// - Definition der API-Endpunkte für Benutzer (/api/users)
+// - Bereitstellung von CRUD-Methoden (GET, POST, PUT, DELETE)
+// ============================================================================
+
 import { http } from "./http"
 
 // GET: Liste aller Benutzer abrufen (/api/users)
