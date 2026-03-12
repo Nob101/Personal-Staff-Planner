@@ -13,7 +13,8 @@ import { ref, defineProps, defineEmits } from 'vue'
 import Multiselect from 'vue-multiselect'
 
 const props = defineProps({
-  benutzer: { type: Object, required: true }
+  benutzer: { type: Object, required: true },
+  allBenutzer: { type: Array, required: true }
 })
 
 const emit = defineEmits(['update', 'delete'])
@@ -26,10 +27,12 @@ const roles = ref(['user', 'admin'])
 const usernameFehler = ref(false)
 const passwordFehler = ref(false)
 const adminNameFehler = ref(false)
+const usernameExistsFehler = ref(false)
 
 function startEdit() {
   usernameFehler.value = false
   passwordFehler.value = false
+  usernameExistsFehler.value = false
   editData.value = { ...props.benutzer }
   adminNameFehler.value = false
   isEditing.value = true
@@ -39,6 +42,7 @@ function handleSave() {
   usernameFehler.value = false
   passwordFehler.value = false
   adminNameFehler.value = false
+  usernameExistsFehler.value = false
 
   const currentUsername = (editData.value.username || '').trim()
   const currentPassword = (editData.value.password || '').trim()
@@ -52,7 +56,16 @@ function handleSave() {
     adminNameFehler.value = true
   }
 
-  if (usernameFehler.value || passwordFehler.value || adminNameFehler.value) return
+  // Check auf bereits existierenden Benutzernamen (außer man behält seinen eigenen)
+  const existiertBereits = props.allBenutzer.some(
+    (b) => b.username.toLowerCase() === currentUsername.toLowerCase() && b.id !== props.benutzer.id
+  )
+
+  if (existiertBereits) {
+    usernameExistsFehler.value = true
+  }
+
+  if (usernameFehler.value || passwordFehler.value || adminNameFehler.value || usernameExistsFehler.value) return
 
   emit('update', { ...editData.value })
   isEditing.value = false
@@ -84,10 +97,11 @@ function handleSave() {
           <input 
             v-model="editData.username" 
             class="input-field" 
-            :class="{ 'input-error': usernameFehler || adminNameFehler }" 
+            :class="{ 'input-error': usernameFehler || adminNameFehler || usernameExistsFehler }" 
           />
           <p v-if="usernameFehler" class="error-text">Name ist erforderlich</p>
           <p v-if="adminNameFehler" class="error-text">Dieser Benutzername darf nicht genommen werden</p>
+          <p v-if="usernameExistsFehler" class="error-text">Benutzername existiert bereits</p>
         </div>
 
         <div class="input-group">
