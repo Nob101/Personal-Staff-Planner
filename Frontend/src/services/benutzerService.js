@@ -11,14 +11,13 @@ export function getBenutzerById(id) {
 }
 
 // POST: Benutzer anlegen (/api/users)
+// Backend erwartet { username, password, role }
 export function createBenutzer(userData) {
-  // Erwartet laut Backend: { username, password, role }
   return http.post("/users", userData)
 }
 
 // PUT: Benutzer aktualisieren (/api/users/:id)
 export function updateBenutzer(userData) {
-  // Wir extrahieren die ID für die URL und schicken den Rest als Body
   const { id, ...payload } = userData
   return http.put(`/users/${id}`, payload)
 }
