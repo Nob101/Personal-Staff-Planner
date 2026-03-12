@@ -26,55 +26,58 @@ const showAddForm = ref(false)
 const roles = ref(['user', 'admin'])
 const newBenutzer = ref({ username: '', password: '', role: 'user' })
 
-
 // Fehler-States
 const usernameFehler = ref(false)
 const passwordFehler = ref(false)
 const adminNameFehler = ref(false)
+const usernameExistsFehler = ref(false)
 
-// Erstellt neuen Benutzer nach Validierung der Eingaben, ansonsten werden Fehlermeldungen angezeigt
 function confirmCreate() {
-  // Reset aller Fehlermeldungen
   usernameFehler.value = false
   passwordFehler.value = false
   adminNameFehler.value = false
+  usernameExistsFehler.value = false
 
   const inputName = newBenutzer.value.username.trim()
 
-  // 1. Pflichtfeld-Check
   if (!inputName) usernameFehler.value = true
   if (!newBenutzer.value.password.trim()) passwordFehler.value = true
+  if (inputName.toLowerCase() === 'admin') adminNameFehler.value = true
 
-  // 2. Admin-Check (Case Insensitive, damit auch 'Admin' oder 'ADMIN' abgefangen wird)
-  if (inputName.toLowerCase() === 'admin') {
-    adminNameFehler.value = true
+  // Check auf bereits existierenden Benutzernamen
+  const existiertBereits = props.benutzer.some(
+    (b) => b.username.toLowerCase() === inputName.toLowerCase()
+  )
+  
+  if (existiertBereits) {
+    usernameExistsFehler.value = true
   }
 
-  // Wenn irgendein Fehler vorliegt, abbrechen
-  if (usernameFehler.value || passwordFehler.value || adminNameFehler.value) return
+  if (usernameFehler.value || passwordFehler.value || adminNameFehler.value || usernameExistsFehler.value) return
 
   emit('create', { ...newBenutzer.value })
   cancelCreate()
 }
-// Erstell-Cancel und leert das Formular zurück auf die Default-Werte (leer), und entfernt Fehlermeldungen
+
 function cancelCreate() {
   newBenutzer.value = { username: '', password: '', role: 'user' }
   usernameFehler.value = false
   passwordFehler.value = false
   adminNameFehler.value = false
+  usernameExistsFehler.value = false
   showAddForm.value = false
 }
 </script>
 
 <template>
   <BaseLoader v-if="isLoading" text="Benutzer werden geladen..." />
-  <!-- Zeigt alle Benutzer an. Wenn auf "Neuen Benutzer hinzufügen" geklickt wird, wird das Erstell-Formular angezeigt -->
   <div v-else class="benutzer-list-container">
     <div class="benutzer-list">
       <BenutzerCard
         v-for="b in benutzer"
         :key="b.id"
         :benutzer="b"
+        :allBenutzer="benutzer"
         @update="(data) => emit('update', data)"
         @delete="emit('delete', b)"
       />
@@ -93,10 +96,11 @@ function cancelCreate() {
               <input 
                 v-model="newBenutzer.username" 
                 class="input-field" 
-                :class="{ 'input-error': usernameFehler || adminNameFehler }" 
+                :class="{ 'input-error': usernameFehler || adminNameFehler || usernameExistsFehler }" 
               />
               <p v-if="usernameFehler" class="error-text">Name erforderlich</p>
               <p v-if="adminNameFehler" class="error-text">Dieser Benutzername darf nicht genommen werden</p>
+              <p v-if="usernameExistsFehler" class="error-text">Benutzername existiert bereits</p>
             </div>
           </div>
 
