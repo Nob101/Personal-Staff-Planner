@@ -28,33 +28,33 @@ export function useDienstplan() {
     }
   }
 
-async function generate(jahr, monat, fnr) {
-  loading.value = true;
-  error.value = "";
-  try {
-    await generateDienstplan(jahr, monat, fnr);
-    await load(jahr, monat);
-  } catch (e) {
-    console.error(e);
-    error.value = e?.response?.data?.error || e?.message || "Fehler beim Generieren";
-  } finally {
-    loading.value = false;
+  async function generate(jahr, monat, fnr) {
+    loading.value = true;
+    error.value = "";
+    try {
+      await generateDienstplan(jahr, monat, fnr);
+      await load(jahr, monat);
+    } catch (e) {
+      console.error(e);
+      error.value = e?.response?.data?.error || e?.message || "Fehler beim Generieren";
+    } finally {
+      loading.value = false;
+    }
   }
-}
 
-async function remove(jahr, monat, fnr) {
-  loading.value = true;
-  error.value = "";
-  try {
-    await deleteDienstplan(jahr, monat, fnr);
-    await load(jahr, monat);
-  } catch (e) {
-    console.error(e);
-    error.value = e?.response?.data?.error || e?.message || "Fehler beim Löschen";
-  } finally {
-    loading.value = false;
+  async function remove(jahr, monat, fnr) {
+    loading.value = true;
+    error.value = "";
+    try {
+      await deleteDienstplan(jahr, monat, fnr);
+      await load(jahr, monat);
+    } catch (e) {
+      console.error(e);
+      error.value = e?.response?.data?.error || e?.message || "Fehler beim Löschen";
+    } finally {
+      loading.value = false;
+    }
   }
-}
 
   async function doShift({ jahr, monat, id, schicht_typ }) {
     loading.value = true;

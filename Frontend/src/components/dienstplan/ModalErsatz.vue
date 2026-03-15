@@ -1,34 +1,19 @@
-<!-- ModalErsatz.vue (Modal für Ersatz bei Dienstkonflikten) -->
 <script setup>
 import { ref, watch, nextTick, onBeforeUnmount } from "vue";
 
-/**
- * Props:
- * Dieses Modal zeigt mögliche Ersatz-Mitarbeiter an,
- * wenn ein Dienst nicht direkt gespeichert werden kann.
- */
 const props = defineProps({
-  open: { type: Boolean, default: false },        // Modal sichtbar
-  loading: { type: Boolean, default: false },     // Kandidaten werden geladen
-  error: { type: String, default: "" },           // Fehler beim Laden
-  kandidaten: { type: Array, default: () => [] }, // Ersatz-Kandidaten
-  altDienstId: { type: Number, default: null },   // ursprünglicher Dienst
-  altNewTyp: { type: String, default: "" },       // neuer Typ für Alt-Dienst
-  datum: { type: String, default: "" },           // Datum des Dienstes
-  fnr: { type: Number, default: null },           // Filialnummer
+  open: { type: Boolean, default: false },
+  loading: { type: Boolean, default: false },
+  error: { type: String, default: "" },
+  kandidaten: { type: Array, default: () => [] },
+  altDienstId: { type: Number, default: null },
+  altNewTyp: { type: String, default: "" },
+  datum: { type: String, default: "" },
+  fnr: { type: Number, default: null },
 });
 
-/**
- * Events:
- * - close: Modal schließen
- * - pick: Ersatz auswählen
- * - ignore: Ersatz ignorieren & trotzdem speichern
- */
 const emit = defineEmits(["close", "pick", "ignore"]);
 
-// ======================
-// DRAG / MOVE LOGIC
-// ======================
 const modalEl = ref(null);
 const pos = ref({ x: 0, y: 0 });
 const dragging = ref(false);
@@ -49,7 +34,6 @@ function centerModal() {
 }
 
 function startDrag(e) {
-  // nur linke Maustaste
   if (e.button !== 0) return;
 
   dragging.value = true;
@@ -100,17 +84,14 @@ watch(
 </script>
 
 <template>
-  <div v-if="open" class="fixed inset-0 z-50">
-    <!-- Overlay -->
-    <div class="absolute inset-0 bg-black/60" @click="emit('close')"></div>
+  <div v-if="open" class="dp-modal-root">
+    <div class="dp-modal-overlay" @click="emit('close')"></div>
 
-    <!-- Modal-Container (verschiebbar) -->
     <div
       ref="modalEl"
       class="absolute w-[520px] max-w-[94vw] rounded-2xl border border-white/10 bg-linear-to-b from-zinc-500 to-zinc-800 text-white shadow-2xl"
       :style="{ left: pos.x + 'px', top: pos.y + 'px' }"
     >
-      <!-- HEADER (drag handle) -->
       <div
         class="px-3 py-2 border-b border-white/10 flex items-center justify-between cursor-pointer select-none"
         @mousedown="startDrag"
@@ -122,10 +103,8 @@ watch(
           </span>
         </div>
 
-        <!-- Wichtig: stop, damit Drag nicht startet, wenn man Button klickt -->
         <button
-          class="px-2 py-1 text-xs rounded-lg
-          bg-linear-to-b from-red-500 to-red-900 hover:from-red-900 hover:to-red-500"
+          class="px-2 py-1 text-xs rounded-lg bg-linear-to-b from-red-500 to-red-900 hover:from-red-900 hover:to-red-500"
           @mousedown.stop
           @click.stop="emit('close')"
         >
@@ -133,7 +112,6 @@ watch(
         </button>
       </div>
 
-      <!-- CONTENT -->
       <div class="p-3">
         <div class="text-xs text-white/70 mb-2">
           Alt-Dienst wird auf
@@ -174,11 +152,12 @@ watch(
                     {{ k.vorname }} {{ k.nachname }}
                     <span v-if="k.springer" class="text-amber-400 font-bold ml-1">*</span>
                   </td>
-                  <td class="px-2 py-2 text-white/70">{{ k.schicht_typ }} (Filiale {{ k.dienstFilialname }})</td>
+                  <td class="px-2 py-2 text-white/70">
+                    {{ k.schicht_typ }} (Filiale {{ k.dienstFilialname }})
+                  </td>
                   <td class="px-2 py-2 text-right">
                     <button
-                      class="px-2.5 py-1 text-xs rounded-lg bg-linear-to-b from-blue-500 to-blue-900
-                    hover:from-blue-900 hover:to-blue-500"
+                      class="px-2.5 py-1 text-xs rounded-lg bg-linear-to-b from-blue-500 to-blue-900 hover:from-blue-900 hover:to-blue-500"
                       @click="emit('pick', k)"
                     >
                       wählen
@@ -190,7 +169,6 @@ watch(
           </div>
         </div>
 
-        <!-- FOOTER ACTIONS -->
         <div class="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
           <div class="flex items-center gap-2 ml-auto">
             <button

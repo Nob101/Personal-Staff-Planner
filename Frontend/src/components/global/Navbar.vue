@@ -1,6 +1,5 @@
 <script setup>
 import { useRoute } from "vue-router"
-import { useDarkMode } from '@/composables/useDarkMode.js'
 import logo from '@/assets/icons/PSP_Logo_Transparent.png';
 import dienstplaene_icon from '@/assets/icons/dienstplaene_icon.svg'
 import mitarbeiter_icon from '@/assets/icons/mitarbeiter_icon.svg'
@@ -19,9 +18,6 @@ const emit = defineEmits(["search"])
 //!! To-Do: Link von offener Page soll gehighlighted werden, derzeit nicht der Fall
 // Zugriff auf aktuelle Route
 const route = useRoute()
-
-const { isDark, toggle } = useDarkMode();
-console.log("Navbar mounted, isDark:", isDark.value)
 </script>
 
 
@@ -38,13 +34,13 @@ console.log("Navbar mounted, isDark:", isDark.value)
   >
 
     <!-- Logo -->
-    <div class="flex items-center gap-2">
+    <RouterLink to="/home" class="flex items-center gap-2">
       <img
         :src="logo"
         alt="Personal Staff Planner Logo"
-        class="h-8 w-8"
+        class="h-12 w-12 cursor-pointer"
       />
-    </div>
+    </RouterLink>
 
     <!-- Navigation -->
     <nav class="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">

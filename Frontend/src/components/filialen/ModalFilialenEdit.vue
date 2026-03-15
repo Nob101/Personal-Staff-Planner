@@ -1,5 +1,3 @@
-<!-- ModalFilialenEdit.vue -->
-
 <script setup>
 import { ref, defineProps, watch } from 'vue'
 import BaseModal from '@/components/global/BaseModal.vue'
@@ -111,39 +109,25 @@ function handleSubmit() {
   <BaseModal v-if="filiale" :show="show" @close="emit('close')" width="760px">
     <template #body>
       <!-- Card wie ModalMitarbeiterEdit + ModalFilialenCreate -->
-      <article
-        class="mx-auto w-full max-w-[760px]
-               font-sans relative rounded-3xl
-               bg-white/70 dark:bg-zinc-900/50
-               backdrop-blur overflow-hidden"
-      >
+      <article class="fi-form-shell">
         <!-- HEADER -->
-        <div class="bg-linear-to-b from-zinc-300 to-zinc-400">
+        <div class="fi-card-head">
           <div class="flex items-center justify-between gap-3 px-4 py-2">
             <div class="min-w-0">
-              <div class="text-xl font-extrabold text-zinc-900 dark:text-white truncate">
+              <div class="text-xl font-extrabold text-zinc-900 truncate">
                 Filiale bearbeiten: {{ filiale.filialname }}
               </div>
-              <div class="text-[11px] text-zinc-600 dark:text-white/70">
+              <div class="text-[11px] text-zinc-600">
                 Pflichtfelder: Filialname, Algorithmus
               </div>
             </div>
 
             <!-- ACTIONS -->
-            <div
-              class="flex items-center gap-1 rounded-xl
-                     bg-white/60 dark:bg-white/10
-                     ring-1 ring-black/10 dark:ring-white/10
-                     p-1"
-            >
+            <div class="fi-card-actions">
               <button
                 type="button"
                 @click="handleSubmit"
-                class="inline-flex h-8 w-8 items-center justify-center rounded-xl
-                       bg-linear-to-b from-emerald-300 to-emerald-900
-                       hover:from-emerald-900 hover:to-emerald-300
-                       ring-1 ring-emerald-600/30 shadow-sm
-                       transition active:scale-[0.97]"
+                class="fi-action-btn fi-action-btn--emerald"
                 title="Speichern"
               >
                 <img :src="speichern_icon" class="h-4 w-4 opacity-90" alt="Speichern" />
@@ -152,11 +136,7 @@ function handleSubmit() {
               <button
                 type="button"
                 @click="emit('close')"
-                class="inline-flex h-8 w-8 items-center justify-center rounded-xl
-                       bg-linear-to-b from-red-300 to-red-900
-                       hover:from-red-900 hover:to-red-300
-                       ring-1 ring-red-600/30 shadow-sm
-                       transition active:scale-[0.97]"
+                class="fi-action-btn fi-action-btn--red"
                 title="Abbrechen"
               >
                 <img :src="abbrechen_icon" class="h-4 w-4 opacity-90" alt="Abbrechen" />
@@ -167,49 +147,49 @@ function handleSubmit() {
 
         <!-- BODY -->
         <div class="px-4 pt-3 pb-4 rounded-b-3xl bg-linear-to-b from-zinc-400 to-zinc-600">
-          <div class="rounded-2xl bg-zinc-300 dark:bg-white/10 ring-1 ring-black/10 dark:ring-white/10">
+          <div class="fi-form-panel">
             <div class="p-4">
               <form @submit.prevent="handleSubmit" class="space-y-6">
                 <!-- LINKS | LINIE | RECHTS -->
-                <div class="grid grid-cols-[1fr_1px_1fr] gap-6 text-sm text-zinc-900 dark:text-white/90">
+                <div class="fi-form-grid">
                   <!-- LINKS -->
                   <section class="space-y-4 min-w-0">
                     <!-- Filiale -->
-                    <fieldset class="form-fieldset">
-                      <legend class="form-legend">Filiale</legend>
+                    <fieldset class="fi-form-fieldset">
+                      <legend class="fi-form-legend">Filiale</legend>
 
-                      <div class="form-body">
-                        <div class="form-row">
-                          <span class="form-label">Name</span>
-                          <input v-model="filialname" type="text" class="form-input" />
+                      <div class="fi-form-body">
+                        <div class="fi-form-row">
+                          <span class="fi-form-label">Name</span>
+                          <input v-model="filialname" type="text" class="fi-form-input" />
                         </div>
 
-                        <p v-if="nameFehler" class="form-error">
+                        <p v-if="nameFehler" class="fi-form-error">
                           Filialenname ist erforderlich
                         </p>
                       </div>
                     </fieldset>
 
                     <!-- Kontakt -->
-                    <fieldset class="form-fieldset">
-                      <legend class="form-legend">Kontakt</legend>
+                    <fieldset class="fi-form-fieldset">
+                      <legend class="fi-form-legend">Kontakt</legend>
 
-                      <div class="form-body">
-                        <div class="form-row">
-                          <span class="form-label">Email</span>
-                          <input type="email" v-model="email" class="form-input" />
+                      <div class="fi-form-body">
+                        <div class="fi-form-row">
+                          <span class="fi-form-label">Email</span>
+                          <input type="email" v-model="email" class="fi-form-input" />
                         </div>
 
-                        <div class="form-row">
-                          <span class="form-label">Telefon</span>
-                          <input type="tel" v-model="telefon" class="form-input" />
+                        <div class="fi-form-row">
+                          <span class="fi-form-label">Telefon</span>
+                          <input type="tel" v-model="telefon" class="fi-form-input" />
                         </div>
                       </div>
                     </fieldset>
 
                     <!-- Farbe -->
-                    <fieldset class="form-fieldset">
-                      <legend class="form-legend">Filialenfarbe</legend>
+                    <fieldset class="fi-form-fieldset">
+                      <legend class="fi-form-legend">Filialenfarbe</legend>
                       <div class="mt-2">
                         <ColorPicker v-model="farbe" />
                       </div>
@@ -217,45 +197,45 @@ function handleSubmit() {
                   </section>
 
                   <!-- Linie -->
-                  <div class="bg-black/10 dark:bg-white/15"></div>
+                  <div class="fi-divider"></div>
 
                   <!-- RECHTS -->
                   <section class="space-y-4 min-w-0">
                     <!-- Adresse -->
-                    <fieldset class="form-fieldset">
-                      <legend class="form-legend">Adresse</legend>
+                    <fieldset class="fi-form-fieldset">
+                      <legend class="fi-form-legend">Adresse</legend>
 
-                      <div class="form-body">
-                        <div class="form-row">
-                          <span class="form-label">Straße</span>
-                          <input type="text" v-model="strasse" class="form-input" />
+                      <div class="fi-form-body">
+                        <div class="fi-form-row">
+                          <span class="fi-form-label">Straße</span>
+                          <input type="text" v-model="strasse" class="fi-form-input" />
                         </div>
 
-                        <div class="form-row">
-                          <span class="form-label">Ort</span>
-                          <input type="text" v-model="ort" class="form-input" />
+                        <div class="fi-form-row">
+                          <span class="fi-form-label">Ort</span>
+                          <input type="text" v-model="ort" class="fi-form-input" />
                         </div>
 
-                        <div class="form-row">
-                          <span class="form-label">PLZ</span>
-                          <input type="text" v-model="plz" class="form-input" />
+                        <div class="fi-form-row">
+                          <span class="fi-form-label">PLZ</span>
+                          <input type="text" v-model="plz" class="fi-form-input" />
                         </div>
 
-                        <div class="form-row">
-                          <span class="form-label">Land</span>
-                          <input type="text" v-model="land" class="form-input" />
+                        <div class="fi-form-row">
+                          <span class="fi-form-label">Land</span>
+                          <input type="text" v-model="land" class="fi-form-input" />
                         </div>
                       </div>
                     </fieldset>
 
                     <!-- Algorithmus -->
-                    <fieldset class="form-fieldset">
-                      <legend class="form-legend">Algorithmus</legend>
+                    <fieldset class="fi-form-fieldset">
+                      <legend class="fi-form-legend">Algorithmus</legend>
 
-                      <div class="form-body">
-                        <div class="form-row">
-                          <span class="form-label">Typ</span>
-                          <div class="form-inputwrap">
+                      <div class="fi-form-body">
+                        <div class="fi-form-row">
+                          <span class="fi-form-label">Typ</span>
+                          <div class="fi-form-inputwrap">
                             <Multiselect
                               class="ms"
                               v-model="algorithmid"
@@ -273,24 +253,20 @@ function handleSubmit() {
                           </div>
                         </div>
 
-                        <p v-if="algorithmFehler" class="form-error">
+                        <p v-if="algorithmFehler" class="fi-form-error">
                           Algorithmus ist erforderlich
                         </p>
                       </div>
                     </fieldset>
 
                     <!-- Anmerkungen -->
-                    <fieldset class="form-fieldset">
-                      <legend class="form-legend">Anmerkungen</legend>
+                    <fieldset class="fi-form-fieldset">
+                      <legend class="fi-form-legend">Anmerkungen</legend>
 
                       <textarea
                         rows="4"
                         v-model="anmerkungen"
-                        class="w-full resize-none rounded-xl
-                               ring-1 ring-white/80 dark:ring-white/20
-                               bg-white/70 dark:bg-black/30
-                               p-2 text-sm text-zinc-900 dark:text-white/90
-                               outline-none"
+                        class="fi-form-textarea"
                       />
                     </fieldset>
                   </section>
@@ -305,87 +281,3 @@ function handleSubmit() {
     <template #footer></template>
   </BaseModal>
 </template>
-
-<style scoped>
-/* gleiche Utility-Klassen wie in ModalFilialenCreate / ModalMitarbeiterEdit */
-.form-fieldset{
-  border-radius: 1rem;
-  background: rgba(255,255,255,1);
-  padding: .75rem;
-  box-shadow: 0 0 0 1px rgba(0,0,0,.10) inset;
-}
-:global(.dark) .form-fieldset{
-  background: rgba(0,0,0,.25);
-  box-shadow: 0 0 0 1px rgba(255,255,255,.10) inset;
-}
-
-.form-legend{
-  font-size: .875rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  color: rgb(82 82 91); /* zinc-600 */
-  padding: 0 .25rem;
-  margin-bottom: -0.75rem;
-}
-:global(.dark) .form-legend{
-  color: rgba(255,255,255,.70);
-}
-
-.form-body{
-  margin-top: .5rem;
-  display: grid;
-  gap: .5rem;
-}
-
-.form-row{
-  display: flex;
-  justify-content: space-between;
-  gap: .75rem;
-  align-items: center;
-  min-width: 0;
-}
-
-.form-label{
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.form-inputwrap{
-  flex: 1 1 auto;
-  max-width: 220px;
-  min-width: 0;
-}
-
-.form-input{
-  height: 2.25rem; /* h-9 */
-  flex: 1 1 auto;
-  max-width: 220px;
-  min-width: 0;
-
-  border-radius: .75rem; /* rounded-xl */
-  background: rgba(255,255,255,.70);
-  padding: 0 .75rem;
-  font-size: .875rem;
-  color: rgb(24 24 27); /* zinc-900 */
-  outline: none;
-  box-shadow: 0 0 0 1px rgba(0,0,0,.10) inset;
-  text-align: right;
-}
-:global(.dark) .form-input{
-  background: rgba(0,0,0,.30);
-  color: rgba(255,255,255,.90);
-  box-shadow: 0 0 0 1px rgba(255,255,255,.15) inset;
-}
-.form-input:focus{
-  box-shadow: 0 0 0 1px rgba(0,0,0,.20) inset;
-}
-:global(.dark) .form-input:focus{
-  box-shadow: 0 0 0 1px rgba(255,255,255,.30) inset;
-}
-
-.form-error{
-  font-size: .875rem;
-  color: rgb(248 113 113); /* red-400 */
-}
-</style>
