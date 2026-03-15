@@ -8,15 +8,9 @@ export function useDienstplanPage() {
   const selectedFilialen = ref([]);
 
   const {
-    view,
-    loading,
-    error,
-    load,
-    generate,
-    remove,
-    doShift,
-    getErsatz,
-    doShiftMitErsatz,
+    view, loading, error,
+    load, generate, remove,
+    doShift, getErsatz, doShiftMitErsatz,
   } = useDienstplan();
 
   function onLoad(j, m) {
