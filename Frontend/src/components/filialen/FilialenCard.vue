@@ -1,5 +1,3 @@
-<!-- FilialenCard.vue -->
-
 <script setup>
 // Funktionalitäten und Komponenten importieren
 import { defineProps } from 'vue'
@@ -57,12 +55,7 @@ const springerMitarbeiter = computed(() =>
   <!-- LIST VARIANT (Design) -->
   <article
     v-if="variant === 'list'"
-    class="relative cursor-pointer font-sans
-           overflow-hidden
-           rounded-3xl
-           bg-linear-to-b from-zinc-300 to-zinc-600
-           shadow-[0_16px_40px_rgba(0,0,0,0.4)]
-           hover:-translate-y-0.5 transition"
+    class="relative cursor-pointer font-sans overflow-hidden rounded-3xl bg-linear-to-b from-zinc-300 to-zinc-600 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:-translate-y-0.5 transition"
     @click="handleSelect"
   >
     <!-- Farbleiste links (Logik: farbe) -->
@@ -72,17 +65,17 @@ const springerMitarbeiter = computed(() =>
     />
 
     <div class="px-4 py-2">
-      <h3 class="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+      <h3 class="text-xl font-extrabold tracking-tight text-zinc-900">
         {{ filialen.filialname }}
       </h3>
 
-      <div class="mt-0.5 text-sm text-zinc-800 dark:text-white/80">
+      <div class="mt-0.5 text-sm text-zinc-800">
         {{ filialen.email || '-' }}
       </div>
     </div>
 
     <div class="px-4 pt-2 pb-3">
-      <div class="rounded-2xl bg-white ring-1 ring-black/10">
+      <div class="fi-info-box">
         <div class="p-3">
           <div class="grid grid-cols-[1fr_1px_1fr] gap-5 text-sm text-zinc-700">
             <!-- LINKS: Kontakt -->
@@ -136,11 +129,7 @@ const springerMitarbeiter = computed(() =>
   <!-- DETAIL VARIANT (Design) -->
   <article
     v-else
-    class="mx-auto w-full max-w-[760px]
-           font-sans relative overflow-hidden rounded-3xl
-           bg-white/70 dark:bg-zinc-900/50
-           shadow-[0_16px_40px_rgba(0,0,0,0.4)]
-           backdrop-blur"
+    class="fi-card mx-auto w-full max-w-[760px]"
   >
     <!-- Farbleiste links (Logik: farbe) -->
     <div
@@ -149,31 +138,22 @@ const springerMitarbeiter = computed(() =>
     />
 
     <!-- HEADER -->
-    <div class="bg-linear-to-b from-zinc-300 to-zinc-400">
+    <div class="fi-card-head">
       <div class="flex items-center justify-between gap-3 px-4 py-2">
         <div class="min-w-0">
-          <div class="text-xl font-extrabold text-zinc-900 dark:text-white truncate">
+          <div class="text-xl font-extrabold text-zinc-900 truncate">
             {{ filialen.filialname }}
           </div>
-          <div class="text-[11px] text-zinc-600 dark:text-white/70 break-all">
+          <div class="text-[11px] text-zinc-600 break-all">
             {{ filialen.email || '-' }}
           </div>
         </div>
 
         <!-- Edit/Delete Buttons (Design) -->
-        <div
-          class="flex items-center gap-1 rounded-xl
-                 bg-white/60 dark:bg-white/10
-                 ring-1 ring-black/10 dark:ring-white/10
-                 p-1"
-        >
+        <div class="fi-card-actions">
           <button
             @click="handleEdit"
-            class="inline-flex h-8 w-8 items-center justify-center rounded-xl
-                   bg-linear-to-b from-blue-300 to-blue-900
-                   hover:from-blue-900 hover:to-blue-300
-                   ring-1 ring-blue-600/30 shadow-sm
-                   transition active:scale-[0.97]"
+            class="fi-action-btn fi-action-btn--blue"
             type="button"
             title="Bearbeiten"
           >
@@ -182,11 +162,7 @@ const springerMitarbeiter = computed(() =>
 
           <button
             @click="handleDelete"
-            class="inline-flex h-8 w-8 items-center justify-center rounded-xl
-                   bg-linear-to-b from-red-300 to-red-900
-                   hover:from-red-900 hover:to-red-300
-                   ring-1 ring-red-600/30 shadow-sm
-                   transition active:scale-[0.97]"
+            class="fi-action-btn fi-action-btn--red"
             type="button"
             title="Löschen"
           >
@@ -196,15 +172,15 @@ const springerMitarbeiter = computed(() =>
       </div>
     </div>
 
-    <div class="px-4 pt-2 pb-3 rounded-b-3xl bg-linear-to-b from-zinc-400 to-zinc-600">
-      <div class="rounded-2xl bg-white/55 dark:bg-white/10 ring-1 ring-black/10 dark:ring-white/10">
+    <div class="fi-card-body">
+      <div class="fi-info-box-soft">
         <div class="p-4">
           <!-- LINKS | LINIE | RECHTS -->
-          <div class="grid grid-cols-[1fr_1px_1fr] gap-5 text-sm text-zinc-900 dark:text-white/90">
+          <div class="grid grid-cols-[1fr_1px_1fr] gap-5 text-sm text-zinc-900">
             <!-- LINKS -->
             <section class="space-y-4 min-w-0">
-              <fieldset class="rounded-2xl bg-white dark:bg-black/25 ring-1 ring-black/10 dark:ring-white/10 p-3">
-                <legend class="text-sm font-extrabold uppercase tracking-wide text-zinc-600 dark:text-white/70 px-1 -mb-3">
+              <fieldset class="fi-detail-fieldset">
+                <legend class="fi-detail-legend">
                   Email
                 </legend>
                 <div class="mt-2 space-y-2">
@@ -215,8 +191,8 @@ const springerMitarbeiter = computed(() =>
                 </div>
               </fieldset>
 
-              <fieldset class="rounded-2xl bg-white dark:bg-black/25 ring-1 ring-black/10 dark:ring-white/10 p-3">
-                <legend class="text-sm font-extrabold uppercase tracking-wide text-zinc-600 dark:text-white/70 px-1 -mb-3">
+              <fieldset class="fi-detail-fieldset">
+                <legend class="fi-detail-legend">
                   Telefon
                 </legend>
                 <div class="mt-2 space-y-2">
@@ -227,15 +203,15 @@ const springerMitarbeiter = computed(() =>
                 </div>
               </fieldset>
 
-              <fieldset class="rounded-2xl bg-white dark:bg-black/25 ring-1 ring-black/10 dark:ring-white/10 p-3">
-                <legend class="text-sm font-extrabold uppercase tracking-wide text-zinc-600 dark:text-white/70 px-1 -mb-3">
+              <fieldset class="fi-detail-fieldset">
+                <legend class="fi-detail-legend">
                   Filialenfarbe
                 </legend>
                 <div class="mt-2 flex items-center justify-between gap-3">
                   <span class="font-bold">Farbe</span>
                   <span class="inline-flex items-center gap-2 min-w-0 justify-end">
                     <span
-                      class="h-4 w-4 rounded-md ring-1 ring-black/10 dark:ring-white/15 shrink-0"
+                      class="fi-color-dot"
                       :style="{ backgroundColor: filialen.farbe || '#ccc' }"
                     />
                     <span class="min-w-0 text-right truncate">{{ filialen.farbe || 'Keine Farbe gesetzt' }}</span>
@@ -243,8 +219,8 @@ const springerMitarbeiter = computed(() =>
                 </div>
               </fieldset>
 
-              <fieldset class="rounded-2xl bg-white dark:bg-black/25 ring-1 ring-black/10 dark:ring-white/10 p-3">
-                <legend class="text-sm font-extrabold uppercase tracking-wide text-zinc-600 dark:text-white/70 px-1 -mb-3">
+              <fieldset class="fi-detail-fieldset">
+                <legend class="fi-detail-legend">
                   Algorithmus
                 </legend>
                 <div class="mt-2 flex justify-between gap-3">
@@ -255,12 +231,12 @@ const springerMitarbeiter = computed(() =>
             </section>
 
             <!-- Linie -->
-            <div class="bg-black/10 dark:bg-white/15"></div>
+            <div class="fi-divider"></div>
 
             <!-- RECHTS -->
             <section class="space-y-4 min-w-0">
-              <fieldset class="rounded-2xl bg-white dark:bg-black/25 ring-1 ring-black/10 dark:ring-white/10 p-3">
-                <legend class="text-sm font-extrabold uppercase tracking-wide text-zinc-600 dark:text-white/70 px-1 -mb-3">
+              <fieldset class="fi-detail-fieldset">
+                <legend class="fi-detail-legend">
                   Adresse
                 </legend>
                 <div class="mt-2 space-y-2">
@@ -283,19 +259,15 @@ const springerMitarbeiter = computed(() =>
                 </div>
               </fieldset>
 
-              <fieldset class="rounded-2xl bg-white dark:bg-black/25 ring-1 ring-black/10 dark:ring-white/10 p-3">
-                <legend class="text-sm font-extrabold uppercase tracking-wide text-zinc-600 dark:text-white/70 px-1 -mb-3">
+              <fieldset class="fi-detail-fieldset">
+                <legend class="fi-detail-legend">
                   Anmerkungen
                 </legend>
                 <textarea
                   rows="4"
                   :value="filialen.anmerkungen || ''"
                   readonly
-                  class="w-full resize-none rounded-xl
-                         ring-1 ring-white/80 dark:ring-white/20
-                         bg-white/70 dark:bg-black/30
-                         p-2 text-sm text-zinc-900 dark:text-white/90
-                         outline-none"
+                  class="fi-note-area"
                 ></textarea>
               </fieldset>
             </section>

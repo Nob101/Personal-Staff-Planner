@@ -34,16 +34,16 @@ const emit = defineEmits(['select', 'edit', 'delete'])
     text="Mitarbeiter werden geladen"
   />
 
-  <div v-else-if="mitarbeiter.length === 0 && filialen.length === 0" class="hint warning">
+  <div v-else-if="mitarbeiter.length === 0 && filialen.length === 0" class="ma-hint ma-hint--warning">
     <p>Es sind noch keine Mitarbeiter angelegt <strong>und</strong> es existiert noch keine Filiale.</p>
     <p>Sie müssen zuerst eine Filiale anlegen, bevor Sie Mitarbeiter hinzufügen können.</p>
   </div>
 
-  <p v-else-if="mitarbeiter.length === 0" class="hint">
+  <p v-else-if="mitarbeiter.length === 0" class="ma-hint">
     Es ist noch kein Mitarbeiter angelegt.
   </p>
 
-  <p v-else-if="filialen.length === 0" class="hint">
+  <p v-else-if="filialen.length === 0" class="ma-hint">
     Bitte legen Sie zuerst eine Filiale an.
   </p>
 
@@ -60,4 +60,3 @@ const emit = defineEmits(['select', 'edit', 'delete'])
     />
   </div>
 </template>
-

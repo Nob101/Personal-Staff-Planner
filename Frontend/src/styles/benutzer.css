@@ -1,0 +1,162 @@
+@layer components {
+
+  /* =========================================================
+     LIST / GRID
+     ========================================================= */
+
+  .bu-list-container {
+    @apply mx-auto max-w-[1200px] px-5;
+  }
+
+  .bu-list-grid {
+    @apply grid justify-center gap-6
+           grid-cols-[repeat(auto-fit,minmax(380px,450px))];
+  }
+
+  /* =========================================================
+     CARD
+     ========================================================= */
+
+  .bu-card {
+    @apply mx-auto w-full max-w-[450px]
+           font-sans relative rounded-3xl
+           bg-white/70 shadow-[0_16px_40px_rgba(0,0,0,0.22)]
+           overflow-hidden
+           transition hover:-translate-y-0.5;
+  }
+
+  .bu-card-head {
+    @apply bg-linear-to-b from-zinc-300 to-zinc-400;
+  }
+
+  .bu-card-head-inner {
+    @apply flex items-center justify-between gap-3 px-4 py-2;
+  }
+
+  .bu-card-title {
+    @apply text-xl font-extrabold text-zinc-900 truncate;
+  }
+
+  .bu-card-body {
+    @apply -mt-px px-4 pt-3 pb-4 rounded-b-3xl
+           bg-linear-to-b from-zinc-400 to-zinc-600;
+  }
+
+  /* =========================================================
+     ACTIONS
+     ========================================================= */
+
+  .bu-action-wrap {
+    @apply flex items-center gap-1 rounded-xl
+           bg-white/60 ring-1 ring-black/10 p-1;
+  }
+
+  .bu-action-btn {
+    @apply inline-flex h-8 w-8 items-center justify-center rounded-xl
+           shadow-sm transition active:scale-[0.97];
+  }
+
+  .bu-action-btn--blue {
+    @apply bg-linear-to-b from-blue-300 to-blue-900
+           hover:from-blue-900 hover:to-blue-300
+           ring-1 ring-blue-600/30;
+  }
+
+  .bu-action-btn--red {
+    @apply bg-linear-to-b from-red-300 to-red-900
+           hover:from-red-900 hover:to-red-300
+           ring-1 ring-red-600/30;
+  }
+
+  .bu-action-btn--emerald {
+    @apply bg-linear-to-b from-emerald-300 to-emerald-900
+           hover:from-emerald-900 hover:to-emerald-300
+           ring-1 ring-emerald-600/30;
+  }
+
+  .bu-action-icon {
+    @apply h-4 w-4 opacity-90;
+  }
+
+  /* =========================================================
+     PLACEHOLDER / ADD CARD
+     ========================================================= */
+
+  .bu-add-placeholder {
+    @apply flex min-h-[280px] cursor-pointer flex-col items-center justify-center
+           rounded-3xl border-2 border-dashed border-zinc-300
+           bg-zinc-100 text-zinc-500 transition hover:-translate-y-0.5
+           hover:border-blue-400 hover:bg-blue-50 hover:text-blue-600;
+  }
+
+  .bu-add-plus {
+    @apply text-[3.5rem] leading-none;
+  }
+
+  .bu-add-text {
+    @apply mt-2 font-semibold;
+  }
+
+  /* =========================================================
+     FIELDSETS / CONTENT
+     ========================================================= */
+
+  .bu-fieldset {
+    @apply rounded-2xl bg-white p-4;
+  }
+
+  .bu-fieldset-stack {
+    @apply rounded-2xl bg-white p-4 space-y-3;
+  }
+
+  .bu-row {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  .bu-label {
+    @apply font-bold whitespace-nowrap;
+  }
+
+  .bu-input-wrap {
+    @apply w-full max-w-[220px];
+  }
+
+  .bu-input {
+    @apply h-9 w-full max-w-[220px] rounded-xl
+           bg-white px-3 text-sm text-zinc-900
+           outline-none ring-1 ring-inset text-right;
+  }
+
+  .bu-input-normal {
+    @apply ring-black/10;
+  }
+
+  .bu-input-error {
+    @apply ring-red-400 bg-red-50;
+  }
+
+  .bu-field-error {
+    @apply space-y-1;
+  }
+
+  .bu-error-text {
+    @apply text-sm text-red-500;
+  }
+
+  /* =========================================================
+     ROLE BADGE
+     ========================================================= */
+
+  .bu-role-badge {
+    @apply rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide;
+  }
+
+  .bu-role-badge--admin {
+    @apply bg-red-100 text-red-700;
+  }
+
+  .bu-role-badge--user {
+    @apply bg-zinc-200 text-zinc-700;
+  }
+
+}
