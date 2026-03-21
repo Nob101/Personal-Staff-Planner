@@ -51,7 +51,7 @@ async function add(f) {
 /**
  * Liefert alle Filialen.
  *
- * ORDER BY fnr sorgt für eine stabile Reihenfolge,
+ * ORDER BY filialname sorgt für eine stabile und UI-freundliche Reihenfolge,
  * damit das Frontend nicht "zufällig" sortierte Daten erhält.
  */
 async function getAll() {
@@ -133,7 +133,7 @@ async function update(fnr, updates) {
 }
 
 /**
- * Löscht eine Filiale anhand fnr.
+ * Deaktiviert eine Filiale anhand fnr (soft delete)
  *
  * Rückgabe:
  * - true  -> wenn tatsächlich eine Zeile gelöscht wurde
@@ -144,7 +144,10 @@ async function update(fnr, updates) {
  */
 async function remove(fnr) {
   const result = await pool.query(
-    `UPDATE filiale SET aktiv = FALSE WHERE fnr = $1;`,
+    `UPDATE filiale
+     SET aktiv = FALSE
+     WHERE fnr = $1
+       AND aktiv = TRUE;`,
     [fnr],
   );
   return result.rowCount > 0;

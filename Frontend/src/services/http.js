@@ -1,6 +1,5 @@
-//zentrale Axios Instant
-//Später muss nur die BaseURL getauscht werden, die services bleiben gleich!
-
+// http.js
+// zentrale Axios Instant
 import axios from "axios"
 
 export const http = axios.create({

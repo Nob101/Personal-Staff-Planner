@@ -71,8 +71,8 @@ function handleSubmit() {
     plz: plz.value || '',
     land: land.value || '',
     farbe: farbe.value,
-    anmerkungen: anmerkungen.value || '',
-    algorithmid: algorithmid.value ? algorithmid.value.value : null
+    algorithmid: algorithmid.value ? algorithmid.value.value : null,
+    anmerkungen: anmerkungen.value || ''
   })
 
   resetFormFields()
@@ -92,6 +92,7 @@ function resetFormFields() {
   anmerkungen.value = ''
   nameFehler.value = false
   algorithmFehler.value = false
+  anmerkungen.value = ''
 }
 </script>
 

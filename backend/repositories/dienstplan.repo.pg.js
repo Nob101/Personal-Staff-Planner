@@ -44,7 +44,7 @@ async function save(jahr, monat, datum, mnr, fnr, schicht_typ) {
  * - rowCount: Anzahl der gelöschten Datensätze (für Logging/Feedback).
  */
 async function deleteByMonth(jahr, monat, fnr) {
-  if (fnr) {
+  if (Number.isInteger(Number(fnr)) && Number(fnr) > 0) { 
     const result = await pool.query(
       `
       DELETE FROM dienstplaene
@@ -123,9 +123,10 @@ async function getByIdTx(client, id) {
  * - vermeidet einen zusätzlichen SELECT nach dem UPDATE.
  */
 async function dienstShiftTx(client, id, schicht_typ, fnr) {
-
-  // Wenn fnr NICHT übergeben wurde → Filiale NICHT ändern
-  if (typeof fnr === "undefined") {
+  // Filiale nur ändern, wenn eine gültige numerische fnr mitgegeben wurde.
+  // Bei undefined/null/ungültig bleibt fnr unverändert.
+  const hasValidFnr = Number.isInteger(Number(fnr)) && Number(fnr) > 0;
+  if (!hasValidFnr) {
     const r = await client.query(
       `
       UPDATE dienstplaene
@@ -138,7 +139,7 @@ async function dienstShiftTx(client, id, schicht_typ, fnr) {
     return r.rows[0] ?? null;
   }
 
-  // Wenn fnr mitgegeben wurde → beides ändern (test)
+  // Gültige fnr mitgegeben -> Schichttyp + Filiale ändern
   const r = await client.query(
     `
     UPDATE dienstplaene
@@ -147,40 +148,21 @@ async function dienstShiftTx(client, id, schicht_typ, fnr) {
     WHERE id = $1
     RETURNING id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung;
     `,
-    [id, schicht_typ, fnr]
+    [id, schicht_typ, Number(fnr)]
   );
 
   return r.rows[0] ?? null;
 }
 
-/**
- * Spezial-Update für den Ersatzfall:
- * - Schichttyp wird gesetzt
- * - Arbeitsfiliale (fnr) wird übernommen, da der Ersatzdienst in der Filiale
- *   des ursprünglichen Dienstes stattfindet.
- *
- * Auch hier: RETURNING liefert den fertigen Datensatz zurück.
- */
-/* async function dienstShiftMitErsatzTx(client, id, schicht_typ, fnr) {
-  const r = await client.query(
-    `
-    UPDATE dienstplaene
-    SET schicht_typ = $2,
-        fnr = $3
-    WHERE id = $1
-    RETURNING id, jahr, monat, datum, mnr, fnr, schicht_typ, anmerkung;
-    `,
-    [id, schicht_typ, fnr]
-  );
-  return r.rows[0] ?? null;
-} */
 
 /**
  * Liefert mögliche Ersatz-Kandidaten für einen konkreten Dienst.
  *
  * Kriterien:
  * 1) gleicher Tag (d2.datum = d1.datum)
- * 2) Kandidat hat an diesem Tag "F" (frei) -> darf übernommen werden
+  * 2) Kandidat hat an diesem Tag entweder:
+ *    - F (frei), oder
+ *    - A / E, sofern dadurch die ursprüngliche Filiale nicht unterbesetzt wird
  * 3) Kandidat ist für die Filiale qualifiziert:
  *    - entweder Hauptfiliale entspricht der Dienst-Filiale
  *    - oder Mitarbeiter ist in der Mapping-Tabelle als Nebenfiliale eingetragen
@@ -207,6 +189,7 @@ async function findErsatzKandidatenByDienstId(dienstId) {
     JOIN mitarbeiter m ON m.mnr = d2.mnr
     JOIN filiale f ON f.fnr = d2.fnr
     WHERE d1.id = $1
+      AND d2.id <> d1.id
       AND m.aktiv = true
       AND (
         m.hauptfiliale_fnr = d1.fnr

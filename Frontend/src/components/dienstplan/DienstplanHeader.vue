@@ -20,6 +20,40 @@ const props = defineProps({
   modelValue: { type: Array, default: () => [] },
 });
 
+// NEU: an PDF angepasst
+async function exportAlleFilialen() {
+  if (props.loading || !props.hasView) return;
+ 
+  // NEU:Das stellt sicher, dass Änderungen anderer Nutzer oder 
+  // letzte Korrekturen im PDF landen. (best practice) emit ist asynchron und falls Vue länger braucht
+    emit('load', props.jahr, props.monat);
+    await new Promise(r => setTimeout(r, 600));
+ 
+  // Bestimme, welche Filialen exportiert werden sollen
+  const exportListe = props.modelValue?.length ? props.modelValue : props.filialen;
+ 
+  for (let i = 0; i < exportListe.length; i++) {
+    const f = exportListe[i];
+    // WICHTIG: Die ID muss so aufgebaut sein, wie sie im DOM vergeben wurde
+    // Beispiel: "dienstplan-filiale-10"
+    const elementId = `export-area-filiale-${f.fnr}`;
+    const dateiname = `Dienstplan_${f.filialname}_${props.monat}_${props.jahr}`;
+    try{
+ 
+       await downloadDienstplanPdf(elementId, dateiname);
+       if (i < exportListe.length - 1) {    //Damit das seTimeout nach dem letzten PDF 
+                                            // nicht mehr ausgeführt wird da zB 4 < 4 = false
+        await new Promise(r => setTimeout(r, 800));
+       }
+ 
+    }catch (err) {
+    console.error('Zuviele PDFs auf einmal', err)
+  }
+ }
+}
+ 
+const list = (props.modelValue?.length ? props.modelValue : props.filialen);
+console.log("Export list length:", list.length, list.map(f => f.fnr));
 const emit = defineEmits(["load", "generate", "remove", "update:modelValue"]);
 
 async function exportAlleFilialen() {
