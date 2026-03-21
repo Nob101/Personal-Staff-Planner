@@ -76,10 +76,7 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
   <div ref="rootEl" class="relative">
     <div class="flex items-center gap-2">
       <button
-        class="px-3 py-2 rounded-xl
-               bg-linear-to-b from-zinc-200 to-zinc-300
-               text-black disabled:opacity-50
-               hover:from-zinc-300 hover:to-zinc-200"
+        class="dp-monthpicker-nav-btn"
         :disabled="loading"
         @click="shiftMonths(-1)"
         title="Vormonat"
@@ -88,10 +85,7 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
       </button>
 
       <button
-        class="h-10 px-4 py-2 rounded-xl border border-white/15
-               bg-linear-to-b from-zinc-200 to-zinc-300
-               text-black font-semibold min-w-40 text-center
-               hover:from-zinc-300 hover:to-zinc-200"
+        class="dp-monthpicker-trigger"
         :disabled="loading"
         @click="togglePicker"
         title="Monat/Jahr auswählen"
@@ -100,10 +94,7 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
       </button>
 
       <button
-        class="px-3 py-2 rounded-xl
-               bg-linear-to-b from-zinc-200 to-zinc-300
-               text-black disabled:opacity-50
-               hover:from-zinc-300 hover:to-zinc-200"
+        class="dp-monthpicker-nav-btn"
         :disabled="loading"
         @click="shiftMonths(1)"
         title="Nächster Monat"
@@ -114,20 +105,16 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
 
     <div
       v-if="pickerOpen"
-      class="absolute left-0 top-full mt-2 z-50 p-4
-             rounded-xl
-             bg-linear-to-b from-zinc-500 to-zinc-700
-             border border-white/20
-             shadow-2xl"
+      class="dp-monthpicker-popover"
     >
-      <div class="flex items-end gap-2">
+      <div class="dp-monthpicker-row">
         <div>
-          <label class="block text-xs text-white/60 mb-1 text-center">
+          <label class="dp-monthpicker-label">
             Monat:
           </label>
           <select
             v-model.number="pickMonat"
-            class="px-3 py-1 rounded-xl bg-black/40 border border-white/15 text-white outline-none"
+            class="dp-monthpicker-select"
           >
             <option v-for="m in 12" :key="m" :value="m">
               {{ monatName(m) }}
@@ -136,12 +123,12 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
         </div>
 
         <div>
-          <label class="block text-xs text-white/60 mb-1 text-center">
+          <label class="dp-monthpicker-label">
             Jahr:
           </label>
           <select
             v-model.number="pickJahr"
-            class="px-3 py-1 rounded-xl bg-black/40 border border-white/15 text-white outline-none"
+            class="dp-monthpicker-select"
           >
             <option v-for="y in jahre" :key="y" :value="y">
               {{ y }}
@@ -150,7 +137,7 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
         </div>
 
         <button
-          class="px-2 py-1 rounded-xl bg-linear-to-b from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white font-semibold disabled:opacity-50"
+          class="dp-monthpicker-ok-btn"
           :disabled="loading"
           @click="jumpTo"
         >
