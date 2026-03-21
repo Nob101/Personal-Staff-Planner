@@ -50,18 +50,23 @@ function handleSave() {
   const currentUsername = (editData.value.username || '').trim()
   const currentPassword = (editData.value.password || '').trim()
 
+  // Validierung: Pflichtfelder
   if (!currentUsername) usernameFehler.value = true
   if (!currentPassword) passwordFehler.value = true
 
+  // Validierung: Reservierter Name "admin"
   if (currentUsername.toLowerCase() === 'admin') {
     adminNameFehler.value = true
   }
 
+  // Check auf bereits existierenden Benutzernamen (außer man behält seinen eigenen)
   const existiertBereits = props.allBenutzer.some(
     (b) => b.username.toLowerCase() === currentUsername.toLowerCase() && b.id !== props.benutzer.id
   )
 
-  if (existiertBereits) usernameExistsFehler.value = true
+  if (existiertBereits) {
+    usernameExistsFehler.value = true
+  }
 
   if (usernameFehler.value || passwordFehler.value || adminNameFehler.value || usernameExistsFehler.value) return
 
@@ -187,6 +192,7 @@ function handleSave() {
   </article>
 </template>
 
+<!-- Temporöres Styling -> von Dumitru noch zu ersetzen! -->
 <style scoped>
 :deep(.multiselect__input),
 :deep(.multiselect__single),

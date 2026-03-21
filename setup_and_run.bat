@@ -2,7 +2,9 @@
 echo -------------------------------------
 echo PSP-Dienstplan: System check und start
 echo -------------------------------------
- 
+
+
+
 :: NEU: Ladefenster starten mit timeout
 start /b powershell  -ExecutionPolicy Bypass -File "%~dp0gui.ps1"
 timeout /t 2 /nobreak >nul
@@ -37,10 +39,10 @@ if %errorlevel% neq 0 (
         exit /b
     )
 )
- 
+
 "%OSSL%" req -x509 -newkey rsa:4096 -keyout certs\key.pem -out certs\cert.pem -sha256 -days 365 -nodes -subj "/CN=localhost" >nul 2>&1
  
- 
+:: ...
 :: NEU: Verbesserter Docker Startprozess
 :start_docker
 echo [INFO] Pruefe Container-Status...
@@ -57,34 +59,30 @@ if %errorlevel% neq 0 (
 :: NEU: curl ist schneller als ps (standard bei 10/11) NEU : Wartet bis Nginx wirklich antwortet!!!!! -_-
 :: Reverse_Proxy oft schneller als node.js antworten kann -> 200 und 502 abwarten (Endlosschleife verhinderen)
 set /a retry_count=0
- 
 :loop
 set /a retry_count+=1
-if %retry_count% gtr 30 (
+if %retry_count% gtr 40 (
     echo [WARN] Server startet langsam. Oeffne Browser trotzdem...
     goto :open_browser
 )
- 
 :: NEU: Statuscode speichern
 :: FIX: curl gibt status des Webbrowsers wieder. -k für http
 set "status=000"
-for /f "delims=" %%i in ('curl -k -s -o /dev/null -w "%%{http_code}" https://localhost') do set "status=%%i"
- 
-echo [INFO] Warte auf Server... (Status: %status%, Versuch: %retry_count%/30)
- 
+for /f "delims=" %%i in ('curl -k -s -o /dev/null -w "%%{http_code}" https://localhost 2^>nul') do set "status=%%i"
+echo [INFO] Warte auf Server... (Status: %status%, Versuch: %retry_count%/40)
 :: FIX: 200 (OK) oder 502 (Nginx da, aber Node noch nicht) -> Nginx lebt!
 if "%status%"=="200" goto :open_browser
+
 if "%status%"=="502" (
     echo [INFO] Nginx ist bereit -> backend (express)startet noch...
-)
-timeout /t 2 /nobreak >nul
     goto :loop
- 
+) 
 :: Falls  Server  nicht reagiert (Status 000), weiter warten
 timeout /t 2 /nobreak >nul
 goto :loop
- 
-:open_browser
+
+:open_browser 
+::...
 ::  Ladefenster schließen und App öffnen
 powershell -Command "Stop-Process -Name 'powershell' -Force" >nul 2>&1
 :: NEU: Browser suche über Pfad (Nutzt nur vorhandenen)

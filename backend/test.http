@@ -1,11 +1,7 @@
 @baseUrl = https://localhost/api
-<<<<<<< HEAD
-@token = 8e168f93a70ef89782ddaee3e050921cee3249a0ff90ad72
-=======
-@token = d4f5d4112cd7393474e5a20b08817ffdcae45b890b8e0b1c
->>>>>>> efb402cb7f2851fca4bd4c88afb49ecd94555152
+@token = 1b1cd5de0dee9f281124041f0c2ff873d6c916dcc897734e
 @jahr = 2026
-@monat = 2
+@monat = 3
 
 
 ### ============================================================================
@@ -204,11 +200,7 @@ Content-Type: application/json
 ### ERSATZ
 ### ============================================================================
 
-<<<<<<< HEAD
 @DIENST_ID = 43801
-=======
-@DIENST_ID = 283429
->>>>>>> efb402cb7f2851fca4bd4c88afb49ecd94555152
 GET {{baseUrl}}/dienstplan/{{DIENST_ID}}/ersatz
 Authorization: {{token}}
 Accept: application/json
@@ -252,3 +244,46 @@ Content-Type: application/json
   "monat": {{monat}},
   "fnr": {{FNR_TEST}}
 }
+
+
+
+### ============================================================================
+### USERS
+### ============================================================================
+
+### GET alle Users
+GET {{baseUrl}}/users
+Authorization: {{token}}
+
+### GET User nach id
+@USER_ID = 2
+GET {{baseUrl}}/users/{{USER_ID}}
+Authorization: {{token}}
+
+### POST User anlegen
+POST {{baseUrl}}/users
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "test1234",
+  "role": "user"
+}
+
+### PUT User bearbeiten
+@USER_ID_UPDATE = 2
+PUT {{baseUrl}}/users/{{USER_ID_UPDATE}}
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "username": "testuser_updated",
+  "role": "admin",
+  "password": "newpass123"
+}
+
+### DELETE User löschen
+@USER_ID_DELETE = 2
+DELETE {{baseUrl}}/users/{{USER_ID_DELETE}}
+Authorization: {{token}}

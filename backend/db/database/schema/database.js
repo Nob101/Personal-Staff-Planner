@@ -55,7 +55,7 @@ async function initDatabase() {
     
 
         console.log("--- DB-Initialisierung gestartet ---");
-        // im Do Block da Postgres kein Create Role if not Exists kennt (nicht in der userTabelle)
+        // im Do Block, da Postgres kein Create Role if not Exists kennt (nicht in der userTabelle)
         // admin hat Superuser Rechte (Create, Delete, usw. DB) '%L' verhindert das Sonderzeichen im Passwort das SQL-Kommando zerstört
         await client.query(`
             DO $$
@@ -69,7 +69,6 @@ async function initDatabase() {
         await client.query('BEGIN');
  
         // Externe Skripte => laden
-        // HINWEIS: prevent_double_booking Trigger gelöscht
         const schemaDir = __dirname;
         
         const procedureDir = path.resolve(__dirname, '../procedures');
@@ -78,8 +77,8 @@ async function initDatabase() {
         const indexesDir = path.resolve(__dirname, '../indexes');
         const seedsDir = path.resolve(__dirname, '../seeds');
 
-        // Erst das Schema laden!
-        // Reihenfolge ist wichtig!
+        // Wichtig: Erst das Schema laden!  -> Reihenfolge 
+        
 
         // erstens
         await loadSqlFiles(client, [schemaDir]);
@@ -109,7 +108,7 @@ async function initDatabase() {
         `, [hashPassword]);
  
         await client.query('COMMIT');
-        console.log("Datenbank erfolgreich an Backend-Wünsche angepasst.");
+        // console.log("Datenbank erfolgreich an Backend-Wünsche angepasst.");
  
  
     } catch (err) {

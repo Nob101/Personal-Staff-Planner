@@ -28,12 +28,14 @@ const showAddForm = ref(false)
 const roles = ref(['user', 'admin'])
 const newBenutzer = ref({ username: '', password: '', role: 'user' })
 
+// Fehler-States
 const usernameFehler = ref(false)
 const passwordFehler = ref(false)
 const adminNameFehler = ref(false)
 const usernameExistsFehler = ref(false)
 
 function confirmCreate() {
+  // Reset aller Fehlermeldungen
   usernameFehler.value = false
   passwordFehler.value = false
   adminNameFehler.value = false
@@ -41,21 +43,28 @@ function confirmCreate() {
 
   const inputName = newBenutzer.value.username.trim()
 
+  // 1. Pflichtfeld-Check
   if (!inputName) usernameFehler.value = true
   if (!newBenutzer.value.password.trim()) passwordFehler.value = true
+
+  // 2. Admin-Check (Case Insensitive, damit auch 'Admin' oder 'ADMIN' abgefangen wird)
   if (inputName.toLowerCase() === 'admin') adminNameFehler.value = true
 
+  // Check auf bereits existierenden Benutzernamen
   const existiertBereits = props.benutzer.some(
     (b) => b.username.toLowerCase() === inputName.toLowerCase()
   )
-
-  if (existiertBereits) usernameExistsFehler.value = true
+  
+  if (existiertBereits) {
+    usernameExistsFehler.value = true
+  }
+  // Wenn irgendein Fehler vorliegt, abbrechen
   if (usernameFehler.value || passwordFehler.value || adminNameFehler.value || usernameExistsFehler.value) return
 
   emit('create', { ...newBenutzer.value })
   cancelCreate()
 }
-
+// Erstell-Cancel und leert das Formular zurück auf die Default-Werte (leer), und entfernt Fehlermeldungen
 function cancelCreate() {
   newBenutzer.value = { username: '', password: '', role: 'user' }
   usernameFehler.value = false
