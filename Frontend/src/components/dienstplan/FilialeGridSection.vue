@@ -131,7 +131,7 @@ function isSunday(datum) {
               :key="datum"
               class="h-8 rounded-lg flex flex-col items-center justify-center text-[9px]"
               :class="isSunday(datum)
-                ? 'bg-linear-to-b from-zinc-100 to-zinc-600'
+                ? 'bg-linear-to-b from-zinc-100 to-zinc-500'
                 : 'bg-linear-to-b from-zinc-100 to-zinc-400'"
             >
               <div class="font-semibold text-zinc-600">{{ dow(datum) }}</div>

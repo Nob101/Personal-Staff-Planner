@@ -24,9 +24,8 @@ const route = useRoute()
 <template>
 <header
   class="sticky top-0 z-10000
-         border-b border-black/10 dark:border-white/10
+         border-b border-black/10 
          bg-linear-to-b from-zinc-500 to-zinc-700
-         dark:from-zinc-700/70 dark:to-zinc-900/80
          backdrop-blur supports-backdrop-filter:bg-white/60"
 >
   <div
@@ -51,12 +50,12 @@ const route = useRoute()
               border-b-2 border-transparent
               transition-colors
 
-              text-zinc-100 dark:text-white/70
-              hover:text-white dark:hover:text-white
-              hover:border-white dark:hover:border-white/60
+              text-zinc-100
+              hover:text-white
+              hover:border-white
 
-              aria-[current=page]:text-white dark:aria-[current=page]:text-white
-              aria-[current=page]:border-white dark:aria-[current=page]:border-white/60"
+              aria-[current=page]:text-white
+              aria-[current=page]:border-white"
       >
         <img :src="dienstplaene_icon" class="h-5 w-5 -ml-0.5" />
         <span>Dienstpläne</span>
@@ -69,12 +68,12 @@ const route = useRoute()
               border-b-2 border-transparent
               transition-colors
 
-              text-zinc-100 dark:text-white/70
-              hover:text-white dark:hover:text-white
-              hover:border-white dark:hover:border-white/60
+              text-zinc-100 
+              hover:text-white 
+              hover:border-white
 
-              aria-[current=page]:text-white dark:aria-[current=page]:text-white
-              aria-[current=page]:border-white dark:aria-[current=page]:border-white/60"
+              aria-[current=page]:text-white
+              aria-[current=page]:border-white"
       >
         <img :src="mitarbeiter_icon" class="h-5 w-5" />
         <span>Mitarbeiter</span>
@@ -87,12 +86,12 @@ const route = useRoute()
               border-b-2 border-transparent
               transition-colors
 
-              text-zinc-100 dark:text-white/70
-              hover:text-white dark:hover:text-white
-              hover:border-white dark:hover:border-white/60
+              text-zinc-100
+              hover:text-white
+              hover:border-white
 
-              aria-[current=page]:text-white dark:aria-[current=page]:text-white
-              aria-[current=page]:border-white dark:aria-[current=page]:border-white/60"
+              aria-[current=page]:text-white
+              aria-[current=page]:border-white"
       >
         <img :src="filialen_icon" class="h-5 w-5 -ml-0.5" />
         <span>Filialen</span>
@@ -105,12 +104,12 @@ const route = useRoute()
               border-b-2 border-transparent
               transition-colors
 
-              text-zinc-100 dark:text-white/70
-              hover:text-white dark:hover:text-white
-              hover:border-white dark:hover:border-white/60
+              text-zinc-100
+              hover:text-white
+              hover:border-white
 
-              aria-[current=page]:text-white dark:aria-[current=page]:text-white
-              aria-[current=page]:border-white dark:aria-[current=page]:border-white/60"
+              aria-[current=page]:text-white
+              aria-[current=page]:border-white"
       >
         <img :src="benutzer_icon" class="h-5 w-5 -ml-0.5" />
         <span>Benutzer</span>

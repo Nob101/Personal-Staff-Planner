@@ -190,7 +190,7 @@
 
   .ma-legend {
     @apply text-sm font-extrabold uppercase tracking-wide
-           text-zinc-700
+           text-zinc-600
            px-1 -mb-3;
   }
 

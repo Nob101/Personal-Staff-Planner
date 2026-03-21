@@ -4,7 +4,7 @@
 //
 // Aufgaben dieser Datei:
 // - Initialisierung von Express und globaler Middleware (JSON, CORS)
-// - Einbinden der REST-Routen (Auth, Mitarbeiter, Filialen, Dienstplan, Export)
+// - Einbinden der REST-Routen (Auth, Mitarbeiter, Filialen, Dienstplan, Users)
 // - Startlogik inkl. DB-Initialisierung und regelmäßiger Cleanup-Job
 // ============================================================================
 
@@ -62,8 +62,11 @@ const dienstplanRouter = require("./routes/dienstplan.routes");
 app.use("/api/dienstplan", dienstplanRouter);
 
 // Export/Download-Funktionen (z.B. CSV-Export für Dienstpläne)
-const exportRouter = require("./routes/export.routes.js");
-app.use("/api/download", exportRouter);
+// const exportRouter = require("./routes/export.routes.js");
+// app.use("/api/download", exportRouter);
+
+const usersRouter = require("./routes/users.routes");
+app.use("/api/users", usersRouter);
 
 // ============================================================================
 // Startlogik
@@ -81,7 +84,7 @@ async function startApp() {
 
     // In Docker-Setups kann es passieren, dass die DB noch nicht bereit ist.
     // Diese kurze Verzögerung reduziert Startfehler (z.B. connection refused).
-    await new Promise((res) => setTimeout(res, 5000));
+    await new Promise((res) => setTimeout(res, 2000));
 
     await db.initDatabase();
 
@@ -89,9 +92,13 @@ async function startApp() {
     await deleteOldShifts();
 
     // Regelmäßiger Cleanup: alle 24 Stunden
-    setInterval(async () => {
-      await deleteOldShifts();
-    }, 24 * 60 * 60 * 1000);
+setInterval(async () => {
+  try {
+    await deleteOldShifts();
+  } catch (err) {
+    console.error("Fehler beim regelmäßigen Cleanup:", err);
+  }
+}, 24 * 60 * 60 * 1000);
 
     app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
   } catch (err) {

@@ -4,7 +4,7 @@
 
   .dp-header {
     @apply sticky top-12 z-50
-           left-0 right-0 w-screen
+           left-0 right-0 w-full
            bg-white/80
            backdrop-blur
            transition-transform duration-200 ease-out will-change-transform;
@@ -25,6 +25,60 @@
 
   .dp-header--shown {
     @apply translate-y-0;
+  }
+
+  /* MONTH PICKER */
+
+  .dp-monthpicker-nav-btn {
+    @apply px-3 py-2 rounded-xl
+           bg-linear-to-b from-zinc-200 to-zinc-300
+           text-black disabled:opacity-50
+           hover:from-zinc-300 hover:to-zinc-200;
+  }
+
+  .dp-monthpicker-trigger {
+    @apply h-10 px-4 py-2 rounded-xl
+           bg-linear-to-b from-zinc-200 to-zinc-300
+           text-black font-semibold min-w-40 text-center
+           ring-1 ring-black/10
+           hover:from-zinc-300 hover:to-zinc-200
+           disabled:opacity-50;
+  }
+
+  .dp-monthpicker-popover {
+    @apply absolute left-0 top-full mt-2 z-50 p-4
+           rounded-xl
+           bg-linear-to-b from-zinc-500 to-zinc-700
+           border border-white/20
+           shadow-2xl;
+  }
+
+  .dp-monthpicker-row {
+    @apply flex items-end gap-2;
+  }
+
+  .dp-monthpicker-label {
+    @apply block text-xs text-white/60 mb-1 text-center;
+  }
+
+  .dp-monthpicker-select {
+    @apply h-10 px-3 rounded-xl
+           bg-linear-to-b from-zinc-200 to-zinc-300
+           text-sm text-zinc-800
+           ring-1 ring-black/10
+           outline-none
+           hover:from-zinc-300 hover:to-zinc-200
+           focus:ring-black/20;
+  }
+
+  .dp-monthpicker-ok-btn {
+    @apply h-10 px-3 rounded-xl
+           bg-linear-to-b from-blue-300 to-blue-900
+           hover:from-blue-900 hover:to-blue-300
+           text-white font-semibold
+           ring-1 ring-blue-600/30
+           shadow-sm transition active:scale-[0.97]
+           disabled:opacity-50;
   }
 
   /* ACTION BUTTONS */

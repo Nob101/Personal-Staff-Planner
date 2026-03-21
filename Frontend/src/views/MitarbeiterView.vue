@@ -40,7 +40,7 @@ const {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white text-black dark:bg-[#18181b] dark:text-white">
+  <div class="min-h-screen bg-white text-black">
 
     <!-- ActionBar -->
     <MitarbeiterActionBar
