@@ -121,13 +121,13 @@ services:
     depends_on:
       psp_database:
         condition: service_healthy
-    deploy:                 # <- NEU: Leistungsbegränzer verhindert einen Absturzt (Endlosschleife)
+    deploy:         # <- NEU: Leistungsbegrenzer verhindert einen Absturzt (Endlosschleife)
       resources:
         limits:
-          cpus: '1'         # Ein Kern der CPU
-          memory: 2G        # Maximum / Limit
+          cpus: '1'      # Ein Kern der CPU
+          memory: 2G       # Maximum / Limit
         reservations:
-          memory: 512M      # Garantierter Speicher 
+          memory: 512M   # Garantierter Speicher 
 
   # --- FRONTEND BEREICH für Oliver (VUE) und JD (TAILWIND)  ---
   psp_frontend:
@@ -157,11 +157,11 @@ services:
     restart: always
     logging: *default-logging
     ports:
-    - "80:80"    # HTTP für Browser
-    - "443:443"   # HTTPS für später
+    - "80:80"    # HTTP 
+    - "443:443"   # HTTPS 
     volumes:
     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    - ./certs:/etc/nginx/ssl:ro    # Zertifikate
+    - ./certs:/etc/nginx/ssl:ro    # Zertifikate read-only
     depends_on:
     - psp_frontend
     - psp_backend

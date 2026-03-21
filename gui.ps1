@@ -1,9 +1,13 @@
-# Wichtig: Aktiviert das Design für Ladebalken
-[Windows.Forms.Application]::EnableVisualStyles()
- 
+
+#  Libraries laden
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
  
+
+ # Wichtig: Aktiviert das Design für Ladebalken
+[Windows.Forms.Application]::EnableVisualStyles()
+
+
 # NEU: HELFER für den Farbmix (Ladebalken)
 $code = @"
 using System;
