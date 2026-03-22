@@ -1,20 +1,16 @@
-// loginServie.js
-// Gesamte Backend-Kommunikation für Login
+// loginService.js
+// ============================================================================
+// Service für die Authentifizierungs-API
+// Aufgaben dieser Datei:
+// - Bereitstellung von Methoden für Login und Registrierung
+// - Kommunikation mit den Auth-Endpunkten (/api/auth)
+// ============================================================================
 
-//BaseURL importieren
 import { http } from './http'
 
-// Login
+// POST: Login durchführen (/api/auth/login)
 export function login(benutzername, passwort) {
   return http.post('/auth/login', {
-    username: benutzername,
-    password: passwort
-  })
-}
-
-// --- Registrierung ---
-export function register(benutzername, passwort) {
-  return http.post('/auth/register', {
     username: benutzername,
     password: passwort
   })
