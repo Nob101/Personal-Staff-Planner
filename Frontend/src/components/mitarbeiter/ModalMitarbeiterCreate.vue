@@ -1,4 +1,11 @@
 <!-- ModalMitarbeiterCreate.vue -->
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Modal zum erstellen eines neuen Mitarbeiters
+// ============================================================================
+-->
+
 <script setup>
 import BaseModal from '@/components/global/BaseModal.vue'
 import Multiselect from 'vue-multiselect'
