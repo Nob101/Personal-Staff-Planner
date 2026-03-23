@@ -1,9 +1,14 @@
-<script setup>
-/**
- * Aktionsleiste für die Filialen-Ansicht.
- * Beinhaltet die Suche, Sortierung und den "Hinzufügen"-Button.
- */
+<!-- FilialenActionBar.vue -->
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Actionbar für alles bezüglich Filialen
+// - Buttons zum hinzufügen einer neuen Filialen
+// - Sortier- und Such-Funktionalität
+// ============================================================================
+-->
 
+<script setup>
 // Funktionalitäten und Komponenten importieren
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import Multiselect from 'vue-multiselect'
