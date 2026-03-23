@@ -1,3 +1,12 @@
+<!-- FilialenCard.vue -->
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Darstellung von Filialen in Karteiform
+// - Buttons zum ändern und löschen der Filiale
+// ============================================================================
+-->
+
 <script setup>
 // Funktionalitäten und Komponenten importieren
 import { defineProps } from 'vue'
