@@ -76,7 +76,7 @@ function handleSelect() {
 
       <!-- Email unter dem Namen (sonst evtl. zu lang)-->
       <div class="ma-list-subtitle">
-        {{ mitarbeiter.email1 ?? "-" }}
+        {{ mitarbeiter.email1 || "-" }}
       </div>
     </div>
 
@@ -94,7 +94,7 @@ function handleSelect() {
 
               <div class="space-y-2">
                 <div class="flex justify-between gap-3 min-w-0">
-                  <span class="text-right min-w-0 truncate">{{ mitarbeiter.telefon1 ?? "-" }}</span>
+                  <span class="text-right min-w-0 truncate">{{ mitarbeiter.telefon1 || "-" }}</span>
                 </div>
 
                 <div class="flex justify-between gap-3 min-w-0">

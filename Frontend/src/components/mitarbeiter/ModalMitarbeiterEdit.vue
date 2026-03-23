@@ -296,18 +296,18 @@ function handleSubmit() {
                                 selectedLabel=""
                               >
                                 <!-- AUSGEWÄHLTE TAGS: nur Kreise + hover-title -->
-                                <template #tag="{ option, remove }">
-                                  <span
-                                    class="inline-flex items-center justify-center
-                                           h-5 w-5 rounded-full
-                                           ring-1 ring-black/20
-                                           cursor-pointer"
-                                    :style="{ backgroundColor: option.farbe || '#ccc' }"
-                                    :title="option.filialname"
-                                    @mousedown.prevent
-                                    @click.stop="remove(option)"
-                                  />
-                                </template>
+                              <template #tag="{ option, remove }">
+                                <span
+                                  class="inline-flex items-center justify-center h-5 w-5 rounded-full
+                                        ring-1 ring-black/20 cursor-pointer text-[10px] font-semibold text-black/70 mr-1"
+                                  :style="{ backgroundColor: option.farbe || '#ccc' }"
+                                  :title="option.filialname"
+                                  @mousedown.prevent
+                                  @click.stop="remove(option)"
+                                >
+                                  {{ option.filialname?.charAt(0).toUpperCase() }}
+                                </span>
+                              </template>
 
                                 <!-- OPTION im Dropdown: Kreis + Name -->
                                 <template #option="{ option }">

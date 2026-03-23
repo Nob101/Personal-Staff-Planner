@@ -5,6 +5,7 @@
 @import "./filialen.css";
 @import "./mitarbeiter.css";
 @import "./benutzer.css";
+@import "./navbar.css";
 
 @tailwind utilities;
 
