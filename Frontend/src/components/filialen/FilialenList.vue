@@ -1,3 +1,12 @@
+<!-- FilialenList.vue -->
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Darstellung ALLER FilialenCards
+// - Ladespinner 
+// ============================================================================
+-->
+
 <script setup>
 // Funktionalitäten und Komponenten importieren
 import { defineProps } from 'vue'
