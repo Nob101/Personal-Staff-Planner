@@ -15,8 +15,8 @@ export function getMitarbeiter() {
 }
 
 // GET: Einzelnen Mitarbeiter nach MNR abrufen
-export function getMitarbeiterById(mnr) {
-  return http.get(`/mitarbeiter/${mnr}`)
+export function getMitarbeiterById(id) {
+  return http.get(`/mitarbeiter/${id}`)
 }
 
 // POST: Mitarbeiter anlegen (/api/mitarbeiter)
@@ -30,8 +30,8 @@ export function updateMitarbeiter(m) {
 }
 
 // DELETE: Mitarbeiter löschen (/api/mitarbeiter/:mnr)
-export function deleteMitarbeiter(mnr) {
-  return http.delete(`/mitarbeiter/${mnr}`)
+export function deleteMitarbeiter(id) {
+  return http.delete(`/mitarbeiter/${id}`)
 }
 
 
