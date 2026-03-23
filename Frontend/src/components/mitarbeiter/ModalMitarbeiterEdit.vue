@@ -1,4 +1,11 @@
 <!-- ModalMitarbeiterEdit.vue -->
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Modal zum Ändern der Daten eines Mitarbeiters
+// ============================================================================
+-->
+
 <script setup>
 import BaseModal from '@/components/global/BaseModal.vue'
 import Multiselect from 'vue-multiselect'
