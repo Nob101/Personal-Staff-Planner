@@ -267,21 +267,18 @@ function handleSubmit() {
                                 deselectLabel=""
                                 selectedLabel=""
                               >
-                                <!-- AUSGEWÄHLTE TAGS im Input-Feld -->
-                                <template #tag="{ option, remove }">
-                                  <span
-                                    class="inline-flex items-center justify-center h-5 w-5 rounded-full
-                                           ring-1 ring-black/20 cursor-pointer"
-                                    :style="{ backgroundColor: option.farbe || '#ccc' }"
-                                    :title="option.filialname"
-                                    @mousedown.prevent
-                                    @click.stop="remove(option)"
-                                  >
-                                    <span class="text-[10px] leading-none text-black/60 opacity-0 hover:opacity-100">
-                                      ×
-                                    </span>
-                                  </span>
-                                </template>
+                              <template #tag="{ option, remove }">
+                                <span
+                                  class="inline-flex items-center justify-center h-5 w-5 rounded-full
+                                        ring-1 ring-black/20 cursor-pointer text-[10px] font-semibold text-black/70 mr-1"
+                                  :style="{ backgroundColor: option.farbe || '#ccc' }"
+                                  :title="option.filialname"
+                                  @mousedown.prevent
+                                  @click.stop="remove(option)"
+                                >
+                                  {{ option.filialname?.charAt(0).toUpperCase() }}
+                                </span>
+                              </template>
 
                                 <!-- OPTIONEN im Dropdown: Punkt + Name -->
                                 <template #option="{ option }">

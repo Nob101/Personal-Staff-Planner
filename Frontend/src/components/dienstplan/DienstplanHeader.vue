@@ -56,31 +56,6 @@ const list = (props.modelValue?.length ? props.modelValue : props.filialen);
 console.log("Export list length:", list.length, list.map(f => f.fnr));
 const emit = defineEmits(["load", "generate", "remove", "update:modelValue"]);
 
-async function exportAlleFilialen() {
-  if (props.loading || !props.hasView) return;
-
-  emit("load", props.jahr, props.monat);
-  await new Promise((r) => setTimeout(r, 600));
-
-  const exportListe = props.modelValue?.length ? props.modelValue : props.filialen;
-
-  for (let i = 0; i < exportListe.length; i++) {
-    const f = exportListe[i];
-    const elementId = `export-area-filiale-${f.fnr}`;
-    const dateiname = `Dienstplan_${f.filialname}_${props.monat}_${props.jahr}`;
-
-    try {
-      await downloadDienstplanPdf(elementId, dateiname);
-
-      if (i < exportListe.length - 1) {
-        await new Promise((r) => setTimeout(r, 800));
-      }
-    } catch (err) {
-      console.error("Zuviele PDFs auf einmal", err);
-    }
-  }
-}
-
 const headerHidden = ref(false);
 let lastY = 0;
 let ticking = false;
@@ -156,15 +131,18 @@ onBeforeUnmount(() => {
           deselect-label=""
           :allow-empty="true"
         >
-          <template #tag="{ option, remove }">
-            <span
-              class="inline-flex h-5 w-5 items-center justify-center rounded-full ring-1 ring-black/20"
-              :style="{ backgroundColor: option.farbe || '#ccc' }"
-              :title="option.filialname"
-              @mousedown.prevent
-              @click.stop="remove(option)"
-            />
-          </template>
+        <template #tag="{ option, remove }">
+          <span
+            class="inline-flex items-center justify-center h-5 w-5 rounded-full
+                  ring-1 ring-black/20 cursor-pointer text-[10px] font-semibold text-black/70 mr-1"
+            :style="{ backgroundColor: option.farbe || '#ccc' }"
+            :title="option.filialname"
+            @mousedown.prevent
+            @click.stop="remove(option)"
+          >
+            {{ option.filialname?.charAt(0).toUpperCase() }}
+          </span>
+        </template>
 
           <template #option="{ option }">
             <div class="flex items-center gap-2">
