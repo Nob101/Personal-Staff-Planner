@@ -1,3 +1,11 @@
+<!-- ModalFilialenEdit.vue -->
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Modal zum Ändern der Daten einer Filiale
+// ============================================================================
+-->
+
 <script setup>
 import { ref, defineProps, watch } from 'vue'
 import BaseModal from '@/components/global/BaseModal.vue'
