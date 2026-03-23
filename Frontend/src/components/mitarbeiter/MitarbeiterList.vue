@@ -1,4 +1,11 @@
 <!-- MitarbeiterList.vue -->
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Darstellung ALLER MitarbeiterCards
+// - Ladespinner 
+// ============================================================================
+-->
 
 <script setup>
 // Funktionalitäten und Komponenten importieren
