@@ -1,4 +1,12 @@
 <!-- MitarbeiterActionBar.vue -->
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Actionbar für alles bezüglich Mitarbeiter
+// - Buttons zum hinzufügen eines neuen Mitarbeiter
+// - Sortier- und Such-Funktionalität
+// ============================================================================
+-->
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
