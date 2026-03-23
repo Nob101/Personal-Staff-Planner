@@ -1,5 +1,7 @@
 <script setup>
 import { ref, watch, nextTick, onBeforeUnmount } from "vue";
+import abbrechen_icon from "@/assets/icons/abbrechen_icon.svg";
+
 
 const props = defineProps({
   open: { type: Boolean, default: false },
@@ -104,11 +106,11 @@ watch(
         </div>
 
         <button
-          class="px-2 py-1 text-xs rounded-lg bg-linear-to-b from-red-500 to-red-900 hover:from-red-900 hover:to-red-500"
+          class="px-2 py-2 text-xs rounded-lg bg-linear-to-b from-red-500 to-red-900 hover:from-red-900 hover:to-red-500"
           @mousedown.stop
           @click.stop="emit('close')"
         >
-          Schließen
+                <img :src="abbrechen_icon" class="ma-action-icon" alt="Abbrechen" />
         </button>
       </div>
 
@@ -172,14 +174,7 @@ watch(
         <div class="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
           <div class="flex items-center gap-2 ml-auto">
             <button
-              class="px-3 py-1.5 text-sm rounded-xl bg-linear-to-b from-zinc-500 to-zinc-700 hover:from-zinc-700 hover:to-zinc-500"
-              @click="emit('close')"
-            >
-              Abbrechen
-            </button>
-
-            <button
-              class="px-3 py-1.5 text-sm rounded-xl bg-linear-to-b from-amber-700 to-amber-900 hover:from-amber-900 hover:to-amber-700"
+              class="text-black font-bold px-3 py-1.5 text-sm rounded-xl bg-linear-to-b from-amber-400 to-amber-900 hover:from-amber-900 hover:to-amber-400"
               @click="emit('ignore')"
             >
               Ignorieren &amp; speichern
