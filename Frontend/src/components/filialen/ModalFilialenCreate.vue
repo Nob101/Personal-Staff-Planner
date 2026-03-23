@@ -1,3 +1,11 @@
+<!-- ModalFilialenCreate.vue -->
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Modal zum erstellen einer neuen Filiale
+// ============================================================================
+-->
+
 <script setup>
 import BaseModal from '@/components/global/BaseModal.vue'
 import Multiselect from 'vue-multiselect'
