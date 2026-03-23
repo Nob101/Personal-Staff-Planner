@@ -5,7 +5,6 @@ import mitarbeiter_icon from '@/assets/icons/mitarbeiter_icon.svg'
 import filialen_icon from '@/assets/icons/filialen_icon.svg'
 import benutzer_icon from '@/assets/icons/benutzer_icon.svg'
 
-import './AppNavbar.css'
 </script>
 
 <template>
