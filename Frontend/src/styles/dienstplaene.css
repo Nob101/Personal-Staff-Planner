@@ -48,7 +48,7 @@
   .dp-monthpicker-popover {
     @apply absolute left-0 top-full mt-2 z-50 p-4
            rounded-xl
-           bg-linear-to-b from-zinc-500 to-zinc-700
+           bg-zinc-900
            border border-white/20
            shadow-2xl;
   }

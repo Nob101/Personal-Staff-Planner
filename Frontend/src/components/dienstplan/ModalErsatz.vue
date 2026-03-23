@@ -89,7 +89,7 @@ watch(
 
     <div
       ref="modalEl"
-      class="absolute w-[520px] max-w-[94vw] rounded-2xl border border-white/10 bg-linear-to-b from-zinc-500 to-zinc-800 text-white shadow-2xl"
+      class="absolute w-[520px] max-w-[94vw] rounded-2xl border border-white/10 bg-zinc-900 text-white shadow-2xl"
       :style="{ left: pos.x + 'px', top: pos.y + 'px' }"
     >
       <div
