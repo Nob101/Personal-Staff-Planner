@@ -24,7 +24,7 @@
   }
 
   .fi-action-btn {
-    @apply inline-flex h-8 w-8 items-center justify-center rounded-xl
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-xl
            shadow-sm transition active:scale-[0.97];
   }
 
