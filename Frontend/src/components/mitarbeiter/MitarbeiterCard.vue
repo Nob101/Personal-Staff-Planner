@@ -1,5 +1,3 @@
-<!-- MitarbeiterCard.vue -->
-
 <script setup>
 // Funktionalitäten und Komponenten importieren
 import { defineProps, computed } from 'vue'
@@ -13,7 +11,6 @@ const props = defineProps({
   },
   filialen: { type: Array, required: true },
 
-  
   // WHY: Design hat zwei Layouts (list + detail). Ohne prop kann man das nicht umschalten.
   variant: {
     type: String,
@@ -33,17 +30,15 @@ const emit = defineEmits([
 
 // Helper für Hauptfiliale-Name, damit der Name anstatt der ID angezeigt wird
 const hauptfilialeName = computed(() =>
- props.mitarbeiter.hauptfiliale?.name ?? "-"
-);
+  props.mitarbeiter.hauptfiliale?.name ?? "-"
+)
 
 // Helper für Nebenfilialen-Namen, damit der Name anstatt der ID angezeigt wird
-////map geht jedes Element des Arrays durch und gibt für jede ID den Filialnamen zurück, so dass am Ende ein neues Array mit Namen entsteht
 const nebenfilialenNamen = computed(() =>
- props.mitarbeiter.nebenfilialen?.length
-   ? props.mitarbeiter.nebenfilialen.map(f => f.name).join(", ")
-   : "-"
-);
-
+  props.mitarbeiter.nebenfilialen?.length
+    ? props.mitarbeiter.nebenfilialen.map(f => f.name).join(", ")
+    : "-"
+)
 
 function handleEdit() {
   emit('edit', props.mitarbeiter)
@@ -53,12 +48,10 @@ function handleDelete() {
   emit('delete', props.mitarbeiter)
 }
 
-
 // WHY: List-Card klickbar -> parent kann Detail-Overlay öffnen
 function handleSelect() {
   emit('select', props.mitarbeiter)
 }
-
 </script>
 
 <template>
@@ -74,7 +67,7 @@ function handleSelect() {
         {{ mitarbeiter.vorname }} {{ mitarbeiter.nachname }}
       </h3>
 
-      <!-- Email unter dem Namen (sonst evtl. zu lang)-->
+      <!-- Email unter dem Namen (sonst evtl. zu lang) -->
       <div class="ma-list-subtitle">
         {{ mitarbeiter.email1 || "-" }}
       </div>
@@ -93,22 +86,28 @@ function handleSelect() {
               </div>
 
               <div class="space-y-2">
-                <div class="flex justify-between gap-3 min-w-0">
-                  <span class="text-right min-w-0 truncate">{{ mitarbeiter.telefon1 || "-" }}</span>
+                <div class="ma-list-value-row">
+                  <span class="ma-list-value">
+                    {{ mitarbeiter.telefon1 || "-" }}
+                  </span>
                 </div>
 
-                <div class="flex justify-between gap-3 min-w-0">
-                  <span class="shrink-0">Filiale {{ hauptfilialeName }}</span>
+                <div class="ma-list-value-row">
+                  <span class="ma-list-value-fixed">
+                    Filiale {{ hauptfilialeName }}
+                  </span>
                 </div>
 
-                <div class="flex justify-between gap-3 min-w-0">
-                  <span class="shrink-0">{{ mitarbeiter.arbeitsstunden ?? "-" }} Stunden</span>
+                <div class="ma-list-value-row">
+                  <span class="ma-list-value-fixed">
+                    {{ mitarbeiter.arbeitsstunden ?? "-" }} Stunden
+                  </span>
                 </div>
               </div>
             </div>
 
             <!-- Linie -->
-            <div class="bg-black/10"></div>
+            <div class="ma-divider"></div>
 
             <!-- RECHTS: Nebenfilialen -->
             <div class="space-y-2 min-w-0">
@@ -116,7 +115,7 @@ function handleSelect() {
                 Nebenfilialen:
               </div>
 
-              <p class="text-sm leading-7 line-clamp-4 wrap-break-word">
+              <p class="ma-list-clamp">
                 {{ nebenfilialenNamen }}
               </p>
             </div>
@@ -144,7 +143,7 @@ function handleSelect() {
             {{ mitarbeiter.vorname }} {{ mitarbeiter.nachname }}
           </div>
           <div class="ma-subtitle-break">
-            {{ mitarbeiter.email1 ?? "-" }}
+            {{ mitarbeiter.email1 || "-" }}
           </div>
         </div>
 
@@ -179,19 +178,19 @@ function handleSelect() {
           <!-- LINKS | LINIE | RECHTS -->
           <div class="ma-card-grid">
             <!-- LINKS -->
-            <section class="space-y-4 min-w-0">
+            <section class="ma-form-section">
               <fieldset class="ma-fieldset">
                 <legend class="ma-legend">
                   Email
                 </legend>
                 <div class="mt-2 space-y-2">
-                  <div class="flex justify-between gap-3">
-                    <span class="font-bold">Email 1</span>
-                    <span class="min-w-0 text-right truncate">{{ mitarbeiter.email1 || "-" }}</span>
+                  <div class="ma-detail-row">
+                    <span class="ma-detail-label">Email 1:</span>
+                    <span class="ma-detail-value">{{ mitarbeiter.email1 || "-" }}</span>
                   </div>
-                  <div class="flex justify-between gap-3">
-                    <span class="font-bold">Email 2</span>
-                    <span class="min-w-0 text-right truncate">{{ mitarbeiter.email2 || "-" }}</span>
+                  <div class="ma-detail-row">
+                    <span class="ma-detail-label">Email 2:</span>
+                    <span class="ma-detail-value">{{ mitarbeiter.email2 || "-" }}</span>
                   </div>
                 </div>
               </fieldset>
@@ -201,13 +200,13 @@ function handleSelect() {
                   Telefon
                 </legend>
                 <div class="mt-2 space-y-2">
-                  <div class="flex justify-between gap-3">
-                    <span class="font-bold">Telefon 1</span>
-                    <span class="min-w-0 text-right truncate">{{ mitarbeiter.telefon1 || "-" }}</span>
+                  <div class="ma-detail-row">
+                    <span class="ma-detail-label">Telefon 1:</span>
+                    <span class="ma-detail-value">{{ mitarbeiter.telefon1 || "-" }}</span>
                   </div>
-                  <div class="flex justify-between gap-3">
-                    <span class="font-bold">Telefon 2</span>
-                    <span class="min-w-0 text-right truncate">{{ mitarbeiter.telefon2 || "-" }}</span>
+                  <div class="ma-detail-row">
+                    <span class="ma-detail-label">Telefon 2:</span>
+                    <span class="ma-detail-value">{{ mitarbeiter.telefon2 || "-" }}</span>
                   </div>
                 </div>
               </fieldset>
@@ -217,12 +216,12 @@ function handleSelect() {
                   Filialen
                 </legend>
                 <div class="mt-2 space-y-2">
-                  <div class="flex justify-between gap-3">
-                    <span class="font-bold">Hauptfiliale</span>
-                    <span class="min-w-0 text-right truncate">{{ hauptfilialeName }}</span>
+                  <div class="ma-detail-row">
+                    <span class="ma-detail-label">Hauptfiliale:</span>
+                    <span class="ma-detail-value">{{ hauptfilialeName }}</span>
                   </div>
 
-                  <div class="font-bold">Nebenfilialen</div>
+                  <div class="ma-detail-label">Nebenfilialen:</div>
                   <div class="flex flex-wrap gap-2">
                     <span
                       v-for="f in mitarbeiter.nebenfilialen"
@@ -241,27 +240,27 @@ function handleSelect() {
             <div class="ma-divider"></div>
 
             <!-- RECHTS -->
-            <section class="space-y-4 min-w-0">
+            <section class="ma-form-section">
               <fieldset class="ma-fieldset">
                 <legend class="ma-legend">
                   Adresse
                 </legend>
                 <div class="mt-2 space-y-2">
-                  <div class="flex justify-between gap-3">
-                    <span class="font-bold">Straße</span>
-                    <span class="min-w-0 text-right truncate">{{ mitarbeiter.strasse || "-" }}</span>
+                  <div class="ma-detail-row">
+                    <span class="ma-detail-label">Straße:</span>
+                    <span class="ma-detail-value">{{ mitarbeiter.strasse || "-" }}</span>
                   </div>
-                  <div class="flex justify-between gap-3">
-                    <span class="font-bold">Postleitzahl</span>
-                    <span class="min-w-0 text-right truncate">{{ mitarbeiter.postleitzahl || "-" }}</span>
+                  <div class="ma-detail-row">
+                    <span class="ma-detail-label">Postleitzahl:</span>
+                    <span class="ma-detail-value">{{ mitarbeiter.postleitzahl || "-" }}</span>
                   </div>
-                  <div class="flex justify-between gap-3">
-                    <span class="font-bold">Ort:</span>
-                    <span class="min-w-0 text-right truncate">{{ mitarbeiter.ort || "-" }}</span>
+                  <div class="ma-detail-row">
+                    <span class="ma-detail-label">Ort:</span>
+                    <span class="ma-detail-value">{{ mitarbeiter.ort || "-" }}</span>
                   </div>
-                  <div class="flex justify-between gap-3">
-                    <span class="font-bold">Land</span>
-                    <span class="min-w-0 text-right truncate">{{ mitarbeiter.land || "-" }}</span>
+                  <div class="ma-detail-row">
+                    <span class="ma-detail-label">Land:</span>
+                    <span class="ma-detail-value">{{ mitarbeiter.land || "-" }}</span>
                   </div>
                 </div>
               </fieldset>
@@ -271,13 +270,13 @@ function handleSelect() {
                   Arbeit
                 </legend>
                 <div class="mt-2 space-y-2">
-                  <div class="flex justify-between gap-3">
-                    <span class="font-bold">Arbeitsstunden</span>
-                    <span class="min-w-0 text-right truncate">{{ mitarbeiter.arbeitsstunden ?? "-" }}</span>
+                  <div class="ma-detail-row">
+                    <span class="ma-detail-label">Arbeitsstunden:</span>
+                    <span class="ma-detail-value">{{ mitarbeiter.arbeitsstunden ?? "-" }}</span>
                   </div>
-                  <div class="flex justify-between gap-3">
-                    <span class="font-bold">Springer</span>
-                    <span class="min-w-0 text-right truncate">
+                  <div class="ma-detail-row">
+                    <span class="ma-detail-label">Springer:</span>
+                    <span class="ma-detail-value">
                       {{ mitarbeiter.springer ? 'Ja' : 'Nein' }}
                     </span>
                   </div>
@@ -285,9 +284,7 @@ function handleSelect() {
               </fieldset>
 
               <fieldset class="ma-fieldset">
-                <legend
-                  class="ma-legend"
-                >
+                <legend class="ma-legend">
                   Anmerkungen
                 </legend>
 

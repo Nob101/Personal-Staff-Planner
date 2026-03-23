@@ -76,10 +76,10 @@
      ========================================================= */
 
   .ma-card {
-    @apply font-sans relative rounded-3xl
+    @apply relative overflow-hidden rounded-3xl font-sans
            bg-white/70
            shadow-[0_16px_40px_rgba(0,0,0,0.4)]
-           backdrop-blur overflow-hidden;
+           backdrop-blur;
   }
 
   .ma-card-detail {
@@ -87,10 +87,10 @@
   }
 
   .ma-card-list {
-    @apply relative cursor-pointer font-sans rounded-3xl
+    @apply relative cursor-pointer rounded-3xl font-sans
            bg-linear-to-b from-zinc-300 to-zinc-600
            shadow-[0_16px_40px_rgba(0,0,0,0.4)]
-           hover:-translate-y-0.5 transition;
+           transition hover:-translate-y-0.5;
   }
 
   .ma-card-head {
@@ -102,8 +102,8 @@
   }
 
   .ma-card-body {
-    @apply px-4 pt-2 pb-3 rounded-b-3xl
-           bg-linear-to-b from-zinc-400 to-zinc-600;
+    @apply rounded-b-3xl bg-linear-to-b from-zinc-400 to-zinc-600
+           px-4 pt-2 pb-3;
   }
 
   .ma-card-body-inner {
@@ -137,7 +137,7 @@
   }
 
   .ma-list-subtitle {
-    @apply mt-0.5 text-sm text-zinc-800;
+    @apply mt-0.5 min-h-5 text-sm text-zinc-800;
   }
 
   .ma-list-body {
@@ -164,12 +164,28 @@
     @apply mt-3 text-xs text-zinc-400;
   }
 
+  .ma-list-value-row {
+    @apply flex justify-between gap-3 min-w-0;
+  }
+
+  .ma-list-value {
+    @apply min-w-0 truncate text-right;
+  }
+
+  .ma-list-value-fixed {
+    @apply shrink-0;
+  }
+
+  .ma-list-clamp {
+    @apply text-sm leading-7 line-clamp-3 wrap-break-word;
+  }
+
   /* =========================================================
      DETAIL TEXT / TITLE
      ========================================================= */
 
   .ma-title {
-    @apply text-xl font-extrabold text-zinc-900 truncate;
+    @apply truncate text-xl font-extrabold text-zinc-900;
   }
 
   .ma-subtitle {
@@ -177,7 +193,19 @@
   }
 
   .ma-subtitle-break {
-    @apply text-[11px] text-zinc-600 break-all;
+    @apply break-all text-[11px] text-zinc-600;
+  }
+
+  .ma-detail-row {
+    @apply flex justify-between gap-3;
+  }
+
+  .ma-detail-label {
+    @apply font-bold;
+  }
+
+  .ma-detail-value {
+    @apply min-w-0 truncate text-right;
   }
 
   /* =========================================================
@@ -189,9 +217,8 @@
   }
 
   .ma-legend {
-    @apply text-sm font-extrabold uppercase tracking-wide
-           text-zinc-600
-           px-1 -mb-3;
+    @apply -mb-3 px-1 text-sm font-extrabold uppercase tracking-wide
+           text-zinc-600;
   }
 
   .ma-form-body {
@@ -199,36 +226,36 @@
   }
 
   .ma-form-section {
-    @apply space-y-4 min-w-0;
+    @apply min-w-0 space-y-4;
   }
 
   .ma-form-row {
-    @apply flex justify-between gap-3 items-center min-w-0;
+    @apply flex items-center justify-between gap-3 min-w-0;
   }
 
   .ma-form-label {
-    @apply font-bold whitespace-nowrap;
+    @apply whitespace-nowrap font-bold;
   }
 
   .ma-form-inputwrap {
-    @apply flex-1 max-w-[220px] min-w-0;
+    @apply min-w-0 max-w-[220px] flex-1;
   }
 
   .ma-form-input {
-    @apply h-9 flex-1 max-w-[220px] min-w-0
+    @apply h-9 min-w-0 max-w-[220px] flex-1
            rounded-xl bg-white/70
-           px-3 text-sm text-zinc-900
-           outline-none text-right
+           px-3 text-right text-sm text-zinc-900
+           outline-none
            ring-1 ring-inset ring-black/10
            focus:ring-black/20;
   }
 
   .ma-form-textarea {
     @apply w-full resize-none rounded-xl
-           ring-1 ring-white/80
            bg-white/70
            p-2 text-sm text-zinc-900
-           outline-none;
+           outline-none
+           ring-1 ring-white/80;
   }
 
   .ma-form-error {
@@ -275,5 +302,4 @@
   .ma-search-icon {
     @apply pointer-events-none absolute left-3 top-1/2 -translate-y-1/2;
   }
-
 }

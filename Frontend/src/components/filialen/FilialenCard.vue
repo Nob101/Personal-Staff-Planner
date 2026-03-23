@@ -185,7 +185,7 @@ const springerMitarbeiter = computed(() =>
                 </legend>
                 <div class="mt-2 space-y-2">
                   <div class="flex justify-between gap-3">
-                    <span class="font-bold">Email</span>
+                    <span class="font-bold">Email:</span>
                     <span class="min-w-0 text-right truncate">{{ filialen.email || '-' }}</span>
                   </div>
                 </div>
@@ -197,7 +197,7 @@ const springerMitarbeiter = computed(() =>
                 </legend>
                 <div class="mt-2 space-y-2">
                   <div class="flex justify-between gap-3">
-                    <span class="font-bold">Telefon</span>
+                    <span class="font-bold">Telefon:</span>
                     <span class="min-w-0 text-right truncate">{{ filialen.telefon || '-' }}</span>
                   </div>
                 </div>
@@ -208,7 +208,7 @@ const springerMitarbeiter = computed(() =>
                   Filialenfarbe
                 </legend>
                 <div class="mt-2 flex items-center justify-between gap-3">
-                  <span class="font-bold">Farbe</span>
+                  <span class="font-bold">Farbe:</span>
                   <span class="inline-flex items-center gap-2 min-w-0 justify-end">
                     <span
                       class="fi-color-dot"
@@ -224,7 +224,7 @@ const springerMitarbeiter = computed(() =>
                   Algorithmus
                 </legend>
                 <div class="mt-2 flex justify-between gap-3">
-                  <span class="font-bold">Algorithmus</span>
+                  <span class="font-bold">Algorithmus:</span>
                   <span class="min-w-0 text-right truncate">{{ filialen.algorithmid ?? '-' }}</span>
                 </div>
               </fieldset>
@@ -241,19 +241,19 @@ const springerMitarbeiter = computed(() =>
                 </legend>
                 <div class="mt-2 space-y-2">
                   <div class="flex justify-between gap-3">
-                    <span class="font-bold">Straße</span>
+                    <span class="font-bold">Straße:</span>
                     <span class="min-w-0 text-right truncate">{{ filialen.strasse || '-' }}</span>
                   </div>
                   <div class="flex justify-between gap-3">
-                    <span class="font-bold">Postleitzahl</span>
+                    <span class="font-bold">Postleitzahl:</span>
                     <span class="min-w-0 text-right truncate">{{ filialen.plz || '-' }}</span>
                   </div>
                   <div class="flex justify-between gap-3">
-                    <span class="font-bold">Ort</span>
+                    <span class="font-bold">Ort:</span>
                     <span class="min-w-0 text-right truncate">{{ filialen.ort || '-' }}</span>
                   </div>
                   <div class="flex justify-between gap-3">
-                    <span class="font-bold">Land</span>
+                    <span class="font-bold">Land:</span>
                     <span class="min-w-0 text-right truncate">{{ filialen.land || '-' }}</span>
                   </div>
                 </div>

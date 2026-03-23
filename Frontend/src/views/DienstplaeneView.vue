@@ -1,7 +1,7 @@
 <script setup>
 import { useDienstplanPage } from "@/composables/dienstplan/useDienstplanPage.js";
 
-import DienstplanHeader from "@/components/dienstplan/DienstplanHeader.vue";
+import DienstplanActionBar from "@/components/dienstplan/DienstplanActionBar.vue";
 import DienstplanGrid from "@/components/dienstplan/DienstplanGrid.vue";
 
 const {
@@ -26,7 +26,7 @@ const {
 <template>
   <div class="min-h-screen">
     <div class="mx-auto w-full font-sans pb-6">
-      <DienstplanHeader
+      <DienstplanActionBar
         :jahr="jahr"
         :monat="monat"
         :loading="loading"
