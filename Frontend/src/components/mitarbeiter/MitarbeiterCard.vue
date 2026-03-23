@@ -1,3 +1,12 @@
+<!-- MitarbeiterCard.vue -->
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Darstellung von Mitarbeitern in Karteiform
+// - Buttons zum ändern und löschen des Mitarbeiters
+// ============================================================================
+-->
+
 <script setup>
 // Funktionalitäten und Komponenten importieren
 import { defineProps, computed } from 'vue'
