@@ -19,7 +19,8 @@ export default defineConfig({
     host: true,           //Wichtig:verarbeitung Nginx Anfragen und erlaubt mainfest
     allowedHosts: [
       'psp_frontend',
-      'localhost'
+      'localhost',
+      'psp-portal.local',
     ],
     hmr: {
       protocol: 'wss',        //NEU: forced Websocket
