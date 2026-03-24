@@ -16,7 +16,7 @@ COPY . .
 EXPOSE 3001
 
 #  Startbefehl für den Server 
-# Für nodemon: CMD ["npm", "run", "devStart"]
+# Für nodemon: CMD ["npm", "run", "devStart"] mit CMD ["npm", "start"] tauschen
 CMD ["npm", "start"]
 
 
