@@ -1,7 +1,5 @@
-<!-- FilialeGridSection.vue -->
-
 <script setup>
-import { computed, nextTick} from "vue";
+import { computed, nextTick } from "vue";
 
 import export_icon from "@/assets/icons/export_icon.svg";
 import generieren_icon from "@/assets/icons/generieren_icon.svg";
@@ -36,7 +34,6 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "generateFiliale", "removeFiliale"]);
 
-// PDF Export Logik mit deiner ID-Anforderung
 async function onExportClick() {
   await nextTick();
   const elementId = `export-area-filiale-${props.filiale.fnr}`;
@@ -62,27 +59,15 @@ const localTyp = computed({
 });
 
 function isSunday(datum) {
-  // Annahme: datum ist ein ISO-String oder Date-kompatibel
-  return new Date(datum).getDay() === 0
+  return new Date(datum).getDay() === 0;
 }
 </script>
 
 <template>
-  <div :id="`export-area-filiale-${filiale.fnr}`"
-    class="mx-auto w-full max-w-[1400px] px-6">
-    <section
-      class="rounded-3xl
-             bg-white/70 dark:bg-zinc-900/50
-             shadow-[0_16px_40px_rgba(0,0,0,0.4)]
-             backdrop-blur"
-    >
-      <!-- HEADER -->
-      <div
-        class="rounded-t-3xl
-               bg-linear-to-b from-zinc-300 to-zinc-400"
-      >
+  <div :id="`export-area-filiale-${filiale.fnr}`" class="mx-auto w-full max-w-[1400px] px-6">
+    <section class="dp-card">
+      <div class="dp-card-head">
         <div class="flex items-center justify-between gap-3 px-4 py-2">
-          <!-- left -->
           <div class="min-w-0 flex items-center gap-2">
             <span
               class="h-2 w-2 rounded-full ring-2 ring-white/70"
@@ -98,20 +83,9 @@ function isSunday(datum) {
             </div>
           </div>
 
-          <!-- actions -->
-          <div
-            class="flex items-center gap-1 rounded-xl
-                   bg-white/60
-                   ring-1 ring-black/10
-                   p-1"
-          >
+          <div class="flex items-center gap-1 rounded-xl bg-white/60 ring-1 ring-black/10 p-1">
             <button
-              class="inline-flex h-8 w-8 items-center justify-center rounded-xl
-                    bg-linear-to-b from-blue-300 to-blue-900
-                    hover:from-blue-900 hover:to-blue-300
-                    ring-1 ring-blue-600/30
-                    shadow-sm
-                    transition active:scale-[0.97]"
+              class="dp-section-btn dp-section-btn--blue"
               :disabled="loading"
               @click="onGenerateClick"
             >
@@ -125,39 +99,29 @@ function isSunday(datum) {
             </button>
 
             <button
-              class="inline-flex h-8 w-8 items-center justify-center rounded-xl
-                     bg-linear-to-b from-red-300 to-red-900
-                     hover:from-red-900 hover:to-red-300
-                     ring-1 ring-red-600/30
-                     transition active:scale-[0.97]"
+              class="dp-section-btn dp-section-btn--red"
               :disabled="loading || !hasView"
               @click="onRemoveClick"
             >
-              <img :src="leeren_icon" class="h-3 w-3" />
+              <img :src="leeren_icon" class="h-3 w-3" alt="Leeren" />
             </button>
 
             <button
-              class="inline-flex h-8 w-8 items-center justify-center rounded-xl
-                     bg-linear-to-b from-emerald-300 to-emerald-900
-                     hover:from-emerald-900 hover:to-emerald-300
-                     ring-1 ring-emerald-600/30
-                     transition active:scale-[0.97]"
+              class="dp-section-btn dp-section-btn--emerald"
               @click="onExportClick"
             >
-              <img :src="export_icon" class="h-3 w-3" />
+              <img :src="export_icon" class="h-3 w-3" alt="Exportieren" />
             </button>
           </div>
         </div>
       </div>
 
-      <!-- GRID -->
-      <div class="px-4 pt-2 pb-3 rounded-b-3xl bg-linear-to-b from-zinc-400 to-zinc-600">
+      <div class="dp-card-body">
         <div class="overflow-x-auto rounded-2xl bg-white/55 ring-1 ring-black/10">
           <div
             class="grid gap-px p-2"
             :style="{ gridTemplateColumns: `minmax(0, 1fr) repeat(${view.tage.length}, 30px)` }"
           >
-            <!-- Header -->
             <div class="h-8 flex font-sans items-center px-2 rounded-lg bg-linear-to-b from-zinc-100 to-zinc-400 text-sm font-bold">
               Mitarbeiter
             </div>
@@ -167,14 +131,13 @@ function isSunday(datum) {
               :key="datum"
               class="h-8 rounded-lg flex flex-col items-center justify-center text-[9px]"
               :class="isSunday(datum)
-                ? 'bg-linear-to-b from-zinc-100 to-zinc-600'
+                ? 'bg-linear-to-b from-zinc-100 to-zinc-500'
                 : 'bg-linear-to-b from-zinc-100 to-zinc-400'"
             >
               <div class="font-semibold text-zinc-600">{{ dow(datum) }}</div>
               <div class="font-bold text-zinc-900">{{ day(datum) }}</div>
             </div>
 
-            <!-- Rows -->
             <template v-for="m in mitarbeiterByFiliale(filiale.fnr)" :key="m.mnr">
               <div
                 class="h-8 flex items-center gap-2 px-2 rounded-lg
@@ -183,13 +146,13 @@ function isSunday(datum) {
                 <span class="truncate font-semibold">
                   {{ fullName(m) }}
                 </span>
+
                 <span class="flex-1"></span>
+
                 <span
                   class="inline-flex items-center justify-center
-                        min-w-11 h-6 px-2
-                        rounded-full
-                        bg-zinc-200
-                        text-[11px] font-extrabold tabular-nums"
+                         min-w-11 h-6 px-2 rounded-full
+                         bg-zinc-200 text-[11px] font-extrabold tabular-nums"
                   :class="{
                     'text-emerald-700': (stundenByMnr(m.mnr)?.differenz ?? 0) >= 0,
                     'text-red-600': (stundenByMnr(m.mnr)?.differenz ?? 0) < 0,
@@ -202,10 +165,7 @@ function isSunday(datum) {
               <div
                 v-for="datum in view.tage"
                 :key="`${m.mnr}|${datum}`"
-                class="h-8 rounded-lg ring-1 ring-black/10
-                      flex items-center justify-center
-                      text-xs font-bold cursor-pointer
-                      relative overflow-hidden"
+                class="dp-grid-cell"
                 :style="cellStyleByDienst(dienstOf(m.mnr, datum))"
                 @click.stop="openDropdown(m.mnr, datum)"
               >
@@ -216,9 +176,7 @@ function isSunday(datum) {
                 <select
                   v-else
                   v-model="localTyp"
-                  class="absolute inset-0 w-full h-full rounded-lg
-                        bg-black/60 text-white text-center
-                        outline-none z-10"
+                  class="dp-grid-select"
                   @change.stop="saveDropdown"
                   @click.stop
                 >

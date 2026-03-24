@@ -1,9 +1,12 @@
 // useFilialen.js
+// ============================================================================
+// Composables für die Filialen-Logik
+// Aufgaben dieser Datei:
+// - State-Management für die Filialen
+// - Kapselung der API-Aufrufe (CRUD) via filialenService
+// - Vorbereiten der reaktiven Daten und Handler-Funktionen für Components
+// ============================================================================
 
-/**
- * Gesamte Script-Logik für Filialen.
- * Backend Requests laufen über den filialenService.
- */
 import { ref, onMounted, computed } from 'vue'
 import * as filialenService from '@/services/filialenService'
 import * as mitarbeiterService from '@/services/mitarbeiterService'

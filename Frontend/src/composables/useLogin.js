@@ -1,4 +1,9 @@
-// useLogin.js Composable
+// useLogin.js
+// ============================================================================
+// Composables für die Benutzer-Logik
+// Aufgaben dieser Datei:
+// - Logik für Login
+// ============================================================================
 
 import { ref } from 'vue'
 import * as loginService from '@/services/loginService'

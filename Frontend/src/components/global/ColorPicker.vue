@@ -34,103 +34,39 @@ const isValidHex = computed(() =>
 </script>
 
 <template>
-  <fieldset class="color-picker-box">
-    
-
+  <fieldset class="grid gap-3">
     <!-- Presets -->
-    <div class="presets">
+    <div class="flex flex-wrap gap-2.5">
       <button
         v-for="color in presetColors"
         :key="color"
-        class="preset"
-        :class="{ active: color ===props.modelValue }"
+        type="button"
         :style="{ backgroundColor: color }"
         @click="updateColor(color)"
-        type="button"
+        class="h-7 w-7 cursor-pointer rounded-full border-2 border-white/20 shadow-[0_6px_18px_rgba(0,0,0,0.35)] outline-none transition-transform hover:scale-105"
+        :class="{
+          'border-white/85 shadow-[0_0_0_3px_rgba(255,255,255,0.15),0_6px_18px_rgba(0,0,0,0.35)]': color === props.modelValue
+        }"
       ></button>
     </div>
 
     <!-- Custom Color Picker -->
-    <div class="custom">
+    <div class="flex items-center gap-2.5">
       <input
         type="color"
         :value="props.modelValue"
         @input="updateColor($event.target.value)"
+        class="h-[34px] w-11 cursor-pointer border-none bg-transparent p-0"
       />
+
       <input
         type="text"
         :value="props.modelValue"
         @input="updateColor($event.target.value)"
         placeholder="#RRGGBB"
-        :class="{ invalid: !isValidHex }"
+        class="w-[120px] rounded-[10px] border bg-black/25 px-2.5 py-2 text-white outline-none"
+        :class="isValidHex ? 'border-white/15' : 'border-red-400/90'"
       />
     </div>
   </fieldset>
 </template>
-
-
-<style scoped>
-.color-picker-box {
-  display: grid;
-  gap: 12px;
-
-}
-
-/* Preset-Reihe */
-.presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-/* Einzelne Farbbuttons */
-.preset {
-  width: 28px;
-  height: 28px;
-  border-radius: 9999px;
-  border: 2px solid rgba(255,255,255,0.18);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-  cursor: pointer;
-  outline: none;
-}
-
-.preset:hover {
-  transform: scale(1.05);
-}
-
-/* aktive Farbe markieren */
-.preset.active {
-  border-color: rgba(255,255,255,0.85);
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.15), 0 6px 18px rgba(0,0,0,0.35);
-}
-
-/* Custom Inputs */
-.custom {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.custom input[type="color"] {
-  width: 44px;
-  height: 34px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-.custom input[type="text"] {
-  width: 120px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(0,0,0,0.25);
-  color: white;
-  padding: 8px 10px;
-  outline: none;
-}
-
-.custom input[type="text"].invalid {
-  border-color: rgba(248,113,113,0.9); /* rot */
-}
-</style>

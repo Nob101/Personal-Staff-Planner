@@ -1,0 +1,305 @@
+@layer components {
+
+  /* =========================================================
+     HEADER / ACTION BAR
+     ========================================================= */
+
+  .ma-header {
+    @apply sticky top-12 z-50 w-full
+           bg-white/80
+           backdrop-blur
+           transition-transform duration-200 ease-out will-change-transform;
+  }
+
+  .ma-header-inner {
+    @apply mx-auto w-full max-w-[1400px]
+           grid grid-cols-3 items-center gap-4
+           px-10 pt-3 pb-1;
+  }
+
+  .ma-header--hidden {
+    @apply -translate-y-[120%];
+  }
+
+  .ma-header--shown {
+    @apply translate-y-0;
+  }
+
+  /* =========================================================
+     ACTION BUTTONS
+     ========================================================= */
+
+  .ma-action-btn {
+    @apply inline-flex items-center justify-center rounded-xl
+           shadow-sm transition active:scale-[0.97];
+  }
+
+  .ma-action-btn--sm {
+    @apply h-8 w-8;
+  }
+
+  .ma-action-btn--md {
+    @apply h-10 w-10;
+  }
+
+  .ma-action-btn--blue {
+    @apply bg-linear-to-b from-blue-300 to-blue-900
+           hover:from-blue-900 hover:to-blue-300
+           ring-1 ring-blue-600/30;
+  }
+
+  .ma-action-btn--red {
+    @apply bg-linear-to-b from-red-300 to-red-900
+           hover:from-red-900 hover:to-red-300
+           ring-1 ring-red-600/30;
+  }
+
+  .ma-action-btn--emerald {
+    @apply bg-linear-to-b from-emerald-300 to-emerald-900
+           hover:from-emerald-900 hover:to-emerald-300
+           ring-1 ring-emerald-600/30;
+  }
+
+  .ma-action-wrap {
+    @apply flex items-center gap-1 rounded-xl
+           bg-white/60
+           ring-1 ring-black/10
+           p-1;
+  }
+
+  .ma-action-icon {
+    @apply h-4 w-4 opacity-90;
+  }
+
+  /* =========================================================
+     CARDS
+     ========================================================= */
+
+  .ma-card {
+    @apply relative overflow-hidden rounded-3xl font-sans
+           bg-white/70
+           shadow-[0_16px_40px_rgba(0,0,0,0.4)]
+           backdrop-blur;
+  }
+
+  .ma-card-detail {
+    @apply mx-auto w-full max-w-[760px];
+  }
+
+  .ma-card-list {
+    @apply relative cursor-pointer rounded-3xl font-sans
+           bg-linear-to-b from-zinc-300 to-zinc-600
+           shadow-[0_16px_40px_rgba(0,0,0,0.4)]
+           transition hover:-translate-y-0.5;
+  }
+
+  .ma-card-head {
+    @apply bg-linear-to-b from-zinc-300 to-zinc-400;
+  }
+
+  .ma-card-head-inner {
+    @apply flex items-center justify-between gap-3 px-4 py-2;
+  }
+
+  .ma-card-body {
+    @apply rounded-b-3xl bg-linear-to-b from-zinc-400 to-zinc-600
+           px-4 pt-2 pb-3;
+  }
+
+  .ma-card-body-inner {
+    @apply rounded-2xl bg-zinc-200
+           ring-1 ring-black/10;
+  }
+
+  .ma-card-panel {
+    @apply p-4;
+  }
+
+  .ma-card-grid {
+    @apply grid grid-cols-[1fr_1px_1fr] gap-5
+           text-sm text-zinc-900;
+  }
+
+  .ma-divider {
+    @apply bg-black/10;
+  }
+
+  /* =========================================================
+     LIST CARD
+     ========================================================= */
+
+  .ma-list-head {
+    @apply px-4 py-2;
+  }
+
+  .ma-list-title {
+    @apply text-xl font-extrabold tracking-tight text-zinc-900;
+  }
+
+  .ma-list-subtitle {
+    @apply mt-0.5 min-h-5 text-sm text-zinc-800;
+  }
+
+  .ma-list-body {
+    @apply px-4 pt-2 pb-3;
+  }
+
+  .ma-list-inner {
+    @apply rounded-2xl bg-white ring-1 ring-black/10;
+  }
+
+  .ma-list-panel {
+    @apply p-3;
+  }
+
+  .ma-list-grid {
+    @apply grid grid-cols-[1fr_1px_1fr] gap-5 text-sm text-zinc-700;
+  }
+
+  .ma-list-section-title {
+    @apply text-sm font-bold uppercase tracking-wide text-black;
+  }
+
+  .ma-list-hint {
+    @apply mt-3 text-xs text-zinc-400;
+  }
+
+  .ma-list-value-row {
+    @apply flex justify-between gap-3 min-w-0;
+  }
+
+  .ma-list-value {
+    @apply min-w-0 truncate text-right;
+  }
+
+  .ma-list-value-fixed {
+    @apply shrink-0;
+  }
+
+  .ma-list-clamp {
+    @apply text-sm leading-7 line-clamp-3 wrap-break-word;
+  }
+
+  /* =========================================================
+     DETAIL TEXT / TITLE
+     ========================================================= */
+
+  .ma-title {
+    @apply truncate text-xl font-extrabold text-zinc-900;
+  }
+
+  .ma-subtitle {
+    @apply text-[11px] text-zinc-600;
+  }
+
+  .ma-subtitle-break {
+    @apply break-all text-[11px] text-zinc-600;
+  }
+
+  .ma-detail-row {
+    @apply flex justify-between gap-3;
+  }
+
+  .ma-detail-label {
+    @apply font-bold;
+  }
+
+  .ma-detail-value {
+    @apply min-w-0 truncate text-right;
+  }
+
+  /* =========================================================
+     FORM / FIELDSETS
+     ========================================================= */
+
+  .ma-fieldset {
+    @apply rounded-2xl bg-white p-3;
+  }
+
+  .ma-legend {
+    @apply -mb-3 px-1 text-sm font-extrabold uppercase tracking-wide
+           text-zinc-600;
+  }
+
+  .ma-form-body {
+    @apply mt-2 grid gap-2;
+  }
+
+  .ma-form-section {
+    @apply min-w-0 space-y-4;
+  }
+
+  .ma-form-row {
+    @apply flex items-center justify-between gap-3 min-w-0;
+  }
+
+  .ma-form-label {
+    @apply whitespace-nowrap font-bold;
+  }
+
+  .ma-form-inputwrap {
+    @apply min-w-0 max-w-[220px] flex-1;
+  }
+
+  .ma-form-input {
+    @apply h-9 min-w-0 max-w-[220px] flex-1
+           rounded-xl bg-white/70
+           px-3 text-right text-sm text-zinc-900
+           outline-none
+           ring-1 ring-inset ring-black/10
+           focus:ring-black/20;
+  }
+
+  .ma-form-textarea {
+    @apply w-full resize-none rounded-xl
+           bg-white/70
+           p-2 text-sm text-zinc-900
+           outline-none
+           ring-1 ring-white/80;
+  }
+
+  .ma-form-error {
+    @apply text-sm text-red-400;
+  }
+
+  /* =========================================================
+     BADGES / PILLS
+     ========================================================= */
+
+  .ma-pill {
+    @apply rounded-full bg-zinc-300
+           px-2.5 py-0.5 text-[11px];
+  }
+
+  /* =========================================================
+     HINTS / EMPTY STATES
+     ========================================================= */
+
+  .ma-hint {
+    @apply rounded-2xl bg-white/70
+           p-4 text-sm text-zinc-800
+           shadow-[0_8px_24px_rgba(0,0,0,0.15)];
+  }
+
+  .ma-hint--warning {
+    @apply ring-1 ring-amber-500/30;
+  }
+
+  /* =========================================================
+     SEARCH
+     ========================================================= */
+
+  .ma-search {
+    @apply h-9 w-full rounded-xl
+           bg-black/10
+           pl-10 pr-3
+           text-sm text-zinc-900
+           outline-none
+           ring-1 ring-black/10
+           focus:ring-black/20;
+  }
+
+  .ma-search-icon {
+    @apply pointer-events-none absolute left-3 top-1/2 -translate-y-1/2;
+  }
+}

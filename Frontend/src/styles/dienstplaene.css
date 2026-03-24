@@ -1,0 +1,201 @@
+@layer components {
+
+  /* HEADER */
+
+  .dp-header {
+    @apply sticky top-12 z-50
+           left-0 right-0 w-full
+           bg-white/80
+           backdrop-blur
+           transition-transform duration-200 ease-out will-change-transform;
+
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  .dp-header-inner {
+    @apply mx-auto w-full max-w-[1400px]
+           flex items-center justify-between gap-4
+           px-10 pt-2 pb-1;
+  }
+
+  .dp-header--hidden {
+    @apply -translate-y-[120%];
+  }
+
+  .dp-header--shown {
+    @apply translate-y-0;
+  }
+
+  /* MONTH PICKER */
+
+  .dp-monthpicker-nav-btn {
+    @apply px-3 py-2 rounded-xl
+           bg-linear-to-b from-zinc-200 to-zinc-300
+           text-black disabled:opacity-50
+           hover:from-zinc-300 hover:to-zinc-200;
+  }
+
+  .dp-monthpicker-trigger {
+    @apply h-10 px-4 py-2 rounded-xl
+           bg-linear-to-b from-zinc-200 to-zinc-300
+           text-black font-semibold min-w-40 text-center
+           ring-1 ring-black/10
+           hover:from-zinc-300 hover:to-zinc-200
+           disabled:opacity-50;
+  }
+
+  .dp-monthpicker-popover {
+    @apply absolute left-0 top-full mt-2 z-50 p-4
+           rounded-xl
+           bg-zinc-900
+           border border-white/20
+           shadow-2xl;
+  }
+
+  .dp-monthpicker-row {
+    @apply flex items-end gap-2;
+  }
+
+  .dp-monthpicker-label {
+    @apply block text-xs text-white/60 mb-1 text-center;
+  }
+
+  .dp-monthpicker-select {
+    @apply h-10 px-3 rounded-xl
+           bg-linear-to-b from-zinc-200 to-zinc-300
+           text-sm text-zinc-800
+           ring-1 ring-black/10
+           outline-none
+           hover:from-zinc-300 hover:to-zinc-200
+           focus:ring-black/20;
+  }
+
+  .dp-monthpicker-ok-btn {
+    @apply h-10 px-3 rounded-xl
+           bg-linear-to-b from-blue-300 to-blue-900
+           hover:from-blue-900 hover:to-blue-300
+           text-white font-semibold
+           ring-1 ring-blue-600/30
+           shadow-sm transition active:scale-[0.97]
+           disabled:opacity-50;
+  }
+
+  /* ACTION BUTTONS */
+
+  .dp-action-btn {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-xl
+           shadow-sm transition active:scale-[0.97] disabled:opacity-50;
+  }
+
+  .dp-action-btn--blue {
+    @apply bg-linear-to-b from-blue-300 to-blue-900
+           hover:from-blue-900 hover:to-blue-300
+           ring-1 ring-blue-600/30;
+  }
+
+  .dp-action-btn--red {
+    @apply bg-linear-to-b from-red-300 to-red-900
+           hover:from-red-900 hover:to-red-300
+           ring-1 ring-red-600/30;
+  }
+
+  .dp-action-btn--emerald {
+    @apply bg-linear-to-b from-emerald-300 to-emerald-900
+           hover:from-emerald-900 hover:to-emerald-300
+           ring-1 ring-emerald-600/30;
+  }
+
+  /* FILIALKARTE */
+
+  .dp-card {
+    @apply rounded-3xl
+           bg-white/70
+           shadow-[0_16px_40px_rgba(0,0,0,0.4)]
+           backdrop-blur;
+  }
+
+  .dp-card-head {
+    @apply rounded-t-3xl
+           bg-linear-to-b from-zinc-300 to-zinc-400;
+  }
+
+  .dp-card-body {
+    @apply px-4 pt-2 pb-3 rounded-b-3xl
+           bg-linear-to-b from-zinc-400 to-zinc-600;
+  }
+
+  /* FILIAL BUTTONS */
+
+  .dp-section-btn {
+    @apply inline-flex h-8 w-8 items-center justify-center rounded-xl
+           transition active:scale-[0.97];
+  }
+
+  .dp-section-btn--blue {
+    @apply bg-linear-to-b from-blue-300 to-blue-900
+           hover:from-blue-900 hover:to-blue-300
+           ring-1 ring-blue-600/30 shadow-sm;
+  }
+
+  .dp-section-btn--red {
+    @apply bg-linear-to-b from-red-300 to-red-900
+           hover:from-red-900 hover:to-red-300
+           ring-1 ring-red-600/30;
+  }
+
+  .dp-section-btn--emerald {
+    @apply bg-linear-to-b from-emerald-300 to-emerald-900
+           hover:from-emerald-900 hover:to-emerald-300
+           ring-1 ring-emerald-600/30;
+  }
+
+  /* GRID */
+
+  .dp-grid-cell {
+    @apply h-8 rounded-lg ring-1 ring-black/10
+           flex items-center justify-center
+           text-xs font-bold cursor-pointer
+           relative overflow-hidden;
+  }
+
+  .dp-grid-select {
+    @apply absolute inset-0 w-full h-full rounded-lg
+           bg-black/60 text-white text-center
+           outline-none z-10;
+  }
+
+  /* MODAL */
+
+  .dp-modal-root {
+    @apply fixed inset-0 z-50;
+  }
+
+  .dp-modal-overlay {
+    @apply absolute inset-0 bg-black/60;
+  }
+
+  /* INPUTS */
+
+  .dp-input {
+    @apply w-full px-2 py-2 rounded-xl
+           border border-white/15
+           bg-black/30
+           text-white
+           outline-none;
+  }
+
+  .dp-btn-soft {
+    @apply px-3 py-2 rounded-xl
+           bg-white/10
+           hover:bg-white/15;
+  }
+
+  .dp-btn-blue {
+    @apply px-3 py-2 rounded-xl
+           bg-blue-600
+           hover:bg-blue-500
+           disabled:opacity-60;
+  }
+
+}

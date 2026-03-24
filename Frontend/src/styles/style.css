@@ -1,18 +1,13 @@
 /* Tailwind */
 @import "tailwindcss";
 @import "vue-multiselect/dist/vue-multiselect.css";
+@import "./dienstplaene.css";
+@import "./filialen.css";
+@import "./mitarbeiter.css";
+@import "./benutzer.css";
+@import "./navbar.css";
 
-
-/* =========================================================
-   MULTISELECT (.ms) – FINAL CLEAN VERSION
-   Ziele:
-   - Höhe: 40px
-   - grauer Gradient (zinc-200 → zinc-300)
-   - Text/Placeholder sauber vertikal mittig
-   - Multi-Select: Tags bleiben in EINER Zeile (horizontal scroll)
-   - Dropdown ist OVERLAY (macht das Modal NICHT höher)
-   - Dropdown unten wirklich RUND (keine eckigen Ecken)
-   ========================================================= */
+@tailwind utilities;
 
 /* Pointer überall */
 .ms,
@@ -94,4 +89,69 @@
 /* MULTI: Tags NICHT umbrechen -> EINZEILIG + horizontal scroll */
 .ms.multiselect--multiple .multiselect__tags {
   flex-wrap: nowrap !important;
+}
+
+/* Dropdown IMMER nach oben öffnen */
+.ms .multiselect__content-wrapper {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: calc(100% + 6px) !important; /* oberhalb vom Feld */
+  top: auto !important;
+
+  max-height: 220px !important;
+  overflow-y: auto !important;
+  z-index: 9999 !important;
+
+  border-radius: 0.75rem !important;
+  background: linear-gradient(
+    to bottom,
+    rgb(228 228 231),
+    rgb(212 212 216)
+  ) !important;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18) !important;
+  border: none !important;
+}
+
+/* Inhalt sauber runden */
+.ms .multiselect__content {
+  border-radius: 0.75rem !important;
+  overflow: hidden !important;
+  background: transparent !important;
+}
+
+/* Einzelne Optionen */
+.ms .multiselect__option {
+  background: transparent !important;
+  font-size: 0.875rem !important;
+  color: rgb(39 39 42) !important; /* zinc-800 */
+}
+
+.ms .multiselect__option--highlight {
+  background: rgba(255, 255, 255, 0.45) !important;
+  color: rgb(24 24 27) !important;
+}
+
+.ms .multiselect__option--selected {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: rgb(24 24 27) !important;
+}
+
+/* nach oben */
+.ms-up .multiselect__content-wrapper {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: calc(100% + 6px) !important;
+  top: auto !important;
+}
+
+/* nach unten */
+.ms-down .multiselect__content-wrapper {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: calc(100% + 6px) !important;
+  bottom: auto !important;
 }

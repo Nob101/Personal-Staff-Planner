@@ -1,0 +1,44 @@
+@layer components {
+
+  .app-navbar {
+    @apply sticky top-0 z-10000
+          border-b border-black/10
+          bg-linear-to-b from-zinc-700 to-zinc-900
+          backdrop-blur supports-backdrop-filter:bg-white/60;
+  }
+
+  .app-navbar__inner {
+    @apply relative mx-auto flex h-12 w-full max-w-[1400px] items-center px-3;
+  }
+
+  .app-navbar__logo-link {
+    @apply flex items-center gap-2;
+  }
+
+  .app-navbar__logo {
+    @apply h-12 w-12 cursor-pointer;
+  }
+
+  .app-navbar__nav {
+    @apply absolute left-1/2 flex -translate-x-1/2 items-center gap-3;
+  }
+
+  .app-navbar__link {
+    @apply flex items-center gap-1.5 border-b-2 border-transparent px-2.5 py-1.5
+          text-base font-medium transition-colors
+          text-zinc-100
+          hover:border-white hover:text-white
+          aria-[current=page]:border-white
+          aria-[current=page]:text-white;
+  }
+
+  .app-navbar__icon {
+    @apply h-5 w-5;
+  }
+
+  .app-navbar__icon--dienst,
+  .app-navbar__icon--filialen,
+  .app-navbar__icon--benutzer {
+    @apply -ml-0.5;
+  }
+}
