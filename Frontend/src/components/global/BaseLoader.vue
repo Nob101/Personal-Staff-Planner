@@ -1,3 +1,5 @@
+<!-- BaseLoader.vue -->
+<!-- Ein Ladespinner der angezeigt werden soll wenn Daten geladen werden -->
 <script setup>
 defineProps({
   text: {

@@ -1,0 +1,289 @@
+@baseUrl = https://localhost/api
+@token = 1b1cd5de0dee9f281124041f0c2ff873d6c916dcc897734e
+@jahr = 2026
+@monat = 3
+
+
+### ============================================================================
+### AUTH
+### ============================================================================
+
+### POST Login (Token holen)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "markus",
+  "password": "psp1234"
+}
+
+
+### ============================================================================
+### MITARBEITER
+### ============================================================================
+
+### GET alle Mitarbeiter
+GET {{baseUrl}}/mitarbeiter
+Authorization: {{token}}
+
+### GET Mitarbeiter nach mnr
+@MNR = 5
+GET {{baseUrl}}/mitarbeiter/{{MNR}}
+Authorization: {{token}}
+
+### POST Mitarbeiter anlegen
+POST {{baseUrl}}/mitarbeiter
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "vorname": "Test 14",
+  "nachname": "Frontend",
+  "arbeitsstunden": 40,
+  "springer": "Nein",
+  "hauptfiliale": 1,
+  "nebenfilialen": [2],
+  "strasse": "Testweg 1",
+  "ort": "Wien",
+  "postleitzahl": "1010",
+  "land": "Österreich",
+
+  "telefon1": "+43 660 111111",
+  "telefon2": "",
+  "email1": "test@demo.at",
+  "email2": "",
+
+  "anmerkungen": "Hallo"
+}
+
+### PUT Mitarbeiter bearbeiten
+@MNR_UPDATE = 1
+PUT {{baseUrl}}/mitarbeiter/{{MNR_UPDATE}}
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "vorname": "Test-Updated",
+  "nachname": "Frontend-Updated",
+  "arbeitsstunden": 40,
+  "springer": "Ja",
+  "hauptfiliale": 2,
+  "nebenfilialen": [1],
+
+  "strasse": "Updateweg 9",
+  "ort": "Wien",
+  "postleitzahl": "1011",
+  "land": "Österreich",
+
+  "telefon1": "+43 660 999999",
+  "email1": "update@demo.at",
+
+  "anmerkungen": "Update Test"
+}
+
+### DELETE Mitarbeiter
+@MNR_DELETE = 6
+DELETE {{baseUrl}}/mitarbeiter/{{MNR_DELETE}}
+Authorization: {{token}}
+
+
+### ============================================================================
+### FILIALEN
+### ============================================================================
+
+### GET alle Filialen
+GET {{baseUrl}}/filialen
+Authorization: {{token}}
+
+### GET Filiale nach fnr
+@FNR = 1
+GET {{baseUrl}}/filialen/{{FNR}}
+Authorization: {{token}}
+
+### POST Filiale anlegen
+POST {{baseUrl}}/filialen
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "filialname": "Wien",
+  "farbe": "#5c18bbff",
+  "ort": "Wien",
+  "strasse": "Hauptplatz 1",
+  "plz": "1000",
+  "land": "Österreich",
+  "email": "g@firma.at",
+  "anmerkungen": "Zentrale Filiale",
+  "telefon": "+43 3332 12345",
+  "algorithmid": 1
+}
+
+### PUT Filiale bearbeiten
+@FNR_UPDATE = 3
+PUT {{baseUrl}}/filialen/{{FNR_UPDATE}}
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "filialname": "Zentrale Wien NEU",
+  "farbe": "#00ff00",
+  "anmerkungen": "Update Anmerkung"
+}
+
+### DELETE Filiale
+@FNR_DELETE = 3
+DELETE {{baseUrl}}/filialen/{{FNR_DELETE}}
+Authorization: {{token}}
+
+
+### ============================================================================
+### DIENSTPLAN
+### ============================================================================
+
+### POST Dienstplan generieren
+POST {{baseUrl}}/dienstplan/generate
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "jahr": {{jahr}},
+  "monat": {{monat}}
+}
+
+### GET Dienstplan raw
+GET {{baseUrl}}/dienstplan?jahr={{jahr}}&monat={{monat}}
+Authorization: {{token}}
+
+### GET Dienstplan View
+GET {{baseUrl}}/dienstplan/view?jahr={{jahr}}&monat={{monat}}
+Authorization: {{token}}
+
+### DELETE Dienstplan Monat löschen
+DELETE {{baseUrl}}/dienstplan/{{jahr}}/{{monat}}
+Authorization: {{token}}
+
+
+### ============================================================================
+### SHIFT
+### ============================================================================
+
+### POST shift ändern
+@DIENST_ID = 3641
+POST {{baseUrl}}/dienstplan/shift
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "id": {{DIENST_ID}},
+  "schicht_typ": "F"
+}
+
+
+### ============================================================================
+### SHIFT MIT ERSATZ
+### ============================================================================
+
+@ALT_ID = 3641
+@NEU_ID = 3796
+POST {{baseUrl}}/dienstplan/shiftMitErsatz
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "altId": {{ALT_ID}},
+  "neuId": {{NEU_ID}},
+  "schicht_typ": "K"
+}
+
+
+### ============================================================================
+### ERSATZ
+### ============================================================================
+
+@DIENST_ID = 43801
+GET {{baseUrl}}/dienstplan/{{DIENST_ID}}/ersatz
+Authorization: {{token}}
+Accept: application/json
+
+
+### ============================================================================
+### STUNDEN
+### ============================================================================
+
+PUT {{baseUrl}}/dienstplan/stunden
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "mnr": 14,
+  "jahr": 2026,
+  "monat": 1,
+  "ist_stunden_monat": 166
+}
+
+
+@FNR_TEST = 1
+
+### ============================================================================
+### ein Monat löschen mit FNR
+### ============================================================================
+DELETE {{baseUrl}}/dienstplan/{{jahr}}/{{monat}}?fnr={{FNR_TEST}}
+Authorization: {{token}}
+
+
+### ============================================================================
+### ein Monat generieren mit FNR
+### ============================================================================
+
+POST {{baseUrl}}/dienstplan/generate
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "jahr": {{jahr}},
+  "monat": {{monat}},
+  "fnr": {{FNR_TEST}}
+}
+
+
+
+### ============================================================================
+### USERS
+### ============================================================================
+
+### GET alle Users
+GET {{baseUrl}}/users
+Authorization: {{token}}
+
+### GET User nach id
+@USER_ID = 2
+GET {{baseUrl}}/users/{{USER_ID}}
+Authorization: {{token}}
+
+### POST User anlegen
+POST {{baseUrl}}/users
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "test1234",
+  "role": "user"
+}
+
+### PUT User bearbeiten
+@USER_ID_UPDATE = 2
+PUT {{baseUrl}}/users/{{USER_ID_UPDATE}}
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "username": "testuser_updated",
+  "role": "admin",
+  "password": "newpass123"
+}
+
+### DELETE User löschen
+@USER_ID_DELETE = 2
+DELETE {{baseUrl}}/users/{{USER_ID_DELETE}}
+Authorization: {{token}}

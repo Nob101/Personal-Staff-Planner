@@ -1,9 +1,17 @@
-//Router.js Routet alle Seiten die über die Navbar geöffnet werden
+// router.js
+// ============================================================================
+// Zentrale Routing-Konfiguration der Anwendung
+//
+// Aufgaben dieser Datei:
+// - Definition aller erreichbaren Pfade (Routes) und deren Komponenten
+// - Konfiguration der Web-History für die Navigation
+// - Implementierung des Navigations-Wächters (Auth Guard) für Zugriffsschutz
+// ============================================================================
 
-//Erstellung einer Router-Instanz und Webhistory (Seite vor/zurück, etc.)
 import { createRouter, createWebHistory } from "vue-router";
 
-//Importieren aller Views
+// Import der View-Komponenten
+// Jede Route wird einer spezifischen View zugeordnet.
 import LoginView from "@/views/LoginView.vue";
 import HomeView from "@/views/HomeView.vue";
 import MitarbeiterView from "@/views/MitarbeiterView.vue";
@@ -11,8 +19,9 @@ import FilialenView from "@/views/FilialenView.vue";
 import DienstplaeneView from "@/views/DienstplaeneView.vue";
 import BenutzerView from "@/views/BenutzerView.vue";
 
-
-//Definieren aller Routen-Objekte, in einem Array gespeichert
+// Routen-Definition
+// - path: Die URL im Browser
+// - meta: Zusatzinfos (z.B. ob die Navbar ausgeblendet werden soll)
 const routes = [
   { path: "/", name: "login", component: LoginView, meta: { hideNavbar: true } },
   { path: "/home", name: "home", component: HomeView },
@@ -20,35 +29,33 @@ const routes = [
   { path: "/filialen", name: "filialen", component: FilialenView },
   { path: "/dienstplaene", name: "dienstplaene", component: DienstplaeneView },
   { path: "/benutzer", name: "benutzer", component: BenutzerView }
-]
+];
 
+// Web-History fürs für Browser - Back/Forward Navigation
 const router = createRouter({
   history: createWebHistory(),
   routes
-})
-
-// router.js
-
-// NEU: Die Skipp login methode mit überprüfung des tokens
-// Skippen des Logins ohne Token: einfach gesamten router.beforeEach auskommentieren und im Browser direkte Routen verwenden
+});
 
 
+// Navigations-Wächter (Navigation Guard)
+// Überprüft vor jedem Seitenwechsel den Authentifizierungsstatus.
+// Zum Testen ohne Login den gesamten Block auskommentieren.
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('userToken');
 
-  // Wenn man nicht eingeloggt ist und versucht auf eine interne Seite zu gehen:
+  // Fall 1: Nicht eingeloggt -> Umleitung zum Login bei Zugriff auf interne Seiten
   if (to.name !== 'login' && !isAuthenticated) {
     next({ name: 'login' });
   } 
-  // Wenn man eingeloggt ist und versucht zum Login zu gehen:
+  // Fall 2: Bereits eingeloggt -> Umleitung weg vom Login zur Startseite (Home)
   else if (to.name === 'login' && isAuthenticated) {
-    next({ name: 'mitarbeiter' });
+    next({ name: 'home' });
   }
+  // Fall 3: Zugriff erlaubt
   else {
     next();
   }
 });
 
-
-//Export
-export default router
+export default router;

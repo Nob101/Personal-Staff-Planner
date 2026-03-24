@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# Kopiere den Rest des Codes in den Container
+# Kopiert den Rest des Codes in den Container
 COPY . .
 
 # Öffnet den Vite-Standardport

@@ -1,10 +1,14 @@
 <!-- FilialenActionBar.vue -->
-<script setup>
-/**
- * Aktionsleiste für die Filialen-Ansicht.
- * Beinhaltet die Suche, Sortierung und den "Hinzufügen"-Button.
- */
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Actionbar für alles bezüglich Filialen
+// - Buttons zum hinzufügen einer neuen Filialen
+// - Sortier- und Such-Funktionalität
+// ============================================================================
+-->
 
+<script setup>
 // Funktionalitäten und Komponenten importieren
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import Multiselect from 'vue-multiselect'
@@ -74,82 +78,68 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <!-- Sticky ActionBar wie DienstplanHeader -->
+  <!-- Sticky ActionBar über volle Breite -->
   <div
     :class="[
-      'sticky top-12 z-50',
-      'mx-auto w-full max-w-[1400px]',
-      'grid grid-cols-3 items-center gap-4',
-      'px-10 pt-2 pb-1',
-      'bg-white/80 dark:bg-zinc-900/70',
-      'backdrop-blur',
-      'transition-transform duration-200 ease-out will-change-transform',
-      headerHidden ? '-translate-y-[120%]' : 'translate-y-0'
+      'fi-header',
+      headerHidden ? 'fi-header--hidden' : 'fi-header--shown'
     ]"
   >
-    <!-- LINKS: Button -->
-    <div class="justify-self-start h-10 flex items-center">
-      <button
-        type="button"
-        @click="emit('filialeCreate')"
-        class="inline-flex h-10 w-10 items-center justify-center rounded-xl
-               bg-linear-to-b from-emerald-300 to-emerald-900
-               hover:from-emerald-900 hover:to-emerald-300
-               ring-1 ring-emerald-600/30
-               shadow-sm
-               transition active:scale-[0.97]"
-        title="Neu anlegen"
-      >
-        <img
-          :src="hinzufuegen_icon"
-          class="h-5 w-5 opacity-70 group-hover:opacity-100"
-          alt=""
-        />
-      </button>
-    </div>
-
-    <!-- MITTE: Sortierung -->
-    <div class="justify-self-center h-10 flex items-center">
-      <div class="w-60">
-        <Multiselect
-          class="ms"
-          :options="sortOptions"
-          :model-value="selectedOption"
-          @update:model-value="val => emit('update:modelValue', val.value)"
-          label="label"
-          track-by="value"
-          placeholder="Sortieren"
-          :allow-empty="false"
-          :searchable="false"
-          select-label=""
-          selected-label=""
-          deselect-label=""
+    <!-- Inhalt bleibt wie bisher zentriert -->
+    <div class="fi-header-inner">
+      <!-- LINKS: Button -->
+      <div class="justify-self-start h-10 flex items-center">
+        <button
+          type="button"
+          @click="emit('filialeCreate')"
+          class="fi-action-btn fi-action-btn--emerald"
+          title="Neu anlegen"
         >
-          <template #singleLabel="{ option }">
-            <span class="multiselect-label-text text-sm">{{ option.label }}</span>
-          </template>
-        </Multiselect>
+          <img
+            :src="hinzufuegen_icon"
+            class="h-5 w-5 opacity-70 group-hover:opacity-100"
+            alt=""
+          />
+        </button>
       </div>
-    </div>
 
-    <!-- RECHTS: Suche -->
-    <div class="justify-self-end h-10 flex items-center">
-      <div class="relative w-64">
-        <input
-          v-model="search"
-          type="text"
-          placeholder="Suchen"
-          class="h-9 w-full rounded-xl
-                 bg-black/10 dark:bg-zinc-500
-                 pl-10 pr-3
-                 text-sm text-zinc-900 dark:text-white/90
-                 outline-none
-                 ring-1 ring-black/10 dark:ring-white/15
-                 focus:ring-black/20 dark:focus:ring-white/30"
-        />
-        <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2">
-          <img :src="lupe_icon" class="h-4.5 w-4.5 opacity-60" alt="" />
-        </span>
+      <!-- MITTE: Sortierung -->
+      <div class="justify-self-center h-10 flex items-center">
+        <div class="w-60">
+          <Multiselect
+            class="ms ms-down"
+            :options="sortOptions"
+            :model-value="selectedOption"
+            @update:model-value="val => emit('update:modelValue', val.value)"
+            label="label"
+            track-by="value"
+            placeholder="Sortieren"
+            :allow-empty="false"
+            :searchable="false"
+            select-label=""
+            selected-label=""
+            deselect-label=""
+          >
+            <template #singleLabel="{ option }">
+              <span class="multiselect-label-text text-sm">{{ option.label }}</span>
+            </template>
+          </Multiselect>
+        </div>
+      </div>
+
+      <!-- RECHTS: Suche -->
+      <div class="justify-self-end h-10 flex items-center">
+        <div class="relative w-64">
+          <input
+            v-model="search"
+            type="text"
+            placeholder="Suchen"
+            class="fi-search-input"
+          />
+          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2">
+            <img :src="lupe_icon" class="h-4.5 w-4.5 opacity-60" alt="" />
+          </span>
+        </div>
       </div>
     </div>
   </div>

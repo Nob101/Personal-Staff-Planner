@@ -1,167 +1,203 @@
-
 <!-- BenutzerCard.vue -->
+<!-- 
+============================================================================
+// Aufgaben dieser Datei:
+// - Darstellung einzelner Benutzer in Kartenform
+// - Buttons zum Editieren und Löschen eines Benutzers
+// - Editiermodus mit Datenvalidierung für Benutzername und Passwort
+// ============================================================================
+-->
 
 <script setup>
-import { ref, reactive, defineProps, defineEmits } from 'vue'
+import { ref, defineProps, defineEmits } from 'vue'
+import Multiselect from 'vue-multiselect'
+import loeschen_icon from '@/assets/icons/loeschen_icon.png'
+import bearbeiten_icon from '@/assets/icons/bearbeiten_icon.png'
+import speichern_icon from '@/assets/icons/speichern_icon.png'
+import abbrechen_icon from '@/assets/icons/abbrechen_icon.svg'
 
 const props = defineProps({
-  benutzer: { type: Object, required: true }
+  benutzer: { type: Object, required: true },
+  allBenutzer: { type: Array, required: true }
 })
 
 const emit = defineEmits(['update', 'delete'])
 
 const isEditing = ref(false)
-const editData = reactive({ username: '', password: '' })
+const editData = ref({ id: null, username: '', password: '', role: '' })
+const roles = ref(['user', 'admin'])
+
+const usernameFehler = ref(false)
+const passwordFehler = ref(false)
+const adminNameFehler = ref(false)
+const usernameExistsFehler = ref(false)
 
 function startEdit() {
-  editData.username = props.benutzer.username
-  editData.password = props.benutzer.password
+  usernameFehler.value = false
+  passwordFehler.value = false
+  usernameExistsFehler.value = false
+  editData.value = { ...props.benutzer }
+  adminNameFehler.value = false
   isEditing.value = true
 }
 
 function handleSave() {
-  // Verhindert, dass leere Daten gespeichert werden
-  if (!editData.username || !editData.password) {
-    alert("Name und Passwort dürfen nicht leer sein.");
-    return;
+  usernameFehler.value = false
+  passwordFehler.value = false
+  adminNameFehler.value = false
+  usernameExistsFehler.value = false
+
+  const currentUsername = (editData.value.username || '').trim()
+  const currentPassword = (editData.value.password || '').trim()
+
+  // Validierung: Pflichtfelder
+  if (!currentUsername) usernameFehler.value = true
+  if (!currentPassword) passwordFehler.value = true
+
+  // Validierung: Reservierter Name "admin"
+  if (currentUsername.toLowerCase() === 'admin') {
+    adminNameFehler.value = true
   }
-  
-  emit('update', { ...props.benutzer, ...editData })
+
+  // Check auf bereits existierenden Benutzernamen (außer man behält seinen eigenen)
+  const existiertBereits = props.allBenutzer.some(
+    (b) => b.username.toLowerCase() === currentUsername.toLowerCase() && b.id !== props.benutzer.id
+  )
+
+  if (existiertBereits) {
+    usernameExistsFehler.value = true
+  }
+
+  if (usernameFehler.value || passwordFehler.value || adminNameFehler.value || usernameExistsFehler.value) return
+
+  emit('update', { ...editData.value })
   isEditing.value = false
 }
 </script>
 
 <template>
-  <div class="benutzer-card" :class="{ 'editing-active': isEditing }">
-    
-    <template v-if="isEditing">
-      <div class="card-actions">
-        <button @click="handleSave" class="bg-green-400">Speichern</button>
-        <button @click="isEditing = false" class="bg-gray-300">Abbrechen</button>
-      </div>
-      <h1 class="text-3xl font-semibold">Bearbeiten</h1>
-      <div class="benutzer-card-columns">
-        <div class="column">
-          <fieldset class="box">
-            <div class="edit-row">
-              <label>Name:</label>
-              <input v-model="editData.username" class="input-field" />
-            </div>
-            <div class="edit-row">
-              <label>Passwort:</label>
-              <input v-model="editData.password" class="input-field" />
-            </div>
-          </fieldset>
-        </div>
-      </div>
-    </template>
+  <article class="bu-card">
 
-    <template v-else>
-      <div class="card-actions">
-        <button @click="startEdit" class="bg-blue-300">Bearbeiten</button>
-        <button @click="$emit('delete', benutzer)" class="bg-red-300">Löschen</button>
-      </div>
-      <h1 class="text-3xl font-semibold">{{ benutzer.username }}</h1>
-      <div class="benutzer-card-columns">
-        <div class="column">
-          <fieldset class="box">
-            <p data-label="Benutzername:">{{ benutzer.username }}</p>
-            <p data-label="Passwort:">{{ benutzer.password }}</p>
-          </fieldset>
-        </div>
-      </div>
-    </template>
+    <!-- HEADER -->
+    <div class="bu-card-head">
+      <div class="bu-card-head-inner">
 
-  </div>
+        <div class="min-w-0">
+          <div class="bu-card-title">
+            {{ isEditing ? `${benutzer.username} bearbeiten` : benutzer.username }}
+          </div>
+        </div>
+
+        <div class="bu-action-wrap">
+          <template v-if="!isEditing">
+
+            <button
+              @click="startEdit"
+              class="bu-action-btn bu-action-btn--blue"
+            >
+              <img :src="bearbeiten_icon" class="bu-action-icon" />
+            </button>
+
+            <button
+              @click="$emit('delete', benutzer)"
+              class="bu-action-btn bu-action-btn--red"
+            >
+              <img :src="loeschen_icon" class="bu-action-icon" />
+            </button>
+
+          </template>
+
+          <template v-else>
+
+            <button
+              @click="handleSave"
+              class="bu-action-btn bu-action-btn--emerald"
+            >
+              <img :src="speichern_icon" class="bu-action-icon" />
+            </button>
+
+            <button
+              @click="isEditing = false"
+              class="bu-action-btn bu-action-btn--red"
+            >
+              <img :src="abbrechen_icon" class="bu-action-icon" />
+            </button>
+
+          </template>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="bu-card-body">
+
+      <!-- EDIT MODE -->
+      <fieldset v-if="isEditing" class="bu-fieldset-stack">
+
+        <div class="bu-row">
+          <span class="bu-label">Name</span>
+          <input
+            v-model="editData.username"
+            class="bu-input"
+            :class="usernameFehler || adminNameFehler || usernameExistsFehler
+              ? 'bu-input-error'
+              : 'bu-input-normal'"
+          />
+        </div>
+
+        <div class="bu-row">
+          <span class="bu-label">Passwort</span>
+          <input
+            v-model="editData.password"
+            type="password"
+            class="bu-input"
+            :class="passwordFehler ? 'bu-input-error' : 'bu-input-normal'"
+          />
+        </div>
+
+        <div class="bu-row">
+          <span class="bu-label">Rolle</span>
+          <div class="bu-input-wrap">
+            <Multiselect
+              class="ms ms-up"
+              v-model="editData.role"
+              :options="roles"
+              :searchable="false"
+              :show-labels="false"
+              :allow-empty="false"
+            />
+          </div>
+        </div>
+
+      </fieldset>
+
+      <!-- NORMAL MODE -->
+      <fieldset v-else class="bu-fieldset">
+        <div class="bu-row">
+          <span class="bu-label">Rolle</span>
+          <span
+            class="bu-role-badge"
+            :class="benutzer.role === 'admin'
+              ? 'bu-role-badge--admin'
+              : 'bu-role-badge--user'"
+          >
+            {{ benutzer.role }}
+          </span>
+        </div>
+      </fieldset>
+
+    </div>
+
+  </article>
 </template>
 
+<!-- Temporöres Styling -> von Dumitru noch zu ersetzen! -->
 <style scoped>
-.editing-active {
-  border-left-color: #3182ce !important;
+:deep(.multiselect__input),
+:deep(.multiselect__single),
+:deep(.multiselect__placeholder) {
+  color: rgb(24 24 27) !important;
+  background: transparent !important;
 }
-
-.edit-row {
-  display: grid;
-  grid-template-columns: 100px 1fr;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.input-field {
-  border: 1px solid #ccc;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.bg-green-400 { background-color: #68d391; }
-
-.bg-gray-300 { background-color: #e2e8f0; }
-
-.benutzer-card {
-  position: relative;
-  text-align: center;
-  border: 1px solid #ccc;
-  border-left: 6px solid #4a5568;
-  padding: 48px 24px 24px 24px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  background-color: #fff;
-}
-
-.card-actions {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  display: flex;
-  gap: 8px;
-}
-
-.card-actions button {
-  padding: 6px 14px;
-  border-radius: 4px;
-  cursor: pointer;
-  border: none;
-  font-weight: 500;
-}
-
-.benutzer-card-columns {
-  display: flex;
-  justify-content: center;
-  text-align: left;
-  margin-top: 16px;
-}
-
-.column {
-  width: 100%;
-  max-width: 400px;
-}
-
-.box {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #f9f9f9;
-  padding: 12px 18px;
-}
-
-.box legend {
-  padding: 0 6px;
-  font-weight: 600;
-}
-
-.box p {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 10px;
-  margin: 8px 0;
-  align-items: center;
-}
-
-.box p::before {
-  content: attr(data-label);
-  font-weight: 600;
-}
-
-.bg-blue-300 { background-color: #93c5fd; }
-
-.bg-red-300 { background-color: #fca5a5; }
 </style>

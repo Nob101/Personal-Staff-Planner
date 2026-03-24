@@ -1,0 +1,157 @@
+/* Tailwind */
+@import "tailwindcss";
+@import "vue-multiselect/dist/vue-multiselect.css";
+@import "./dienstplaene.css";
+@import "./filialen.css";
+@import "./mitarbeiter.css";
+@import "./benutzer.css";
+@import "./navbar.css";
+
+@tailwind utilities;
+
+/* Pointer überall */
+.ms,
+.ms * {
+  cursor: pointer;
+}
+
+/* Root: Anker für absolutes Dropdown */
+.ms.multiselect {
+  position: relative !important;
+  min-height: 40px !important;
+  border-radius: 0.75rem !important; /* rounded-xl */
+  background: transparent !important;
+  z-index: 10;
+}
+
+/* Tags/Field */
+.ms .multiselect__tags {
+  height: 40px !important;
+  min-height: 40px !important;
+
+  padding: 0 44px 0 12px !important; /* Platz für Pfeil */
+  box-sizing: border-box;
+
+  border-radius: 0.75rem !important;
+  overflow: hidden !important; /* wichtig: sauber rund */
+
+  background: linear-gradient(
+    to bottom,
+    rgb(228 228 231), /* zinc-200 */
+    rgb(212 212 216)  /* zinc-300 */
+  ) !important;
+
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Entfernt weiße Innenflächen */
+.ms .multiselect__single,
+.ms .multiselect__placeholder,
+.ms .multiselect__input,
+.ms .multiselect__tags-wrap {
+  background: transparent !important;
+}
+
+/* Placeholder + Single Text */
+.ms .multiselect__single,
+.ms .multiselect__placeholder {
+  margin: 0 !important;
+  padding: 0 !important;
+
+  font-size: 0.875rem !important;
+  color: rgb(60, 60, 60) !important;
+
+  display: flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+/* Input (wenn searchable=true) */
+.ms .multiselect__input {
+  margin: 0 !important;
+  padding: 0 !important;
+
+  font-size: 0.875rem !important;
+  color: rgb(60, 60, 60) !important;
+
+  line-height: 1 !important;
+}
+
+/* SINGLE: minimal tiefer, damit’s optisch perfekt mittig wirkt */
+.ms.multiselect--single .multiselect__single,
+.ms.multiselect--single .multiselect__placeholder {
+  position: relative;
+  top: 1px;
+}
+
+/* MULTI: Tags NICHT umbrechen -> EINZEILIG + horizontal scroll */
+.ms.multiselect--multiple .multiselect__tags {
+  flex-wrap: nowrap !important;
+}
+
+/* Dropdown IMMER nach oben öffnen */
+.ms .multiselect__content-wrapper {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: calc(100% + 6px) !important; /* oberhalb vom Feld */
+  top: auto !important;
+
+  max-height: 220px !important;
+  overflow-y: auto !important;
+  z-index: 9999 !important;
+
+  border-radius: 0.75rem !important;
+  background: linear-gradient(
+    to bottom,
+    rgb(228 228 231),
+    rgb(212 212 216)
+  ) !important;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18) !important;
+  border: none !important;
+}
+
+/* Inhalt sauber runden */
+.ms .multiselect__content {
+  border-radius: 0.75rem !important;
+  overflow: hidden !important;
+  background: transparent !important;
+}
+
+/* Einzelne Optionen */
+.ms .multiselect__option {
+  background: transparent !important;
+  font-size: 0.875rem !important;
+  color: rgb(39 39 42) !important; /* zinc-800 */
+}
+
+.ms .multiselect__option--highlight {
+  background: rgba(255, 255, 255, 0.45) !important;
+  color: rgb(24 24 27) !important;
+}
+
+.ms .multiselect__option--selected {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: rgb(24 24 27) !important;
+}
+
+/* nach oben */
+.ms-up .multiselect__content-wrapper {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: calc(100% + 6px) !important;
+  top: auto !important;
+}
+
+/* nach unten */
+.ms-down .multiselect__content-wrapper {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: calc(100% + 6px) !important;
+  bottom: auto !important;
+}

@@ -5,7 +5,6 @@ import { jsPDF } from 'jspdf';
 export async function downloadDienstplanPdf(elementId, filename) {
   const element = document.getElementById(elementId);
   if (!element) return;
- 
     const clone = element.cloneNode(true);
     clone.querySelectorAll('*').forEach(el => {
         el.style.boxShadow = 'none';
@@ -13,26 +12,23 @@ export async function downloadDienstplanPdf(elementId, filename) {
         el.style.border = 'none';      // Ganz dünne, graue Standardlinie
             el.style.backgroundImage = 'none';        // Keine Gradients
           
-            el.style.color = 'black';               // Text immer schwarz
+            el.style.color = 'black';               //NEU: Text immer schwarz -> Druck
        
-        if (el.classList.contains('truncate')) {
-            el.style.whiteSpace = 'normal';
-            el.style.overflow = 'visible';
+        if (el.classList.contains('truncate')) { //Wichtig: Korrektur -> textkürzung weg
+            el.style.whiteSpace = 'normal';     // Umbruch erlauben
+            el.style.overflow = 'visible';      //FIX: Gesamter Inhalt Sichtbar
         }
     });
- 
- 
   Object.assign(clone.style, {
         position: 'absolute',
         top: '-9999px',
         left: '-9999px',
-        width: 'auto',      // FIX: Passt sich dem Inahalt an
+        width: 'auto',      // FIX: Passt sich dem Inhalt an
         display: 'inline-block', //NEU: verhindert breite Streckung
         background: 'white',
         boxShadow: 'none',
         display: 'block'
     });
- 
     document.body.appendChild(clone);
  
     try {
@@ -41,13 +37,6 @@ export async function downloadDienstplanPdf(elementId, filename) {
             bgcolor: '#f3ebeb',
             quality: 1,
             scale: 3,
-           
-              // FIX: Interaktive Elemente entfernen
-            // filter: (node) => {
-            //     const isButton = node.tagName === 'BUTTON';
-            //     const isNoExport = node.classList && node.classList.contains('no-export');
-            //     return !isButton && !isNoExport;
-            // }
         } );
  
         // PDF generieren -_-
@@ -58,7 +47,7 @@ export async function downloadDienstplanPdf(elementId, filename) {
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-       
+//...
         const margin = 10;
         const maxWidth = pdfWidth - (margin * 2);
         const maxHeight = pdfHeight - (margin * 2);
@@ -79,8 +68,10 @@ export async function downloadDienstplanPdf(elementId, filename) {
 
         // Wichtig: Bild einfügen mit den berechneten Maßen
             pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, adjustedWidth, adjustedHeight);
+            
+//...
             pdf.save(`${filename}.pdf`);
- 
+
     } catch (error) {
         console.error("Export fehlgeschlagen:", error);
     } finally {

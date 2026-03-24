@@ -5,18 +5,19 @@ FROM node:20-alpine
 WORKDIR /app
 
 #  Abhängigkeiten kopieren und installieren
-#  kopiert erst nur die package-Dateien( Docker-Cache optimal  nutzen)
+#  kopiert erst nur die package-Dateien
 COPY package*.json ./
 RUN npm install
 
-#  Den restlichen Quellcode kopieren (inkl. deiner db-Struktur und server.js)
+#  Den restlichen Quellcode kopieren (inkl. der db-Struktur und server.js)
 COPY . .
 
-#  Den Port freigeben, auf dem deine Express-App läuft
+#  Der Port auf dem die Express-App läuft (lauschen)
 EXPOSE 3001
 
-#  Startbefehl für den Server [auf nodemon angepasst]
-CMD ["npm", "run",  "devStart"]
+#  Startbefehl für den Server 
+# Für nodemon: CMD ["npm", "run", "devStart"] mit CMD ["npm", "start"] tauschen
+CMD ["npm", "start"]
 
 
 # für Alex:
