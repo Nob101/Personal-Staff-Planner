@@ -16,8 +16,8 @@ COPY . .
 EXPOSE 3001
 
 #  Startbefehl für den Server 
-# auf nodemon angepasst
-CMD ["npm", "run",  "devStart"]
+# Für nodemon: CMD ["npm", "run", "devStart"]
+CMD ["npm", "start"]
 
 
 # für Alex:
