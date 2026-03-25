@@ -87,8 +87,8 @@ function handleSubmit() {
   if (vornameFehler.value || nachnameFehler.value || hauptfilialeFehler.value) return
 
   emit('mitarbeiterCreate', {
-    vorname: vorname.value,
-    nachname: nachname.value,
+    vorname: vorname.value.trim(),
+    nachname: nachname.value.trim(),
     email1: email1.value || '',
     email2: email2.value || '',
     telefon1: telefon1.value || '',
@@ -96,8 +96,8 @@ function handleSubmit() {
     strasse: strasse.value || '',
     ort: ort.value || '',
     postleitzahl: postleitzahl.value || '',
-    land: land.value || '',
-    arbeitsstunden: arbeitsstunden.value ? Number(arbeitsstunden.value) : null,
+    land: land.value.trim() !== '' ? land.value : 'Österreich',
+    arbeitsstunden: (arbeitsstunden.value > 0) ? Number(arbeitsstunden.value) : 40,
     springer: springer.value ?? false, // wenn undefined, dann false
     hauptfiliale: hauptfiliale.value?.fnr || null,
     nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.fnr) : null,

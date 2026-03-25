@@ -60,14 +60,14 @@ watch(
     ort.value = edited.ort || ''
     postleitzahl.value = edited.postleitzahl || ''
     land.value = edited.land || ''
-    arbeitsstunden.value = edited.arbeitsstunden ?? ''
+    arbeitsstunden.value = edited.arbeitsstunden || ''  //NEU
     springer.value = edited.springer ?? false
     hauptfiliale.value = edited.hauptfiliale
-      ? props.filialen.find(f => f.fnr === edited.hauptfiliale.id)
+      ? props.filialen.find(f => f.fnr === (edited.hauptfiliale.id || edited.hauptfiliale))
       : null
 
     nebenfilialen.value = edited.nebenfilialen?.length
-      ? props.filialen.filter(f => edited.nebenfilialen.some(nf => nf.id === f.fnr))
+      ? props.filialen.filter(f => edited.nebenfilialen.some(nf => (nf.id || nf) === f.fnr))
       : []
 
     anmerkungen.value = edited.anmerkungen || ''
@@ -117,24 +117,24 @@ function handleSubmit() {
 
   // Wenn ein Fehler existiert, abbrechen
   if (vornameFehler.value || nachnameFehler.value || hauptfilialeFehler.value) return
-
+// FIX: Konvertiertr leere Felder zu null (DB Pflege) damit MA bearbeitet werden können!!
   emit('mitarbeiterEdit', {
-    id: props.mitarbeiter.id,
-    vorname: vorname.value,
-    nachname: nachname.value,
-    email1: email1.value || '',
-    email2: email2.value || '',
-    telefon1: telefon1.value || '',
-    telefon2: telefon2.value || '',
-    strasse: strasse.value || '',
-    ort: ort.value || '',
-    postleitzahl: postleitzahl.value || '',
-    land: land.value || '',
-    arbeitsstunden: arbeitsstunden.value ? Number(arbeitsstunden.value) : null,
+    id: props.mitarbeiter.id || props.mitarbeiter.mnr,
+    vorname: vorname.value.trim(),
+    nachname: nachname.value.trim(),
+    email1: email1.value || null,
+    email2: email2.value || null,
+    telefon1: telefon1.value || null,
+    telefon2: telefon2.value || null,
+    strasse: strasse.value?.trim() || null,
+    ort: ort.value?.trim() || null,
+    postleitzahl: postleitzahl.value?.trim() || null,
+    land: (land.value && land.value.trim() !== '') ? land.value : 'Österreich',
+    arbeitsstunden: (arbeitsstunden.value > 0) ? Number(arbeitsstunden.value) : 40,
     springer: springer.value,
     hauptfiliale: hauptfiliale.value?.fnr || null,
     nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.fnr) : null,
-    anmerkungen: anmerkungen.value || ''
+    anmerkungen: anmerkungen.value || null
   })
 
   emit('close')

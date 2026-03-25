@@ -124,7 +124,7 @@ services:
     deploy:                 # <- NEU: Leistungsbegränzer verhindert einen Absturzt (Endlosschleife)
       resources:
         limits:
-          cpus: '3'         # Ein Kern der CPU
+          cpus: '3'         # NEU: an PI angepasst
           memory: 1.5G        # Maximum / Limit
         reservations:
           memory: 512M      # Garantierter Speicher 
