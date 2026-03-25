@@ -134,6 +134,31 @@ else  # NEU: Docker Compose starten wenn certs vorhanden und IP = IP -_-
 fi
 
 
+# Smart-build Logik
+# NEU: Prüft auf lokale Änderungen 
+BUILD_REQUIRED=false
+
+if [ -d ".git" ]; then
+    # --porcelain erkennt lokale Änderungen ( nano / USB lol)
+    CHANGES=$(git status --porcelain)
+    if [ -n "$CHANGES" ]; then
+        echo "[INFO] Code-Änderungen erkannt. Build wird vorbereitet..."
+        BUILD_REQUIRED=true
+    fi
+fi
+
+if [ "$RESTART_REQUIRED" = true ] || [ "$BUILD_REQUIRED" = true ]; then
+    echo "[INFO] Starte Container neu (mit Build), um Änderungen/Zertifikate anzuwenden..."
+    # Falls Änderungen gibt --> down ohne volumes zu löschen (neubau)
+    docker compose down && docker compose up -d --build
+else
+    echo "[INFO] Keine Änderungen am Code oder Zertifikat. Schneller Start..."
+    docker compose up -d
+fi
+
+
+
+
 #  Healthcheck (Warten bis Nginx und Backend antworten !!)
 echo "[INFO] Warte auf Server-Response..."
 retry_count=0

@@ -24,11 +24,21 @@ import BenutzerView from "@/views/BenutzerView.vue";
 // - meta: Zusatzinfos (z.B. ob die Navbar ausgeblendet werden soll)
 const routes = [
   { path: "/", name: "login", component: LoginView, meta: { hideNavbar: true } },
+  // NEU: Login redirect
+  {
+    path: "/login", 
+    redirect: { name: 'login'}
+  },
   { path: "/home", name: "home", component: HomeView },
   { path: "/mitarbeiter", name: "mitarbeiter", component: MitarbeiterView },
   { path: "/filialen", name: "filialen", component: FilialenView },
   { path: "/dienstplaene", name: "dienstplaene", component: DienstplaeneView },
-  { path: "/benutzer", name: "benutzer", component: BenutzerView }
+  { path: "/benutzer", name: "benutzer", component: BenutzerView },
+  // NEU: Catch-all für route Fehler 404
+  { 
+    path: "/:pathMatch(.*)*", 
+    redirect: {name: 'login'}
+  }
 ];
 
 // Web-History fürs für Browser - Back/Forward Navigation
