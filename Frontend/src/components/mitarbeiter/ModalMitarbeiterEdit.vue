@@ -119,7 +119,7 @@ function handleSubmit() {
   if (vornameFehler.value || nachnameFehler.value || hauptfilialeFehler.value) return
 // FIX: Konvertiertr leere Felder zu null (DB Pflege) damit MA bearbeitet werden können!!
   emit('mitarbeiterEdit', {
-    id: props.mitarbeiter.id || props.mitarbeiter.mnr,
+    mnr: props.mitarbeiter.mnr ,
     vorname: vorname.value.trim(),
     nachname: nachname.value.trim(),
     email1: email1.value || null,
