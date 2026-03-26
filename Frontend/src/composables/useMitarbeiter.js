@@ -1,11 +1,7 @@
-// useMitarbeiter.js 
-// ============================================================================
-// Composables für die Benutzer-Logik
-// Aufgaben dieser Datei:
-// - State-Management für die Mitarbeiter
-// - Kapselung der API-Aufrufe (CRUD) via mitarbeiterService
-// - Vorbereiten der reaktiven Daten und Handler-Funktionen für Components
-// ============================================================================
+// useMitarbeiter.js Composable
+// Hier ist gesamte Script-Logik für Mitarbeiter. MitarbeiterView enthält nur noch Template + Event-Handler-Calls
+// Alle Refs, Modale, Funktionen (Create, Edit, Delete, Daten laden) kommen
+// JSON Server Requests laufen über Service
 
 // ref -> reaktiv, onMounted -> wird als erstes gemacht, wenn ein Vue-File/Komponent geladen wird
 // getMitarbeiter und getFilialen holt sich die Daten vom Backend übers Service
@@ -180,6 +176,17 @@ const filteredMitarbeiter = computed(() => {
     showDeleteModal.value = false
   }
 
+  // --- Zusätzliche Funktion: Verfügbare Mitarbeiter nach Filiale & Datum abrufen || unnötig?---
+  async function getVerfuegbareMitarbeiter(filialeFNR, datum) {
+    try {
+      const res = await mitarbeiterService.getVerfuegbareMitarbeiter(filialeFNR, datum)
+      return res.data
+    } catch (err) {
+      console.error("Fehler beim Abrufen verfügbarer Mitarbeiter:", err)
+      return []
+    }
+  }
+
   /* WHY: Design hat eine List-Ansicht + Detail-Overlay.
      Klick auf eine Card soll den Mitarbeiter "auswählen". */
   function handleSelect(m) {
@@ -211,6 +218,7 @@ const filteredMitarbeiter = computed(() => {
     handleDelete,
     confirmDelete,
     cancelDelete,
+    getVerfuegbareMitarbeiter,
     handleSelect,
     closeDetails
   }

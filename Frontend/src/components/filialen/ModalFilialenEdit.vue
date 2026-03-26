@@ -102,7 +102,7 @@ function handleSubmit() {
     strasse: strasse.value || '',
     ort: ort.value || '',
     plz: plz.value || '',
-    land: land.value || '',
+    land: land.value.trim() !== '' ? land.value : 'Österreich',
     telefon: telefon.value || '',
     email: email.value || '',
     farbe: farbe.value || '',

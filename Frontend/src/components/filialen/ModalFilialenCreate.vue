@@ -77,7 +77,7 @@ function handleSubmit() {
     strasse: strasse.value || '',
     ort: ort.value || '',
     plz: plz.value || '',
-    land: land.value || '',
+    land: land.value.trim() !== '' ? land.value : 'Österreich',
     farbe: farbe.value,
     algorithmid: algorithmid.value ? algorithmid.value.value : null,
     anmerkungen: anmerkungen.value || ''
