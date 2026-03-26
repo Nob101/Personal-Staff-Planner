@@ -1,11 +1,4 @@
 <!-- ModalMitarbeiterEdit.vue -->
-<!-- 
-============================================================================
-// Aufgaben dieser Datei:
-// - Modal zum Ändern der Daten eines Mitarbeiters
-// ============================================================================
--->
-
 <script setup>
 import BaseModal from '@/components/global/BaseModal.vue'
 import Multiselect from 'vue-multiselect'
@@ -119,22 +112,22 @@ function handleSubmit() {
   if (vornameFehler.value || nachnameFehler.value || hauptfilialeFehler.value) return
 
   emit('mitarbeiterEdit', {
-     mnr: props.mitarbeiter.mnr ,
-    vorname: vorname.value.trim(),
-    nachname: nachname.value.trim(),
-    email1: email1.value || null,
-    email2: email2.value || null,
-    telefon1: telefon1.value || null,
-    telefon2: telefon2.value || null,
-    strasse: strasse.value?.trim() || null,
-    ort: ort.value?.trim() || null,
-    postleitzahl: postleitzahl.value?.trim() || null,
-    land: (land.value && land.value.trim() !== '') ? land.value : 'Österreich',
-    arbeitsstunden: (arbeitsstunden.value > 0) ? Number(arbeitsstunden.value) : 40,
+    id: props.mitarbeiter.id,
+    vorname: vorname.value,
+    nachname: nachname.value,
+    email1: email1.value || '',
+    email2: email2.value || '',
+    telefon1: telefon1.value || '',
+    telefon2: telefon2.value || '',
+    strasse: strasse.value || '',
+    ort: ort.value || '',
+    postleitzahl: postleitzahl.value || '',
+    land: land.value || '',
+    arbeitsstunden: arbeitsstunden.value ? Number(arbeitsstunden.value) : null,
     springer: springer.value,
     hauptfiliale: hauptfiliale.value?.fnr || null,
     nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.fnr) : null,
-    anmerkungen: anmerkungen.value || null
+    anmerkungen: anmerkungen.value || ''
   })
 
   emit('close')

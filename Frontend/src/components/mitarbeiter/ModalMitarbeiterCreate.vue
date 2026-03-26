@@ -86,6 +86,9 @@ function handleSubmit() {
   // Wenn ein Fehler existiert, abbrechen
   if (vornameFehler.value || nachnameFehler.value || hauptfilialeFehler.value) return
 
+/* 
+fix default
+
   emit('mitarbeiterCreate', {
     vorname: vorname.value,
     nachname: nachname.value,
@@ -102,7 +105,34 @@ function handleSubmit() {
     hauptfiliale: hauptfiliale.value?.fnr || null,
     nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.fnr) : null,
     anmerkungen: anmerkungen.value || ''
-  })
+  }) */
+/* neu */
+const payload = {
+  vorname: vorname.value,
+  nachname: nachname.value,
+  email1: email1.value || '',
+  email2: email2.value || '',
+  telefon1: telefon1.value || '',
+  telefon2: telefon2.value || '',
+  strasse: strasse.value || '',
+  ort: ort.value || '',
+  postleitzahl: postleitzahl.value || '',
+  springer: springer.value ?? false,
+  hauptfiliale: hauptfiliale.value?.fnr || null,
+  nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.fnr) : null,
+  anmerkungen: anmerkungen.value || ''
+}
+
+if (land.value.trim() !== '') {
+  payload.land = land.value.trim()
+}
+
+if (arbeitsstunden.value !== '' && Number(arbeitsstunden.value) > 0) {
+  payload.arbeitsstunden = Number(arbeitsstunden.value)
+}
+
+emit('mitarbeiterCreate', payload)
+
 
   // Formular zurücksetzen
   vorname.value = ''
