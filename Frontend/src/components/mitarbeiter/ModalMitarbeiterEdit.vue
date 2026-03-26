@@ -52,7 +52,7 @@ watch(
     strasse.value = edited.strasse || ''
     ort.value = edited.ort || ''
     postleitzahl.value = edited.postleitzahl || ''
-    land.value = edited.land || ''
+    land.value = edited.land || 'Österreich'
     arbeitsstunden.value = edited.arbeitsstunden ?? ''
     springer.value = edited.springer ?? false
     hauptfiliale.value = edited.hauptfiliale
@@ -122,8 +122,8 @@ function handleSubmit() {
     strasse: strasse.value || '',
     ort: ort.value || '',
     postleitzahl: postleitzahl.value || '',
-    land: land.value || '',
-    arbeitsstunden: arbeitsstunden.value ? Number(arbeitsstunden.value) : null,
+    land: land.value || 'Österreich',
+    arbeitsstunden: arbeitsstunden.value ? Number(arbeitsstunden.value) : 40,
     springer: springer.value,
     hauptfiliale: hauptfiliale.value?.fnr || null,
     nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.fnr) : null,
