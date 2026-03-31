@@ -30,8 +30,8 @@ export default defineConfig({
       usePolling: true,       //NEU: Hilft in Docker-Umgebung änderungen zu erkennen
     }
   },
- 
-     resolve: {
+
+    resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
