@@ -34,7 +34,7 @@ const routes = [
   { path: "/filialen", name: "filialen", component: FilialenView },
   { path: "/dienstplaene", name: "dienstplaene", component: DienstplaeneView },
   { path: "/benutzer", name: "benutzer", component: BenutzerView },
-  // NEU: Catch-all für route Fehler 404
+   // NEU: Catch-all für route Fehler 404
   { 
     path: "/:pathMatch(.*)*", 
     redirect: {name: 'login'}

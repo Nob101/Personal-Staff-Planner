@@ -1,11 +1,4 @@
 <!-- ModalMitarbeiterEdit.vue -->
-<!-- 
-============================================================================
-// Aufgaben dieser Datei:
-// - Modal zum Ändern der Daten eines Mitarbeiters
-// ============================================================================
--->
-
 <script setup>
 import BaseModal from '@/components/global/BaseModal.vue'
 import Multiselect from 'vue-multiselect'
@@ -59,15 +52,15 @@ watch(
     strasse.value = edited.strasse || ''
     ort.value = edited.ort || ''
     postleitzahl.value = edited.postleitzahl || ''
-    land.value = edited.land || ''
-    arbeitsstunden.value = edited.arbeitsstunden || ''  //NEU
+    land.value = edited.land || 'Österreich'
+    arbeitsstunden.value = edited.arbeitsstunden ?? ''
     springer.value = edited.springer ?? false
     hauptfiliale.value = edited.hauptfiliale
-      ? props.filialen.find(f => f.fnr === (edited.hauptfiliale.id || edited.hauptfiliale))
+      ? props.filialen.find(f => f.fnr === edited.hauptfiliale.id)
       : null
 
     nebenfilialen.value = edited.nebenfilialen?.length
-      ? props.filialen.filter(f => edited.nebenfilialen.some(nf => (nf.id || nf) === f.fnr))
+      ? props.filialen.filter(f => edited.nebenfilialen.some(nf => nf.id === f.fnr))
       : []
 
     anmerkungen.value = edited.anmerkungen || ''
@@ -117,24 +110,24 @@ function handleSubmit() {
 
   // Wenn ein Fehler existiert, abbrechen
   if (vornameFehler.value || nachnameFehler.value || hauptfilialeFehler.value) return
-// FIX: Konvertiertr leere Felder zu null (DB Pflege) damit MA bearbeitet werden können!!
+
   emit('mitarbeiterEdit', {
-    mnr: props.mitarbeiter.mnr ,
-    vorname: vorname.value.trim(),
-    nachname: nachname.value.trim(),
-    email1: email1.value || null,
-    email2: email2.value || null,
-    telefon1: telefon1.value || null,
-    telefon2: telefon2.value || null,
-    strasse: strasse.value?.trim() || null,
-    ort: ort.value?.trim() || null,
-    postleitzahl: postleitzahl.value?.trim() || null,
-    land: (land.value && land.value.trim() !== '') ? land.value : 'Österreich',
-    arbeitsstunden: (arbeitsstunden.value > 0) ? Number(arbeitsstunden.value) : 40,
+    id: props.mitarbeiter.id,
+    vorname: vorname.value,
+    nachname: nachname.value,
+    email1: email1.value || '',
+    email2: email2.value || '',
+    telefon1: telefon1.value || '',
+    telefon2: telefon2.value || '',
+    strasse: strasse.value || '',
+    ort: ort.value || '',
+    postleitzahl: postleitzahl.value || '',
+    land: land.value || 'Österreich',
+    arbeitsstunden: arbeitsstunden.value ? Number(arbeitsstunden.value) : 40,
     springer: springer.value,
     hauptfiliale: hauptfiliale.value?.fnr || null,
     nebenfilialen: nebenfilialen.value.length ? nebenfilialen.value.map(f => f.fnr) : null,
-    anmerkungen: anmerkungen.value || null
+    anmerkungen: anmerkungen.value || ''
   })
 
   emit('close')

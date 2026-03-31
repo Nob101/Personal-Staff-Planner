@@ -20,7 +20,7 @@ export default defineConfig({
     allowedHosts: [
       'psp_frontend',
       'localhost',
-      'psp-portal.local',
+       'psp-portal.local',
     ],
     hmr: {
       protocol: 'wss',        //NEU: forced Websocket
