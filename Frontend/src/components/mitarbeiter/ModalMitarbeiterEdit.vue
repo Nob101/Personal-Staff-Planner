@@ -112,6 +112,7 @@ function handleSubmit() {
   if (vornameFehler.value || nachnameFehler.value || hauptfilialeFehler.value) return
 
   emit('mitarbeiterEdit', {
+    id: props.mitarbeiter.mnr,
     mnr: props.mitarbeiter.mnr,
     vorname: vorname.value,
     nachname: nachname.value,
