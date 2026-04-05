@@ -54,10 +54,15 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('userToken');
 
-  // Fall 1: Nicht eingeloggt -> Umleitung zum Login bei Zugriff auf interne Seiten
+  // NEU: unbekannte Routen abfangen
+   if (!to.name) {
+    return next({ name: 'login' });
+  } 
+
+ // Fall 1: Nicht eingeloggt -> Umleitung zum Login bei Zugriff auf interne Seiten
   if (to.name !== 'login' && !isAuthenticated) {
     next({ name: 'login' });
-  } 
+  }
   // Fall 2: Bereits eingeloggt -> Umleitung weg vom Login zur Startseite (Home)
   else if (to.name === 'login' && isAuthenticated) {
     next({ name: 'home' });
