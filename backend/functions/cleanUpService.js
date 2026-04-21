@@ -40,7 +40,7 @@ const deleteOldShifts = async () => {
                 AND NOT EXISTS (SELECT 1 FROM dienstplaene WHERE fnr = filiale.fnr);
             `);
             await client.query('COMMIT');
-            await pool.query('CALL pr_refresh_indexes()');
+            await client.query('CALL pr_refresh_indexes()');
 
         } else {
             console.log(`Cleanup übersprungen: Aktuell nur ${totalRows} Zeilen.`);
