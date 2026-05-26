@@ -32,7 +32,7 @@ const deleteOldShifts = async () => {
                 DELETE FROM mitarbeiter 
                 WHERE aktiv = FALSE 
                 AND NOT EXISTS (SELECT 1 FROM dienstplaene WHERE mnr = mitarbeiter.mnr);
-            `);     
+            `);
             // Inaktive Filialen löschen
             const filialeDelete = await client.query(`
                 DELETE FROM filiale 
