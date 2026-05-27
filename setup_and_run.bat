@@ -3,7 +3,7 @@ echo -------------------------------------
 echo PSP-Dienstplan: System check und start
 echo -------------------------------------
 
-
+if exist "%~dp0gui_ready.tmp" del /f /q "%~dp0gui_ready.tmp" >nul 2>&1
 
 :: NEU: Ladefenster starten mit timeout
 start /b powershell  -ExecutionPolicy Bypass -File "%~dp0gui.ps1"
@@ -61,31 +61,36 @@ if %errorlevel% neq 0 (
 set /a retry_count=0
 :loop
 set /a retry_count+=1
-if %retry_count% gtr 40 (
+if %retry_count% gtr 30 (
     echo [WARN] Server startet langsam. Oeffne Browser trotzdem...
     goto :open_browser
 )
-:: NEU: Statuscode speichern
-:: FIX: curl gibt status des Webbrowsers wieder. -k für http
-set "status=000"
-for /f "delims=" %%i in ('curl -k -s -o /dev/null -w "%%{http_code}" https://localhost 2^>nul') do set "status=%%i"
-echo [INFO] Warte auf Server... (Status: %status%, Versuch: %retry_count%/40)
-:: FIX: 200 (OK) oder 502 (Nginx da, aber Node noch nicht) -> Nginx lebt!
-if "%status%"=="200" goto :open_browser
 
-if "%status%"=="502" (
-    echo [INFO] Nginx ist bereit -> backend (express)startet noch...
-    goto :loop
-) 
-:: Falls  Server  nicht reagiert (Status 000), weiter warten
+echo [INFO] Warte auf Server... (Versuch: %retry_count%/30)
+
+:: -k = ignoriere selbstsigniertes SSL, -s = silent, --connect-timeout = bricht nach 2 Sek ab, falls Nginx blockiert
+curl -k -s --connect-timeout 2 https://localhost >nul 2>&1
+
+:: NEW: Statuscode weg. (entweder oder!)
+:: Wenn curl Erfolg hat (Errorlevel 0 -> Nginx antwortet!)
+if %errorlevel% equ 0 (
+    echo [INFO] Server ist erreichbar!
+    ::INFO:: Kurze pause, damit Node/Express im Container wirklich bereit ist!!
+    timeout /t 2 /nobreak >nul
+    goto :open_browser
+)
+
+::NEW: Falls Server noch gar nicht reagiert, 2 Sekunden warten und erneut pruefen
 timeout /t 2 /nobreak >nul
 goto :loop
 
 :open_browser 
-::...
-::  Ladefenster schließen und App öffnen
-powershell -Command "Stop-Process -Name 'powershell' -Force" >nul 2>&1
-:: NEU: Browser suche über Pfad (Nutzt nur vorhandenen)
+:: NEU: Signal-Datei fuer die GUI schreiben (PowerShell schliesst sich dadurch selbst)
+:: echo done > "%~dp0gui_ready.tmp"
+::FIX: Dateisystem eine Sekunde Zeit geben, um die Datei-Erstellung zu registrieren
+timeout /t 2 /nobreak >nul
+
+:: Browser suche ueber Pfad (Nutzt nur vorhandenen)
  
 :: Edge
 set "EDGE_PATH="
@@ -108,9 +113,7 @@ if defined CHROME_PATH (
     exit
 )
  
-:: Mozilla (hat keine app Ansicht -> Kiosk alt +f4 um es zu beenden)
-:: und Mozilla müssen die Pfade angegeben werden
-:: häufigste Standard-Pfade sind....
+:: Mozilla Firefox
 set "FF_PATH="
 if exist "C:\Program Files\Mozilla Firefox\firefox.exe" set "FF_PATH=C:\Program Files\Mozilla Firefox\firefox.exe"
 if exist "C:\Program Files (x86)\Mozilla Firefox\firefox.exe" set "FF_PATH=C:\Program Files (x86)\Mozilla Firefox\firefox.exe"
@@ -120,6 +123,6 @@ if defined FF_PATH (
     exit
 )
  
-:: Fallback, wenn kein Browser gefunden wird. Standardbrowser (Setting)
+:: Fallback, wenn kein Browser gefunden wird (nutzt Windows-Standard)
 start https://localhost
 exit

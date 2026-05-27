@@ -30,6 +30,7 @@ test.*
 *.txt
 temp/
 db.json
+*.tmp
 
 # Zeichnungen
 *.drawio

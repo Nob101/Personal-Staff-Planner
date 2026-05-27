@@ -98,7 +98,28 @@ $form.Add_Shown({
  
 # NEU: Fenster anzeigen /texte
 $form.Show()
+
+
+# NEU: Parent-Prozess (die cmd.exe der Batch-Datei) ermitteln für das zeitproblem
+try {
+    $parentId = (Get-CimInstance Win32_Process -Filter "ProcessId = $PID").ParentProcessId
+} catch {
+    $parentId = $null
+}
+
+
+# NEU: Zeit für das Ladefenster optimiert
 for($i = 0; $i -le 100; $i++) {
+
+    # NEU: Prüft JETZT SCHON bei jedem Schritt, ob die Batch-Datei (cmd.exe) geschlossen wurde
+    if ($parentId) {
+        $cmdRunning = Get-Process -Id $parentId -ErrorAction SilentlyContinue
+        if (-not $cmdRunning) {
+            $form.Close()
+            exit
+        }
+    }
+
     $bar.Value = $i
    
     # Texte basierend auf dem echten Fortschritt (%)
@@ -116,8 +137,21 @@ for($i = 0; $i -le 100; $i++) {
     Start-Sleep -Milliseconds 180
 }
  
-# Aber falls Docker schneller war, bleibt das Fenster offen bis zum Kill durch Batch
+$status.Text = "Warte auf Antwort von Docker & Nginx..."
+$bar.Value = 100
+
+
+# NEU: Warteschleife korrigiert gegen das Einfrieren
 while($true) {
+    # Wenn die Batch-Datei fertig ist und sich schließt, stirbt die GUI sofort mit
+    if ($parentId) {
+        $cmdRunning = Get-Process -Id $parentId -ErrorAction SilentlyContinue
+        if (-not $cmdRunning) {
+            $form.Close()
+            exit
+        }
+    }
+    
     [System.Windows.Forms.Application]::DoEvents()
     Start-Sleep -Milliseconds 100
 }
