@@ -1,5 +1,5 @@
 @baseUrl = https://localhost/api
-@token = 1b1cd5de0dee9f281124041f0c2ff873d6c916dcc897734e
+@token = 7500d3988dbfd04d4e2f7bccf1e03f184b4072e13db99067
 @jahr = 2026
 @monat = 3
 
@@ -286,4 +286,34 @@ Content-Type: application/json
 ### DELETE User löschen
 @USER_ID_DELETE = 2
 DELETE {{baseUrl}}/users/{{USER_ID_DELETE}}
+Authorization: {{token}}
+
+
+### Abwesenheiten eines Mitarbeiters laden
+GET {{baseUrl}}/abwesenheiten/mitarbeiter/9
+Authorization: {{token}}
+
+### Abwesenheit erstellen
+POST {{baseUrl}}/abwesenheiten
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "mnr": 12,
+  "von": "2026-01-10",
+  "bis": "2026-01-12",
+  "typ": "U",
+  "anmerkung": "Winterurlaub"
+}
+
+### Abwesenheit löschen
+DELETE {{baseUrl}}/abwesenheiten/3
+Authorization: {{token}}
+
+### Abwesenheiten nach Monat
+GET {{baseUrl}}/abwesenheiten?jahr=2026&monat=1
+Authorization: {{token}}
+
+### Alle Abwesenheiten
+GET {{baseUrl}}/abwesenheiten
 Authorization: {{token}}

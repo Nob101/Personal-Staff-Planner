@@ -223,6 +223,21 @@ async function updateIstStundenManuellTx(client, { mnr, jahr, monat, ist }) {
   return r.rows[0] || null;
 }
 
+async function updateIstStunden(mnr, jahr, monat, delta) {
+  const q = `
+    UPDATE stunden_konto
+    SET ist_stunden_monat = ist_stunden_monat + $4,
+        differenz = (ist_stunden_monat + $4) - soll_stunden_monat
+    WHERE mnr = $1
+      AND jahr = $2
+      AND monat = $3
+    RETURNING *;
+  `;
+
+  const r = await pool.query(q, [mnr, jahr, monat, delta]);
+  return r.rows[0] ?? null;
+}
+
 
 module.exports = {
   saveStunden,
@@ -231,4 +246,5 @@ module.exports = {
   getStundenForMonthYear,
   updateIstStundenTx,
   updateIstStundenManuellTx,
+  updateIstStunden,
 };

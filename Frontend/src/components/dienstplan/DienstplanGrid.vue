@@ -70,6 +70,14 @@ function generateNurFiliale(payload) {
 function removeNurFiliale(payload) {
   emit("removeFiliale", payload);
 }
+
+function getCoverageWarning(fnr, datum) {
+  return (props.view?.coverageWarnings ?? []).find(
+    (w) =>
+      Number(w.fnr) === Number(fnr) &&
+      String(w.datum).slice(0, 10) === String(datum).slice(0, 10),
+  );
+}
 </script>
 
 <template>
@@ -113,6 +121,7 @@ function removeNurFiliale(payload) {
       :hasView="hasView"
       @generateFiliale="generateNurFiliale"
       @removeFiliale="removeNurFiliale"
+      :getCoverageWarning="getCoverageWarning"
     />
   </div>
 </template>

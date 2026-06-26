@@ -18,6 +18,7 @@ import MitarbeiterView from "@/views/MitarbeiterView.vue";
 import FilialenView from "@/views/FilialenView.vue";
 import DienstplaeneView from "@/views/DienstplaeneView.vue";
 import BenutzerView from "@/views/BenutzerView.vue";
+import AbwesenheitenView from "@/views/AbwesenheitenView.vue";
 
 // Routen-Definition
 // - path: Die URL im Browser
@@ -33,6 +34,7 @@ const routes = [
   { path: "/mitarbeiter", name: "mitarbeiter", component: MitarbeiterView },
   { path: "/filialen", name: "filialen", component: FilialenView },
   { path: "/dienstplaene", name: "dienstplaene", component: DienstplaeneView },
+  {path: "/abwesenheiten", name: "abwesenheiten", component: AbwesenheitenView },
   { path: "/benutzer", name: "benutzer", component: BenutzerView },
    // NEU: Catch-all für route Fehler 404
   { 

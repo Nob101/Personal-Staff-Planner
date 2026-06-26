@@ -182,3 +182,17 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(20) DEFAULT 'user'
 );
 
+
+CREATE TABLE IF NOT EXISTS mitarbeiter_abwesenheit (
+    id SERIAL PRIMARY KEY,
+    mnr INTEGER NOT NULL REFERENCES mitarbeiter(mnr) ON DELETE CASCADE,
+    von DATE NOT NULL,
+    bis DATE NOT NULL,
+    typ VARCHAR(6) NOT NULL REFERENCES arbeitstyp(akurzl) ON DELETE RESTRICT,
+    anmerkung VARCHAR(250),
+
+    erstellt_am TIMESTAMP DEFAULT now(),
+    aktualisiert_am TIMESTAMP DEFAULT now(),
+
+    CHECK (bis >= von)
+);

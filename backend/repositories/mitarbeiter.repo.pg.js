@@ -546,14 +546,29 @@ async function updateCounter(mnr, counter) {
  * ============================================================================
  */
 async function getAllBase({ onlyActive = false } = {}) {
-  const where = onlyActive ? `WHERE aktiv = true` : ``;
+  const where = onlyActive ? `WHERE m.aktiv = true` : ``;
 
   const r = await pool.query(`
-    SELECT mnr, vorname, nachname, hauptfiliale_fnr,
-           counter, springer, springeralgorithmid, arbeitnehmertyp,
-           aktiv
-    FROM mitarbeiter
+    SELECT
+      m.mnr,
+      m.vorname,
+      m.nachname,
+      m.hauptfiliale_fnr,
+      m.counter,
+      m.springer,
+      m.springeralgorithmid,
+      m.arbeitnehmertyp,
+      m.aktiv,
+
+      COALESCE((
+        SELECT jsonb_agg(f.fnr ORDER BY f.fnr)
+        FROM mitarbeiter_arbeitet_in_filiale f
+        WHERE f.mnr = m.mnr
+      ), '[]'::jsonb) AS nebenfilialen
+
+    FROM mitarbeiter m
     ${where}
+    ORDER BY m.mnr
   `);
 
   return r.rows;
@@ -639,6 +654,24 @@ async function getByMnr(mnr) {
   return r.rows[0] ?? null;
 }
 
+
+async function getByFnr(fnr) {
+  const r = await pool.query(
+    `
+    SELECT mnr, hauptfiliale_fnr
+    FROM mitarbeiter
+    WHERE hauptfiliale_fnr = $1
+      AND aktiv = true
+    ORDER BY mnr
+    `,
+    [fnr]
+  );
+
+  return r.rows;
+}
+
+
+
 module.exports = {
   getAllWithDetails,
   getByIdWithDetails,
@@ -649,4 +682,5 @@ module.exports = {
   deactivate,
   getForDienstplanMonat,
   getByMnr,
+  getByFnr,
 };

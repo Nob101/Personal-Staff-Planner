@@ -68,6 +68,9 @@ app.use("/api/dienstplan", dienstplanRouter);
 const usersRouter = require("./routes/users.routes");
 app.use("/api/users", usersRouter);
 
+const abwesenheitenRouter = require("./routes/abwesenheiten.routes");
+app.use("/api/abwesenheiten", abwesenheitenRouter);
+
 // ============================================================================
 // Startlogik
 // ----------------------------------------------------------------------------

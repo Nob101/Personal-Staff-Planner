@@ -43,17 +43,18 @@ async function save(jahr, monat, datum, mnr, fnr, schicht_typ) {
  * Rückgabe:
  * - rowCount: Anzahl der gelöschten Datensätze (für Logging/Feedback).
  */
-async function deleteByMonth(jahr, monat, fnr) {
-  if (Number.isInteger(Number(fnr)) && Number(fnr) > 0) { 
+async function deleteByMonth(jahr, monat, mnr = null) {
+  if (Number.isInteger(Number(mnr)) && Number(mnr) > 0) {
     const result = await pool.query(
       `
       DELETE FROM dienstplaene
       WHERE jahr = $1
         AND monat = $2
-        AND fnr = $3
+        AND mnr = $3
       `,
-      [jahr, monat, fnr]
+      [jahr, monat, mnr]
     );
+
     return result.rowCount;
   }
 
@@ -230,6 +231,80 @@ async function findErsatzKandidatenByDienstId(dienstId) {
   return r.rows;
 }
 
+async function findDienstplanByDateAndFnr(jahr, monat, fnr) {
+  const result = await pool.query(
+    `
+    SELECT 1
+    FROM dienstplaene
+    WHERE jahr = $1 AND monat = $2 AND fnr = $3
+    LIMIT 1
+    `,
+    [jahr, monat, fnr]
+  );
+
+  return result.rowCount > 0;
+}
+
+async function deleteByMonthAndFiliale(jahr, monat, fnr) {
+  const result = await pool.query(
+    `
+    DELETE FROM dienstplaene
+    WHERE jahr = $1
+      AND monat = $2
+      AND fnr = $3
+    `,
+    [jahr, monat, fnr],
+  );
+
+  return result.rowCount;
+}
+
+async function getByDateAndFnr(jahr, monat, fnr) {
+  const result = await pool.query(
+    `
+    SELECT *
+    FROM dienstplaene
+    WHERE jahr = $1
+      AND monat = $2
+      AND fnr = $3
+    `,
+    [jahr, monat, fnr],
+  );
+
+  return result.rows;
+}
+
+async function insertFreeIfMissing({ jahr, monat, datum, mnr, fnr }) {
+  const exists = await pool.query(
+    `
+    SELECT id
+    FROM dienstplaene
+    WHERE jahr = $1
+      AND monat = $2
+      AND datum = $3
+      AND mnr = $4
+    LIMIT 1
+    `,
+    [jahr, monat, datum, mnr],
+  );
+
+  if (exists.rowCount > 0) return null;
+
+  const result = await pool.query(
+    `
+    INSERT INTO dienstplaene (
+      jahr, monat, datum, mnr, fnr, schicht_typ
+    )
+    VALUES ($1, $2, $3, $4, $5, 'F')
+    RETURNING *
+    `,
+    [jahr, monat, datum, mnr, fnr],
+  );
+
+  return result.rows[0];
+}
+
+
 module.exports = {
   save,
   deleteByMonth,
@@ -237,4 +312,8 @@ module.exports = {
   dienstShiftTx,
   getByIdTx,
   findErsatzKandidatenByDienstId,
+  findDienstplanByDateAndFnr,
+  deleteByMonthAndFiliale,
+  getByDateAndFnr,
+  insertFreeIfMissing,
 };

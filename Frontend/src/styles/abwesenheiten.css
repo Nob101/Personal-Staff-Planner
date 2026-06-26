@@ -1,0 +1,246 @@
+.abwesenheiten-page {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.abwesenheiten-page h1 {
+  margin-bottom: 18px;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.abwesenheiten-page .abwesenheiten-card {
+  width: 100%;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #f5f5f8 0%, #ececf0 100%);
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  margin-bottom: 24px;
+}
+
+.abwesenheiten-page .abwesenheiten-form-card {
+  min-width: 1180px;
+}
+
+.abwesenheiten-page .abwesenheiten-card h2 {
+  margin-bottom: 24px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.abwesenheiten-page .success-message,
+.abwesenheiten-page .error-message {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.abwesenheiten-page .success-message {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.abwesenheiten-page .error-message {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.abwesenheiten-page .form-row,
+.abwesenheiten-page .filter-row {
+  display: flex;
+  gap: 18px;
+}
+
+.abwesenheiten-page .form-row {
+  align-items: end;
+}
+
+.abwesenheiten-page .filter-row {
+  margin-bottom: 32px;
+}
+
+.abwesenheiten-page label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.abwesenheiten-page select,
+.abwesenheiten-page input {
+  min-width: 160px;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid #cfcfd6;
+  border-radius: 12px;
+  background: white;
+  font-size: 0.95rem;
+}
+
+.abwesenheiten-page input:focus,
+.abwesenheiten-page select:focus {
+  outline: none;
+  border-color: #4d88ff;
+  box-shadow: 0 0 0 3px rgba(77, 136, 255, 0.15);
+}
+
+.abwesenheiten-page .autocomplete {
+  position: relative;
+}
+
+.abwesenheiten-page .autocomplete-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: white;
+  border: 1px solid #d4d4d4;
+  border-radius: 12px;
+  overflow: hidden;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.abwesenheiten-page .autocomplete-list button {
+  width: 100%;
+  text-align: left;
+  background: white;
+  color: #222;
+  border: none;
+  border-radius: 0;
+  padding: 10px 14px;
+  min-width: unset;
+  height: auto;
+  box-shadow: none;
+}
+
+.abwesenheiten-page .autocomplete-list button:hover {
+  background: #f1f5ff;
+  transform: none;
+}
+
+.abwesenheiten-page .anmerkung-field {
+  min-width: 220px;
+}
+
+.abwesenheiten-page .anmerkung-field input {
+  width: 100%;
+}
+
+.abwesenheiten-page .form-row > button {
+  height: 42px;
+  min-width: 130px;
+  margin-left: auto;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #52d88d 0%, #2db46d 100%);
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+  transition: all 0.2s ease;
+}
+
+.abwesenheiten-page .form-row > button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.22);
+}
+
+.abwesenheiten-page .filialgruppe {
+  margin-top: 28px;
+}
+
+.abwesenheiten-page .filialgruppe h3 {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 14px 0;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(240, 240, 245, 1) 100%
+  );
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.abwesenheiten-page .abwesenheiten-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.abwesenheiten-page .abwesenheiten-table th,
+.abwesenheiten-page .abwesenheiten-table td {
+  padding: 14px 12px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid #e2e2e7;
+}
+
+.abwesenheiten-page .abwesenheiten-table th {
+  font-weight: 700;
+  color: #222;
+}
+
+.abwesenheiten-page .abwesenheiten-table th:nth-child(1),
+.abwesenheiten-page .abwesenheiten-table td:nth-child(1) {
+  width: 24%;
+}
+
+.abwesenheiten-page .abwesenheiten-table th:nth-child(2),
+.abwesenheiten-page .abwesenheiten-table td:nth-child(2) {
+  width: 16%;
+}
+
+.abwesenheiten-page .abwesenheiten-table th:nth-child(3),
+.abwesenheiten-page .abwesenheiten-table td:nth-child(3) {
+  width: 16%;
+}
+
+.abwesenheiten-page .abwesenheiten-table th:nth-child(4),
+.abwesenheiten-page .abwesenheiten-table td:nth-child(4) {
+  width: 8%;
+}
+
+.abwesenheiten-page .abwesenheiten-table th:nth-child(5),
+.abwesenheiten-page .abwesenheiten-table td:nth-child(5) {
+  width: 24%;
+}
+
+.abwesenheiten-page .abwesenheiten-table th:nth-child(6),
+.abwesenheiten-page .abwesenheiten-table td:nth-child(6) {
+  width: 12%;
+  text-align: right;
+}
+
+.abwesenheiten-page .delete-btn {
+  min-width: 110px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #ff5b5b 0%, #ef4444 100%);
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+.abwesenheiten-page .delete-btn:hover {
+  background: linear-gradient(180deg, #ff4747 0%, #dc2626 100%);
+}

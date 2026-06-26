@@ -117,10 +117,40 @@ router.delete("/:jahr/:monat", async (req, res) => {
       return res.status(400).json({ error: "Ungültige fnr." });
     }
 
-    let deleted;
+    let deleted = 0;
 
     if (fnr) {
-      deleted = await dienstplanRepo.deleteByMonth(jahr, monat, fnr);
+      const diensteZumLoeschen =
+        await dienstplanRepo.getByDateAndFnr(jahr, monat, fnr);
+
+      deleted = await dienstplanRepo.deleteByMonthAndFiliale(jahr, monat, fnr);
+
+      for (const d of diensteZumLoeschen) {
+        const m = await mitarbeiterRepo.getByMnr(d.mnr);
+        if (!m) continue;
+
+        const minus = -stundenVonTyp(d.schicht_typ, m);
+
+        if (minus !== 0) {
+          await stundenRepo.updateIstStunden(
+            d.mnr,
+            jahr,
+            monat,
+            minus,
+          );
+        }
+
+        // Fremder Springer: nach Löschen wieder F in Hauptfiliale anlegen
+        if (Number(d.fnr) !== Number(m.hauptfiliale_fnr)) {
+          await dienstplanRepo.insertFreeIfMissing({
+            jahr,
+            monat,
+            datum: d.datum,
+            mnr: d.mnr,
+            fnr: m.hauptfiliale_fnr,
+          });
+        }
+      }
     } else {
       deleted = await dienstplanRepo.deleteByMonth(jahr, monat);
     }
@@ -129,6 +159,7 @@ router.delete("/:jahr/:monat", async (req, res) => {
       message: "Dienstplan gelöscht",
       jahr,
       monat,
+      fnr,
       deletedEintraege: deleted,
     });
   } catch (err) {
@@ -143,8 +174,8 @@ router.delete("/:jahr/:monat", async (req, res) => {
  * Im System existieren folgende Schichttypen:
  * A = Frühdienst (9h)
  * E = Spätdienst (9h)
- * K = Krank (8h)   -> Sonderfall: zählt weniger als A/E
- * U = Urlaub (8h)  -> Sonderfall: zählt weniger als A/E
+ * K = Krank (mit Faktor aus arbeitnehmertyp)
+ * U = Urlaub (mit Faktor aus arbeitnehmertyp)
  * F = Frei (0h)
  *
  * Für nachträgliche Änderungen (Shift / Ersatz) wird die Stunden-Differenz
@@ -156,29 +187,50 @@ const ALLOWED = new Set(["A", "E", "F", "K", "U"]);
 const STUNDEN_BY_TYP = {
   A: 9,
   E: 9,
-  K: 8,
-  U: 8,
   F: 0,
 };
 
 /**
+ * Faktor aus arbeitnehmertyp (20 / 25 / 30 / 35 / 40).
+ * Beispiel:
+ * - 40h -> Faktor 1.0
+ * - 20h -> Faktor 0.5
+ * - 30h -> Faktor 0.75
+ */
+function getFaktorFuerMitarbeiter(m) {
+  const typNum = Number(m?.arbeitnehmertyp ?? 40) || 40;
+  return typNum / 40;
+}
+
+/**
  * Liefert die Soll-/Ist-Stunden, die ein Diensttyp "wert" ist.
+ * K/U werden dynamisch über den Faktor des Mitarbeiters berechnet.
  * Unbekannte Werte fallen kontrolliert auf 0 zurück.
  */
-function stundenVonTyp(typ) {
+function stundenVonTyp(typ, mitarbeiter = null) {
   const t = String(typ ?? "F")
     .trim()
     .toUpperCase();
+
+  if (t === "K" || t === "U") {
+    const faktor = getFaktorFuerMitarbeiter(mitarbeiter);
+    return 8 * faktor;
+  }
+
   return STUNDEN_BY_TYP[t] ?? 0;
 }
 
 /**
  * Berechnet die Stundenänderung, wenn ein Diensttyp geändert wird.
- * Beispiel: A(9) -> F(0) => -9
- *           E(9) -> K(8) => -1
+ * Beispiel:
+ * - A(9) -> F(0) => -9
+ * - E(9) -> K(bei 20h = 4) => -5
+ * - E(9) -> K(bei 30h = 6) => -3
  */
-function deltaStunden(altTyp, neuTyp) {
-  return stundenVonTyp(neuTyp) - stundenVonTyp(altTyp);
+function deltaStunden(altTyp, neuTyp, mitarbeiter = null) {
+  return (
+    stundenVonTyp(neuTyp, mitarbeiter) - stundenVonTyp(altTyp, mitarbeiter)
+  );
 }
 
 /* ============================================================================
@@ -218,13 +270,13 @@ router.post("/shift", async (req, res) => {
       return res.status(404).json({ error: "Dienst nicht gefunden." });
     }
 
-    const delta = deltaStunden(before.schicht_typ, neuTyp);
-
     const m = await mitarbeiterRepo.getByMnr(before.mnr);
     if (!m) {
       await client.query("ROLLBACK");
       return res.status(404).json({ error: "Mitarbeiter nicht gefunden." });
     }
+
+    const delta = deltaStunden(before.schicht_typ, neuTyp, m);
 
     // Diensttyp aktualisieren
     const updated = await dienstplanRepo.dienstShiftTx(
@@ -318,8 +370,17 @@ router.post("/shiftMitErsatz", async (req, res) => {
         .json({ error: "Dienst (alt oder neu) nicht gefunden." });
     }
 
+    const mitarbeiterAlt = await mitarbeiterRepo.getByMnr(dienstAlt.mnr);
+    const mitarbeiterNeu = await mitarbeiterRepo.getByMnr(dienstNeu.mnr);
+
+    if (!mitarbeiterAlt || !mitarbeiterNeu) {
+      await client.query("ROLLBACK");
+      return res
+        .status(404)
+        .json({ error: "Mitarbeiter zu Dienst nicht gefunden." });
+    }
+
     // Ersatz ist nur sinnvoll, wenn beide Dienste am selben Datum stattfinden
-    // (Normalisierung auf YYYY-MM-DD verhindert falsche Vergleiche mit Zeitanteil)
     const dAlt = String(dienstAlt.datum).slice(0, 10);
     const dNeu = String(dienstNeu.datum).slice(0, 10);
     if (dAlt !== dNeu) {
@@ -363,8 +424,17 @@ router.post("/shiftMitErsatz", async (req, res) => {
     }
 
     // Stunden erst nach erfolgreichem Update anpassen
-    const deltaAlt = deltaStunden(dienstAlt.schicht_typ, neuTypAltDienst);
-    const deltaNeu = deltaStunden(dienstNeu.schicht_typ, neuTypErsatzDienst);
+    const deltaAlt = deltaStunden(
+      dienstAlt.schicht_typ,
+      neuTypAltDienst,
+      mitarbeiterAlt,
+    );
+
+    const deltaNeu = deltaStunden(
+      dienstNeu.schicht_typ,
+      neuTypErsatzDienst,
+      mitarbeiterNeu,
+    );
 
     let stundenAlt = null;
     let stundenNeu = null;
@@ -418,6 +488,46 @@ router.post("/shiftMitErsatz", async (req, res) => {
   }
 });
 
+//hilfsfunktion abdeckungsprüfung
+function buildCoverageWarnings(dienste, filialen, tage) {
+  const warnings = [];
+  const aktiveFnrsImPlan = new Set(dienste.map((d) => Number(d.fnr)));
+
+  for (const filiale of filialen) {
+    if (!aktiveFnrsImPlan.has(Number(filiale.fnr))) continue;
+    for (const datum of tage) {
+      const diensteAmTag = dienste.filter(
+        (d) =>
+          Number(d.fnr) === Number(filiale.fnr) &&
+          String(d.datum).slice(0, 10) === datum,
+      );
+
+      const hasA = diensteAmTag.some(
+        (d) => String(d.schicht_typ).toUpperCase() === "A",
+      );
+
+      const hasE = diensteAmTag.some(
+        (d) => String(d.schicht_typ).toUpperCase() === "E",
+      );
+
+      const missing = [];
+
+      if (!hasA) missing.push("A");
+      if (!hasE) missing.push("E");
+
+      if (missing.length > 0) {
+        warnings.push({
+          fnr: filiale.fnr,
+          datum,
+          missing,
+        });
+      }
+    }
+  }
+
+  return warnings;
+}
+
 /* ============================================================================
  * GET /dienstplan/view?jahr=YYYY&monat=M
  * ----------------------------------------------------------------------------
@@ -459,8 +569,18 @@ router.get("/view", async (req, res) => {
       const s = String(d);
       return s.length >= 10 ? s.slice(0, 10) : s;
     });
+    const coverageWarnings = buildCoverageWarnings(dienste, filialen, tage);
 
-    res.json({ jahr, monat, tage, dienste, filialen, mitarbeiter, stunden });
+    res.json({
+      jahr,
+      monat,
+      tage,
+      dienste,
+      filialen,
+      mitarbeiter,
+      stunden,
+      coverageWarnings,
+    });
   } catch (err) {
     console.error("GET /dienstplan/view", err);
     res.status(500).json({ error: "Fehler beim Laden." });

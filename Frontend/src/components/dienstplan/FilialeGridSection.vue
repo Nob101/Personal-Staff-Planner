@@ -21,6 +21,7 @@ const props = defineProps({
   dienstOf: { type: Function, required: true },
   cellStyleByDienst: { type: Function, required: true },
   cellText: { type: Function, required: true },
+  getCoverageWarning: { type: Function, default: null },
 
   editingKey: { type: [String, null], default: null },
   modelValue: { type: String, default: "F" },
@@ -32,7 +33,11 @@ const props = defineProps({
   hasView: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["update:modelValue", "generateFiliale", "removeFiliale"]);
+const emit = defineEmits([
+  "update:modelValue",
+  "generateFiliale",
+  "removeFiliale",
+]);
 
 async function onExportClick() {
   await nextTick();
@@ -41,16 +46,24 @@ async function onExportClick() {
   await downloadDienstplanPdf(elementId, dateiname);
 }
 
-const maCount = computed(() =>
-  props.mitarbeiterByFiliale(props.filiale.fnr).length
+const maCount = computed(
+  () => props.mitarbeiterByFiliale(props.filiale.fnr).length,
 );
 
 function onGenerateClick() {
-  emit("generateFiliale", { fnr: props.filiale.fnr, jahr: props.jahr, monat: props.monat });
+  emit("generateFiliale", {
+    fnr: props.filiale.fnr,
+    jahr: props.jahr,
+    monat: props.monat,
+  });
 }
 
 function onRemoveClick() {
-  emit("removeFiliale", { fnr: props.filiale.fnr, jahr: props.jahr, monat: props.monat });
+  emit("removeFiliale", {
+    fnr: props.filiale.fnr,
+    jahr: props.jahr,
+    monat: props.monat,
+  });
 }
 
 const localTyp = computed({
@@ -64,7 +77,10 @@ function isSunday(datum) {
 </script>
 
 <template>
-  <div :id="`export-area-filiale-${filiale.fnr}`" class="mx-auto w-full max-w-[1400px] px-6">
+  <div
+    :id="`export-area-filiale-${filiale.fnr}`"
+    class="mx-auto w-full max-w-[1400px] px-6"
+  >
     <section class="dp-card">
       <div class="dp-card-head">
         <div class="flex items-center justify-between gap-3 px-4 py-2">
@@ -83,7 +99,9 @@ function isSunday(datum) {
             </div>
           </div>
 
-          <div class="flex items-center gap-1 rounded-xl bg-white/60 ring-1 ring-black/10 p-1">
+          <div
+            class="flex items-center gap-1 rounded-xl bg-white/60 ring-1 ring-black/10 p-1"
+          >
             <button
               class="dp-section-btn dp-section-btn--blue"
               :disabled="loading"
@@ -117,12 +135,18 @@ function isSunday(datum) {
       </div>
 
       <div class="dp-card-body">
-        <div class="overflow-x-auto rounded-2xl bg-white/55 ring-1 ring-black/10">
+        <div
+          class="overflow-x-auto rounded-2xl bg-white/55 ring-1 ring-black/10"
+        >
           <div
             class="grid gap-px p-2"
-            :style="{ gridTemplateColumns: `minmax(0, 1fr) repeat(${view.tage.length}, 30px)` }"
+            :style="{
+              gridTemplateColumns: `minmax(0, 1fr) repeat(${view.tage.length}, 30px)`,
+            }"
           >
-            <div class="h-8 flex font-sans items-center px-2 rounded-lg bg-linear-to-b from-zinc-100 to-zinc-400 text-sm font-bold">
+            <div
+              class="h-8 flex font-sans items-center px-2 rounded-lg bg-linear-to-b from-zinc-100 to-zinc-400 text-sm font-bold"
+            >
               Mitarbeiter
             </div>
 
@@ -130,18 +154,30 @@ function isSunday(datum) {
               v-for="datum in view.tage"
               :key="datum"
               class="h-8 rounded-lg flex flex-col items-center justify-center text-[9px]"
-              :class="isSunday(datum)
-                ? 'bg-linear-to-b from-zinc-100 to-zinc-500'
-                : 'bg-linear-to-b from-zinc-100 to-zinc-400'"
+              :class="[
+                isSunday(datum)
+                  ? 'bg-linear-to-b from-zinc-100 to-zinc-500'
+                  : 'bg-linear-to-b from-zinc-100 to-zinc-400',
+                getCoverageWarning?.(filiale.fnr, datum)
+                  ? 'ring-2 ring-red-600 bg-red-200 text-red-900'
+                  : '',
+              ]"
+              :title="
+                getCoverageWarning?.(filiale.fnr, datum)
+                  ? `Fehlt: ${getCoverageWarning(filiale.fnr, datum).missing.join(', ')}`
+                  : ''
+              "
             >
               <div class="font-semibold text-zinc-600">{{ dow(datum) }}</div>
               <div class="font-bold text-zinc-900">{{ day(datum) }}</div>
             </div>
 
-            <template v-for="m in mitarbeiterByFiliale(filiale.fnr)" :key="m.mnr">
+            <template
+              v-for="m in mitarbeiterByFiliale(filiale.fnr)"
+              :key="m.mnr"
+            >
               <div
-                class="h-8 flex items-center gap-2 px-2 rounded-lg
-                       bg-white text-sm ring-1 ring-black/10"
+                class="h-8 flex items-center gap-2 px-2 rounded-lg bg-white text-sm ring-1 ring-black/10"
               >
                 <span class="truncate font-semibold">
                   {{ fullName(m) }}
@@ -150,15 +186,14 @@ function isSunday(datum) {
                 <span class="flex-1"></span>
 
                 <span
-                  class="inline-flex items-center justify-center
-                         min-w-11 h-6 px-2 rounded-full
-                         bg-zinc-200 text-[11px] font-extrabold tabular-nums"
+                  class="inline-flex items-center justify-center min-w-11 h-6 px-2 rounded-full bg-zinc-200 text-[11px] font-extrabold tabular-nums"
                   :class="{
-                    'text-emerald-700': (stundenByMnr(m.mnr)?.differenz ?? 0) >= 0,
+                    'text-emerald-700':
+                      (stundenByMnr(m.mnr)?.differenz ?? 0) >= 0,
                     'text-red-600': (stundenByMnr(m.mnr)?.differenz ?? 0) < 0,
                   }"
                 >
-                  {{ stundenByMnr(m.mnr)?.differenz ?? '' }}
+                  {{ stundenByMnr(m.mnr)?.differenz ?? "" }}
                 </span>
               </div>
 

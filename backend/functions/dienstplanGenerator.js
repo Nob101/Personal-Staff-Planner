@@ -1,4 +1,4 @@
-// dienstplanGenerator.js 
+// dienstplanGenerator.js
 // ------------------------------------------------------------
 // Ziel dieses Moduls:
 // - Erzeugt einen Monats-Dienstplan pro Filiale
@@ -17,9 +17,12 @@ const { savePlan } = require("./savePlan");
 const filialenRepo = require("../repositories/filialen.repo.pg");
 const mitarbeiterRepo = require("../repositories/mitarbeiter.repo.pg");
 const stundenRepo = require("../repositories/stunden.repo.pg");
+const dienstplanRepo = require("../repositories/dienstplan.repo.pg");
+const abwesenheitenRepo = require("../repositories/abwesenheiten.repo.pg");
 
 // Stunden pro Arbeitstag (A/E). (K/U wird später über Shift-Route korrekt mit 8h gerechnet)
 const STUNDEN_PRO_DIENST = 9;
+const STUNDEN_PRO_KU = 8;
 
 // Puffer über Sollstunden in Phase 1.
 // Idee: Phase 1 soll schnell einen "brauchbaren" Plan erzeugen,
@@ -44,27 +47,33 @@ function getFaktorFuerMitarbeiter(m) {
 
 /**
  * Hilfsfunktion: Datum normalisieren (YYYY-MM-DD).
- *
- * Warum?
- * - Daten aus DB / JS können als Date-Objekt oder ISO-String kommen.
- * - Für Map-Keys brauchen wir eine stabile, identische String-Repräsentation,
- *   sonst hätten wir z.B. "2026-01-03T00:00:00.000Z" und "2026-01-03" als
- *   verschiedene Keys -> wäre ein Bug.
  */
 function dateKey(d) {
-  const s = String(d);
-  return s.length >= 10 ? s.slice(0, 10) : s;
+  if (d instanceof Date) {
+    return d.toISOString().slice(0, 10);
+  }
+
+  return String(d).slice(0, 10);
 }
 
-/*
+function shuffleArray(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function istArbeitsTyp(typ) {
+  const t = String(typ || "F").toUpperCase();
+  return t === "A" || t === "E";
+}
+
+/**
  * Diese Funktion macht den Aufruf robust und verhindert "undefined" Fehler.
  */
-
 function resolveMonatsstunden(year, month) {
   const r = getMonthlyHours(year, month);
   if (typeof r === "number") return r;
-  if (r && typeof r === "object" && typeof r.monatsstunden === "number")
+  if (r && typeof r === "object" && typeof r.monatsstunden === "number") {
     return r.monatsstunden;
+  }
   return Number(r) || 0;
 }
 
@@ -74,21 +83,40 @@ async function generateDienstplan(year, month, fnr) {
   const hasFnr = fnr !== undefined && fnr !== null && fnr !== "";
   const filialeFnr = hasFnr ? Number(fnr) : null;
 
-  if (!Number.isInteger(jahr) || !Number.isInteger(monat) || monat < 1 || monat > 12) {
-    throw new Error(`Ungültiges Jahr/Monat für die Generierung: jahr=${year}, monat=${month}`);
+  if (
+    !Number.isInteger(jahr) ||
+    !Number.isInteger(monat) ||
+    monat < 1 ||
+    monat > 12
+  ) {
+    throw new Error(
+      `Ungültiges Jahr/Monat für die Generierung: jahr=${year}, monat=${month}`,
+    );
   }
+
   if (hasFnr && (!Number.isInteger(filialeFnr) || filialeFnr <= 0)) {
     throw new Error(`Ungültige Filialnummer für die Generierung: fnr=${fnr}`);
   }
 
   const monatsstunden = resolveMonatsstunden(jahr, monat);
   const dates = getAllDatesOfMonth(jahr, monat);
+  const abwesenheiten = await abwesenheitenRepo.findByMonat(jahr, monat);
 
-  // Alle Daten einmal laden (Performance):
-  // Würden wir pro Mitarbeiter/Tag DB-Abfragen machen, wäre das extrem langsam.
+  // Alle Daten einmal laden (Performance)
   const alleMitarbeiter = await mitarbeiterRepo.getAllBase({
     onlyActive: true,
-  }); //soft delete beachten
+  });
+
+  function getAbwesenheit(mnr, datum) {
+    const dk = dateKey(datum);
+
+    return abwesenheiten.find((a) => {
+      const von = dateKey(a.von);
+      const bis = dateKey(a.bis);
+
+      return Number(a.mnr) === Number(mnr) && dk >= von && dk <= bis;
+    });
+  }
 
   let alleFilialen;
 
@@ -96,72 +124,80 @@ async function generateDienstplan(year, month, fnr) {
     alleFilialen = await filialenRepo.getAll();
   } else {
     const filiale = await filialenRepo.getById(filialeFnr);
-    if (!filiale) throw new Error(`Filiale mit fnr=${filialeFnr} nicht gefunden.`);
+    if (!filiale) {
+      throw new Error(`Filiale mit fnr=${filialeFnr} nicht gefunden.`);
+    }
     alleFilialen = [filiale];
   }
 
-
-  // Neu-Generierung -> alte Stunden für Monat/Jahr entfernen.
-  // (Die Dienste selbst werden später via savePlan neu geschrieben.)
+  /*   // Neu-Generierung -> alte Stunden für Monat/Jahr entfernen.
   if (hasFnr) {
-    await stundenRepo.deleteStunden(monat, jahr, filialeFnr); // nur diese Filiale
+    await stundenRepo.deleteStunden(monat, jahr, filialeFnr);
   } else {
-    await stundenRepo.deleteStunden(monat, jahr); // alles vom Monat
-  }
+    await stundenRepo.deleteStunden(monat, jahr);
+  } */
 
   // Globale Liste: enthält am Ende alle Dienste aller Filialen.
-  // Vorteil: wir speichern später in einem Schritt (savePlan).
   const dienste = [];
+  const globaleStundenByMnr = new Map();
+  const globaleDienstKey = new Set();
+
+  function addStunden(mnr, stunden) {
+    const cur = globaleStundenByMnr.get(mnr) || 0;
+    globaleStundenByMnr.set(mnr, cur + stunden);
+  }
+
+  function removeStunden(mnr, stunden) {
+    const cur = globaleStundenByMnr.get(mnr) || 0;
+    globaleStundenByMnr.set(mnr, Math.max(0, cur - stunden));
+  }
 
   // ============================================================
   // PRO FILIALE generieren
   // ============================================================
   for (const filiale of alleFilialen) {
     // Nur Mitarbeiter der Hauptfiliale werden automatisch eingeplant.
-    const mitarbeiterFiliale = alleMitarbeiter.filter(
-      (m) => Number(m.hauptfiliale_fnr) === Number(filiale.fnr),
+    const mitarbeiterFilialeAlle = alleMitarbeiter
+      .filter((m) => Number(m.hauptfiliale_fnr) === Number(filiale.fnr))
+      .sort((a, b) => Number(a.mnr) - Number(b.mnr));
+
+    // Normale Mitarbeiter werden regulär nach Algorithmus geplant
+    const mitarbeiterFiliale = mitarbeiterFilialeAlle.filter(
+      (m) => m.springer !== true,
     );
 
+    // Springer werden NICHT in Phase 1 verplant.
+    // Sie bleiben Reserve für spätere Phasen.
+    const springerFiliale = alleMitarbeiter.filter((m) => {
+      if (m.springer !== true) return false;
+
+      if (hasFnr) {
+        return Number(m.hauptfiliale_fnr) === Number(filiale.fnr);
+      }
+
+      const istHauptfiliale =
+        Number(m.hauptfiliale_fnr) === Number(filiale.fnr);
+
+      const istNebenfiliale = (m.nebenfilialen || []).some(
+        (fnr) => Number(fnr) === Number(filiale.fnr),
+      );
+
+      return istHauptfiliale || istNebenfiliale;
+    });
+
     if (mitarbeiterFiliale.length === 0) continue;
+
+    if (
+      await dienstplanRepo.findDienstplanByDateAndFnr(jahr, monat, filiale.fnr)
+    )
+      continue;
+    await stundenRepo.deleteStunden(monat, jahr, filiale.fnr);
 
     // ------------------------------------------------------------
     // Tracking-Strukturen (Map/Set)
     // ------------------------------------------------------------
-
-    /**
-     * stundenByMnr: Map<mnr, istStunden>
-     *
-     * Warum Map?
-     * - O(1) Zugriff auf Stunden eines Mitarbeiters (sehr oft gebraucht).
-     * - Ein normales Array wäre unpraktisch, weil mnr nicht zwingend bei 0 startet
-     *   und Lücken haben kann.
-     */
     const stundenByMnr = new Map();
-
-    /**
-     * idxByMnrDate: Map<"mnr|YYYY-MM-DD", indexInDiensteArray>
-     *
-     * Warum Map?
-     * - Wir müssen später gezielt einen konkreten Dienst finden und ändern,
-     *   z.B. in der Kürzung (A/E -> F) oder beim "A/E sicherstellen".
-     * - Ohne diese Map müssten wir jedes Mal das gesamte dienste-Array durchsuchen:
-     *   O(n) pro Zugriff -> bei vielen Tagen/MAs wird das schnell langsam und fehleranfällig.
-     */
     const idxByMnrDate = new Map();
-
-    /**
-     * abdeckungByDate: Map<dateKey, { A:Set<mnr>, E:Set<mnr> }>
-     *
-     * Warum Set?
-     * - Wir brauchen "ist jemand in A/E?" ohne Duplikate.
-     * - Entfernen muss schnell gehen (delete).
-     * - Set garantiert eindeutige Werte und hat schnelle Operationen:
-     *   add / has / delete sind praktisch O(1).
-     *
-     * Damit können wir sicherstellen:
-     * - pro Tag existiert mindestens 1x A und 1x E
-     * - bei der Kürzung wird nie die letzte A oder E entfernt
-     */
     const abdeckungByDate = new Map();
 
     // ------------------------------------------------------------
@@ -183,38 +219,35 @@ async function generateDienstplan(year, month, fnr) {
         );
       }
 
-      // Zielstunden für diesen Mitarbeiter
       const faktor = getFaktorFuerMitarbeiter(m);
       const zielStunden = Math.round(monatsstunden * faktor);
-
-      // Puffer: erlaubt kurzfristig etwas drüber zu liegen,
-      // bevor Phase 3 (Kürzung) auf Zielstunden reduziert.
       const limitStunden = zielStunden + LIMIT_PUFFER_STUNDEN;
 
-      // Counter aus der Mitarbeiter DB: bestimmt Startposition im Pattern.
-      // Dadurch rotiert der Plan über Monate hinweg.
       let counter = Number(m.counter);
       if (!Number.isFinite(counter) || counter < 0) counter = 0;
 
-      // init IST-Stunden
       if (!stundenByMnr.has(m.mnr)) stundenByMnr.set(m.mnr, 0);
 
       for (const date of dates) {
         const dk = dateKey(date);
 
-        // Pattern-Index via Counter
         let schicht_typ = algorithm[counter % algorithm.length];
 
-        // Stundenlimit:
-        // Wenn bereits >= Limit, dann auf F setzen (damit nicht explodiert)
+        const abwesenheit = getAbwesenheit(m.mnr, date);
+
+        if (abwesenheit) {
+          schicht_typ = abwesenheit.typ;
+        }
+
         const bereits = stundenByMnr.get(m.mnr) || 0;
         if (schicht_typ !== "F" && bereits >= limitStunden) {
           schicht_typ = "F";
         }
 
-        // Dienst in globale Liste schreiben
         const idx = dienste.length;
-
+        if (schicht_typ !== "F") {
+          globaleDienstKey.add(`${m.mnr}|${dk}`);
+        }
         dienste.push({
           jahr,
           monat,
@@ -224,22 +257,24 @@ async function generateDienstplan(year, month, fnr) {
           schicht_typ,
         });
 
-        // Index-Mapping merken (für spätere gezielte Änderungen)
         idxByMnrDate.set(`${m.mnr}|${dk}`, idx);
 
-        // Stunden zählen (nur wenn nicht Frei)
-        if (schicht_typ !== "F") {
+        if (schicht_typ === "K" || schicht_typ === "U") {
+          const realStunden = Math.round(STUNDEN_PRO_KU * faktor);
+
+          stundenByMnr.set(m.mnr, bereits + realStunden);
+          addStunden(m.mnr, realStunden);
+        } else if (schicht_typ !== "F") {
           stundenByMnr.set(m.mnr, bereits + STUNDEN_PRO_DIENST);
+          addStunden(m.mnr, STUNDEN_PRO_DIENST);
         }
 
-        // Abdeckung tracken (A/E)
         if (!abdeckungByDate.has(dk)) {
           abdeckungByDate.set(dk, { A: new Set(), E: new Set() });
         }
         if (schicht_typ === "A") abdeckungByDate.get(dk).A.add(m.mnr);
         if (schicht_typ === "E") abdeckungByDate.get(dk).E.add(m.mnr);
 
-        // Counter weiterdrehen
         counter = (counter + 1) % algorithm.length;
       }
 
@@ -250,78 +285,104 @@ async function generateDienstplan(year, month, fnr) {
     // ------------------------------------------------------------
     // PHASE 2: A/E pro Tag garantieren
     // ------------------------------------------------------------
-    /**
-     * setFirstFTo(dk, typ)
-     * Sucht den ersten Mitarbeiter mit "F" an diesem Tag und setzt auf A/E.
-     *
-     * Wichtig:
-     * - wir ändern gezielt NUR einen Dienst, über idxByMnrDate
-     * - dadurch keine teuren Suchen im ganzen Array
-     * - Diese Funktion wurde bewusst als Function deklariert, weil sie öfters aufgerufen wird und leichter lesbar als eine Arrow-Funktion ist.
-     */
-    function setFirstFTo(dk, typ) {
+    function setBestFTo(dk, typ) {
+      const kandidaten = [];
+
       for (const m of mitarbeiterFiliale) {
         const idx = idxByMnrDate.get(`${m.mnr}|${dk}`);
         if (idx == null) continue;
 
-        if (dienste[idx].schicht_typ === "F") {
-          dienste[idx].schicht_typ = typ;
+        if (dienste[idx].schicht_typ !== "F") continue;
 
-          // Stunden erhöhen, weil aus Frei ein Arbeitstag wurde
-          const cur = stundenByMnr.get(m.mnr) || 0;
-          stundenByMnr.set(m.mnr, cur + STUNDEN_PRO_DIENST);
+        const faktor = getFaktorFuerMitarbeiter(m);
+        const zielStunden = Math.round(monatsstunden * faktor);
+        const ist = stundenByMnr.get(m.mnr) || 0;
+        const differenz = ist - zielStunden;
 
-          // Abdeckung updaten (Set verhindert Duplikate automatisch)
-          if (!abdeckungByDate.has(dk))
-            abdeckungByDate.set(dk, { A: new Set(), E: new Set() });
-          abdeckungByDate.get(dk)[typ].add(m.mnr);
-
-          return true;
-        }
+        kandidaten.push({
+          m,
+          idx,
+          ist,
+          zielStunden,
+          differenz,
+          arbeitnehmertyp: Number(m.arbeitnehmertyp ?? 40) || 40,
+          springer: m.springer === true,
+        });
       }
-      return false;
+
+      if (kandidaten.length === 0) return false;
+
+      kandidaten.sort((a, b) => {
+        // zuerst der mit den wenigsten Überstunden / meisten fehlenden Stunden
+        if (a.differenz !== b.differenz) return a.differenz - b.differenz;
+
+        // Teilzeit etwas bevorzugen, damit 20h/30h nicht untergehen
+        if (a.arbeitnehmertyp !== b.arbeitnehmertyp) {
+          return a.arbeitnehmertyp - b.arbeitnehmertyp;
+        }
+
+        // normale Mitarbeiter vor Springern bevorzugen
+        if (a.springer !== b.springer) {
+          return Number(a.springer) - Number(b.springer);
+        }
+
+        // stabiler Tie-Break
+        return Number(a.m.mnr) - Number(b.m.mnr);
+      });
+
+      const pick = kandidaten[0];
+
+      dienste[pick.idx].schicht_typ = typ;
+
+      const cur = stundenByMnr.get(pick.m.mnr) || 0;
+      stundenByMnr.set(pick.m.mnr, cur + STUNDEN_PRO_DIENST);
+      addStunden(pick.m.mnr, STUNDEN_PRO_DIENST);
+
+      if (!abdeckungByDate.has(dk)) {
+        abdeckungByDate.set(dk, { A: new Set(), E: new Set() });
+      }
+      abdeckungByDate.get(dk)[typ].add(pick.m.mnr);
+
+      return true;
     }
 
-    // pro Tag prüfen, ob A und E existieren
     for (const date of dates) {
       const dk = dateKey(date);
-      if (!abdeckungByDate.has(dk))
+
+      if (!abdeckungByDate.has(dk)) {
         abdeckungByDate.set(dk, { A: new Set(), E: new Set() });
+      }
 
       const cov = abdeckungByDate.get(dk);
-      if (cov.A.size === 0) setFirstFTo(dk, "A");
-      if (cov.E.size === 0) setFirstFTo(dk, "E");
+      if (cov.A.size === 0) setBestFTo(dk, "A");
+      if (cov.E.size === 0) setBestFTo(dk, "E");
     }
 
     // -------------------------------------------------------------------------
     // PHASE 3: Stunden-Kürzung mit monatlichem Ausgleichspuffer
     // -------------------------------------------------------------------------
-    //
-    // Hintergrund:
-    // Aufgrund fixer Schichtlängen (A/E = 9 Stunden) können die Sollstunden
-    // eines Mitarbeiters in vielen Monaten nicht exakt erreicht werden.
-    // Typische Werte sind z.B. 171h oder 180h statt exakt 176h.
-    //
-    // Ziel dieser Logik:
-    // - systematische Minusstunden vermeiden
-    // - über mehrere Monate hinweg einen natürlichen Ausgleich schaffen
-    //
-    // Umsetzung:
-    // - In geraden Monaten (2,4,6,8,10,12) wird ein Puffer von +9 Stunden erlaubt
-    //   → ein zusätzlicher Dienst über den Zielstunden ist möglich
-    // - In ungeraden Monaten wird strenger gekürzt (kein Puffer)
-    //
-    // Dadurch gleichen sich Über- und Unterstunden über das Jahr hinweg aus,
-    // ohne starre oder unrealistische Zwangsregeln im Generator zu erzwingen.
-    // Die finale Feinjustierung der Stunden erfolgt bewusst manuell im Frontend.
-    //
+    // Teilzeit zuerst kürzen, dann Vollzeit, Springer optional zuletzt.
+    const sortedMitarbeiterFuerKuerzung = [...mitarbeiterFiliale].sort(
+      (a, b) => {
+        const aTeilzeit = Number(a.arbeitnehmertyp ?? 40) < 40 ? 0 : 1;
+        const bTeilzeit = Number(b.arbeitnehmertyp ?? 40) < 40 ? 0 : 1;
 
-    for (const m of mitarbeiterFiliale) {
+        // zuerst Teilzeit
+        if (aTeilzeit !== bTeilzeit) return aTeilzeit - bTeilzeit;
+
+        // Springer zuletzt
+        if (a.springer !== b.springer) return a.springer ? 1 : -1;
+
+        // stabil
+        return Number(a.mnr) - Number(b.mnr);
+      },
+    );
+
+    for (const m of sortedMitarbeiterFuerKuerzung) {
       const faktor = getFaktorFuerMitarbeiter(m);
       const zielStunden = Math.round(monatsstunden * faktor);
 
       let hours = stundenByMnr.get(m.mnr) || 0;
-
       const puffer = monat % 2 === 0 ? 9 : 0;
 
       while (hours > zielStunden + puffer) {
@@ -346,54 +407,527 @@ async function generateDienstplan(year, month, fnr) {
 
         if (kandidaten.length === 0) break;
 
-        // zufälligen Kandidaten wählen
-        const pick = kandidaten[Math.floor(Math.random() * kandidaten.length)];
+        kandidaten.sort((a, b) => {
+          // zuerst spätere Dienste kürzen
+          if (a.idx !== b.idx) return b.idx - a.idx;
 
-        // Dienst auf Frei setzen
+          // stabiler Tie-Break
+          return String(a.dk).localeCompare(String(b.dk));
+        });
+
+        const pick = shuffleArray(kandidaten)[0];
+
         dienste[pick.idx].schicht_typ = "F";
-
-        // Abdeckung aktualisieren: dieser MA zählt dort nicht mehr rein
         abdeckungByDate.get(pick.dk)[pick.typ].delete(m.mnr);
 
-        // Stunden reduzieren
         hours -= STUNDEN_PRO_DIENST;
         if (hours < 0) hours = 0;
         stundenByMnr.set(m.mnr, hours);
+        removeStunden(m.mnr, STUNDEN_PRO_DIENST);
       }
     }
 
     // ------------------------------------------------------------
     // PHASE 4: Endkontrolle (A/E muss trotzdem da sein)
     // ------------------------------------------------------------
-    // Nach Random-Kürzung kann theoretisch wieder ein Tag ohne A oder ohne E entstehen.
-    // Deshalb nochmal prüfen und notfalls mit setFirstFTo korrigieren.
     for (const date of dates) {
       const dk = dateKey(date);
-      if (!abdeckungByDate.has(dk))
+
+      if (!abdeckungByDate.has(dk)) {
         abdeckungByDate.set(dk, { A: new Set(), E: new Set() });
+      }
 
       const cov = abdeckungByDate.get(dk);
-      if (cov.A.size === 0) setFirstFTo(dk, "A");
-      if (cov.E.size === 0) setFirstFTo(dk, "E");
+      if (cov.A.size === 0) setBestFTo(dk, "A");
+      if (cov.E.size === 0) setBestFTo(dk, "E");
     }
 
     // ------------------------------------------------------------
-    // PHASE 5: Stunden in DB speichern (nach Kürzung!)
+    // PHASE 4.5: Überstunden durch Springer entlasten
+    // ------------------------------------------------------------
+    /* const springerFiliale = mitarbeiterFilialeAlle.filter(
+  (m) => m.springer === true,
+); */
+
+    function findeFreienSpringer(dk) {
+      for (const s of springerFiliale) {
+        const globalKey = `${s.mnr}|${dk}`;
+
+        // Springer darf an diesem Tag nirgends anders arbeiten
+        if (globaleDienstKey.has(globalKey)) continue;
+
+        // Springer darf nicht Urlaub/Krank/Abwesend sein
+        if (getAbwesenheit(s.mnr, dk)) continue;
+
+        return s;
+      }
+
+      return null;
+    }
+
+    const ueberlasteteMitarbeiter = [...mitarbeiterFiliale]
+      .map((m) => {
+        const faktor = getFaktorFuerMitarbeiter(m);
+        const zielStunden = Math.round(monatsstunden * faktor);
+        const ist = stundenByMnr.get(m.mnr) || 0;
+
+        return {
+          mitarbeiter: m,
+          zielStunden,
+          istStunden: ist,
+          differenz: ist - zielStunden,
+        };
+      })
+      .filter((x) => x.differenz > 0)
+      .sort((a, b) => b.differenz - a.differenz);
+
+    for (const x of ueberlasteteMitarbeiter) {
+      const m = x.mitarbeiter;
+
+      let aktuelleDifferenz = x.differenz;
+
+      for (const date of shuffleArray(dates)) {
+        if (aktuelleDifferenz <= STUNDEN_PRO_DIENST) break;
+
+        const dk = dateKey(date);
+        const idx = idxByMnrDate.get(`${m.mnr}|${dk}`);
+
+        if (idx == null) continue;
+
+        const dienst = dienste[idx];
+        const typ = String(dienst.schicht_typ || "F").toUpperCase();
+
+        if (typ !== "A" && typ !== "E") continue;
+
+        const cov = abdeckungByDate.get(dk);
+        if (!cov) continue;
+
+        // Nur Dienste entlasten, die aktuell NICHT kürzbar sind,
+        // weil sie die einzige A/E-Abdeckung darstellen.
+        if (cov[typ].size !== 1) continue;
+
+        const springer = findeFreienSpringer(dk);
+        if (!springer) continue;
+
+        if (verletztRuhezeit(springer.mnr, dk, typ)) continue;
+        if (verletztMaxFolge(springer.mnr, dk)) continue;
+        if (verletzt2TageRuheNach4(springer.mnr, dk)) continue;
+
+        const globalSpringerKey = `${springer.mnr}|${dk}`;
+
+        if (globaleDienstKey.has(globalSpringerKey)) continue;
+
+        const springerIdx = idxByMnrDate.get(`${springer.mnr}|${dk}`);
+
+        if (springerIdx == null) {
+          const neuerIdx = dienste.length;
+
+          dienste.push({
+            jahr,
+            monat,
+            datum: date,
+            mnr: springer.mnr,
+            fnr: filiale.fnr,
+            schicht_typ: typ,
+          });
+
+          idxByMnrDate.set(`${springer.mnr}|${dk}`, neuerIdx);
+        } else {
+          dienste[springerIdx].schicht_typ = typ;
+        }
+        globaleDienstKey.add(globalSpringerKey);
+
+        // Springer bekommt Stunden
+        const springerIst = stundenByMnr.get(springer.mnr) || 0;
+        stundenByMnr.set(springer.mnr, springerIst + STUNDEN_PRO_DIENST);
+        addStunden(springer.mnr, STUNDEN_PRO_DIENST);
+
+        // Springer übernimmt A/E-Abdeckung
+        cov[typ].add(springer.mnr);
+
+        // Überlasteter Mitarbeiter wird frei
+        dienste[idx].schicht_typ = "F";
+        cov[typ].delete(m.mnr);
+
+        const mIst = stundenByMnr.get(m.mnr) || 0;
+        stundenByMnr.set(m.mnr, Math.max(0, mIst - STUNDEN_PRO_DIENST));
+        removeStunden(m.mnr, STUNDEN_PRO_DIENST);
+
+        aktuelleDifferenz -= STUNDEN_PRO_DIENST;
+
+        if (aktuelleDifferenz <= STUNDEN_PRO_DIENST) {
+          break;
+        }
+      }
+    }
+
+    // ------------------------------------------------------------
+    // Hilfe
+    //
+
+    function typVonMitarbeiterAmTag(mnr, dk) {
+      const dienst = dienste.find(
+        (d) =>
+          Number(d.mnr) === Number(mnr) &&
+          dateKey(d.datum) === dk &&
+          String(d.schicht_typ || "F").toUpperCase() !== "F",
+      );
+
+      if (!dienst) return "F";
+
+      return String(dienst.schicht_typ || "F").toUpperCase();
+    }
+
+    function addDays(dk, offset) {
+      const d = new Date(`${dk}T00:00:00`);
+      d.setDate(d.getDate() + offset);
+      return d.toISOString().slice(0, 10);
+    }
+
+    function verletztRuhezeit(mnr, dk, neuerTyp) {
+      const gestern = typVonMitarbeiterAmTag(mnr, addDays(dk, -1));
+      const morgen = typVonMitarbeiterAmTag(mnr, addDays(dk, 1));
+
+      if (gestern === "E" && neuerTyp === "A") return true;
+      if (neuerTyp === "E" && morgen === "A") return true;
+
+      return false;
+    }
+
+    function verletztMaxFolge(mnr, dk) {
+      let count = 1;
+
+      for (let i = 1; i <= 5; i++) {
+        const typ = typVonMitarbeiterAmTag(mnr, addDays(dk, -i));
+        if (!istArbeitsTyp(typ)) break;
+        count++;
+      }
+
+      for (let i = 1; i <= 5; i++) {
+        const typ = typVonMitarbeiterAmTag(mnr, addDays(dk, i));
+        if (!istArbeitsTyp(typ)) break;
+        count++;
+      }
+
+      return count > 4;
+    }
+
+    function verletzt2TageRuheNach4(mnr, dk) {
+      const t1 = typVonMitarbeiterAmTag(mnr, addDays(dk, -1));
+      const t2 = typVonMitarbeiterAmTag(mnr, addDays(dk, -2));
+      const t3 = typVonMitarbeiterAmTag(mnr, addDays(dk, -3));
+      const t4 = typVonMitarbeiterAmTag(mnr, addDays(dk, -4));
+      const t5 = typVonMitarbeiterAmTag(mnr, addDays(dk, -5));
+
+      // Direkt nach 4 Arbeitstagen muss frei sein
+      if (
+        istArbeitsTyp(t1) &&
+        istArbeitsTyp(t2) &&
+        istArbeitsTyp(t3) &&
+        istArbeitsTyp(t4)
+      ) {
+        return true;
+      }
+
+      // Zweiter freier Tag nach 4 Arbeitstagen
+      if (
+        t1 === "F" &&
+        istArbeitsTyp(t2) &&
+        istArbeitsTyp(t3) &&
+        istArbeitsTyp(t4) &&
+        istArbeitsTyp(t5)
+      ) {
+        return true;
+      }
+
+      return false;
+    }
+
+    // ------------------------------------------------------------
+    // PHASE 4.7: Zu lange Dienstblöcke durch Springer entlasten
+    // ------------------------------------------------------------
+    function arbeitsTageBlockVon(mnr) {
+      const bloecke = [];
+      let aktuellerBlock = [];
+
+      for (const date of dates) {
+        const dk = dateKey(date);
+        const idx = idxByMnrDate.get(`${mnr}|${dk}`);
+        const typ =
+          idx == null
+            ? "F"
+            : String(dienste[idx].schicht_typ || "F").toUpperCase();
+
+        if (typ === "A" || typ === "E") {
+          aktuellerBlock.push({ dk, idx, typ, date });
+        } else {
+          if (aktuellerBlock.length > 4) bloecke.push([...aktuellerBlock]);
+          aktuellerBlock = [];
+        }
+      }
+
+      if (aktuellerBlock.length > 4) bloecke.push([...aktuellerBlock]);
+
+      return bloecke;
+    }
+
+    for (const m of mitarbeiterFiliale) {
+      const bloecke = arbeitsTageBlockVon(m.mnr);
+
+      for (const block of bloecke) {
+        const zuEntlasten = block.slice(4);
+
+        for (const eintrag of zuEntlasten) {
+          const { dk, idx, typ } = eintrag;
+
+          const springer = findeFreienSpringer(dk);
+          if (!springer) continue;
+
+          if (verletztRuhezeit(springer.mnr, dk, typ)) continue;
+          if (verletztMaxFolge(springer.mnr, dk)) continue;
+          if (verletzt2TageRuheNach4(springer.mnr, dk)) continue;
+
+          const globalSpringerKey = `${springer.mnr}|${dk}`;
+          if (globaleDienstKey.has(globalSpringerKey)) continue;
+
+          const neuerIdx = dienste.length;
+
+          dienste.push({
+            jahr,
+            monat,
+            datum: eintrag.date,
+            mnr: springer.mnr,
+            fnr: filiale.fnr,
+            schicht_typ: typ,
+          });
+
+          idxByMnrDate.set(`${springer.mnr}|${dk}`, neuerIdx);
+          globaleDienstKey.add(globalSpringerKey);
+
+          const springerIst = stundenByMnr.get(springer.mnr) || 0;
+          stundenByMnr.set(springer.mnr, springerIst + STUNDEN_PRO_DIENST);
+          addStunden(springer.mnr, STUNDEN_PRO_DIENST);
+
+          dienste[idx].schicht_typ = "F";
+          globaleDienstKey.delete(`${m.mnr}|${dk}`);
+
+          const mIst = stundenByMnr.get(m.mnr) || 0;
+          stundenByMnr.set(m.mnr, Math.max(0, mIst - STUNDEN_PRO_DIENST));
+          removeStunden(m.mnr, STUNDEN_PRO_DIENST);
+
+          const cov = abdeckungByDate.get(dk);
+          if (cov) {
+            cov[typ].delete(m.mnr);
+            cov[typ].add(springer.mnr);
+          }
+
+          break;
+        }
+      }
+    }
+
+    // ------------------------------------------------------------
+    // PHASE 4.9: E -> A Ruhezeit-Verletzungen durch Springer entlasten
     // ------------------------------------------------------------
     for (const m of mitarbeiterFiliale) {
-      const faktor = getFaktorFuerMitarbeiter(m);
-      const zielStunden = Math.round(monatsstunden * faktor);
-      const ist = stundenByMnr.get(m.mnr) || 0;
+      for (const date of dates) {
+        const dk = dateKey(date);
+        const gesternDk = addDays(dk, -1);
 
-      await stundenRepo.saveStunden({
-        mnr: m.mnr,
-        jahr,
-        monat,
-        soll_stunden_monat: zielStunden,
-        ist_stunden_monat: ist,
-        differenz: ist - zielStunden,
-      });
+        const gesternTyp = typVonMitarbeiterAmTag(m.mnr, gesternDk);
+        const heuteIdx = idxByMnrDate.get(`${m.mnr}|${dk}`);
+        if (heuteIdx == null) continue;
+
+        const heuteTyp = String(
+          dienste[heuteIdx].schicht_typ || "F",
+        ).toUpperCase();
+
+        if (gesternTyp !== "E" || heuteTyp !== "A") continue;
+
+        const springer = findeFreienSpringer(dk);
+        if (!springer) continue;
+
+        if (verletztRuhezeit(springer.mnr, dk, heuteTyp)) continue;
+        if (verletztMaxFolge(springer.mnr, dk)) continue;
+        if (verletzt2TageRuheNach4(springer.mnr, dk)) continue;
+
+        const globalSpringerKey = `${springer.mnr}|${dk}`;
+        if (globaleDienstKey.has(globalSpringerKey)) continue;
+
+        const neuerIdx = dienste.length;
+
+        dienste.push({
+          jahr,
+          monat,
+          datum: date,
+          mnr: springer.mnr,
+          fnr: filiale.fnr,
+          schicht_typ: heuteTyp,
+        });
+
+        idxByMnrDate.set(`${springer.mnr}|${dk}`, neuerIdx);
+        globaleDienstKey.add(globalSpringerKey);
+
+        const springerIst = stundenByMnr.get(springer.mnr) || 0;
+        stundenByMnr.set(springer.mnr, springerIst + STUNDEN_PRO_DIENST);
+        addStunden(springer.mnr, STUNDEN_PRO_DIENST);
+
+        dienste[heuteIdx].schicht_typ = "F";
+        globaleDienstKey.delete(`${m.mnr}|${dk}`);
+
+        const mIst = stundenByMnr.get(m.mnr) || 0;
+        stundenByMnr.set(m.mnr, Math.max(0, mIst - STUNDEN_PRO_DIENST));
+        removeStunden(m.mnr, STUNDEN_PRO_DIENST);
+
+        const cov = abdeckungByDate.get(dk);
+        if (cov) {
+          cov.A.delete(m.mnr);
+          cov.A.add(springer.mnr);
+        }
+      }
     }
+
+    // ------------------------------------------------------------
+    // PHASE 4.8: Endkontrolle nach Springer-Entlastung
+    // ------------------------------------------------------------
+    for (const date of dates) {
+      const dk = dateKey(date);
+
+      if (!abdeckungByDate.has(dk)) {
+        abdeckungByDate.set(dk, { A: new Set(), E: new Set() });
+      }
+
+      const cov = abdeckungByDate.get(dk);
+
+      if (cov.A.size === 0) setBestFTo(dk, "A");
+      if (cov.E.size === 0) setBestFTo(dk, "E");
+    }
+    // ------------------------------------------------------------
+    // PHASE 4.10: Springer in eigener Hauptfiliale auffüllen
+    // ------------------------------------------------------------
+    const springerHauptfiliale = alleMitarbeiter.filter(
+      (m) =>
+        m.springer === true &&
+        Number(m.hauptfiliale_fnr) === Number(filiale.fnr),
+    );
+
+    function zaehleTypAmTag(dk, typ) {
+      const cov = abdeckungByDate.get(dk);
+      if (!cov) return 0;
+      return cov[typ]?.size ?? 0;
+    }
+
+    function besterTypFuerSpringer(springerMnr, dk) {
+      const gestern = typVonMitarbeiterAmTag(springerMnr, addDays(dk, -1));
+      const morgen = typVonMitarbeiterAmTag(springerMnr, addDays(dk, 1));
+
+      const moeglich = [];
+
+      if (!(gestern === "E")) moeglich.push("A");
+      if (!(morgen === "A")) moeglich.push("E");
+
+      if (moeglich.length === 0) return null;
+
+      moeglich.sort((a, b) => zaehleTypAmTag(dk, a) - zaehleTypAmTag(dk, b));
+
+      return moeglich[0];
+    }
+
+    for (const springer of springerHauptfiliale) {
+      const faktor = getFaktorFuerMitarbeiter(springer);
+      const zielStunden = Math.round(monatsstunden * faktor);
+
+      let ist = globaleStundenByMnr.get(springer.mnr) || 0;
+
+      for (const date of dates) {
+        if (zielStunden - ist < STUNDEN_PRO_DIENST) break;
+
+        const dk = dateKey(date);
+        const globalKey = `${springer.mnr}|${dk}`;
+
+        if (globaleDienstKey.has(globalKey)) continue;
+        if (getAbwesenheit(springer.mnr, date)) continue;
+
+        const typ = besterTypFuerSpringer(springer.mnr, dk);
+        if (!typ) continue;
+
+        if (verletztRuhezeit(springer.mnr, dk, typ)) continue;
+        if (verletztMaxFolge(springer.mnr, dk)) continue;
+        if (verletzt2TageRuheNach4(springer.mnr, dk)) continue;
+
+        const neuerIdx = dienste.length;
+
+        dienste.push({
+          jahr,
+          monat,
+          datum: date,
+          mnr: springer.mnr,
+          fnr: filiale.fnr,
+          schicht_typ: typ,
+        });
+
+        idxByMnrDate.set(`${springer.mnr}|${dk}`, neuerIdx);
+        globaleDienstKey.add(globalKey);
+
+        if (!abdeckungByDate.has(dk)) {
+          abdeckungByDate.set(dk, { A: new Set(), E: new Set() });
+        }
+
+        abdeckungByDate.get(dk)[typ].add(springer.mnr);
+
+        ist += STUNDEN_PRO_DIENST;
+        stundenByMnr.set(springer.mnr, ist);
+        addStunden(springer.mnr, STUNDEN_PRO_DIENST);
+      }
+    }
+
+    // ------------------------------------------------------------
+    // PHASE 4.11: Fehlende F-Dienste nur in Hauptfiliale ergänzen
+    // ------------------------------------------------------------
+    for (const m of mitarbeiterFilialeAlle) {
+      for (const date of dates) {
+        const dk = dateKey(date);
+        const key = `${m.mnr}|${dk}`;
+
+        if (idxByMnrDate.has(key)) continue;
+        if (globaleDienstKey.has(key)) continue;
+
+        const idx = dienste.length;
+
+        dienste.push({
+          jahr,
+          monat,
+          datum: date,
+          mnr: m.mnr,
+          fnr: filiale.fnr,
+          schicht_typ: "F",
+        });
+
+        idxByMnrDate.set(key, idx);
+      }
+    }
+  } // Ende der Filialen-Schleife
+
+  // ------------------------------------------------------------
+  // PHASE 5: Globale Stunden in DB speichern
+  // ------------------------------------------------------------
+  const mitarbeiterMitDienst = new Set(dienste.map((d) => Number(d.mnr)));
+
+  for (const m of alleMitarbeiter) {
+    if (!mitarbeiterMitDienst.has(Number(m.mnr))) continue;
+
+    const faktor = getFaktorFuerMitarbeiter(m);
+    const zielStunden = Math.round(monatsstunden * faktor);
+    const ist = globaleStundenByMnr.get(m.mnr) || 0;
+
+    await stundenRepo.saveStunden({
+      mnr: m.mnr,
+      jahr,
+      monat,
+      soll_stunden_monat: zielStunden,
+      ist_stunden_monat: ist,
+      differenz: ist - zielStunden,
+    });
   }
 
   // ============================================================

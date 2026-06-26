@@ -167,53 +167,44 @@ router.put("/:mnr", async (req, res) => {
     if (!Number.isFinite(mnr)) {
       return res.status(400).json({ error: "Ungültige mnr" });
     }
- 
-    // Vorzustand laden (für Vergleich: Filiale alt vs neu, Springer alt vs neu)
+
     const before = await mitarbeiterRepo.getByIdWithDetails(mnr);
     if (!before) {
       return res.status(404).json({ error: "Mitarbeiter nicht gefunden" });
     }
- 
-    // Nur übermittelte Felder übernehmen, damit nichts unbeabsichtigt überschrieben wird
+
     const updates = fromFrontendPatch(req.body);
- 
-    // Effektiver Wert nach Update (wenn nicht gesendet -> vorheriger Wert bleibt)
+
     const springerAfter =
       updates.springer !== undefined ? updates.springer : before.springer;
+
     const hfAfter =
       updates.hauptfiliale_fnr !== undefined
         ? updates.hauptfiliale_fnr
         : before.hauptfiliale_fnr;
- 
-    // Wenn Springer aktiv: passenden Springer-Algorithmus setzen
+
     if (springerAfter === true) {
       if (hfAfter) {
         const filiale = await filialenRepo.getById(hfAfter);
         updates.springeralgorithmid = getGegenwertAlgoId(filiale.algorithmid);
-        await resetCountersForFiliale(hfAfter); // Counter neu verteilen, da sich die Abdeckung ändert
-        await setCounterForMitarbeiter(hfAfter);
       } else {
         updates.springeralgorithmid = null;
       }
     }
- 
-    // Wenn Springer deaktiviert: springeralgorithmid entfernen
+
     if (springerAfter === false) {
-      await resetCountersForFiliale(hfAfter); // Counter neu verteilen, da sich die Abdeckung ändert
-      await setCounterForMitarbeiter(hfAfter);
       updates.springeralgorithmid = null;
     }
- 
-    // Update in DB durchführen (inkl. Details)
+
     const updated = await mitarbeiterRepo.updateWithDetails(mnr, updates);
     if (!updated) {
       return res.status(404).json({ error: "Mitarbeiter nicht gefunden" });
     }
- 
-    // Wenn die Hauptfiliale gewechselt wurde: Counter beider Filialen neu verteilen
+
     const oldF = before.hauptfiliale_fnr ?? null;
     const newF = updated.hauptfiliale_fnr ?? null;
- 
+    const springerChanged = before.springer !== updated.springer;
+
     if (oldF !== newF) {
       if (oldF) {
         await resetCountersForFiliale(oldF);
@@ -223,14 +214,16 @@ router.put("/:mnr", async (req, res) => {
         await resetCountersForFiliale(newF);
         await setCounterForMitarbeiter(newF);
       }
+    } else if (springerChanged && newF) {
+      await resetCountersForFiliale(newF);
+      await setCounterForMitarbeiter(newF);
     }
- 
-    // Frische Daten zurückgeben
+
     const [fresh, filialen] = await Promise.all([
       mitarbeiterRepo.getByIdWithDetails(mnr),
       filialenRepo.getAll(),
     ]);
- 
+
     res.json(toFrontend(fresh, filialen));
   } catch (err) {
     console.error("Fehler PUT /mitarbeiter/:mnr:", err);
