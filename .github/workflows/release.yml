@@ -31,6 +31,10 @@ jobs:
         with:
           node-version: 'lts/*'
 
+      - name: Install Semantic Release and plugins global
+        run: |
+          npm install -g semantic-release @semantic-release-monorepo/core @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/npm @semantic-release/github
+
       - name: Run Semantic Release for Frontend & Backend
         uses: cycjimmy/semantic-release-action@v4
         with:
@@ -43,3 +47,4 @@ jobs:
             @semantic-release/github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
