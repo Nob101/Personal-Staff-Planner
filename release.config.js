@@ -8,6 +8,7 @@
  * -Lukas
  */
 
+const wrapPlugin = require('@semantic-release-monorepo/core');    //Monorepo sorgt für die Trennung der jeweiligen Unterordenr
 
 module.exports = {
     branches: [ 'main', 'master'],
@@ -18,7 +19,6 @@ module.exports = {
     ],
 
     plugins: [
-        '@semantic-release-monorepo/core',  //Monorepo sorgt für die Trennung der jeweiligen Unterordenr
         '@semantic-release/commit-analyzer',  // Analysiert die Commits nach 'Conventional Commits Rules'
         '@semantic-release/release-notes-generator',  //Erstellt die Change-logs zur Einsicht
 
@@ -31,7 +31,7 @@ module.exports = {
             successComment: "PR wurde in Version ${nextRelease.version} veröffentlicht",
         }]
 
-    ]
+    ].map(wrapPlugin)
 };
 
 
