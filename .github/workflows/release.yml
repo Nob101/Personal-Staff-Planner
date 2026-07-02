@@ -34,4 +34,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   #FIX: Token für semantic release action mitgeben
         run: |
           cd Frontend && npx semantic-release
-          cd ../Backend && npx semantic-release
+          cd ../backend && npx semantic-release
