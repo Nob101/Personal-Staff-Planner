@@ -11,13 +11,19 @@
 
 module.exports = {
     branches: [ 'main', 'master'],
+
+    packages: [
+        'Frontend',
+        'backend'
+    ],
+
     plugins: [
         '@semantic-release-monorepo/core',  //Monorepo sorgt für die Trennung der jeweiligen Unterordenr
         '@semantic-release/commit-analyzer',  // Analysiert die Commits nach 'Conventional Commits Rules'
         '@semantic-release/release-notes-generator',  //Erstellt die Change-logs zur Einsicht
 
         ['@semantic-release/npm', {
-            npmPublish: false,  //FIX: Ausfallschutz
+            npmPublish: false,  //FIX: Ausfallschutz (kein NPM Upload)
         }],
 
         ['@semantic-release/github', {   //WICHTIG: Erstellt den TAG für GitHub Repo

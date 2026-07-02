@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -30,8 +32,14 @@ jobs:
           node-version: 'lts/*'
 
       - name: Run Semantic Release for Frontend & Backend
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          # alle Plugins die config.js benötigt
+          extra_plugins: |
+            @semantic-release-monorepo/core
+            @semantic-release/commit-analyzer
+            @semantic-release/release-notes-generator
+            @semantic-release/npm
+            @semantic-release/github
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   #FIX: Token für semantic release action mitgeben
-        run: |
-          cd Frontend && npx semantic-release --extends ../release.config.js
-          cd ../backend && npx semantic-release --extends ../release.config.js
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
