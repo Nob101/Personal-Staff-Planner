@@ -1,0 +1,32 @@
+
+
+version: 2
+updates:
+
+  # --- FRONTEND (Vue & Tailwind) ---
+  - package-ecosystem: "npm"
+    directory: "/Frontend" # FIX: Großbuchstabe beachten!
+    schedule:
+      interval: "weekly" # Sucht einmal pro Woche nach Updates
+    open-pull-requests-limit: 3
+    # WICHTIG: für Semantic Release:
+    commit-message:
+      prefix: "fix"
+      sub-system: "deps-frontend"
+
+  # --- BACKEND (Alexander) ---
+  - package-ecosystem: "npm"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "fix"
+      sub-system: "deps-backend"
+
+  # --- DOCKER (Infrastruktur) ---
+  - package-ecosystem: "docker"
+    directory: "/" #NEU: Sucht im Hauptverzeichnis nach der docker-compose.yml
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 2

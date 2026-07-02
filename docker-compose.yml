@@ -66,14 +66,31 @@ x-logging: &default-logging
 # Schritt 3 und 4 sorgen erst dafür, dass die Datei unter Windows tatsächlich wieder kleiner wird. 
 # Ohne Schritt 4 bleibt die Datei auf Windows-Ebene 
 
-# ...
+
 services:
+
+  #NEU: --- Watchtower Infrastruktur Lukas ---
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: psp_watchtower
+    restart: always
+    logging: *default-logging
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true     #WICHTIG: Hält Festplatte sauber
+      - WATCHTOWER_POLL_INTERVAL=86400
+      - WATCHTOWER_LABEL_ENABLE=true  #Wichtig: Nur Container mit Label (com.centurylinklabs.watchtower.enable=true) sind betroffen 
+      - DOCKER_API_VERSION=1.40  #FIX: Erzwingt neueste API_version
+
   # --- DATENBANK BEREICH Lukas ---
   psp_database:
     image: postgres:15
     container_name: psp_database
     restart: always
     logging: *default-logging
+    labels: #WIchtig: für Label
+      - "com.centurylinklabs.watchtower.enable=true"
     command: # WICHTIG: Vermeidung von Speicher-Bloat -> WAL-Dateien beim cleanup
       - "postgres"
       - "-c"
@@ -156,6 +173,8 @@ services:
     container_name: psp_proxy
     restart: always
     logging: *default-logging
+    labels: #Wichtig: für Label
+      - "com.centurylinklabs.watchtower.enable=true"
     ports:
     - "80:80"    # HTTP 
     - "443:443"   # HTTPS 

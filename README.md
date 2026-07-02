@@ -18,6 +18,10 @@ Die Anwendung ermöglicht die Verwaltung von Mitarbeitern und Filialen (Bezirke 
 ```
 
 Personal-Staff-Planner/
+├── .github/                # GitHub-Infrastruktur (Dependabot & CI/CD Pipelines)
+│   ├── workflows/
+│   │   └── release.yml      # GitHub Actions Pipeline für automatisierte SemVer-Releases
+│   └── dependabot.yml      # Automatisierte Paket-Updates für Frontend, Backend & Docker
 ├── .idea/                  # IntelliJ/WebStorm Projekt-Einstellungen (wird via .gitignore ignoriert)
 ├── Backend/                # Node.js & Express REST-API / Datenbank-Aufbau
 ├── Frontend/               # Vue 3 (Composition API) & Tailwind CSS
@@ -29,15 +33,75 @@ Personal-Staff-Planner/
 ├── .gitignore              # Schließt Dateien von Git aus
 ├── docker-compose.yml      # Container-Orchestrierung
 ├── nginx.conf              # Reverse-Proxy Konfiguration
+├── NOTICE                   # Rechtliche Hinweise zu Drittanbieter-Lizenzen
+├── README.md                # Projektdokumentation
+├── release.config.js        # Konfiguration für Semantic Release (Conventional Commits)
 ├── gui.ps1                 # PowerShell-GUI für den System-Check
+├── run.vbs                 # Silent-Starter (verhindert CMD-Fenster)
 ├── setup_and_run.bat       # Zentrale Start-Logik
-└── run.vbs                 # Silent-Starter (verhindert CMD-Fenster)
+├── start-linux.sh           # Start-Skript für Linux-Systeme (z. B. Raspberry Pi)
+└── start-mac.sh             # Start-Skript für macOS-Umgebungen
+
 
 
 ```
+---
+
+<h1>NEUHEITEN</h1>
+
+# Wichtig!: Git Commit Regeln (Semantic Release)
+
+Um automatisierte Releases, Versions-Tags (z. B. v1.0.1) und Changelogs zu generieren, ist jetzt Semantic Release auf Basis von Conventional Commits integriert. 
+
+> [!INFO]
+
+> Diese Regeln haben **keinen** Einfluss auf den Code selbst! Sie steuern lediglich die automatische Versionsnummer. Jede Commit-Message muss diesem Format folgen, damit die Pipeline fehlerfrei läuft. Bei nicht einhaltung wird lediglich die versionierung Ignoriert.
+
+
+### Auswirkung auf die Versionsnummer (Beispiel ausgehend von v1.0.0):
+
+* **Bugfix / Patch** (`v1.0.1`) – Erhöht die letzte Stelle:
+  `git commit -m "fix(frontend): farbcode korrigiert"`
+  `git commit -m "fix(backend): validierung fuer stunden korrigiert"`
+
+* **Minor / Feature** (`v1.1.0`) – Erhöht die mittlere Stelle:
+  `git commit -m "feat(backend): algorithmus fuer springer-pool hinzugefuegt"`
+  `git commit -m "feat(frontend): neue tabellenansicht fuer oliver"`
+
+* **Major / Breaking Change** (`v2.0.0`) – Erhöht die erste Stelle (Große, nicht abwärtskompatible Änderungen):
+  `git commit -m "feat(db)!: tabellenstruktur fuer dienstplan komplett umgestellt"`
+
+* **Kein Release** (`v1.0.0`) – Dokumentation oder Refactoring ohne Auswirkung für den Nutzer:
+  `git commit -m "docs(readme): commit regeln ergaenzt"`
+  `git commit -m "chore: formatting angepasst"`
+
 
 ---
 
+# Wichtig!: Dependabot Workflow
+>[!INFO]
+
+> Dies verhindert veraltete Softwarestände und schützt die Anwendung vor bekannten Angriffsvektoren.
+
+Über die Konfigurationsdatei `.github/dependabot.yml` ist der GitHub Dependabot fest in die CI/CD-Pipeline integriert. 
+* **Funktionsweise:** Das Tool scannt in regelmäßigen Intervallen die Abhängigkeiten im `Backend/` (package.json) und `Frontend/` (package.json) sowie die verwendeten Basis-Images in der `docker-compose.yml`.
+* **Nutzen:** Sobald Sicherheitslücken (CVEs) oder Updates für genutzte Bibliotheken vorliegen, erstellt Dependabot automatisch Pull Requests. 
+
+
+---
+
+# Wichtig!: Watchtower Container 
+>[!INFO]
+
+>Während Dependabot den Quellcode vor dem Deployment absichert, übernimmt **Watchtower** die automatisierte Wartung der bereits laufenden Docker-Container auf dem Zielserver (z. B. dem Raspberry Pi).
+
+* **Funktionsweise:** Watchtower läuft als isolierter Hintergrunddienst innerhalb der Container-Infrastruktur. Er kommuniziert direkt über den Docker-Socket (`docker.sock`) und gleicht die Hashes der lokal ausgeführten Images mit der Remote-Registry ab.
+* **Sicherheits- & Ressourcen-Features:** 
+  * `WATCHTOWER_LABEL_ENABLE=true`: Watchtower aktualisiert ausschließlich Container, die explizit über das Label `com.centurylinklabs.watchtower.enable=true` dafür freigegeben wurden. Dies verhindert unvorhergesehene Breaking Changes an kritischen Core-Diensten während des Betriebs.
+  * `WATCHTOWER_CLEANUP=true`: Nach einem erfolgreichen Update werden alte, ungenutzte Image-Fragmente sofort von der Festplatte gelöscht, um den Speicherplatz des Host-Systems (insbesondere bei embedded Systemen wie dem Raspberry Pi) zu schonen.
+
+
+---
 
 ##  Tech Stack
 

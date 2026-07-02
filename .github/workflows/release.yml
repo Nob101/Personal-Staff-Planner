@@ -1,0 +1,8 @@
+
+
+# Wird in GitHub-Actions ausgeführt
+# erst in Frontend, wieder hinaus und dann ins Backend
+cd Frontend && npx semantic-release
+cd ..
+cd Backend && npx semantic-release
+
