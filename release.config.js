@@ -21,6 +21,7 @@ module.exports = {
     plugins: [
         '@semantic-release/commit-analyzer',  // Analysiert die Commits nach 'Conventional Commits Rules'
         '@semantic-release/release-notes-generator',  //Erstellt die Change-logs zur Einsicht
+        
 
         ['@semantic-release/npm', {
             npmPublish: false,  //FIX: Ausfallschutz (kein NPM Upload)

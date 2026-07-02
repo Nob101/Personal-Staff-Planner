@@ -3,7 +3,6 @@
 # Wird in GitHub-Actions ausgeführt
 # erst in Frontend, wieder hinaus und dann ins Backend
 
-
 name: Automated Semantic Release
 
 on:
@@ -33,8 +32,9 @@ jobs:
 
       - name: Install Semantic Release and plugins global
         run: |
-          npm install -g semantic-release @semantic-release-monorepo/core @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/npm @semantic-release/github
-
+          echo '{"private": true}' > package.json
+          npm install semantic-release @semantic-release-monorepo/core @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/npm @semantic-release/github --no-audit
+      
       - name: Run Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
