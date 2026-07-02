@@ -2,13 +2,27 @@
 
 # Wird in GitHub-Actions ausgeführt
 # erst in Frontend, wieder hinaus und dann ins Backend
-steps:
+
+
+name: Automated Semantic Release
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Run Semantic Release
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Run Semantic Release for Frontend & Backend
         run: |
           cd Frontend && npx semantic-release
           cd ../Backend && npx semantic-release
-
-          
