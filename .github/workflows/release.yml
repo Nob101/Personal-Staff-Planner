@@ -30,12 +30,15 @@ jobs:
         with:
           node-version: 'lts/*'
 
-      - name: Install Semantic Release and plugins global
+      - name: Install Semantic Release Dependencies
         run: |
           echo '{"private": true}' > package.json
-          npm install semantic-release @semantic-release-monorepo/core @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/npm @semantic-release/github --no-audit
-      
-      - name: Run Semantic Release
+          npm install semantic-release @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/npm @semantic-release/github --legacy-peer-deps
+
+      #FIX:  Ausführung isoliert pro Verzeichnis
+      - name: Run Semantic Release for Frontend & Backend
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: |
+          cd Frontend && npx semantic-release
+          cd ../backend && npx semantic-release
