@@ -13,6 +13,13 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -23,6 +30,8 @@ jobs:
           node-version: 'lts/*'
 
       - name: Run Semantic Release for Frontend & Backend
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   #FIX: Token für semantic release action mitgeben
         run: |
           cd Frontend && npx semantic-release
           cd ../Backend && npx semantic-release
