@@ -12,7 +12,7 @@ updates:
     # WICHTIG: für Semantic Release:
     commit-message:
       prefix: "fix"
-      sub-system: "deps-frontend"
+      scope: "deps-frontend"
 
   # --- BACKEND (Alexander) ---
   - package-ecosystem: "npm"
@@ -22,7 +22,7 @@ updates:
     open-pull-requests-limit: 3
     commit-message:
       prefix: "fix"
-      sub-system: "deps-backend"
+      scope: "deps-backend"
 
   # --- DOCKER (Infrastruktur) ---
   - package-ecosystem: "docker"

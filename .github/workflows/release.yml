@@ -23,7 +23,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          persist-credentials: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -40,5 +40,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd Frontend && npx semantic-release
-          cd ../backend && npx semantic-release
+          cd Frontend && npx semantic-release --repository-url https://github.com/${{ github.repository }}
+          cd ../backend && npx semantic-release --repository-url https://github.com/${{ github.repository }}
