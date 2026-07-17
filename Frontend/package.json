@@ -13,7 +13,7 @@
     "api": "json-server --watch db.json --port 3001"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.17",
+    "@tailwindcss/vite": "^4.3.3",
     "axios": "^1.13.2",
     "dom-to-image-more": "^3.7.2",
     "jspdf": "^4.2.0",
