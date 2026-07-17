@@ -17,7 +17,7 @@
     "axios": "^1.13.2",
     "dom-to-image-more": "^3.7.2",
     "jspdf": "^4.2.0",
-    "nodemon": "^3.1.11",
+    "nodemon": "^3.1.14",
     "tailwindcss": "^4.1.17",
     "vue": "^3.5.22",
     "vue-multiselect": "^3.4.0",
