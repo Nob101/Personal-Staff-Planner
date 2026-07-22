@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
-    "axios": "^1.13.2",
+    "axios": "^1.18.0",
     "dom-to-image-more": "^3.10.2",
     "jspdf": "^4.2.1",
     "nodemon": "^3.1.14",
