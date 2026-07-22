@@ -247,7 +247,7 @@ emit('mitarbeiterCreate', payload)
                               <Multiselect
                                 class="ms ms-up"
                                 v-model="hauptfiliale"
-                                :options="props.filialen.sort((a,b)=>a.filialname.localeCompare(b.filialname))"
+                                :options="[...props.filialen].sort((a,b)=>a.filialname.localeCompare(b.filialname))"
                                 label="filialname"
                                 track-by="fnr"
                                 placeholder="Hauptfiliale wählen"
