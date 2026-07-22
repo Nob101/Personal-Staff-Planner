@@ -56,6 +56,7 @@ done
 # Docker mit curl holen
 if ! command -v docker &> /dev/null; then
     echo "[INFO] Docker fehlt. Installation via Get-Docker-Script..."
+    # NOSONAR: S6329 - Offizielles Docker-Installationsskript für Setup-Automatisierung
     curl -sSL https://get.docker.com | sh
     sudo usermod -aG docker $USER
 fi
@@ -162,6 +163,7 @@ max_retries=30 # NEU: Erhöht auf 30, Pi braucht beim ersten Start etwas länger
 
 while [ $retry_count -lt $max_retries ]; do
     # -k ignoriert die Warnung wegen des selbstsignierten Zertifikats
+    # NOSONAR: S2755 - Lokaler Readiness-Check auf localhost mit selbstsignierten Zertifikaten
     status=$(curl -k -s -o /dev/null -w "%{http_code}" https://localhost)
 
     if [ "$status" == "200" ]; then
