@@ -2,7 +2,7 @@
 
 -- Warnt vor jedem Löscehn eines datensatzes
 -- Besser als POP UP im reinen Frontend
--- Als SAFE DELETE Methode nur wenn noch zeit bleibt -> Komplex
+
 
 
 -- CREATE OR REPLACE FUNCTION fn_warn_before_delete()

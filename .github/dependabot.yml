@@ -7,7 +7,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/Frontend" # FIX: Großbuchstabe beachten!
     schedule:
-      interval: "weekly" # Sucht einmal pro Woche nach Updates
+      interval: "monthly" # Sucht einmal pro Woche nach Updates
     open-pull-requests-limit: 5
 
 
@@ -15,7 +15,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/backend"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
 
 
@@ -23,5 +23,5 @@ updates:
   - package-ecosystem: "docker"
     directory: "/" #NEU: Sucht im Hauptverzeichnis nach der docker-compose.yml
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5

@@ -6,7 +6,6 @@
 
 # Zum Starten der fertgien Softwarelösung auf 
 # dem Rechner unseres AGs
-#
 
 
 
@@ -21,8 +20,8 @@
 
 
 # Variablen für die DB-Verbindung
-DB_NAME="diesntplan"
-DB_USER="markus"
+DB_NAME="db_name"
+DB_USER="user_name"
 
 # Prüfen, ob die DB existiert
 DB_EXISTS=$(psql -U $DB_USER -tAc "SELECT 1 FROM pg_database WHERE datname='${DB_NAME}'")

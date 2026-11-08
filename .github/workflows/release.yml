@@ -1,7 +1,9 @@
-
-
-# Wird in GitHub-Actions ausgeführt
-# erst in Frontend, wieder hinaus und dann ins Backend
+# =====================================================================
+# Automated Semantic Release Workflow
+# =====================================================================
+# Executes independent versioning and release management sequentially 
+# for both the Frontend and Backend components within the repository.
+# =====================================================================
 
 name: Automated Semantic Release
 
@@ -18,27 +20,32 @@ jobs:
       issues: write
       pull-requests: write
 
-
     steps:
+    # Step 1: Check out the repository source code
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           persist-credentials: true
 
+    # Step 2: Set up the required Node.js environment 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
 
+    # Step 3: Initialize temporary package.json and install release dependencies
       - name: Install Semantic Release Dependencies
         run: |
           echo '{"private": true}' > package.json
           npm install semantic-release @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/npm @semantic-release/github --legacy-peer-deps
 
-      #FIX:  Ausführung isoliert pro Verzeichnis
+      # Step 4: Execute semantic-release in isolated directory contexts 
+      # (First processing Frontend, then switching back and processing Backend)
       - name: Run Semantic Release for Frontend & Backend
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd Frontend && npx semantic-release --repository-url https://github.com/${{ github.repository }}
           cd ../backend && npx semantic-release --repository-url https://github.com/${{ github.repository }}
+
+

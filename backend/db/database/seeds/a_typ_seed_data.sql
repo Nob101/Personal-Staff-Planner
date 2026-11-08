@@ -11,14 +11,3 @@ INSERT INTO arbeitstyp (akurzl, text) VALUES
     on CONFLICT (akurzl) DO NOTHING;
 
 
-
-
-
-
-
-
-
-
-
-
-    --Hola

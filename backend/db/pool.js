@@ -1,9 +1,10 @@
-// Import des Pools aus dem pg-Modul
+// Import pool from pg-Modul
 const { Pool } = require('pg');
-require('dotenv').config();  //Wichtig: werte aus der .env Datei
+require('dotenv').config();  //IMPORTANT: values => .env file
 
 
-// Neue Verbindung (Pool) zur Datenbank
+
+// NEW: pool connection
 const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -13,4 +14,3 @@ const pool = new Pool({
 });
 
 module.exports = pool;
- 

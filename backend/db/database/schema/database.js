@@ -1,22 +1,25 @@
+
+
 /**#####################################################
- * Das Modul verwaltet die Initialisierung der Datenbank
+ * Module managing the database initialization
  * --------------------
  * 
- * ABLAUF:
- * 1. Rollen-Check: Stellt sicher, dass die 'admin'-Rolle existiert.
- * 2. Schema: Erstellt Tabellen (muss immer zuerst laufen).
- * 3. Logik: Lädt PL/pgSQL Funktionen, Trigger und Datenbank-Indizes.
- * 4. Seeds: Befüllt Tabellen mit Stammdaten (z.B. Arbeitstypen).
- * 5. Admin-User: Erstellt den Initial-User (Passwort via Bcrypt aus .env).
+ * EXECUTION FLOW:
+ * 1. Role Check: Ensures the 'admin' role exists.
+ * 2. Schema: Creates tables (must always run first).
+ * 3. Logic: Loads PL/pgSQL functions, triggers, and database indexes.
+ * 4. Seeds: Populates tables with initial master data (e.g., work types).
+ * 5. Admin User: Creates the initial user (password hashed via Bcrypt from .env).
  * 
  * --------------------
- *  HINWEIS: Verwendet den 'sqlLoader.js', um alle Dateien in den jeweiligen 
- * Verzeichnissen automatisch auszuführen.
+ * NOTE: Uses 'sqlLoader.js' to automatically execute all files 
+ * in their respective directories.
  */
 
 
 
-const pool = require('../../pool.js');  //Neu! da Der Pool wartbarer wird wenn er ausserhalb liegt
+// New! Pool is more maintainable when defined externally
+const pool = require('../../pool.js');  
 const bcrypt = require('bcrypt');
 const path = require('path');
 
@@ -36,8 +39,8 @@ async function initDatabase() {
       throw new Error(`Config-Passwörter fehlen in der .env!`);
     }
     /**
-     * NEU: Wenn DB bereits existiert muss nicht der ganze Block ausgeführt werden
-     * kontrolle über PG Inahltsverzeichnis welche Tabellen existieren oder nicht
+     * If the database already exists, the full setup block can be skipped.
+     * Controlled via the PostgreSQL information schema checking for existing tables.
      */
     const checkTableRes = await client.query(`
             SELECT EXISTS (
@@ -49,14 +52,14 @@ async function initDatabase() {
 
         const dbExists = checkTableRes.rows[0].exists;
         if(dbExists){
-             console.log("--- DB-Existiert bereits. Setup wird Übersprungen ---");
+             console.log("--- Database already exists. Skipping setup ---");
              return ;
         }
     
 
-        console.log("--- DB-Initialisierung gestartet ---");
-        // im Do Block, da Postgres kein Create Role if not Exists kennt (nicht in der userTabelle)
-        // admin hat Superuser Rechte (Create, Delete, usw. DB) '%L' verhindert das Sonderzeichen im Passwort das SQL-Kommando zerstört
+        console.log("--- Database initialization started ---");
+        // Wrapped in a DO block since Postgres does not support 'CREATE ROLE IF NOT EXISTS' directly
+        // Admin has superuser privileges (Create, Delete, etc.). '%L' prevents special characters in passwords from breaking the SQL command.
         await client.query(`
             DO $$
             BEGIN
@@ -68,7 +71,7 @@ async function initDatabase() {
  
         await client.query('BEGIN');
  
-        // Externe Skripte => laden
+        //!! Load external scripts directories
         const schemaDir = __dirname;
         
         const procedureDir = path.resolve(__dirname, '../procedures');
@@ -77,30 +80,25 @@ async function initDatabase() {
         const indexesDir = path.resolve(__dirname, '../indexes');
         const seedsDir = path.resolve(__dirname, '../seeds');
 
-        // Wichtig: Erst das Schema laden!  -> Reihenfolge 
-        
+        // Important: Load the schema first -> strict execution order 
+            // First: Base schema tables
+            await loadSqlFiles(client, [schemaDir]);
 
-        // erstens
-        await loadSqlFiles(client, [schemaDir]);
- 
-        // zweitens
-        // console.log("Lade externe SQL-Skripte...");
-        await loadSqlFiles(client, [procedureDir, functionsDir]);
+            // Second: Procedures and functions
+            await loadSqlFiles(client, [procedureDir, functionsDir]);
 
-        // drittens
-        await loadSqlFiles(client, [ triggersDir, indexesDir]);
+            // Third: Triggers and indexes
+            await loadSqlFiles(client, [triggersDir, indexesDir]);
 
-        // viertens
-        await loadSqlFiles(client, [seedsDir]);
-        // console.log("....Laden der Skripte beendet");
+            // Fourth: Seed data
+            await loadSqlFiles(client, [seedsDir]);
 
-     // Query Planner bekommt die aktualisierten Datensätze
-        await client.query('CALL pr_refresh_indexes();');
+            // Query Planner receives updated dataset statistics
+            await client.query('CALL pr_refresh_indexes();');
 
+            // Create initial admin user
+            const hashPassword = await bcrypt.hash(markusPassword, saltRounds);
 
-
-         // Admin-User
-        const hashPassword = await bcrypt.hash(markusPassword, saltRounds);
  
         await client.query(`
             INSERT INTO users (username, password_hash, role)
@@ -108,12 +106,11 @@ async function initDatabase() {
         `, [hashPassword]);
  
         await client.query('COMMIT');
-        // console.log("Datenbank erfolgreich an Backend-Wünsche angepasst.");
  
  
     } catch (err) {
         if (client) await client.query('ROLLBACK');
-        console.error("DB-Initialisierung fehlgeschlagen:", err.message);
+        console.error("Database initialization failed:", err.message);
     } finally {
         client.release();
     }

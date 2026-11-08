@@ -1,10 +1,7 @@
 
-
 /*
 ###############################
-
--- Zum Laden der Trigger usw. (sql-files)
-
+-- Module for loading and executing SQL script files dynamically
 ################################
 */
 
@@ -14,13 +11,13 @@ const fs = require('fs');
 const path = require('path');
 
 
-// *.sql -Files aus den ordnern Laden
-
+// Loads and executes all .sql files from the specified directories in alphabetical order
 async function loadSqlFiles(client, directories) {
-  for (const dir of directories) {  //sucht in alle Verzeichnisse
+  for (const dir of directories) {  // Iterates through all provided directories
     
     if (fs.existsSync(dir)) {
-      const files = fs.readdirSync(dir).filter(file => file.endsWith('.sql')).sort(); //lädt gezielt .sql-FIles
+      // Filters for .sql files and sorts them alphabetically to guarantee execution order
+      const files = fs.readdirSync(dir).filter(file => file.endsWith('.sql')).sort(); 
 
 
       for (const file of files) {
@@ -28,13 +25,13 @@ async function loadSqlFiles(client, directories) {
             const sql = fs.readFileSync(fullPath, 'utf8');
 
         try {
-// Ausführen der sql-files in der aktuellen Transaktion
+          // Execute the SQL file within the current transaction block
           await client.query(sql);
-             console.log(`  SQL ausgeführt: ${file}`);
+             console.log(`SQL executed successfully: ${file}`);
         } catch (err) {
-            console.error(` Fehler in Datei ${file}:`, err.message);
+            console.error(`Error in file ${file}:`, err.message);
 
-          throw err; //  Transaktion bricht ab bei fehler -> RollBack
+          throw err; // Aborts the transaction and triggers a rollback on failure
         }
       }
     } else {

@@ -1,6 +1,6 @@
 
--- Listet alle MA die in einer Filaile zugeteilt sind
--- !!! An aktuelle DB angepasst !!!
+-- Lists all employees assigned to a specific branch
+
 CREATE OR REPLACE FUNCTION fn_list_employees_by_filiale(fnr INTEGER)
 RETURNS TABLE (
   mnr INTEGER,
@@ -19,7 +19,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
--- Aufruf im Node.js file mit...
+-- Execution within the Node.js application
 -- const { rows } = await pool.query('SELECT * FROM fn_list_employees_by_filiale($1)', [fnr]);
 
 

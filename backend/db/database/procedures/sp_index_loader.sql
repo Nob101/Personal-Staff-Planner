@@ -1,38 +1,32 @@
 
 /*
-    Stored Procedure damit das hinzufügen größeren Datensätzen
-    die Index Struktur neu aufzubauen. (Index Bloat vermeidung)
-    Für den fall das später der Input mehrere Datensätze (Massen Import) via excel file oder csv
+    Stored Procedure for rebuilding index structures to avoid index bloat 
+    when inserting large datasets (e.g., bulk imports via Excel or CSV).
 */
 
 CREATE OR REPLACE PROCEDURE pr_refresh_indexes()
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    -- PostgreSQL -> REINDEX TABLE für alle Indizes einer Tabelle
-    --  effizienter als jeden Index einzeln zu benennen (ORACLE zB)
+    -- PostgreSQL -> REINDEX TABLE for all indexes of a table
+    -- More efficient than rebuilding each index individually (unlike Oracle, etc.)
     REINDEX TABLE  dienstplaene;
     REINDEX TABLE mitarbeiter;
     REINDEX TABLE  mitarbeiter_arbeitet_in_filiale;
     REINDEX TABLE  stunden_konto;
+    --NEW: Table mitarbeiter_abwesenheit
+    REINDEX TABLE mitarbeiter_abwesenheit;
 
-    -- Statistiken aktualisieren für QUERY Planner -> speichert werte in der System-Statistik (Intern) pg_statistic
+    -- Update statistics for the Query Planner -> stores values in the internal system catalog (pg_statistic)
     ANALYZE dienstplaene;
     ANALYZE mitarbeiter;
     ANALYZE mitarbeiter_kontakt;
     ANALYZE mitarbeiter_arbeitet_in_filiale;
+    --NEW: statistic mitarbeiter_abwesenheit
+    ANALYZE mitarbeiter_abwesenheit;
 
-    RAISE NOTICE 'Index-Rebuild und Statistiken (ANALYZE) erfolgreich abgeschlossen.';
+    RAISE NOTICE 'Index rebuild and statistics analysis (ANALYZE) completed successfully.';
 END;
 $$;
 
 
-
-
-
-
-
-
-
-
---
