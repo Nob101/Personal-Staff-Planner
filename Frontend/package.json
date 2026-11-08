@@ -18,7 +18,7 @@
     "dom-to-image-more": "^3.11.0",
     "jspdf": "^4.2.1",
     "nodemon": "^3.1.14",
-    "tailwindcss": "^4.3.3",
+    "tailwindcss": "^4.3.4",
     "vue": "^3.5.44",
     "vue-multiselect": "^3.5.0",
     "vue-router": "^5.4.0"
